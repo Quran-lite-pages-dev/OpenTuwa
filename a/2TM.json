@@ -44,6 +44,169 @@
             "title": "Al-Fatiha"
         },
                 {
+            "chapterNumber": 2,
+            "totalDuration": "03:49:49",
+            "verses": [
+                {
+                    "verseNumber": 1,
+                    "startTime": "00:00:00",
+                    "endTime": "00:00:07"
+                },
+                {
+                    "verseNumber": 2,
+                    "startTime": "00:00:07",
+                    "endTime": "00:00:22"
+                },
+                {
+                    "verseNumber": 3,
+                    "startTime": "00:00:22",
+                    "endTime": "00:00:42"
+                },
+                {
+                    "verseNumber": 4,
+                    "startTime": "00:00:42",
+                    "endTime": "00:01:09"
+                },
+                {
+                    "verseNumber": 5,
+                    "startTime": "00:01:09",
+                    "endTime": "00:01:27"
+                },
+                {
+                    "verseNumber": 6,
+                    "startTime": "00:01:27",
+                    "endTime": "00:01:50"
+                },
+                {
+                    "verseNumber": 7,
+                    "startTime": "00:01:50",
+                    "endTime": "00:02:13"
+                },
+                {
+                    "verseNumber": 8,
+                    "startTime": "00:02:13",
+                    "endTime": "00:02:35"
+                },
+                {
+                    "verseNumber": 9,
+                    "startTime": "00:02:35",
+                    "endTime": "00:02:57"
+                },
+                {
+                    "verseNumber": 10,
+                    "startTime": "00:02:57",
+                    "endTime": "00:03:21"
+                },
+                {
+                    "verseNumber": 11,
+                    "startTime": "00:03:21",
+                    "endTime": "00:03:43"
+                },
+                {
+                    "verseNumber": 12,
+                    "startTime": "00:03:43",
+                    "endTime": "00:03:59"
+                },
+                {
+                    "verseNumber": 13,
+                    "startTime": "00:03:59",
+                    "endTime": "00:04:45"
+                },
+                {
+                    "verseNumber": 14,
+                    "startTime": "00:04:45",
+                    "endTime": "00:05:27"
+                },
+                {
+                    "verseNumber": 15,
+                    "startTime": "00:05:27",
+                    "endTime": "00:05:42"
+                },
+                {
+                    "verseNumber": 16,
+                    "startTime": "00:05:42",
+                    "endTime": "00:06:05"
+                },
+                {
+                    "verseNumber": 17,
+                    "startTime": "00:06:05",
+                    "endTime": "00:06:40"
+                },
+                {
+                    "verseNumber": 18,
+                    "startTime": "00:06:40",
+                    "endTime": "00:06:54"
+                },
+                {
+                    "verseNumber": 19,
+                    "startTime": "00:06:54",
+                    "endTime": "00:07:37"
+                },
+                {
+                    "verseNumber": 20,
+                    "startTime": "00:07:37",
+                    "endTime": "00:08:32"
+                },
+                {
+                    "verseNumber": 21,
+                    "startTime": "00:08:32",
+                    "endTime": "00:08:55"
+                },
+                {
+                    "verseNumber": 22,
+                    "startTime": "00:08:55",
+                    "endTime": "00:09:48"
+                },
+                {
+                    "verseNumber": 23,
+                    "startTime": "00:09:48",
+                    "endTime": "00:10:27"
+                },
+                {
+                    "verseNumber": 24,
+                    "startTime": "00:10:27",
+                    "endTime": "00:10:57"
+                },
+                {
+                    "verseNumber": 25,
+                    "startTime": "00:10:57",
+                    "endTime": "00:12:08"
+                },
+                {
+                    "verseNumber": 26,
+                    "startTime": "00:12:08",
+                    "endTime": "00:13:27"
+                },
+                {
+                    "verseNumber": 27,
+                    "startTime": "00:13:27",
+                    "endTime": "00:14:10"
+                },
+                {
+                    "verseNumber": 28,
+                    "startTime": "00:14:10",
+                    "endTime": "00:14:45"
+                },
+                {
+                    "verseNumber": 284,
+                    "startTime": "04:48:29",
+                    "endTime": "04:49:52"
+                },
+                {
+                    "verseNumber": 285,
+                    "startTime": "04:49:53",
+                    "endTime": "04:50:29"
+                },
+                {
+                    "verseNumber": 286,
+                    "startTime": "04:50:30",
+                    "endTime": "04:52:15"
+                }
+            ],
+            "audioURL": "https://ia902203.us.archive.org/19/items/Quran-Indonesia_/002.mp3",
+            "title": "Al-Baqarah"
+        },
+                {
             "chapterNumber": 36,
             "totalDuration": "00:32:54",
             "verses": [
