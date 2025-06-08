@@ -1,4 +1,0 @@
-User-agent: *
-Disallow:
-
-Sitemap: https://muslim1446.github.io/sitemap.xml
