@@ -3,58 +3,85 @@
 <head>
     <meta charset="UTF-8">
     
-    <title>Listen to the Quran: Verse by Verse Player with Reciters & Translation</title>
+    <title>Quran Player with Spanish, Chinese, English & Indonesian Translation</title>
     
-    <meta name="description" content="Play the Noble Quran verse by verse. Choose reciters like Alafasy and Sudais. Read Arabic text with English, Spanish, Chinese, and Indonesian translations. Includes optional audio translations.">
-    
+    <meta name="description" content="Listen to the Noble Quran verse by verse. Get Arabic text with English, Spanish, Chinese, and Indonesian translations. Features reciter selection and audio translation.">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <meta name="theme-color" content="#000000">
 
     <link rel="canonical" href="https://muslim1446.github.io/">
 
-    <link href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>" rel="icon">
-    
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="alternate" hreflang="x-default" href="https://muslim1446.github.io/">
+    <link rel="alternate" hreflang="en" href="https://muslim1446.github.io/">
+    <link rel="alternate" hreflang="es" href="https://muslim1446.github.io/">
+    <link rel="alternate" hreflang="zh" href="https://muslim1446.github.io/">
+    <link rel="alternate" hreflang="id" href="https://muslim1446.github.io/">
 
-
-    <meta property="og:title" content="Listen to the Quran: Verse by Verse Player">
-    <meta property="og:description" content="Play the Noble Quran verse by verse with reciter selection and multiple text/audio translations (English, Spanish, Chinese, etc.).">
+    <meta property="og:title" content="Quran Player (Spanish, Chinese, English)">
+    <meta property="og:description" content="A verse-by-verse Quran player with Arabic text and translations in Spanish, Chinese, English, and Indonesian.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://muslim1446.github.io/">
-    <meta property="og:image" content="https://muslim1446.github.io/social-preview.jpg">
-    <meta property="og:site_name" content="Qur'an Player">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://muslim1446.github.io/">
-    <meta name="twitter:title" content="Listen to the Quran: Verse by Verse Player">
-    <meta name="twitter:description" content="Play the Quran verse by verse with reciter selection and multiple text/audio translations.">
+    <meta property="og:image" content="https://muslim1446.github.io/social-preview.jpg"> <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="es_ES"> <meta property="og:locale:alternate" content="zh_CN"> <meta property="og:locale:alternate" content="id_ID"> <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Quran Player (Spanish, Chinese, English)">
+    <meta name="twitter:description" content="Verse-by-verse Quran player with translations in Spanish, Chinese, English, and Indonesian.">
     <meta name="twitter:image" content="https://muslim1446.github.io/social-preview.jpg">
-
 
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
-      "url": "https://muslim1446.github.io/", // <-- TODO: REPLACE
-      "mainEntity": {
-        "@type": "WebApplication",
-        "name": "Qur'an Verse by Verse Player",
-        "description": "An online player for the Noble Quran, providing verse-by-verse recitation, Arabic text, and translations in English, Spanish, Chinese, and Indonesian. Features multiple reciters and audio translation options.",
-        "applicationCategory": "MultimediaApplication",
-        "operatingSystem": "Any",
-        "browserRequirements": "Requires a modern web browser with JavaScript enabled.",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
+      "@type": "WebApplication",
+      "name": "Multi-lingual Quran Player",
+      "description": "A verse-by-verse Quran player offering Arabic text with translations (English, Spanish, Chinese, Indonesian) and audio translations.",
+      "url": "https://muslim1446.github.io/",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Any (Web)",
+      "browserRequirements": "Requires a modern web browser.",
+      
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+
+      "featureList": [
+        "Verse-by-Verse Audio Playback",
+        "Reciter Selection",
+        "Arabic Text Display",
+        "Audio Translation (English, Indonesian)",
+        "Text Translation (English, Spanish, Chinese, Indonesian)"
+      ],
+      
+      "inLanguage": "ar",
+      
+      "availableLanguage": [
+        {
+          "@type": "Language",
+          "name": "Arabic"
         },
-        "keywords": "Quran, Qur'an, player, recitation, verse by verse, Alafasy, Juhaynee, Sudais, Ghamadi, Abbad, Muaiqly, Shuraym, Abdul Basit, translation, English, Spanish, Chinese, Indonesian"
-      }
+        {
+          "@type": "Language",
+          "name": "English"
+        },
+        {
+          "@type": "Language",
+          "name": "Spanish"
+        },
+        {
+          "@type": "Language",
+          "name": "Chinese"
+        },
+        {
+          "@type": "Language",
+          "name": "Indonesian"
+        }
+      ]
     }
     </script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
+    <link href="data:image/svg+xml,<svg xmlns=%22http://www.w.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📖</text></svg>" rel="icon">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"> <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa+Ink:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -70,7 +97,6 @@
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
     })(window,document,'script','dataLayer','GTM-54DDMRW8');</script>
-
     <style>
         /* ... (all styles are the same as before) ... */
         :root { --vh: 100vh; }
