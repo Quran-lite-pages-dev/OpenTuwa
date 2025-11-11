@@ -416,7 +416,8 @@ function updateVerse(newSrc) {
         const TRANSLATION_AUDIO_CONFIG = {
             'none': { name: 'No Audio Translation' },
             'en_walk': { name: 'English (Ibrahim Walk)', path: 'English/Sahih_Intnl_Ibrahim_Walk_192kbps' },
-            'id_ministry': { name: 'Indonesian (Ministry)', path: 'httpIA://dn721906.ca.archive.org/0/items/AlQuran-terjemahan-indonesia-tanpa-bahasa-arab' }
+            'id_ministry': { name: 'Indonesian (Ministry)', path: 'httpIA://dn721906.ca.archive.org/0/items/AlQuran-terjemahan-indonesia-tanpa-bahasa-arab' },
+            'es_custom': { name: 'Español', path: 'custom_es_url' }
         };
 
         // --- FTT URL ---
@@ -730,6 +731,8 @@ function updateVerse(newSrc) {
 
             if (config.path.startsWith('httpIA')) { 
                 newAudioUrl = `${config.path.replace('httpIA', 'https')}/${chapterStr}${verseStr}.mp3`;
+            } else if (config.path === 'custom_es_url') {
+                newAudioUrl = `https://github.com/muslim1446/muslim1446.github.io/raw/refs/heads/master/play/${chapterStr}${verseStr}.mp3`;
             } else {
                 newAudioUrl = `https://everyayah.com/data/${config.path}/${chapterStr}${verseStr}.mp3`;
             }
