@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Audio Tagger (v4 - Shortcuts Fixed)</title>
+    <title>Online Audio Tagger (v5 - Zoomable)</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -68,7 +68,7 @@
         #waveform {
             width: 100%;
             height: 128px; /* You can change this height */
-            margin-top: 15px;
+            margin-top: 10px;
             border: 1px solid #ddd;
             background: #f9f9f9;
         }
@@ -80,6 +80,24 @@
             display: none; /* Hidden by default */
             margin-left: 20px;
         }
+        
+        /* --- NEW --- Zoom Controls */
+        #zoom-controls {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #fafafa;
+            border: 1px solid #eee;
+            border-radius: 5px;
+        }
+        #zoom-controls label {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        #zoom-slider {
+            width: 300px;
+            vertical-align: middle;
+        }
+        /* --- END NEW --- */
 
         #clips-section {
             background: #fff;
@@ -135,7 +153,7 @@
 <body>
 
     <header>
-        <h1>🎧 Online Audio Tagger (v4 - Shortcuts Fixed)</h1>
+        <h1>🎧 Online Audio Tagger (v5 - Zoomable)</h1>
     </header>
 
     <section id="player-controls">
@@ -146,15 +164,21 @@
         <span id="time-display">00:00:00.000</span>
         <span id="loading-indicator">Decoding Waveform...</span>
         
+        <div id="zoom-controls">
+            <label for="zoom-slider">Zoom:</label>
+            <input type="range" id="zoom-slider" min="10" max="500" value="50">
+            (Shortcuts: [+] / [-])
+        </div>
         <div id="waveform"></div>
         
         <div>
             <strong>Shortcuts:</strong> 
             [Space]: Play/Pause |
-            [←]: Rewind 1s |
-            [→]: Forward 1s |
+            [←/→]: Rewind/Fwd 1s |
             [1]: Mark Arabic End |
-            [2]: Mark Spanish End
+            [2]: Mark Spanish End |
+            [+/=]: Zoom In |
+            [-]: Zoom Out
         </div>
     </section>
 
@@ -189,6 +213,7 @@
         const importJsonText = document.getElementById('import-json');
         const exportJsonText = document.getElementById('export-json');
         const importButton = document.getElementById('import-button');
+        const zoomSlider = document.getElementById('zoom-slider'); // --- NEW ---
         
         let wavesurfer = null; // This will be our WaveSurfer instance
         let db = {}; // Master database for all timestamps
@@ -308,6 +333,10 @@
             wavesurfer.on('ready', () => {
                 loadingIndicator.style.display = 'none';
                 console.log('Waveform ready.');
+                
+                // --- NEW --- Apply zoom on load
+                wavesurfer.zoom(parseInt(zoomSlider.value));
+
                 // Restore last saved time
                 wavesurfer.setTime(playerState.currentTime);
                 timeDisplay.textContent = formatTime(playerState.currentTime);
@@ -438,10 +467,7 @@
             if (state === 'orange') {
                 tagStatus.style.backgroundColor = 'orange';
                 tagStatus.style.color = '#333';
-                // --- THIS WAS THE BUG ---
-                // It used to say 'tagGag.textContent'
                 tagStatus.textContent = 'Waiting for Arabic End (Press 1)';
-                // -----------------------
             } else {
                 tagStatus.style.backgroundColor = 'lightgreen';
                 tagStatus.style.color = '#333';
@@ -500,6 +526,25 @@
             updateTagStatusUI('orange');
         }
 
+        // --- NEW --- Helper function for zoom
+        /**
+         * Sets the zoom level on the slider and the waveform
+         * @param {number} newZoom - The new zoom value (pixels per second)
+         */
+        function setZoom(newZoom) {
+            const min = parseInt(zoomSlider.min);
+            const max = parseInt(zoomSlider.max);
+            
+            // Clamp the value between min and max
+            newZoom = Math.max(min, Math.min(max, newZoom));
+            
+            zoomSlider.value = newZoom;
+            if (wavesurfer) {
+                wavesurfer.zoom(newZoom);
+            }
+        }
+        // --- END NEW ---
+
         /**
          * Handles global key presses for shortcuts
          * @param {KeyboardEvent} e
@@ -532,6 +577,18 @@
                     e.preventDefault();
                     handleMarkEnd();
                     break;
+                
+                // --- NEW --- Zoom keys
+                case '+':
+                case '=': // '+' key without shift
+                    e.preventDefault();
+                    setZoom(parseInt(zoomSlider.value) + 50);
+                    break;
+                case '-':
+                    e.preventDefault();
+                    setZoom(parseInt(zoomSlider.value) - 50);
+                    break;
+                // --- END NEW ---
             }
         }
 
@@ -589,6 +646,7 @@
                 // Load the first chapter by default if no state
                 chapterSelect.value = "001";
                 loadChapter("001");
+
             }
             
             // 5. Render initial data
@@ -596,10 +654,18 @@
             updateTagStatusUI('orange');
 
             // 6. Attach event listeners
-            // This line is now reachable because the typo is fixed!
             document.addEventListener('keydown', handleGlobalKeydown);
             chapterSelect.addEventListener('change', (e) => loadChapter(e.target.value));
             importButton.addEventListener('click', handleImport);
+
+            // --- NEW --- Listen for slider changes
+            zoomSlider.addEventListener('input', () => {
+                const zoomLevel = parseInt(zoomSlider.value);
+                if (wavesurfer) {
+                    wavesurfer.zoom(zoomLevel);
+                }
+            });
+            // --- END NEW ---
         });
 
     </script>
