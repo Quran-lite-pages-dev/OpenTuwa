@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Online Audio Tagger (v5 - Zoomable)</title>
+    <title>Online Audio Tagger (v6 - Layout Fix)</title>
     <style>
+        /* --- NEW --- Full page reset */
+        html {
+            height: 100%;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* No scrollbars on the base page */
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: grid;
@@ -18,12 +27,18 @@
             padding: 15px;
             background-color: #f4f4f4;
             color: #333;
-            height: 95vh;
+
+            /* --- FIX --- Use full viewport and box-sizing */
+            height: 100vh;
+            width: 100vw;
+            margin: 0;
+            box-sizing: border-box; /* Include padding in the 100vh/vw */
+            /* --- END FIX --- */
         }
 
         header { grid-area: header; }
         #player-controls { grid-area: player; }
-        #clips-section { grid-area: clips; display: flex; flex-direction: column; min-height: 200px; }
+        #clips-section { grid-area: clips; display: flex; flex-direction: column; min-height: 150px; } /* Min height for clips */
         #io-section { grid-area: io; }
 
         h1, h2 {
@@ -64,10 +79,9 @@
             margin-left: 20px;
         }
 
-        /* This is where the waveform will live */
         #waveform {
             width: 100%;
-            height: 128px; /* You can change this height */
+            height: 128px;
             margin-top: 10px;
             border: 1px solid #ddd;
             background: #f9f9f9;
@@ -77,11 +91,10 @@
             font-size: 1.1em;
             font-weight: bold;
             color: #d9534f;
-            display: none; /* Hidden by default */
+            display: none;
             margin-left: 20px;
         }
         
-        /* --- NEW --- Zoom Controls */
         #zoom-controls {
             margin-top: 15px;
             padding: 10px;
@@ -97,14 +110,13 @@
             width: 300px;
             vertical-align: middle;
         }
-        /* --- END NEW --- */
 
         #clips-section {
             background: #fff;
             padding: 15px;
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            overflow-y: auto;
+            overflow-y: auto; /* Allow THIS section to scroll */
         }
 
         #clips-list {
@@ -135,7 +147,7 @@
             width: 100%;
             height: 150px;
             font-family: "Courier New", Courier, monospace;
-            box-sizing: border-box; /* Ensures padding doesn't affect width */
+            box-sizing: border-box;
         }
         #import-button {
             background-color: #007bff;
@@ -153,7 +165,7 @@
 <body>
 
     <header>
-        <h1>🎧 Online Audio Tagger (v5 - Zoomable)</h1>
+        <h1>🎧 Online Audio Tagger (v6 - Layout Fix)</h1>
     </header>
 
     <section id="player-controls">
@@ -169,6 +181,7 @@
             <input type="range" id="zoom-slider" min="10" max="500" value="50">
             (Shortcuts: [+] / [-])
         </div>
+
         <div id="waveform"></div>
         
         <div>
@@ -213,21 +226,16 @@
         const importJsonText = document.getElementById('import-json');
         const exportJsonText = document.getElementById('export-json');
         const importButton = document.getElementById('import-button');
-        const zoomSlider = document.getElementById('zoom-slider'); // --- NEW ---
+        const zoomSlider = document.getElementById('zoom-slider');
         
-        let wavesurfer = null; // This will be our WaveSurfer instance
-        let db = {}; // Master database for all timestamps
-        let playerState = { currentFile: null, currentTime: 0 }; // Last known state
-        let taggingState = 'orange'; // 'orange' (waiting for 1) or 'green' (waiting for 2)
+        let wavesurfer = null;
+        let db = {};
+        let playerState = { currentFile: null, currentTime: 0 };
+        let taggingState = 'orange';
         let currentStartTime = null;
 
         // --- CORE FUNCTIONS ---
 
-        /**
-         * Formats seconds into HH:MM:SS.mmm format
-         * @param {number} seconds - The time in seconds
-         * @returns {string} Formatted time string
-         */
         function formatTime(seconds) {
             const ms = Math.floor((seconds % 1) * 1000);
             const totalSec = Math.floor(seconds);
@@ -237,9 +245,6 @@
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(3, '0')}.${ms.toString().padStart(3, '0')}`;
         }
 
-        /**
-         * Saves the entire timestamp database to localStorage and updates the export box
-         */
         function saveDB() {
             try {
                 const jsonString = JSON.stringify(db, null, 2);
@@ -251,9 +256,6 @@
             }
         }
 
-        /**
-         * Loads the timestamp database from localStorage
-         */
         function loadDB() {
             const storedDB = localStorage.getItem('timestampDB');
             if (storedDB) {
@@ -270,20 +272,13 @@
             }
         }
 
-        /**
-         * Saves the current player state (file and time) to localStorage
-         */
         function savePlayerState() {
-            // Get current time from wavesurfer if it exists
             if (wavesurfer) {
                 playerState.currentTime = wavesurfer.getCurrentTime();
             }
             localStorage.setItem('playerState', JSON.stringify(playerState));
         }
 
-        /**
-         * Loads the last player state from localStorage
-         */
         function loadPlayerState() {
             const storedState = localStorage.getItem('playerState');
             if (storedState) {
@@ -296,9 +291,6 @@
             }
         }
 
-        /**
-         * Populates the chapter select dropdown (1-114)
-         */
         function populateChapterSelect() {
             for (let i = 1; i <= 114; i++) {
                 const chapterNum = i.toString().padStart(3, '0');
@@ -309,9 +301,6 @@
             }
         }
 
-        /**
-         * Initializes the WaveSurfer player
-         */
         function initWaveSurfer() {
             if (wavesurfer) {
                 wavesurfer.destroy();
@@ -319,13 +308,15 @@
             
             wavesurfer = WaveSurfer.create({
                 container: '#waveform',
-                waveColor: 'rgb(200, 200, 200)',
-                progressColor: 'rgb(100, 100, 100)',
+                /* --- FIX --- More distinct colors */
+                waveColor: 'rgb(200, 200, 200)',    // Light grey for unplayed
+                progressColor: 'rgb(70, 70, 130)',  // Dark blue for played
+                cursorColor: '#d9534f',             // Bright red for the cursor
+                /* --- END FIX --- */
                 height: 128,
                 barWidth: 2,
                 barGap: 1,
-                cursorWidth: 2,
-                cursorColor: '#004a99'
+                cursorWidth: 2
             });
 
             // --- WaveSurfer Event Listeners ---
@@ -334,10 +325,8 @@
                 loadingIndicator.style.display = 'none';
                 console.log('Waveform ready.');
                 
-                // --- NEW --- Apply zoom on load
                 wavesurfer.zoom(parseInt(zoomSlider.value));
 
-                // Restore last saved time
                 wavesurfer.setTime(playerState.currentTime);
                 timeDisplay.textContent = formatTime(playerState.currentTime);
             });
@@ -349,7 +338,6 @@
 
             wavesurfer.on('timeupdate', (currentTime) => {
                 timeDisplay.textContent = formatTime(currentTime);
-                // Save state continuously
                 playerState.currentTime = currentTime;
                 savePlayerState();
             });
@@ -360,36 +348,27 @@
             });
         }
         
-        /**
-         * Loads a new chapter into the audio player
-         * @param {string} chapterNum - The 3-digit chapter number (e.g., "001")
-         */
         function loadChapter(chapterNum) {
             const fileName = `coran_${chapterNum}.mp3`;
             const filePath = `https://ia601404.us.archive.org/34/items/elsagrado/${fileName}`;
             
-            playerState.currentFile = fileName; // We still save the local-style name for the DB
-            playerState.currentTime = 0; // Reset on new chapter load
+            playerState.currentFile = fileName;
+            playerState.currentTime = 0;
             savePlayerState();
             
             currentChapterTitle.textContent = `coran_${chapterNum}`;
             
-            // Load the new audio file into wavesurfer
-            // We MUST add a dummy parameter to bypass browser cache for archive.org
             wavesurfer.load(filePath + '?t=' + new Date().getTime());
 
             renderCurrentChapterClips();
-            updateTagStatusUI('orange'); // Reset tag state
+            updateTagStatusUI('orange');
         }
 
-        /**
-         * Renders the list of marked clips for the currently loaded chapter
-         */
         function renderCurrentChapterClips() {
-            clipsList.innerHTML = ''; // Clear existing list
+            clipsList.innerHTML = '';
             if (!playerState.currentFile) return;
 
-            const chapterKey = playerState.currentFile.split('.')[0]; // e.g., "coran_001"
+            const chapterKey = playerState.currentFile.split('.')[0];
             const clips = db[chapterKey] || [];
 
             if (clips.length === 0) {
@@ -399,7 +378,6 @@
                     const li = document.createElement('li');
                     li.textContent = `Verse ${clip.verse}: ${clip.start}  →  ${clip.end}`;
                     
-                    // Add a jump-to button
                     const jumpBtn = document.createElement('button');
                     jumpBtn.textContent = 'Jump to Start';
                     jumpBtn.onclick = () => {
@@ -408,7 +386,6 @@
                     };
                     li.appendChild(jumpBtn);
 
-                    // Add a delete button
                     const deleteBtn = document.createElement('button');
                     deleteBtn.textContent = 'Delete';
                     deleteBtn.style.color = 'red';
@@ -425,43 +402,24 @@
             }
         }
 
-        /**
-         * Deletes a specific clip and re-numbers subsequent verses
-         * @param {string} chapterKey - e.g., "coran_001"
-         * @param {number} verseToDelete - The verse number to delete
-         */
         function deleteClip(chapterKey, verseToDelete) {
             if (!db[chapterKey]) return;
-
-            // Filter out the deleted verse
             let chapterClips = db[chapterKey];
             chapterClips = chapterClips.filter(clip => clip.verse !== verseToDelete);
-
-            // Re-number all subsequent verses
             chapterClips.forEach((clip, index) => {
                 clip.verse = index + 1;
             });
-
             db[chapterKey] = chapterClips;
             saveDB();
             renderCurrentChapterClips();
         }
 
-        /**
-         * Converts "HH:MM:SS.mmm" string to seconds
-         * @param {string} timeString
-         * @returns {number} Time in seconds
-         */
         function timeStringToSeconds(timeString) {
             const parts = timeString.split(':');
             const secondsAndMs = parseFloat(parts[2]);
             return (parseInt(parts[0]) * 3600) + (parseInt(parts[1]) * 60) + secondsAndMs;
         }
 
-        /**
-         * Updates the status indicator UI
-         * @param {string} state - 'orange' or 'green'
-         */
         function updateTagStatusUI(state) {
             taggingState = state;
             if (state === 'orange') {
@@ -475,27 +433,15 @@
             }
         }
 
-        /**
-         * Handles the "Mark Start" action (Key '1')
-         */
         function handleMarkStart() {
-            if (taggingState !== 'orange') {
-                console.warn("Ignored '1' press: not in correct state.");
-                return; // Can only mark start from orange state
-            }
+            if (taggingState !== 'orange') return;
             currentStartTime = wavesurfer.getCurrentTime();
             updateTagStatusUI('green');
             console.log(`Marked START at ${formatTime(currentStartTime)}`);
         }
 
-        /**
-         * Handles the "Mark End" action (Key '2')
-         */
         function handleMarkEnd() {
-            if (taggingState !== 'green') {
-                console.warn("Ignored '2' press: no start time marked.");
-                return; // Can only mark end from green state
-            }
+            if (taggingState !== 'green') return;
             
             const endTime = wavesurfer.getCurrentTime();
             if (endTime <= currentStartTime) {
@@ -516,26 +462,18 @@
             };
 
             db[chapterKey].push(newClip);
-            saveDB(); // Save and update export box
-            renderCurrentChapterClips(); // Update UI list
+            saveDB();
+            renderCurrentChapterClips();
 
             console.log(`Saved CLIP ${verseNum}: ${newClip.start} -> ${newClip.end}`);
 
-            // Reset for next clip
             currentStartTime = null;
             updateTagStatusUI('orange');
         }
 
-        // --- NEW --- Helper function for zoom
-        /**
-         * Sets the zoom level on the slider and the waveform
-         * @param {number} newZoom - The new zoom value (pixels per second)
-         */
         function setZoom(newZoom) {
             const min = parseInt(zoomSlider.min);
             const max = parseInt(zoomSlider.max);
-            
-            // Clamp the value between min and max
             newZoom = Math.max(min, Math.min(max, newZoom));
             
             zoomSlider.value = newZoom;
@@ -543,18 +481,12 @@
                 wavesurfer.zoom(newZoom);
             }
         }
-        // --- END NEW ---
 
-        /**
-         * Handles global key presses for shortcuts
-         * @param {KeyboardEvent} e
-         */
         function handleGlobalKeydown(e) {
-            // If user is typing in the import box, don't trigger shortcuts
             if (e.target === importJsonText) {
                 return;
             }
-            if (!wavesurfer) return; // Don't do anything if player not ready
+            if (!wavesurfer) return;
 
             switch (e.key) {
                 case ' ':
@@ -563,11 +495,11 @@
                     break;
                 case 'ArrowLeft':
                     e.preventDefault();
-                    wavesurfer.skip(-1); // Skip backward 1 second
+                    wavesurfer.skip(-1);
                     break;
                 case 'ArrowRight':
                     e.preventDefault();
-                    wavesurfer.skip(1); // Skip forward 1 second
+                    wavesurfer.skip(1);
                     break;
                 case '1':
                     e.preventDefault();
@@ -577,10 +509,8 @@
                     e.preventDefault();
                     handleMarkEnd();
                     break;
-                
-                // --- NEW --- Zoom keys
                 case '+':
-                case '=': // '+' key without shift
+                case '=':
                     e.preventDefault();
                     setZoom(parseInt(zoomSlider.value) + 50);
                     break;
@@ -588,13 +518,9 @@
                     e.preventDefault();
                     setZoom(parseInt(zoomSlider.value) - 50);
                     break;
-                // --- END NEW ---
             }
         }
 
-        /**
-         * Handles the click on the Import button
-         */
         function handleImport() {
             const jsonToImport = importJsonText.value;
             if (!jsonToImport) {
@@ -607,10 +533,10 @@
 
             try {
                 const newData = JSON.parse(jsonToImport);
-                db = newData; // Overwrite in-memory DB
-                saveDB(); // Save to localStorage and update export box
-                renderCurrentChapterClips(); // Re-render UI
-                importJsonText.value = ""; // Clear import box
+                db = newData;
+                saveDB();
+                renderCurrentChapterClips();
+                importJsonText.value = "";
                 alert("Import successful! All data has been overwritten.");
             } catch (e) {
                 console.error("Import failed:", e);
@@ -621,51 +547,39 @@
         // --- INITIALIZATION ---
         
         window.addEventListener('load', () => {
-            // 1. Populate UI elements
             populateChapterSelect();
-
-            // 2. Load data from localStorage
             loadDB();
             loadPlayerState();
-
-            // 3. Initialize WaveSurfer
             initWaveSurfer();
             
-            // 4. Restore state
             if (playerState.currentFile) {
                 const chapterNum = playerState.currentFile.split('_')[1].split('.')[0];
                 chapterSelect.value = chapterNum;
                 currentChapterTitle.textContent = `coran_${chapterNum}`;
                 
-                // Load the audio, and the 'ready' event will handle setting the time
                 const fileName = `coran_${chapterNum}.mp3`;
                 const filePath = `https://ia601404.us.archive.org/34/items/elsagrado/${fileName}`;
                 wavesurfer.load(filePath + '?t=' + new Date().getTime());
             
             } else {
-                // Load the first chapter by default if no state
                 chapterSelect.value = "001";
                 loadChapter("001");
 
             }
             
-            // 5. Render initial data
             renderCurrentChapterClips();
             updateTagStatusUI('orange');
 
-            // 6. Attach event listeners
             document.addEventListener('keydown', handleGlobalKeydown);
             chapterSelect.addEventListener('change', (e) => loadChapter(e.target.value));
             importButton.addEventListener('click', handleImport);
 
-            // --- NEW --- Listen for slider changes
             zoomSlider.addEventListener('input', () => {
                 const zoomLevel = parseInt(zoomSlider.value);
                 if (wavesurfer) {
                     wavesurfer.zoom(zoomLevel);
                 }
             });
-            // --- END NEW ---
         });
 
     </script>
