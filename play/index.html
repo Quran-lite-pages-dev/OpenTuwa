@@ -3,10 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offline Audio Tagger (Dark)</title>
+    <title>Offline Audio Tagger (Low-Blue-Light Dark)</title>
     <style>
         :root {
-            color-scheme: dark; /* Hint to browser for native dark controls */
+            /* Tell the browser to use its native dark controls (dropdowns, audio player).
+              This is key for a consistent, non-generic feel.
+            */
+            color-scheme: dark;
         }
 
         body {
@@ -20,8 +23,10 @@
             grid-template-rows: auto auto 1fr auto;
             gap: 15px;
             padding: 15px;
-            background-color: #1a1a1a; /* Ergonomic dark-gray, not pure black */
-            color: #e0e0e0; /* Off-white text, not pure white */
+            /* 1. No Pure Black: Better for IPS glow & less harsh. */
+            background-color: #1a1a1a; 
+            /* 2. No Pure White: Reduces "halation" / text blooming. */
+            color: #e0e0e0; 
             height: 95vh;
         }
 
@@ -32,19 +37,20 @@
 
         h1, h2 {
             margin: 0 0 10px 0;
-            border-bottom: 2px solid #444; /* Darker border */
+            border-bottom: 2px solid #444; /* Darker, subtle border */
             padding-bottom: 5px;
             color: #f5f5f5; /* Brighter white for headers */
         }
 
-        /* Elevated surfaces are lighter than the background */
+        /* 3. Depth Hierarchy: Lighter surfaces "come forward" in dark mode. */
         #player-controls,
         #clips-section,
         #io-section > div {
             background: #252525;
             padding: 15px;
             border-radius: 8px;
-            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05); /* Subtle edge highlight */
+            /* Subtle edge highlight for better separation */
+            box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.05); 
         }
 
         #chapter-select {
@@ -66,14 +72,19 @@
             display: inline-block;
             width: 300px;
             text-align: center;
-            transition: background-color 0.3s ease; /* Smooth state transition */
+            transition: background-color 0.3s ease;
         }
 
         #time-display {
             font-family: "Courier New", Courier, monospace;
             font-size: 1.5em;
             font-weight: bold;
-            color: #6cb6ff; /* Light, readable blue for high-vis info */
+            /* 4. Calibrated Blue: 
+              A clear, legible blue for high-visibility info.
+              We don't need to make it "yellow" because the
+              TÜV screen is already filtering harmful blue light.
+            */
+            color: #6cb6ff; 
             margin-left: 20px;
         }
 
@@ -83,7 +94,6 @@
         }
 
         #clips-section {
-            /* Handled by the combined rule above */
             overflow-y: auto;
         }
 
@@ -99,8 +109,9 @@
             padding: 8px;
             border-bottom: 1px solid #444; /* Was #eee */
         }
+        /* Subtle zebra striping for readability */
         #clips-list li:nth-child(odd) { 
-            background-color: #303030; /* Darker, subtle zebra striping */
+            background-color: #303030; 
         }
 
         /* Styling for buttons inside the list */
@@ -137,7 +148,6 @@
             gap: 15px;
         }
         #io-section > div {
-            /* Handled by the combined rule above */
             display: flex;
             flex-direction: column;
         }
@@ -145,7 +155,7 @@
             width: 100%;
             height: 150px;
             font-family: "Courier New", Courier, monospace;
-            box-sizing: border-box; /* Ensures padding doesn't affect width */
+            box-sizing: border-box; 
             background-color: #1f1f1f;
             color: #d5d5d5;
             border: 1px solid #444;
@@ -158,7 +168,7 @@
         }
 
         #import-button {
-            background-color: #3a75c4; /* Desaturated, clear blue */
+            background-color: #3a75c4; /* Desaturated, clear action blue */
             color: white;
             border: none;
             padding: 10px;
@@ -172,11 +182,11 @@
             background-color: #4a85d4; 
         }
 
-        /* Style for the secondary shortcut info text */
+        /* Dim secondary/hint text */
         #player-controls > div:last-of-type {
             margin-top: 15px;
             font-size: 0.9em;
-            color: #aaa; /* Dim secondary text */
+            color: #aaa; 
         }
     </style>
 </head>
@@ -253,7 +263,7 @@
             const h = Math.floor(totalSec / 3600);
             const m = Math.floor((totalSec % 3600) / 60);
             const s = totalSec % 60;
-            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}.${ms.toString().padStart(3, '0')}`;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(3, '0')}`;
         }
 
         /**
@@ -370,7 +380,8 @@
                     // Add a delete button
                     const deleteBtn = document.createElement('button');
                     deleteBtn.textContent = 'Delete';
-                    deleteBtn.classList.add('delete-btn'); // *** MODIFICATION: Use class instead of inline style ***
+                    // *** MODIFICATION: Use class for better CSS practice ***
+                    deleteBtn.classList.add('delete-btn'); 
                     deleteBtn.onclick = (e) => {
                         e.stopPropagation();
                         if (confirm(`Delete Verse ${clip.verse}?`)) {
@@ -493,6 +504,7 @@
          */
         function handleGlobalKeydown(e) {
             // If user is typing in an input/textarea, don't trigger shortcuts
+            // *** MODIFICATION: Check for any TEXTAREA or INPUT ***
             if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') {
                 return;
             }
