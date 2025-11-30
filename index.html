@@ -8,16 +8,20 @@
     <meta name="description" content="Read and listen to the Noble Quran online. Distraction-free and data saving.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#050505">
+    
+    <link rel="canonical" href="https://Quran-lite.github.io/">
+
     <meta property="og:site_name" content="QuranLite">
     <meta property="og:title" content="QuranLite - The Distraction-Free Quran Player">
     <meta property="og:description" content="Listen to the Noble Quran verse by verse with synchronized text and translations.">
     <meta property="og:image" content="https://Quran-lite.github.io/social-preview.jpg"> 
-    <meta property="og:url" content="https://Quran-lite.github.io/reading/">
+    
+    <meta property="og:url" content="https://Quran-lite.github.io/">
     <meta property="og:type" content="website">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="data:image/svg+xml,<svg xmlns=%22http://www.w.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💠</text></svg>" rel="icon">
+    <link href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💠</text></svg>" rel="icon">
     <link rel="icon" href="https://quran-lite.github.io/favicon.ico" sizes="any">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
 
@@ -146,21 +150,6 @@
             let targetUrl = 'reading/';
 
             if (saved) {
-                // Construct URL based on saved state
-                // We need to fetch the Chapter Number (index + 1 usually, but to be safe we pass index to reading logic or map it)
-                // Note: The original logic saved index as 'chapter'. 
-                // The /reading/ page handles ?chapter=X as index or number depending on logic.
-                // To keep it simple and robust, we pass the saved state as query params.
-                
-                // However, the original 'saveState' saves 0-based index for chapter.
-                // But the URL params in original code: ?chapter=Num.
-                // Let's rely on the Reading page's 'restoreState' to handle defaults if we just send them to /reading/ 
-                // BUT user wants "Continue" functionality.
-                
-                // Let's reconstruct the detailed URL so they land exactly where they left off
-                // We need the quranData to convert Index to Chapter Number for the URL, 
-                // OR we just send them to /reading/ and let that page's JS read the localStorage.
-                
                 // STRATEGY: Send to /reading/. The script in /reading/ ALREADY checks localStorage 
                 // if no URL params are present.
                 startBtn.textContent = "Continue";
