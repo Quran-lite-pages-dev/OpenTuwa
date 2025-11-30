@@ -18,6 +18,7 @@
     <meta property="og:image" content="https://Quran-lite.github.io/social-preview.jpg"> 
     <meta property="og:url" content="https://Quran-lite.github.io/">
     <meta property="og:type" content="website">
+   <base href="https://Quran-lite.github.io/">
 
     <link rel="canonical" id="dynamic-canonical" href="https://Quran-lite.github.io/">
 
@@ -532,15 +533,16 @@
             const transName = TRANSLATIONS_CONFIG[state.trans].name;
             const reciterName = RECITERS_CONFIG[state.reciter].name;
 
-            const newUrl = `?chapter=${chNum}&verse=${vNum}&reciter=${state.reciter}&trans=${state.trans}&audio_trans=${state.audio_trans}`;
-            window.history.pushState({path: newUrl}, '', newUrl);
+// CHANGE THIS IN /reading/index.html ONLY
+const newUrl = `reading/?chapter=${chNum}&verse=${vNum}&reciter=${state.reciter}&trans=${state.trans}`;
 
-            // Update Canonical Link Dynamically
-            const canonicalLink = document.getElementById('dynamic-canonical');
-            const fullUrl = `https://Quran-lite.github.io/${newUrl}`;
-            if (canonicalLink) {
-                canonicalLink.href = fullUrl;
-            }
+// Update Canonical Link
+const canonicalLink = document.getElementById('dynamic-canonical');
+// We want Google to index this specific reading page
+const fullUrl = `https://Quran-lite.github.io/reading/?chapter=${chNum}`; 
+if (canonicalLink) {
+    canonicalLink.href = fullUrl;
+}
 
             const pageTitle = `${chObj.title} - Verse ${vNum} | QuranLite`;
             document.title = pageTitle;
@@ -831,13 +833,11 @@
         }
 
         function setupEventListeners() {
-/* --- READING PAGE: PLAYER LOGIC --- */
-elements.startBtn.addEventListener('click', () => {
-    // Standard behavior: Hide overlay and play audio
-    elements.overlay.style.opacity = 0;
-    setTimeout(() => elements.overlay.style.display = 'none', 500);
-    loadVerse(true); 
-});
+            elements.startBtn.addEventListener('click', () => {
+                elements.overlay.style.opacity = 0;
+                setTimeout(() => elements.overlay.style.display = 'none', 500);
+                loadVerse(true); 
+            });
 
             elements.selects.chapter.addEventListener('change', () => { populateVerseSelect(); loadVerse(true); });
             elements.selects.verse.addEventListener('change', () => loadVerse(true));
