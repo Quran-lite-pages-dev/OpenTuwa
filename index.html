@@ -34,6 +34,22 @@
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     </noscript>
 
+    <script>
+/* --- REDIRECT USERS WHO TYPE ?chapter= DIRECTLY --- */
+(function() {
+    const p = new URLSearchParams(window.location.search);
+    if (p.has("chapter")) {
+
+        // Save full query for later use by Continue button
+        localStorage.setItem("reading_redirect", window.location.search);
+
+        // Redirect to clean homepage (ads allowed)
+        window.location.replace("https://Quran-lite.github.io/");
+    }
+})();
+</script>
+
+
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3499275303366562"
      crossorigin="anonymous"></script>
     
