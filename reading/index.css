@@ -478,36 +478,11 @@
         }
 
         /* 6. HIDE NON-ESSENTIALS */
-        #tv-sidebar { display: none !important; } /* Ensure it's gone */
+        
         #hero-subtitle-overlay { display: none; } /* Remove floating desktop elements */
         
         /* 7. SEARCH OVERLAY MOBILE */
-        #search-overlay {
-            padding-left: 0;
-            grid-template-columns: 1fr;
-            grid-template-rows: auto 1fr;
-            overflow-y: auto;
-        }
-        
-        .keyboard-section {
-            padding: 1rem;
-            border-right: none;
-            border-bottom: 1px solid #333;
-        }
-        
-        .keyboard-grid {
-            gap: 4px;
-        }
-        
-        .key {
-            padding: 10px;
-            font-size: 1.2rem;
-        }
-        
-        .results-section {
-            padding: 1rem;
-        }
-        }
+}
 
 /* =========================================
    MOBILE LAYOUT OVERRIDES (Bottom Bar & 9:16 Search)
