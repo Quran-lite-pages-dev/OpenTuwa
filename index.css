@@ -333,13 +333,20 @@
 /* --- REFACTORED MOBILE OPTIMIZATION (NETFLIX STYLE) --- */
 @media screen and (max-width: 768px), screen and (orientation: portrait) {
 
+    /* Global Reset for Mobile View to prevent horizontal scroll */
+    * {
+        box-sizing: border-box;
+    }
+
     body {
         display: flex;
         flex-direction: column;
         height: 100vh;
         width: 100vw;
-        overflow: hidden !important;
+        overflow: hidden !important; /* Locks the main scroll */
         background: #000;
+        margin: 0;
+        padding: 0;
     }
 
     /* 1. Sidebar: Top Horizontal Carousel (Netflix-style Row) */
@@ -349,11 +356,10 @@
         flex: 0 0 auto;
         padding: 15px 0 15px 15px; /* Padding left only for scroll start */
         background: linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 100%);
-        backdrop-filter: blur(10px); /* Glass effect */
+        backdrop-filter: blur(10px);
         z-index: 50;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         
-        /* Layout for horizontal scroll */
         display: flex;
         flex-direction: column;
         overflow: visible; 
@@ -372,27 +378,23 @@
     .profile-list-container {
         display: flex;
         flex-direction: row;
-        flex-wrap: nowrap; /* CRITICAL: Forces single row */
+        flex-wrap: nowrap;
         gap: 12px;
-        overflow-x: auto; /* Allow horizontal scroll */
+        overflow-x: auto;
         overflow-y: hidden;
-        padding-right: 20px; /* Space at end of scroll */
+        padding-right: 20px;
         -webkit-overflow-scrolling: touch;
         scroll-behavior: smooth;
-        
-        /* Hide Scrollbar */
-        scrollbar-width: none; /* Firefox */
-        -ms-overflow-style: none; /* IE/Edge */
+        scrollbar-width: none;
     }
     
-    /* Hide scrollbar for Chrome/Safari */
     .profile-list-container::-webkit-scrollbar {
         display: none;
     }
 
     .profile-item {
-        flex: 0 0 auto; /* Don't shrink items */
-        width: 70px;    /* Fixed width for uniform look */
+        flex: 0 0 auto;
+        width: 70px;
         padding: 0;
         background: transparent;
         border: none;
@@ -405,8 +407,8 @@
     .profile-avatar {
         width: 55px;
         height: 55px;
-        border-radius: 50%; /* Netflix circular avatars */
-        border: 2px solid transparent; /* Prepare for active state */
+        border-radius: 50%;
+        border: 2px solid transparent;
         background: #333;
         font-size: 1.2rem;
         display: flex;
@@ -415,9 +417,8 @@
         transition: transform 0.2s ease;
     }
     
-    /* Active/Selected State Simulation */
     .profile-item.active .profile-avatar {
-        border-color: #e50914; /* Netflix Red border */
+        border-color: #e50914;
         transform: scale(1.05);
     }
 
@@ -435,31 +436,30 @@
         display: block;
     }
 
-    /* Hide extraneous desktop elements */
     .profile-status, .action-buttons, .btn-action {
         display: none; 
     }
 
     /* 3. Preview Area: The "Hero" Section */
     .preview-area {
-        flex: 1; /* Fills all remaining space */
+        flex: 1;
         width: 100%;
         position: relative;
-        padding: 30px 20px 80px 20px; /* Extra bottom padding for safe area */
+        /* Padding creates the Safe Zone from screen edges */
+        padding: 20px 24px 80px 24px; 
         display: flex;
         align-items: center; 
         justify-content: center;
         overflow-y: auto;
         overflow-x: hidden;
+        box-sizing: border-box; /* Critical for padding math */
     }
 
     .preview-bg {
-        /* Netflix-style vignette */
         background: radial-gradient(circle at 50% 40%, #2a2a2a 0%, #000000 85%);
     }
 
     .spotlight {
-        /* Ambient light effect */
         opacity: 0.4;
         filter: blur(80px);
     }
@@ -467,10 +467,15 @@
     /* 4. Typography & Content Scaling */
     .preview-content {
         width: 100%;
-        max-width: 400px;
+        max-width: 100%; /* Ensures it never pushes grid wider */
         text-align: center;
-        overflow-x: hidden;
+        overflow-x: hidden; /* Safety clip */
         animation: fadeIn 0.8s ease-out;
+        
+        /* Flex fix for text wrapping */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .surah-title-en {
@@ -481,39 +486,47 @@
         background: linear-gradient(to right, #fff, #ccc);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
+        line-height: 1.1; /* Prevent top cropping */
     }
 
     .surah-title-ar {
         font-size: 2.2rem;
         color: var(--accent, #e50914);
         margin-bottom: 1.5rem;
-        font-family: serif; /* Ensure arabic font looks distinct */
+        font-family: serif;
     }
 
     .surah-desc {
-    font-size: 1rem;
-    line-height: 1.6;
-    color: #dcdcdc;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-    border: none;
-    padding: 0;
-    opacity: 0.9;
-
-    /* Prevent overflow */
-    max-width: 100%;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    word-break: break-word;
-    white-space: normal;
-}
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #dcdcdc;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        border: none;
+        padding: 0;
+        opacity: 0.9;
+        
+        /* THE FIX: Safe Zone Constraints */
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        margin: 0 auto;
+        
+        /* Aggressive Wrapping */
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto; /* Adds hyphens for cleaner breaks */
+        white-space: normal;
+    }
 
     /* 5. Mobile Search / Input */
     .input-box {
         width: 100%;
+        max-width: 100%;
         margin-bottom: 1rem;
+        box-sizing: border-box;
     }
     
-    /* Hide input placeholder on focus for cleaner look */
     input[type="text"]:focus::placeholder {
         color: transparent;
     }
@@ -527,15 +540,454 @@
         font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 1px;
+        white-space: nowrap;
     }
     
     .meta-tag::before { display: none; }
 }
 
-/* Optional simple fade in for content */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}/* --- REFACTORED MOBILE OPTIMIZATION (NETFLIX STYLE) --- */
+@media screen and (max-width: 768px), screen and (orientation: portrait) {
+
+    /* Global Reset for Mobile View to prevent horizontal scroll */
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden !important; /* Locks the main scroll */
+        background: #000;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* 1. Sidebar: Top Horizontal Carousel (Netflix-style Row) */
+    .sidebar {
+        width: 100%;
+        height: auto;
+        flex: 0 0 auto;
+        padding: 15px 0 15px 15px; /* Padding left only for scroll start */
+        background: linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 100%);
+        backdrop-filter: blur(10px);
+        z-index: 50;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        
+        display: flex;
+        flex-direction: column;
+        overflow: visible; 
+    }
+
+    /* Clean up the logo area */
+    .logo {
+        display: none;
+        margin-bottom: 0.8rem;
+        padding-right: 15px;
+        transform: scale(0.9);
+        transform-origin: left center;
+    }
+
+    /* 2. Profile List: Horizontal Scrolling Strip */
+    .profile-list-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 12px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-right: 20px;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+    }
+    
+    .profile-list-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .profile-item {
+        flex: 0 0 auto;
+        width: 70px;
+        padding: 0;
+        background: transparent;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .profile-avatar {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        background: #333;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease;
+    }
+    
+    .profile-item.active .profile-avatar {
+        border-color: #e50914;
+        transform: scale(1.05);
+    }
+
+    .profile-info {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .profile-name {
+        font-size: 0.7rem;
+        color: #b3b3b3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+
+    .profile-status, .action-buttons, .btn-action {
+        display: none; 
+    }
+
+    /* 3. Preview Area: The "Hero" Section */
+    .preview-area {
+        flex: 1;
+        width: 100%;
+        position: relative;
+        /* Padding creates the Safe Zone from screen edges */
+        padding: 20px 24px 80px 24px; 
+        display: flex;
+        align-items: center; 
+        justify-content: center;
+        overflow-y: auto;
+        overflow-x: hidden;
+        box-sizing: border-box; /* Critical for padding math */
+    }
+
+    .preview-bg {
+        background: radial-gradient(circle at 50% 40%, #2a2a2a 0%, #000000 85%);
+    }
+
+    .spotlight {
+        opacity: 0.4;
+        filter: blur(80px);
+    }
+
+    /* 4. Typography & Content Scaling */
+    .preview-content {
+        width: 100%;
+        max-width: 100%; /* Ensures it never pushes grid wider */
+        text-align: center;
+        overflow-x: hidden; /* Safety clip */
+        animation: fadeIn 0.8s ease-out;
+        
+        /* Flex fix for text wrapping */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .surah-title-en {
+        font-size: 3rem; 
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(to right, #fff, #ccc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.1; /* Prevent top cropping */
+    }
+
+    .surah-title-ar {
+        font-size: 2.2rem;
+        color: var(--accent, #e50914);
+        margin-bottom: 1.5rem;
+        font-family: serif;
+    }
+
+    .surah-desc {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #dcdcdc;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        border: none;
+        padding: 0;
+        opacity: 0.9;
+        
+        /* THE FIX: Safe Zone Constraints */
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        margin: 0 auto;
+        
+        /* Aggressive Wrapping */
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto; /* Adds hyphens for cleaner breaks */
+        white-space: normal;
+    }
+
+    /* 5. Mobile Search / Input */
+    .input-box {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 1rem;
+        box-sizing: border-box;
+    }
+    
+    input[type="text"]:focus::placeholder {
+        color: transparent;
+    }
+
+    .meta-tag {
+        display: inline-flex;
+        margin-top: 20px;
+        background: rgba(255,255,255,0.1);
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        white-space: nowrap;
+    }
+    
+    .meta-tag::before { display: none; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}/* --- REFACTORED MOBILE OPTIMIZATION (NETFLIX STYLE) --- */
+@media screen and (max-width: 768px), screen and (orientation: portrait) {
+
+    /* Global Reset for Mobile View to prevent horizontal scroll */
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        width: 100vw;
+        overflow: hidden !important; /* Locks the main scroll */
+        background: #000;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* 1. Sidebar: Top Horizontal Carousel (Netflix-style Row) */
+    .sidebar {
+        width: 100%;
+        height: auto;
+        flex: 0 0 auto;
+        padding: 15px 0 15px 15px; /* Padding left only for scroll start */
+        background: linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 100%);
+        backdrop-filter: blur(10px);
+        z-index: 50;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        
+        display: flex;
+        flex-direction: column;
+        overflow: visible; 
+    }
+
+    /* Clean up the logo area */
+    .logo {
+        display: none;
+        margin-bottom: 0.8rem;
+        padding-right: 15px;
+        transform: scale(0.9);
+        transform-origin: left center;
+    }
+
+    /* 2. Profile List: Horizontal Scrolling Strip */
+    .profile-list-container {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        gap: 12px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-right: 20px;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+    }
+    
+    .profile-list-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .profile-item {
+        flex: 0 0 auto;
+        width: 70px;
+        padding: 0;
+        background: transparent;
+        border: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .profile-avatar {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        background: #333;
+        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s ease;
+    }
+    
+    .profile-item.active .profile-avatar {
+        border-color: #e50914;
+        transform: scale(1.05);
+    }
+
+    .profile-info {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .profile-name {
+        font-size: 0.7rem;
+        color: #b3b3b3;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: block;
+    }
+
+    .profile-status, .action-buttons, .btn-action {
+        display: none; 
+    }
+
+    /* 3. Preview Area: The "Hero" Section */
+    .preview-area {
+        flex: 1;
+        width: 100%;
+        position: relative;
+        /* Padding creates the Safe Zone from screen edges */
+        padding: 20px 24px 80px 24px; 
+        display: flex;
+        align-items: center; 
+        justify-content: center;
+        overflow-y: auto;
+        overflow-x: hidden;
+        box-sizing: border-box; /* Critical for padding math */
+    }
+
+    .preview-bg {
+        background: radial-gradient(circle at 50% 40%, #2a2a2a 0%, #000000 85%);
+    }
+
+    .spotlight {
+        opacity: 0.4;
+        filter: blur(80px);
+    }
+
+    /* 4. Typography & Content Scaling */
+    .preview-content {
+        width: 100%;
+        max-width: 100%; /* Ensures it never pushes grid wider */
+        text-align: center;
+        overflow-x: hidden; /* Safety clip */
+        animation: fadeIn 0.8s ease-out;
+        
+        /* Flex fix for text wrapping */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .surah-title-en {
+        font-size: 3rem; 
+        font-weight: 800;
+        letter-spacing: -1px;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(to right, #fff, #ccc);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        line-height: 1.1; /* Prevent top cropping */
+    }
+
+    .surah-title-ar {
+        font-size: 2.2rem;
+        color: var(--accent, #e50914);
+        margin-bottom: 1.5rem;
+        font-family: serif;
+    }
+
+    .surah-desc {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #dcdcdc;
+        text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        border: none;
+        padding: 0;
+        opacity: 0.9;
+        
+        /* THE FIX: Safe Zone Constraints */
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        margin: 0 auto;
+        
+        /* Aggressive Wrapping */
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto; /* Adds hyphens for cleaner breaks */
+        white-space: normal;
+    }
+
+    /* 5. Mobile Search / Input */
+    .input-box {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 1rem;
+        box-sizing: border-box;
+    }
+    
+    input[type="text"]:focus::placeholder {
+        color: transparent;
+    }
+
+    .meta-tag {
+        display: inline-flex;
+        margin-top: 20px;
+        background: rgba(255,255,255,0.1);
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        white-space: nowrap;
+    }
+    
+    .meta-tag::before { display: none; }
+}
+
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
 
 </style>
