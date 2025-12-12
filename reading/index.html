@@ -70,7 +70,16 @@
 
     </head>
 <body>
+<script src="offline-ui.js"></script>
 
+    <script>
+        if ('serviceWorker' in navigator) {
+            // "sw.js" must be at the ROOT of your domain
+            navigator.serviceWorker.register('/sw.js')
+            .then(() => console.log('Service Worker Registered'))
+            .catch((err) => console.log('SW Failed', err));
+        }
+    </script>
     <div id="intro-overlay" style="display:flex;">
         <div class="intro-logo">THE QURAN THE CLEAR BOOK</div>
     </div>
