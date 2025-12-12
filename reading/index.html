@@ -72,14 +72,16 @@
 <body>
 <script src="offline-ui.js"></script>
 
-    <script>
-        if ('serviceWorker' in navigator) {
-            // "sw.js" must be at the ROOT of your domain
-            navigator.serviceWorker.register('/sw.js')
-            .then(() => console.log('Service Worker Registered'))
-            .catch((err) => console.log('SW Failed', err));
-        }
-    </script>
+<script>
+    if ('serviceWorker' in navigator) {
+        // 1. Path to file: Use the absolute path '/reading/sw.js'
+        // 2. Scope: Set the scope to '/reading/' so it only controls pages within that subdirectory.
+        
+        navigator.serviceWorker.register('/reading/sw.js', { scope: '/reading/' })
+        .then(registration => console.log('Service Worker Registered with scope:', registration.scope))
+        .catch((err) => console.log('SW Failed:', err));
+    }
+</script>
     <div id="intro-overlay" style="display:flex;">
         <div class="intro-logo">THE QURAN THE CLEAR BOOK</div>
     </div>
