@@ -5,6 +5,9 @@ const FILES_TO_CACHE = [
   '/',
   '/index.html',
   '/offline-ui.js',
+  '/index.css',
+  '/favicon.ico'
+  'favicon.png',
   // Add other CSS or Image files here if needed
 ];
 
