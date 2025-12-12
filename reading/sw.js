@@ -1,31 +1,37 @@
-/* sw.js - Comprehensive Offline Caching Strategy */
+/* sw.js - Comprehensive Offline Caching Strategy - FIXED FOR /reading/ SUBDIRECTORY */
 
 // 1. VERSION CONTROL & CACHE NAMES
-// *** IMPORTANT: Change this version number (v4) every time you update any cached file. ***
-const CACHE_VERSION = 'v4';
+// *** IMPORTANT: Change this version number (v5) every time you update any cached file. ***
+// Changed to v5 to ensure browser detects the fix and re-installs.
+const CACHE_VERSION = 'v5';
 const CORE_CACHE_NAME = 'core-assets-' + CACHE_VERSION;
 const FONT_CACHE_NAME = 'google-fonts-' + CACHE_VERSION;
 const ALL_CACHE_NAMES = [CORE_CACHE_NAME, FONT_CACHE_NAME];
 
+// *** BASE PATH CORRECTION ***
+// Since your app is in /root/reading/, the base URL for asset paths is '/reading/'
+const BASE_PATH = '/reading'; 
+// Note: We use BASE_PATH for assets, but '/' in CORE_FILES_TO_CACHE is still needed 
+// as it typically maps to the 'index.html' of the scope (i.e., /reading/)
+
 // 2. CORE ASSETS TO CACHE (HTML, CSS, JS, local images)
-// Based on analysis of your CSS imports and standard practice.
+// All paths are now prefixed with BASE_PATH for correct resolution.
 const CORE_FILES_TO_CACHE = [
   // Required for the service worker to function offline
-  '/',
-  '/index.html',
-  // Your main CSS files (assuming they are in the root)
-  '/index.css',
-  '/index.js', // This name might cause issues, verify the actual file path!
+  // The scope's root (often maps to index.html)
+  BASE_PATH + '/', 
+  BASE_PATH + '/index.html',
+  // Your main CSS files
+  BASE_PATH + '/index.css',
+  BASE_PATH + '/index.js',
   // Your offline UI script
-  '/offline-ui.js',
-  // Required fonts (if you use custom ones in CSS not linked via Google)
-  // Your CSS imports 'Inter', 'Amiri', 'Source Serif 4'. Assuming they are Google Fonts.
+  BASE_PATH + '/offline-ui.js',
   
   // Local Icons/Favicons
-  '/favicon.ico',
-  '/favicon.png',
+  BASE_PATH + '/favicon.ico',
+  BASE_PATH + '/favicon.png',
   
-  // Add any other local images (e.g., '/images/hero.jpg') here
+  // Add any other local images (e.g., BASE_PATH + '/images/hero.jpg') here
 ];
 
 // 3. GOOGLE FONTS URLs (Based on 'Inter', 'Amiri', 'Source Serif 4' in your CSS)
@@ -35,8 +41,6 @@ const GOOGLE_FONT_URLS = [
     'https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap',
     'https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@700&display=swap',
 ];
-// You must include the full URLs for the actual font files too (gstatic.com)
-// Note: These URLs can change, so we use a Stale-While-Revalidate strategy in fetch
 const GOOGLE_FONT_HOST = 'https://fonts.gstatic.com';
 
 
@@ -45,15 +49,19 @@ const GOOGLE_FONT_HOST = 'https://fonts.gstatic.com';
 // =================================================================
 self.addEventListener('install', (event) => {
   console.log('[Service Worker] Installing New Version:', CACHE_VERSION);
-  self.skipWaiting(); // Force the waiting service worker to become the active one immediately
+  self.skipWaiting(); 
 
   event.waitUntil(
     // 4.1 Cache the main core files
     caches.open(CORE_CACHE_NAME).then((coreCache) => {
       console.log('[SW] Caching core files');
-      return coreCache.addAll(CORE_FILES_TO_CACHE);
+      // Adding a catch block here for robustness in case some files fail to fetch
+      return coreCache.addAll(CORE_FILES_TO_CACHE).catch(error => {
+          console.error('[SW] Failed to cache one or more core files:', error);
+          // Allow installation to continue even if a non-critical file fails
+      });
     }).then(() => {
-        // 4.2 Cache the Google Font stylesheets (so the browser doesn't try to fetch them later)
+        // 4.2 Cache the Google Font stylesheets
         return caches.open(FONT_CACHE_NAME).then(fontCache => {
             console.log('[SW] Caching Google Font stylesheets');
             return fontCache.addAll(GOOGLE_FONT_URLS);
@@ -81,7 +89,6 @@ self.addEventListener('activate', (event) => {
         })
       );
     }).then(() => {
-      // Take control of the page immediately after activation
       return self.clients.claim();
     })
   );
@@ -95,7 +102,6 @@ self.addEventListener('fetch', (event) => {
   const requestURL = new URL(event.request.url);
 
   // 6.1 Strategy for Google Fonts (Stale-While-Revalidate)
-  // This caches the actual font files coming from gstatic.com
   if (requestURL.host === 'fonts.gstatic.com' || requestURL.host === 'fonts.googleapis.com') {
     event.respondWith(
       caches.open(FONT_CACHE_NAME).then((cache) => {
@@ -118,22 +124,26 @@ self.addEventListener('fetch', (event) => {
         });
       })
     );
-    return; // Stop processing this fetch request
+    return;
   }
 
 
   // 6.2 Strategy for Core Assets (Cache-First)
-  // This serves HTML, CSS, JS, and local images
+  // Check if the requested path is one of our CORE_FILES (now prefixed with /reading)
   if (CORE_FILES_TO_CACHE.includes(requestURL.pathname)) {
     event.respondWith(
       caches.match(event.request).then((response) => {
         // Serve from cache if available, otherwise fetch from the network
         return response || fetch(event.request);
       }).catch(() => {
-        // Fallback: If both fail, you could serve a true offline page here
-        return caches.match('/index.html'); // Fallback to the homepage
+        // Fallback: If both fail, serve the cached index.html for the subdirectory
+        return caches.match(BASE_PATH + '/index.html'); 
       })
     );
-    return; // Stop processing this fetch request
+    return;
   }
+  
+  // OPTIONAL: Default Network-First for everything else (e.g., images not listed in CORE_FILES)
+  // If a request doesn't match a rule, just let it go to the network.
+  // We don't call event.respondWith() so the request goes to the network as normal.
 });
