@@ -62,7 +62,16 @@
  <link rel="stylesheet" href="index.css" fetchpriority="high">                              
 </head>
 <body>
+<script src="offline-ui.js"></script>
 
+    <script>
+        if ('serviceWorker' in navigator) {
+            // "sw.js" must be at the ROOT of your domain
+            navigator.serviceWorker.register('/sw.js')
+            .then(() => console.log('Service Worker Registered'))
+            .catch((err) => console.log('SW Failed', err));
+        }
+    </script>
     <header>
         <h1 class="logo" onclick="goHome()" id="phantom-heading">Quran for Every Soul</h1>
 <script>
