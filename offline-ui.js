@@ -40,8 +40,8 @@
     const banner = document.createElement('div');
     banner.id = 'offline-banner';
     banner.innerHTML = `
-        <span>⚠️ No Internet Connection</span>
-        <button onclick="window.location.reload()">Retry</button>
+        <span>Offline mode</span>
+        <button onclick="window.location.reload()">Reload</button>
     `;
     document.body.appendChild(banner);
 
