@@ -1,10 +1,12 @@
 (function() {
     // --- CONFIGURATION ---
     const ANALYTICS_KEY = 'quran_user_analytics';
+    const AI_SECTION_ID = 'ai-section';
+    const AI_ROW_ID = 'ai-row';
     const PUTER_SCRIPT_URL = 'https://js.puter.com/v2/';
-    const AI_MODEL = 'gpt-5.2'; // Using the advanced model from your docs
+    const AI_MODEL = 'gpt-5.2'; // Using the advanced model as requested
 
-    // --- 1. INJECT PUTER.JS ---
+    // --- 1. LOAD PUTER.JS DYNAMICALLY ---
     function loadPuter() {
         return new Promise((resolve, reject) => {
             if (window.puter) return resolve();
@@ -16,26 +18,26 @@
         });
     }
 
-    // --- 2. VIRTUAL BACKEND (Fetch Interceptor) ---
-    // This tricks your website into thinking it's talking to a server, 
-    // but actually it's talking to Puter directly in the browser.
+    // --- 2. VIRTUAL BACKEND (The "Interceptor") ---
+    // This replaces the need for search.js, validate-name.js, and recommendations.js
     const originalFetch = window.fetch;
     window.fetch = async function(input, init) {
         const url = typeof input === 'string' ? input : input.url;
 
-        // >> ROUTE: SEARCH <<
+        // >> LOGIC FROM OLD "search.js"
         if (url.includes('/api/search') && url.includes('q=')) {
-            const query = new URL('https://dummy.com' + url).searchParams.get('q');
+            const query = new URL('https://Quran-lite.pages.dev' + url).searchParams.get('q');
+            if (!query || query.length < 2) return new Response("[]");
             return handleSearch(query);
         }
 
-        // >> ROUTE: RECOMMENDATIONS <<
+        // >> LOGIC FROM OLD "recommendations.js"
         if (url.includes('/api/recommend') && init && init.method === 'POST') {
             const body = JSON.parse(init.body);
             return handleRecommendations(body);
         }
 
-        // >> ROUTE: VALIDATE NAME <<
+        // >> LOGIC FROM OLD "validate-name.js"
         if (url.includes('/api/validate-name') && init && init.method === 'POST') {
             const body = JSON.parse(init.body);
             return handleValidateName(body.name);
@@ -45,9 +47,13 @@
         return originalFetch(input, init);
     };
 
-    // --- 3. AI LOGIC HANDLERS ---
+    // --- 3. AI HANDLERS (GPT-5.2 Logic) ---
 
+    // HANDLER 1: SEARCH
+    const searchCache = new Map();
     async function handleSearch(query) {
+        if (searchCache.has(query)) return new Response(JSON.stringify(searchCache.get(query)));
+
         await loadPuter();
         const systemPrompt = `
             You are a Quranic Search Engine.
@@ -55,13 +61,14 @@
             Task: Return relevant Surah numbers (1-114).
             Rules:
             1. Return ONLY a raw JSON array of integers. Example: [2, 18, 110]
-            2. Handle typos, topics, and stories.
+            2. Handle typos, topics (e.g. "Moses"), and stories.
             3. No text, no markdown. JSON only.
         `;
 
         try {
             const response = await puter.ai.chat(systemPrompt, { model: AI_MODEL, temperature: 0.0 });
             const cleanJson = extractJsonArray(response?.message?.content || response);
+            searchCache.set(query, cleanJson); // Cache the result
             return new Response(JSON.stringify(cleanJson), { headers: { 'Content-Type': 'application/json' } });
         } catch (e) {
             console.error("Puter Search Error:", e);
@@ -69,6 +76,7 @@
         }
     }
 
+    // HANDLER 2: RECOMMENDATIONS
     async function handleRecommendations(data) {
         await loadPuter();
         const lastPlayed = data.last_played || 'None';
@@ -93,43 +101,42 @@
         }
     }
 
+    // HANDLER 3: VALIDATE NAME
     async function handleValidateName(name) {
         await loadPuter();
         const prompt = `
             Check if this name is offensive/profane/shirk in English/Arabic/Malay: "${name}".
-            Strictly allow normal names like "Abdullah", "Muhammad".
-            Output JSON: { "safe": boolean, "reason": "string" }
+            Strictly allow common names like "Abdullah", "Muhammad".
+            Output JSON ONLY: { "safe": boolean, "reason": "string" }
         `;
 
         try {
-            const response = await puter.ai.chat(prompt, { 
-                model: AI_MODEL, 
-                response_format: { type: "json_object" } // GPT feature if supported, else regex fallback
-            });
+            const response = await puter.ai.chat(prompt, { model: AI_MODEL });
             const text = response?.message?.content || response || "{}";
             
-            // Cleanup JSON
+            // Robust JSON extraction
             const first = text.indexOf('{');
             const last = text.lastIndexOf('}');
             const jsonStr = (first !== -1 && last !== -1) ? text.substring(first, last + 1) : JSON.stringify({ safe: true });
 
             return new Response(jsonStr, { headers: { 'Content-Type': 'application/json' } });
         } catch (e) {
+            // Fail safe (allow) if AI fails
             return new Response(JSON.stringify({ safe: true }), { headers: { 'Content-Type': 'application/json' } });
         }
     }
 
-    // --- 4. HELPERS ---
+    // --- 4. UTILITIES ---
     function extractJsonArray(text) {
         if (typeof text !== 'string') return [];
-        const match = text.match(/\[[\d,\s]*\]/);
-        return match ? JSON.parse(match[0]) : [];
+        const match = text.match(/\[[\d,\s]*\]/); // Find [1, 2, 3]
+        if (!match) return [];
+        try {
+            return JSON.parse(match[0]);
+        } catch(e) { return []; }
     }
 
-    // --- 5. ORIGINAL ANALYTICS & UI LOGIC (Preserved) ---
-    const AI_SECTION_ID = 'ai-section';
-    const AI_ROW_ID = 'ai-row';
-
+    // --- 5. ANALYTICS & UI LOGIC (Preserved from original AI2.js) ---
     function getAnalytics() {
         return JSON.parse(localStorage.getItem(ANALYTICS_KEY)) || { reads: [], searches: [] };
     }
@@ -156,7 +163,7 @@
         }
     };
 
-    // Monkey-Patching (Keep your existing hook logic)
+    // Monkey-Patching Global Functions (from your original file)
     const patchInterval = setInterval(() => {
         if (typeof window.launchPlayer === 'function' && !window.launchPlayer.isPatched) {
             const originalLaunch = window.launchPlayer;
@@ -183,19 +190,21 @@
         if (data.reads.length === 0) return;
 
         // This fetch call is now intercepted by the code above!
-        const res = await fetch('/api/recommend', {
-            method: 'POST',
-            body: JSON.stringify(data)
-        });
-        
-        const ids = await res.json();
-        if (ids.length > 0) renderCards(ids);
+        try {
+            const res = await fetch('/api/recommend', {
+                method: 'POST',
+                body: JSON.stringify(data)
+            });
+            const ids = await res.json();
+            if (ids.length > 0) renderCards(ids);
+        } catch(e) { console.log("AI Loading skipped"); }
     }
 
     function renderCards(ids) {
         const container = document.getElementById(AI_ROW_ID);
         const section = document.getElementById(AI_SECTION_ID);
-        if (!container || !section || !window.quranData) return;
+        // Ensure quranData exists (from your main app)
+        if (!container || !section || typeof window.quranData === 'undefined') return;
 
         container.innerHTML = '';
         ids.forEach(id => {
