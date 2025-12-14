@@ -1,35 +1,50 @@
 export async function onRequest(context) {
     const { request, env } = context;
 
-    // 1. DEFINE CORS HEADERS
-    // This tells the browser: "It is okay to accept data from any website (*)"
+    // --- CONFIGURATION ---
+    // Use the newest 8b model for better reasoning, or stick to llama-3 if preferred
+    const AI_MODEL = '@cf/meta/llama-3-8b-instruct'; 
+    const CACHE_TTL = 86400; // Cache results for 24 Hours (Important for stability)
+
+    // 1. CORS HEADERS
     const corsHeaders = {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, HEAD, POST, OPTIONS",
       "Access-Control-Allow-Headers": "Content-Type",
     };
 
-    // 2. HANDLE PREFLIGHT REQUESTS (Browser Security Check)
-    // Browsers send an "OPTIONS" request first to check if it's safe.
+    // 2. PREFLIGHT CHECK
     if (request.method === "OPTIONS") {
-      return new Response(null, {
-        headers: corsHeaders,
-      });
+      return new Response(null, { headers: corsHeaders });
     }
 
     const url = new URL(request.url);
     const query = url.searchParams.get('q');
 
-    // Return empty array if query is too short
+    // Fast exit for empty queries
     if (!query || query.length < 2) {
-      return new Response(JSON.stringify([]), { 
-          headers: { 
-              ...corsHeaders,
-              "Content-Type": "application/json" 
-          } 
+      return new Response(JSON.stringify([]), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" }
       });
     }
 
+    // 3. CACHE CHECK (The "Overload" Preventer)
+    // If this query exists in cache, return it immediately.
+    const cacheKey = new Request(url.toString(), request);
+    const cache = caches.default;
+    let response = await cache.match(cacheKey);
+
+    if (response) {
+      // Re-apply CORS headers to cached response
+      const newHeaders = new Headers(response.headers);
+      newHeaders.set("Access-Control-Allow-Origin", "*");
+      return new Response(response.body, {
+        status: response.status,
+        headers: newHeaders
+      });
+    }
+
+    // 4. SYSTEM PROMPT (Strictly Unchanged Rules, reinforced structure)
     const systemPrompt = `
       You are a Quranic Search Engine API.
       Your goal is to accept a User Query (which might be a topic, a story, a specific name with typos, or a concept) and return the most relevant Surah numbers.
@@ -47,39 +62,74 @@ export async function onRequest(context) {
 
     const userPrompt = `User Query: "${query}"`;
 
-    try {
-      // 3. RUN AI MODEL
-      const response = await env.AI.run('@cf/meta/llama-3-8b-instruct', {
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ]
-      });
+    // 5. RUN AI WITH RETRY LOGIC (The "Service Unavailable" Fix)
+    let aiResponse = null;
+    let attempts = 0;
+    const maxAttempts = 2; // Try twice before giving up
 
-      let rawText = response.response;
-      
-      // Clean up AI output if it adds markdown code blocks
-      const match = rawText.match(/\[[\s\d,]*\]/);
-      if (match) {
-         rawText = match[0];
-      }
-
-      // 4. RETURN RESPONSE WITH HEADERS
-      return new Response(rawText, {
-        headers: { 
-            ...corsHeaders,
-            "Content-Type": "application/json" 
+    while (attempts < maxAttempts) {
+        try {
+            aiResponse = await env.AI.run(AI_MODEL, {
+                messages: [
+                    { role: 'system', content: systemPrompt },
+                    { role: 'user', content: userPrompt }
+                ],
+                // CRITICAL FIX: Temperature 0 forces the AI to be "Deterministic"
+                // This stops the results from changing (3 results -> 15 results -> 6 results)
+                temperature: 0, 
+            });
+            break; // If successful, exit loop
+        } catch (error) {
+            attempts++;
+            console.error(`Attempt ${attempts} failed:`, error);
+            if (attempts >= maxAttempts) {
+                // If all retries fail, return empty array cleanly (don't crash the frontend)
+                return new Response(JSON.stringify([]), { 
+                    status: 200, 
+                    headers: { ...corsHeaders, "Content-Type": "application/json" } 
+                });
+            }
         }
-      });
+    }
+
+    // 6. ROBUST PARSING (The "Cant Display" Fix)
+    // We clean the output so "Here is the list [1,2]" becomes just [1,2]
+    const cleanData = extractAndValidateJson(aiResponse.response);
+
+    // 7. RETURN & CACHE
+    response = new Response(JSON.stringify(cleanData), {
+        headers: { 
+            ...corsHeaders, 
+            "Content-Type": "application/json",
+            "Cache-Control": `public, max-age=${CACHE_TTL}`
+        }
+    });
+
+    // Save to Cloudflare cache so we don't ask AI next time
+    context.waitUntil(cache.put(cacheKey, response.clone()));
+
+    return response;
+}
+
+/**
+ * HELPER: Extracts array from text and ensures valid Surah numbers (1-114)
+ */
+function extractAndValidateJson(rawText) {
+    try {
+        // Regex finds the first JSON array in the text
+        const match = rawText.match(/\[[\d,\s]*\]/);
+        if (!match) return [];
+
+        let surahs = JSON.parse(match[0]);
+        
+        if (!Array.isArray(surahs)) return [];
+
+        // Filter: Must be number, 1-114, remove duplicates
+        return [...new Set(surahs)]
+            .map(num => parseInt(num))
+            .filter(num => !isNaN(num) && num >= 1 && num <= 114);
 
     } catch (e) {
-      // Return error with headers so the frontend can see it
-      return new Response(JSON.stringify([]), { 
-          status: 500,
-          headers: { 
-              ...corsHeaders,
-              "Content-Type": "application/json" 
-          } 
-      });
+        return [];
     }
 }
