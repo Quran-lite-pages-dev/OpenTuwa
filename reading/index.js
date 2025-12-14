@@ -373,34 +373,8 @@
             const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
             const heroBtn = document.getElementById('door-play-btn');
             
-          const allIndices = Array.from({length: 114}, (_, i) => i);
-          const shortRowIndices = allIndices.slice(78, 114);
-
-          // ... existing rows ...
-fillRow('trending-row', [36, 67, 18, 55, 1, 112, 113, 114].map(id => id - 1));
-fillRow('all-row', allIndices);
-fillRow('short-row', shortRowIndices);
-
-// --- NEW ADDITION: AI Recommendation Row ---
-fetch('/api/recommend', {
-    method: 'POST', // Using POST as your backend expects data to generate the prompt
-    headers: { 'Content-Type': 'application/json' },
-    // Sending context if you have it stored (e.g., in localStorage), otherwise sends empty defaults
-    body: JSON.stringify({
-        last_played: localStorage.getItem('last_played_surah') || null,
-        search_history: JSON.parse(localStorage.getItem('search_history') || '[]')
-    })
-})
-.then(response => response.json())
-.then(aiSurahIds => {
-    // The AI returns 1-114, so we subtract 1 to match fillRow's 0-based index expectation
-    const aiIndices = aiSurahIds.map(id => id - 1);
-    fillRow('ai-row', aiIndices);
-})
-.catch(error => {
-    console.error('Failed to load AI recommendations:', error);
-    // Optional: hide the row or show a fallback if AI fails
-});
+            fillRow('trending-row', [36, 67, 18, 55, 1, 112, 113, 114].map(id => id-1));
+            fillRow('all-row', Array.from({length: 114}, (_, i) => i));
 
             if(saved.chapter !== undefined && quranData[saved.chapter]) {
                 const chNum = quranData[saved.chapter].chapterNumber;
