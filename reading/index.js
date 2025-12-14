@@ -1171,7 +1171,7 @@
                 setTimeout(() => {
                     intro.style.display = 'none';
                 }, 1000);
-            }, 3500); 
+            }, 10000); 
         }
 
         document.addEventListener('DOMContentLoaded', initializeApp);
