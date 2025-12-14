@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="0;url=/Quran%20for%20Every%20soul.apk">
     <title>Google TV app of the Quran for Every soul</title>
 
-    <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
     <style>
@@ -15,9 +13,30 @@
             text-align: center;
             padding: 50px;
         }
+        /* Optional: Style the link to look like a button */
+        .download-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
-    <p>If you are not redirected automatically, <a href="/Quran%20for%20Every%20soul.apk">click here</a>.</p>
+    <p>Your download should start automatically.</p>
+    
+    <p>If it does not, <a href="/Quran%20for%20Every%20soul.apk" download="QuranApp.apk" id="auto-download" class="download-btn">click here</a>.</p>
+
+    <script>
+        // Wait for the page to load, then programmatically click the link
+        window.onload = function() {
+            const link = document.getElementById('auto-download');
+            link.click();
+        };
+    </script>
 </body>
 </html>
