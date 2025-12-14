@@ -219,6 +219,7 @@ body {
 
 /* Typography in Preview */
 .meta-tag {
+    display: none;
     color: var(--accent);
     font-size: 0.9rem;
     letter-spacing: 4px;
@@ -236,6 +237,7 @@ body {
     height: 1px;
     background: var(--accent);
     box-shadow: 0 0 10px var(--accent);
+    display: none;
 }
 
 .surah-title-en {
