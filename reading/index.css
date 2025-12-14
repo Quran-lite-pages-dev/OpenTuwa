@@ -1,8 +1,14 @@
- <style>
+<style>
 
    /* --- 0. NETFLIX TV STYLE OVERRIDES & SCROLLBAR BAN --- */
         ::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; background: transparent !important; }
-        html, body { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+        
+        /* *** CRITICAL FIX: Added overflow: hidden !important to the main viewport to stop scrolling itself *** */
+        html, body { 
+            scrollbar-width: none !important; 
+            -ms-overflow-style: none !important;
+            overflow: hidden !important; /* <--- THIS IS THE MOST IMPORTANT FIX HERE */
+        }
         
         /* Sidebar Navigation */
         #tv-sidebar {
@@ -85,7 +91,8 @@
             color: var(--text);
             line-height: 1.6;
             font-size: 1.6rem;
-            height: 100vh; overflow: hidden; /* App-like feel */
+            height: 100vh; 
+            overflow: hidden !important; /* App-like feel, added !important for stubborn browsers/OS */
             display: flex; flex-direction: column;
         }
 
@@ -98,6 +105,11 @@
             display: none; /* Hidden by default */
             padding-left: 80px; /* Force Space for Sidebar */
         }
+        /* *** SCROLLBAR HIDE FOR THE DASHBOARD ITSELF *** */
+        #dashboard-view::-webkit-scrollbar { display: none !important; }
+        #dashboard-view { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+        /* ----------------------------------------------- */
+
         #dashboard-view.active { display: block; animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
