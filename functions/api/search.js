@@ -40,7 +40,9 @@ export async function onRequest(context) {
       3. Handle typos (e.g. "Alfatih" -> 1).
       4. Handle topics (e.g. "Alcohol" -> [5, 2, 4]).
       5. Handle stories (e.g. "Moses sea" -> [26, 20, 10]).
-      6. Limit results to the top 5 most relevant.
+      6. Don't limit any results, list as much as you can and what you think must be related even 0.1%.
+      7. Handle any outside box things such theory conspiracies or etc that really much related.
+      8. Handle any questions even the question really billion hard that can relate to any chapters.
     `;
 
     const userPrompt = `User Query: "${query}"`;
