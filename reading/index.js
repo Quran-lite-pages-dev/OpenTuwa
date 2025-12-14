@@ -372,8 +372,12 @@
         function refreshDashboard() {
             const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
             const heroBtn = document.getElementById('door-play-btn');
+
+                const allIndices = Array.from({length: 114}, (_, i) => i);
+          const shortRowIndices = allIndices.slice(77, 114);
             
             fillRow('trending-row', [36, 67, 18, 55, 1, 112, 113, 114].map(id => id-1));
+            fillRow('short-row', shortRowIndices);
             fillRow('all-row', Array.from({length: 114}, (_, i) => i));
 
             if(saved.chapter !== undefined && quranData[saved.chapter]) {
