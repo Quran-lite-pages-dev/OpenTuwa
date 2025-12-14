@@ -1,770 +1,474 @@
 <style>
-        /* --- 0. UNIVERSAL SCROLLBAR BAN (APPLIES EVERYWHERE) --- */
-        /* Strictly hides the UI of the scrollbar while preserving scroll functionality */
-        html, body, div, section, main, * {
-            scrollbar-width: none !important; /* Firefox */
-            -ms-overflow-style: none !important; /* IE 10+ */
-        }
-        
-        ::-webkit-scrollbar {
-            display: none !important; /* Chrome, Safari, Opera */
-            width: 0 !important;
-            height: 0 !important;
-            background: transparent !important;
-        }
+/* --- 0. UNIVERSAL RESET & SCROLLBAR HIDING --- */
+html, body, div, section, main, * {
+    scrollbar-width: none !important; /* Firefox */
+    -ms-overflow-style: none !important; /* IE 10+ */
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased; /* Crisp text */
+    -moz-osx-font-smoothing: grayscale;
+}
 
-        :root {
-            --bg-color: #000000;
-            --panel-bg: #00FFBB;
-            --text-main: #ffffff;
-            --text-muted: #00FFBB;
-            --accent: #00FFBB; 
-            --focus-border: #ffffff;
-            --glass: rgba(255, 255, 255, 0.1);
-            --gold: #00FFBB;
-        }
+::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+}
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            height: 100vh;
-            overflow: hidden; /* GLOBAL LOCK */
-            display: flex;
-        }
+:root {
+    /* Refined Color Palette */
+    --bg-deep: #050505;
+    --bg-panel: #0a0a0a;
+    --accent: #00FFBB; 
+    --accent-glow: rgba(0, 255, 187, 0.4);
+    --text-main: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.5);
+    --border-dim: rgba(255, 255, 255, 0.08);
+    --border-bright: rgba(255, 255, 255, 0.2);
+    --glass: rgba(255, 255, 255, 0.03);
+    --glass-heavy: rgba(20, 20, 20, 0.75);
+    --gold: #00FFBB; /* Kept your variable name */
+}
 
-        /* --- LAYOUT: Left Sidebar (Profiles) --- */
-        .sidebar {
-            width: 350px;
-            background: linear-gradient(to right, #000 0%, #0a0a0a 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 40px;
-            z-index: 10;
-            box-shadow: 10px 0 50px rgba(0,0,0,0.8);
-        }
+body {
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+}
 
-        .logo {
-            color: var(--accent);
-            margin-bottom: 3rem;
-            
-        }
+/* --- 1. DESKTOP SIDEBAR (Left) --- */
+.sidebar {
+    width: 350px;
+    /* Subtle noise texture simulation via gradient */
+    background: linear-gradient(180deg, #0e0e0e 0%, #000000 100%);
+    border-right: 1px solid var(--border-dim);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 40px;
+    z-index: 10;
+    box-shadow: 20px 0 60px rgba(0,0,0,0.5);
+    position: relative;
+}
 
-        .profile-list-container {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
+.logo {
+    color: var(--accent);
+    margin-bottom: 3rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    text-shadow: 0 0 20px var(--accent-glow);
+}
 
-        .profile-item {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            opacity: 0.6;
-            border: 2px solid transparent;
-            position: relative;
-        }
+.profile-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
 
-        .profile-item.focused, .profile-item:hover {
-            opacity: 1;
-            transform: scale(1.05);
-            background: var(--glass);
-            border-color: var(--focus-border);
-        }
+.profile-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    opacity: 0.5;
+    border: 1px solid transparent;
+    background: transparent;
+}
 
-        .profile-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 4px; /* Netflix square style */
-            background-color: #333;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-        }
+/* Hover/Focus State - The "Glow" */
+.profile-item.focused, .profile-item:hover {
+    opacity: 1;
+    transform: translateX(10px);
+    background: var(--glass);
+    border-color: var(--border-dim);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
 
-        .profile-info {
-            display: flex;
-            flex-direction: column;
-        }
+.profile-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px; /* Softer square */
+    background: linear-gradient(135deg, #333, #1a1a1a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease;
+    border: 1px solid var(--border-dim);
+}
 
-        .profile-name {
-            font-size: 1.2rem;
-            font-weight: 500;
-        }
+.profile-item:hover .profile-avatar {
+    transform: scale(1.1);
+    border-color: var(--accent);
+    box-shadow: 0 0 15px var(--accent-glow);
+}
 
-        .profile-status {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
+.profile-info {
+    display: flex;
+    flex-direction: column;
+}
 
-        /* Edit Mode Styles */
-        .editing .profile-item {
-            border-color: var(--accent);
-            animation: shake 0.5s ease-in-out;
-        }
-        
-        .delete-icon {
-            display: none;
-            color: var(--accent);
-            margin-left: auto;
-            font-size: 1.2rem;
-        }
-        
-        .editing .delete-icon {
-            display: block;
-        }
+.profile-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
 
-        .action-buttons {
-            margin-top: 3rem;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
+.profile-status {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
 
-        .btn-action {
-            background: transparent;
-            border: 1px solid #444;
-            color: #888;
-            padding: 10px;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
+/* Edit Mode Animation */
+.editing .profile-item {
+    border-color: rgba(200, 50, 50, 0.5);
+    animation: shake 0.4s ease-in-out infinite;
+}
 
-        .btn-action.focused, .btn-action:hover {
-            border-color: white;
-            color: white;
-            background: rgba(255,255,255,0.1);
-        }
+.delete-icon {
+    display: none;
+    color: #ff4444;
+    margin-left: auto;
+    font-size: 1.2rem;
+    filter: drop-shadow(0 0 5px rgba(255, 68, 68, 0.5));
+}
+.editing .delete-icon { display: block; }
 
-        /* --- LAYOUT: Right Preview (The Hero) --- */
-        .preview-area {
-            flex: 1;
-            position: relative;
-            display: flex;
-            align-items: center;
-            padding: 80px;
-            overflow: hidden;
-        }
+/* Buttons */
+.action-buttons {
+    margin-top: 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
 
-        /* Animated Abstract Background */
-        .preview-bg {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 70% 50%, #222 0%, #000 70%);
-            z-index: 1;
-            transition: opacity 1s ease;
-        }
-        
-        .spotlight {
-            position: absolute;
-            top: -50%; left: -50%;
-            width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%);
-            animation: rotateLight 20s linear infinite;
-            z-index: 2;
-        }
+.btn-action {
+    background: transparent;
+    border: 1px solid var(--border-dim);
+    color: var(--text-muted);
+    padding: 14px;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 3px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
 
-        .preview-content {
-            z-index: 10;
-            max-width: 800px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 1s ease, transform 1s ease-out;
-        }
+.btn-action.focused, .btn-action:hover {
+    border-color: var(--text-main);
+    color: var(--bg-deep);
+    background: var(--text-main);
+    box-shadow: 0 0 20px rgba(255,255,255,0.2);
+}
 
-        .preview-content.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
+/* --- 2. PREVIEW AREA (Right / Main) --- */
+.preview-area {
+    flex: 1;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 80px;
+    overflow: hidden;
+}
 
-        .meta-tag {
-            color: var(--gold);
-            font-size: 1rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
+/* The Cinematic Background */
+.preview-bg {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    /* Complex gradient for depth */
+    background: radial-gradient(circle at 80% 20%, #1a1a1a 0%, #000000 60%);
+    z-index: 1;
+}
 
-        .meta-tag::before {
-            content: '';
-            width: 40px;
-            height: 2px;
-            background: var(--gold);
-        }
+.spotlight {
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    /* Subtle moving light rays */
+    background: conic-gradient(from 0deg at 50% 50%, transparent 0%, rgba(255, 255, 255, 0.03) 15%, transparent 30%);
+    animation: rotateLight 30s linear infinite;
+    z-index: 2;
+    pointer-events: none;
+}
 
-        .surah-title-en {
-            font-size: 4rem;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 10px 30px rgba(0,0,0,1);
-        }
+.preview-content {
+    z-index: 10;
+    max-width: 900px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
 
-        .surah-title-ar {
-            font-family: 'Amiri', serif;
-            font-size: 3rem;
-            color: rgba(255,255,255,0.5);
-            margin-bottom: 2rem;
-        }
+.preview-content.active {
+    opacity: 1;
+    transform: translateY(0);
+}
 
-        .surah-desc {
-            font-size: 1.2rem;
-            line-height: 1.6;
-            color: #ddd;
-            max-width: 600px;
-            text-shadow: 0 2px 5px rgba(0,0,0,1);
-            border-left: 4px solid var(--accent);
-            padding-left: 20px;
-        }
+/* Typography in Preview */
+.meta-tag {
+    color: var(--accent);
+    font-size: 0.9rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-weight: 700;
+}
 
-        /* --- ADD UI OVERLAY --- */
-        .overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
-        .overlay.active { opacity: 1; pointer-events: all; }
+.meta-tag::before {
+    content: '';
+    width: 30px;
+    height: 1px;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+}
 
-        .input-box {
-            text-align: center;
-            width: 100%;
-            max-width: 500px;
-        }
+.surah-title-en {
+    font-size: 5rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    /* Gradient Text */
+    background: linear-gradient(180deg, #fff 0%, #aaa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 10px 30px rgba(0,0,0,0.8));
+}
 
-        input[type="text"] {
-            background: transparent;
-            border: none;
-            border-bottom: 2px solid #555;
-            color: white;
-            font-size: 2.5rem;
-            text-align: center;
-            width: 100%;
-            padding: 10px;
-            outline: none;
-        }
+.surah-title-ar {
+    font-family: 'Amiri', serif;
+    font-size: 3.5rem;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+    opacity: 0.6;
+}
 
-        input[type="text"]:focus { border-color: var(--accent); }
+.surah-desc {
+    font-size: 1.25rem;
+    line-height: 1.7;
+    color: #ccc;
+    max-width: 650px;
+    border-left: 3px solid var(--accent);
+    padding-left: 25px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, transparent 100%);
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
 
-        /* --- CONFIRM DELETE MODAL --- */
-        .modal {
-            background: #222;
-            padding: 30px;
-            border-radius: 8px;
-            text-align: center;
-            border: 1px solid #444;
-        }
-        .modal h3 { margin-top: 0; color: var(--accent); }
-        .modal-actions { display: flex; gap: 20px; justify-content: center; margin-top: 20px; }
-        .btn-modal { padding: 10px 30px; border: none; font-weight: bold; cursor: pointer; }
-        .btn-yes { background: var(--accent); color: white; }
-        .btn-no { background: #444; color: white; }
-        .btn-modal.focused { transform: scale(1.1); box-shadow: 0 0 15px rgba(255,255,255,0.3); }
+/* --- 3. UI OVERLAY & INPUTS --- */
+.overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(10px); /* Heavy Blur */
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+.overlay.active { opacity: 1; pointer-events: all; }
 
-        /* Animations */
-        @keyframes rotateLight {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-3px); }
-            75% { transform: translateX(3px); }
-        }
-/* 2. H1 CONTAINER STYLING */
-        #phantom-heading {
-            position: fixed;
-            top: 20px;
-            /* Safe mode logic: uses max() for notch safety */
-            left: max(20px, env(safe-area-inset-left));
-            margin: 0;
-            z-index: 9999;
-            font-size: 2rem;
-            font-weight: 800;
-            line-height: 1;
-            color: inherit; 
-            white-space: pre; 
-            pointer-events: none;
-        }
+input[type="text"] {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--text-muted);
+    color: white;
+    font-size: 3rem;
+    text-align: center;
+    width: 100%;
+    padding: 15px;
+    outline: none;
+    font-weight: 300;
+    transition: border-color 0.3s;
+}
+input[type="text"]:focus { border-color: var(--accent); }
 
-        /* 3. ANIMATION STATES */
-        .char-span {
-            display: inline-block;
-            opacity: 0;
-            filter: blur(10px);    
-            transform: translateX(-15px); /* Slightly more movement for dramatic effect */
-            
-            /* Transition settings */
-            transition: opacity 0.5s ease-out, 
-                        filter 0.5s ease-out, 
-                        transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            
-            color: inherit; 
-        }
+/* --- 4. MODALS --- */
+.modal {
+    background: #151515;
+    padding: 40px;
+    border-radius: 16px;
+    text-align: center;
+    border: 1px solid var(--border-dim);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+}
+.modal h3 { margin-top: 0; color: var(--accent); }
+.btn-modal { padding: 12px 35px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; transition: 0.2s;}
+.btn-yes { background: var(--accent); color: #000; box-shadow: 0 0 15px var(--accent-glow);}
+.btn-no { background: #333; color: white; }
 
-        /* Visible State */
-        .char-span.visible {
-            opacity: 1;
-            filter: blur(0);
-            transform: translateX(0);
-        }
+/* --- ANIMATIONS --- */
+@keyframes rotateLight {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px) rotate(-1deg); }
+    75% { transform: translateX(2px) rotate(1deg); }
+}
 
-/* --- REFACTORED MOBILE OPTIMIZATION (NETFLIX STYLE) --- */
+/* --- 5. MOBILE & TABLET OPTIMIZATION (THE BIG FIX) --- */
 @media screen and (max-width: 768px), screen and (orientation: portrait) {
 
-    /* Global Reset for Mobile View to prevent horizontal scroll */
-    * {
-        box-sizing: border-box;
-    }
-
+    /* Body Lock */
     body {
-        display: flex;
         flex-direction: column;
         height: 100vh;
         width: 100vw;
-        overflow: hidden !important; /* Locks the main scroll */
+        overflow-x: hidden;
         background: #000;
-        margin: 0;
-        padding: 0;
     }
 
-    /* 1. Sidebar: Top Horizontal Carousel (Netflix-style Row) */
+    /* THE DYNAMIC ISLAND (Sidebar Refactored) */
     .sidebar {
-        width: 100%;
-        height: auto;
-        flex: 0 0 auto;
-        padding: 15px 0 15px 15px; /* Padding left only for scroll start */
-        background: linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 100%);
-        backdrop-filter: blur(10px);
-        z-index: 50;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        /* Floating Positioning */
+        position: fixed;
+        top: 15px;
+        left: 50%;
+        transform: translateX(-50%);
         
+        /* Shape & Size */
+        width: 92%; 
+        max-width: 400px; 
+        height: auto;
+        padding: 8px 10px;
+        
+        /* Glassmorphism Polish */
+        background: rgba(25, 25, 25, 0.85);
+        backdrop-filter: blur(25px) saturate(180%);
+        -webkit-backdrop-filter: blur(25px) saturate(180%);
+        
+        /* Borders & Depth */
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 40px;
+        box-shadow: 
+            0 15px 40px rgba(0, 0, 0, 0.5), /* Deep shadow */
+            inset 0 1px 1px rgba(255, 255, 255, 0.2); /* Top highlight */
+            
+        /* Layout */
         display: flex;
-        flex-direction: column;
-        overflow: visible; 
+        flex-direction: row; /* Horizontal flow */
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        
+        /* Entrance Animation */
+        animation: islandPop 0.8s cubic-bezier(0.19, 1, 0.22, 1) forwards;
     }
 
-    /* Clean up the logo area */
-    .logo {
-        display: none;
-        margin-bottom: 0.8rem;
-        padding-right: 15px;
-        transform: scale(0.9);
-        transform-origin: left center;
-    }
+    .logo { display: none; }
 
-    /* 2. Profile List: Horizontal Scrolling Strip */
+    /* Horizontal Scroll Strip */
     .profile-list-container {
-        display: flex;
         flex-direction: row;
         flex-wrap: nowrap;
         gap: 12px;
+        width: 100%;
         overflow-x: auto;
-        overflow-y: hidden;
-        padding-right: 20px;
-        -webkit-overflow-scrolling: touch;
-        scroll-behavior: smooth;
+        padding: 5px;
+        justify-content: flex-start;
         scrollbar-width: none;
-    }
-    
-    .profile-list-container::-webkit-scrollbar {
-        display: none;
+        -webkit-overflow-scrolling: touch;
+        mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
     }
 
     .profile-item {
         flex: 0 0 auto;
-        width: 70px;
-        padding: 0;
-        background: transparent;
-        border: none;
-        display: flex;
+        width: auto; /* Allow natural width */
+        min-width: 60px;
         flex-direction: column;
-        align-items: center;
         gap: 6px;
-    }
-
-    .profile-avatar {
-        width: 55px;
-        height: 55px;
-        border-radius: 50%;
-        border: 2px solid transparent;
-        background: #333;
-        font-size: 1.2rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: transform 0.2s ease;
-    }
-    
-    .profile-item.active .profile-avatar {
-        border-color: #e50914;
-        transform: scale(1.05);
-    }
-
-    .profile-info {
-        width: 100%;
-        text-align: center;
-    }
-    
-    .profile-name {
-        font-size: 0.7rem;
-        color: #b3b3b3;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        display: block;
-    }
-
-    .profile-status, .action-buttons, .btn-action {
-        display: none; 
-    }
-
-    /* 3. Preview Area: The "Hero" Section */
-    .preview-area {
-        flex: 1;
-        width: 100%;
-        position: relative;
-        /* Padding creates the Safe Zone from screen edges */
-        padding: 20px 24px 80px 24px; 
-        display: flex;
-        align-items: center; 
-        justify-content: center;
-        overflow-y: auto;
-        overflow-x: hidden;
-        box-sizing: border-box; /* Critical for padding math */
-    }
-
-    .preview-bg {
-        background: radial-gradient(circle at 50% 40%, #2a2a2a 0%, #000000 85%);
-    }
-
-    .spotlight {
-        opacity: 0.4;
-        filter: blur(80px);
-    }
-
-    /* 4. Typography & Content Scaling */
-    .preview-content {
-        width: 100%;
-        max-width: 100%; /* Ensures it never pushes grid wider */
-        text-align: center;
-        overflow-x: hidden; /* Safety clip */
-        animation: fadeIn 0.8s ease-out;
-        
-        /* Flex fix for text wrapping */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .surah-title-en {
-        font-size: 3rem; 
-        font-weight: 800;
-        letter-spacing: -1px;
-        margin-bottom: 0.5rem;
-        background: linear-gradient(to right, #fff, #ccc);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        line-height: 1.1; /* Prevent top cropping */
-    }
-
-    .surah-title-ar {
-        font-size: 2.2rem;
-        color: var(--accent, #e50914);
-        margin-bottom: 1.5rem;
-        font-family: serif;
-    }
-
-    .surah-desc {
-        font-size: 1rem;
-        line-height: 1.6;
-        color: #dcdcdc;
-        text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-        border: none;
+        opacity: 0; /* For animation */
         padding: 0;
-        opacity: 0.9;
-        
-        /* THE FIX: Safe Zone Constraints */
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
-        margin: 0 auto;
-        
-        /* Aggressive Wrapping */
-        overflow-wrap: break-word;
-        word-wrap: break-word;
-        word-break: break-word;
-        hyphens: auto; /* Adds hyphens for cleaner breaks */
-        white-space: normal;
-    }
-
-    /* 5. Mobile Search / Input */
-    .input-box {
-        width: 100%;
-        max-width: 100%;
-        margin-bottom: 1rem;
-        box-sizing: border-box;
-    }
-    
-    input[type="text"]:focus::placeholder {
-        color: transparent;
-    }
-
-    .meta-tag {
-        display: inline-flex;
-        margin-top: 20px;
-        background: rgba(255,255,255,0.1);
-        padding: 5px 10px;
-        border-radius: 4px;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        white-space: nowrap;
-    }
-    
-    .meta-tag::before { display: none; }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* --- ENTIRE MOBILE FIX (DYNAMIC ISLAND + NETFLIX SCROLL) --- */
-@media screen and (max-width: 768px), screen and (orientation: portrait) {
-
-    /* 1. Global Reset & Layout */
-    * {
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        width: 100vw;
-        background: #000;
         margin: 0;
-        padding: 0;
-        overflow-x: hidden;
-    }
-
-    /* 2. THE DYNAMIC ISLAND (Sidebar Refactored) */
-    .sidebar {
-        /* Positioning: Fixed floating pill */
-        position: fixed;
-        top: 20px; /* Distance from top */
-        left: 50%;
-        transform: translateX(-50%); /* Center horizontally */
-        
-        /* Sizing */
-        width: 90%; 
-        max-width: 380px; 
-        height: auto;
-        
-        /* styling: Glassy Black Pill */
-        background: rgba(20, 20, 20, 0.85);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-radius: 50px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
-        
-        /* Layout */
-        display: flex;
-        align-items: center;
-        justify-content: center; /* Center the list inside */
-        padding: 8px 10px;
-        z-index: 9999; /* Always on top */
-        
-        /* Animations */
-        animation: islandPop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-        transition: transform 0.4s ease, opacity 0.4s ease;
-    }
-
-    /* Hide the default logo to save space in the island */
-    .logo { display: none; }
-
-    /* 3. PROFILE LIST (Horizontal Scroll inside Island) */
-    .profile-list-container {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: nowrap;
-        gap: 15px; /* Clean spacing between avatars */
-        width: 100%;
-        overflow-x: auto;
-        padding: 5px 5px;
-        justify-content: flex-start; /* Aligns items to start for scrolling */
-        
-        /* Hide scrollbars */
-        scrollbar-width: none;
-        -webkit-overflow-scrolling: touch;
+        animation: avatarSlide 0.5s ease-out forwards;
     }
     
-    .profile-list-container::-webkit-scrollbar { display: none; }
+    /* Stagger Animations */
+    .profile-item:nth-child(1) { animation-delay: 0.1s; }
+    .profile-item:nth-child(2) { animation-delay: 0.2s; }
+    .profile-item:nth-child(3) { animation-delay: 0.3s; }
+    .profile-item:nth-child(4) { animation-delay: 0.4s; }
+    .profile-item:nth-child(5) { animation-delay: 0.5s; }
 
-    .profile-item {
-        flex: 0 0 auto;
-        width: 60px;
+    .profile-item:hover, .profile-item.focused {
         background: transparent;
-        border: none;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 6px; /* Space between avatar and name */
-        
-        /* Animation Entry */
-        opacity: 0;
-        animation: avatarSlide 0.6s ease-out forwards;
+        box-shadow: none;
+        transform: none;
     }
 
-    /* Staggered Entrance */
-    .profile-item:nth-child(1) { animation-delay: 0.2s; }
-    .profile-item:nth-child(2) { animation-delay: 0.3s; }
-    .profile-item:nth-child(3) { animation-delay: 0.4s; }
-    .profile-item:nth-child(4) { animation-delay: 0.5s; }
-    .profile-item:nth-child(5) { animation-delay: 0.6s; }
-
     .profile-avatar {
-        width: 55px; 
-        height: 55px;
-        border-radius: 50%;
-        background: #333;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        width: 48px; 
+        height: 48px;
+        border-radius: 50%; /* Circle on mobile */
         border: 2px solid transparent;
-        transition: transform 0.2s, border-color 0.2s;
-        overflow: hidden;
+        background: #2a2a2a;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
     }
     
     .profile-item.active .profile-avatar {
-        border-color: #e50914; /* Netflix Red active state */
-        transform: scale(1.05);
+        border-color: var(--accent);
+        box-shadow: 0 0 12px var(--accent-glow);
     }
 
     .profile-name {
-        font-size: 0.75rem; /* Fixed: was 1.7rem (too big) */
-        color: #b3b3b3;
+        font-size: 0.65rem;
+        color: #aaa;
         max-width: 60px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        text-align: center;
     }
 
-    /* Hide desktop specific elements */
-    .profile-status, .action-buttons, .btn-action { display: none; }
+    /* Elements to hide on Mobile */
+    .profile-status, .action-buttons, .btn-action, .surah-title-en, .surah-title-ar, .surah-desc, .meta-tag {
+        display: none !important;
+    }
 
-    /* 4. PREVIEW AREA */
+    /* Preview Area Adjustments */
     .preview-area {
-        flex: 1;
-        width: 100%;
-        position: relative;
-        /* Padding top pushes content below the fixed island */
-        padding: 140px 20px 40px 20px; 
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+        padding: 160px 20px 40px 20px; /* Space for Island */
+        align-items: flex-start;
         overflow-y: auto;
     }
-
+    
     .preview-bg {
-        background: radial-gradient(circle at 50% 40%, #2a2a2a 0%, #000000 85%);
+        background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 90%);
         position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
-        z-index: -1;
     }
 
-    /* 5. SEARCH INPUT */
     .input-box {
+        margin-top: 20px;
         width: 100%;
-        max-width: 100%;
-        margin-bottom: 1rem;
-        box-sizing: border-box;
     }
     
-    input[type="text"]:focus::placeholder { color: transparent; }
-
-
-    /* =========================================================
-       6. STRICTLY HIDDEN ELEMENTS (As Requested)
-       ========================================================= */
-    
-    .surah-title-en {
-        display: none !important;
-    }
-
-    .surah-title-ar {
-        display: none !important;
-    }
-
-    .surah-desc {
-        display: none !important;
-    }
-
-    .meta-tag {
-        display: none !important; 
-    }
-
-    .meta-tag::before {
-        display: none !important;
-    }
-
-
-    /* =========================================================
-       7. ANIMATIONS
-       ========================================================= */
-
-    /* Island Pop-in */
+    /* Mobile Animation Keyframes */
     @keyframes islandPop {
-        0% {
-            opacity: 0;
-            transform: translate(-50%, -150%) scale(0.8);
-        }
-        60% {
-            transform: translate(-50%, 10px) scale(1.02);
-        }
-        100% {
-            opacity: 1;
-            transform: translate(-50%, 0) scale(1);
-        }
+        0% { opacity: 0; transform: translate(-50%, -150%) scale(0.9); }
+        100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
     }
-
-    /* Avatar Slide */
+    
     @keyframes avatarSlide {
-        0% {
-            opacity: 0;
-            transform: translateX(20px);
-        }
-        100% {
-            opacity: 1;
-            transform: translateX(0);
-        }
+        0% { opacity: 0; transform: translateX(10px); }
+        100% { opacity: 1; transform: translateX(0); }
     }
 }
-
 </style>
