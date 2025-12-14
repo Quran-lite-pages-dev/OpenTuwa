@@ -1,6 +1,6 @@
-<style>
+ <style>
 
-   /* --- 0.  TV STYLE OVERRIDES & SCROLLBAR BAN --- */
+   /* --- 0. NETFLIX TV STYLE OVERRIDES & SCROLLBAR BAN --- */
         ::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; background: transparent !important; }
         html, body { scrollbar-width: none !important; -ms-overflow-style: none !important; }
         
@@ -275,9 +275,13 @@
         
         audio { display: none; }
 
-        /* --- 9:16 MOBILE PORTRAIT PERFORMANCE OVERRIDES --- */
-    /* Optimized for Google Web Vitals (LCP, CLS, INP) */
-    @media screen and (max-width: 768px) and (orientation: portrait) {
+        @media (max-width: 768px) {
+            #tv-sidebar { width: 0; overflow: hidden; } /* Hide Sidebar on mobile for now, or adapt */
+            #dashboard-view { padding-left: 0; }
+            #chapter-title {
+                position: relative; top: 0; left: 0; width: 100%; text-align: center; padding: 1.5rem 0; margin-bottom: 1rem;
+                background: linear-gradient(to bottom, #000 50%, transparent); color: var(--accent); mix-blend-mode: normal;
+            }
             .container { padding: 0; padding-bottom: 230px; justify-content: flex-start; }
             #content-display { margin: 0; justify-content: flex-start; }
             #verse-container { height: 40vh; margin-bottom: 0; background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 60%); }
@@ -297,12 +301,11 @@
         }
 
         /* NEW: Netflix-style Intro Transition Styles */
-                /* NEW: Netflix-style Intro Transition Styles */
         #intro-overlay {
-            position: fixed;
+            position: flex;
             top: 0;
             left: 0;
-            width: 100%; /* Changed from 50% to 100% to cover the whole screen */
+            width: 100%;
             height: 100%;
             background-color: #000;
             z-index: 10000;
@@ -313,294 +316,35 @@
             transition: opacity 0.8s ease-out;
         }
         .intro-logo {
-            font-family: 'Source Serif 4', serif;
-            /* Base font size for standard screens (e.g., small desktops, large tablets) */
-            font-size: 3rem; 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 5rem;
             font-weight: 700;
-            color: #fff;
+            color: #fff; /* Charismatic White for Quran */
             letter-spacing: 1px;
             animation: logoZoom 3.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
             text-transform: uppercase;
-            /* Added padding for safe zones on all devices */
-            padding: 0 20px; 
-            box-sizing: border-box;
         }
         @keyframes logoZoom {
             0% { transform: scale(1); opacity: 0; }
             20% { opacity: 1; }
             85% { opacity: 1; }
-            /* Adjusted scale slightly to look less aggressive on all screen sizes */
-            100% { transform: scale(3.0); opacity: 0; } 
+            100% { transform: scale(3.5); opacity: 0; }
         }
         .intro-fade-out {
             opacity: 0 !important;
             pointer-events: none;
         }
-
-        /* --- DEVICE ADJUSTMENTS --- */
-
-        /* Mobile Adjustment (Screens up to 768px wide) */
+        /* Mobile adjustment */
         @media (max-width: 768px) {
-            .intro-logo { 
-                /* Use clamp to ensure it's fluid (vw) but stays within readable min/max rem values */
-                font-size: 0.5625rem; 
-
-                 /* Add environment safe area padding for devices with notches/rounded corners */
-                padding-left: env(safe-area-inset-left, 20px);
-                padding-right: env(safe-area-inset-right, 20px);
-            }
+            .intro-logo { font-size: 3rem; }
         }
-
-        /* Desktop Adjustment (Screens wider than 1024px) */
-        @media (min-width: 1024px) {
-            .intro-logo {
-                /* Slightly larger base font size for large monitors */
-                font-size: 4rem; 
-                /* Increase the animation scale for a bigger screen impact */
-                animation: logoZoom 3.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-            }
-            @keyframes logoZoom {
-                 /* Scale up slightly more on desktop */
-                0% { transform: scale(1); opacity: 0; }
-                20% { opacity: 1; }
-                85% { opacity: 1; }
-                100% { transform: scale(4.0); opacity: 0; } 
-            }
+/* AI Section Specifics */
+        .ai-card-border {
+            border-color: rgba(0, 255, 187, 0.4) !important;
+            box-shadow: 0 0 15px rgba(0, 255, 187, 0.1);
         }
-
-        /* 1. VIEWPORT & LAYOUT STABILITY (CLS Fix) */
-        :root {
-            --mobile-header-height: 60px;
+        .ai-card-border:hover {
+            border-color: var(--accent) !important;
+            box-shadow: 0 0 25px rgba(0, 255, 187, 0.3);
         }
-
-        body {
-            height: 100dvh; /* Dynamic height fixes iOS address bar jumps */
-            width: 100vw;
-            overflow-x: hidden;
-            position: fixed; /* Prevents rubber-banding on body */
-        }
-
-        /* 2. DASHBOARD OPTIMIZATION (LCP Fix) */
-        #dashboard-view {
-            padding-left: 0;
-            padding-top: 0;
-            height: 100dvh;
-            overflow-y: auto; /* Native scrolling for performance */
-            -webkit-overflow-scrolling: touch;
-            scroll-behavior: smooth;
-        }
-
-        .hero-banner {
-            /* Reduce height to allow "Next Content" to be visible immediately (LCP) */
-            height: 55vh; 
-            min-height: auto;
-            padding: 8rem 1.5rem 2rem;
-            justify-content: flex-end; /* Push text to bottom */
-            background-attachment: scroll; /* Fixes mobile parallax jank */
-        }
-
-        .hero-content {
-            width: 100%;
-            margin-top: 0;
-        }
-
-        .hero-title-text {
-            font-size: 3.2rem; /* Readable without wrapping excessively */
-            line-height: 1.1;
-        }
-
-        .hero-desc {
-            font-size: 1.1rem;
-            -webkit-line-clamp: 3; /* Show less text to paint faster */
-            margin-bottom: 1.5rem;
-            max-width: 100%;
-        }
-
-        .dash-btn {
-            padding: 1rem 2rem;
-            width: 100%; /* Full width button for easier interaction */
-            justify-content: center;
-        }
-
-        /* 3. HORIZONTAL SCROLLING PERFORMANCE (INP Fix) */
-        .row-section {
-            padding: 1rem 0 1rem 0;
-            margin-top: 0; /* Remove negative margin which causes overlap issues */
-            background: #050505;
-        }
-
-        .row-header {
-            padding-left: 1.5rem;
-            font-size: 1.4rem;
-        }
-
-        .card-scroller {
-            padding-left: 1.5rem; /* Align with header */
-            padding-right: 1.5rem;
-            gap: 12px;
-            /* Scroll Snap is critical for Mobile UX/INP */
-            scroll-snap-type: x mandatory; 
-            scroll-padding-left: 1.5rem;
-        }
-
-        .surah-card {
-            /* Wider cards for mobile legibility */
-            flex: 0 0 85vw; 
-            scroll-snap-align: start;
-            height: 120px;
-            /* Remove heavy hover effects on touch devices to prevent stuck states */
-            transform: none !important; 
-        }
-
-        .surah-card:active {
-            transform: scale(0.98) !important; /* Simple tactile feedback */
-            background: #222;
-        }
-
-        /* 4. CINEMA/READING MODE (Readability Focus) */
-        #cinema-view {
-            background: #000;
-            padding-bottom: env(safe-area-inset-bottom); /* iOS Safe Area */
-        }
-        /* 5. CONTROLS (Touch Target Fixes) */
-        #control-panel {
-            padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom)) 1rem;
-            background: rgba(0,0,0,0.95);
-            gap: 0.8rem;
-        }
-
-        select {
-            /* 16px font prevents iOS from zooming in on focus */
-            font-size: 16px; 
-            height: 50px; /* Large touch target */
-            width: 100%;
-            background-color: #222;
-        }
-
-        /* 6. HIDE NON-ESSENTIALS */
-        
-        #hero-subtitle-overlay { display: none; } /* Remove floating desktop elements */
-        
-        /* 7. SEARCH OVERLAY MOBILE */
-}
-
-/* =========================================
-   MOBILE LAYOUT OVERRIDES (Bottom Bar & 9:16 Search)
-   ========================================= */
-
-@media screen and (max-width: 768px) {
-
-    /* 1. MOVE SIDEBAR TO BOTTOM */
-    #tv-sidebar {
-        display: flex !important; /* Override the 'display: none' */
-        flex-direction: row;
-        width: 100% !important;
-        height: 80px; /* Taller to accommodate the pop-out button */
-        bottom: 0;
-        top: auto;
-        left: 0;
-        right: 0;
-        padding: 0;
-        background: rgba(0, 0, 0, 0.98);
-        border-top: 1px solid #222;
-        justify-content: space-between;
-        align-items: center;
-        z-index: 9999;
-        box-shadow: 0 -5px 20px rgba(0,0,0,0.8);
-    }
-
-    /* 2. HIDE ALL BUTTONS INITIALLY (To filter only the 3 we want) */
-    .nav-item {
-        display: none; 
-        flex: 1;
-        justify-content: center;
-        padding: 0;
-        height: 100%;
-        border-left: none !important; /* Remove any desktop borders */
-    }
-
-    /* 3. CONFIGURE BUTTON POSITIONS (Flex Order) */
-    
-    /* PROFILE / USER BUTTON -> LEFT */
-    /* Assuming ID is user-auth-btn or similar based on standard conventions */
-    #user-auth-btn, #profile-btn { 
-        display: flex;
-        order: 1; 
-    }
-
-    /* SEARCH BUTTON -> CENTER (Highlighted) */
-    #search-btn {
-        display: flex;
-        order: 2;
-        /* Visual Pop-out Effect */
-        background: #111;
-        border: 2px solid #00ffbb; /* Your theme accent color */
-        border-radius: 50%;
-        width: 65px; /* Fixed width */
-        height: 65px; /* Fixed height */
-        max-width: 65px;
-        margin-bottom: 25px; /* Push it up */
-        box-shadow: 0 0 15px rgba(0, 255, 187, 0.3);
-        z-index: 10000;
-        align-items: center;
-        color: #00ffbb;
-    }
-
-    /* HOME BUTTON -> RIGHT */
-    #door-btn, #home-btn {
-        display: flex;
-        order: 3;
-    }
-
-    /* 4. SEARCH OVERLAY -> 9:16 FULL SCREEN LAYOUT */
-    #search-overlay {
-        /* Force full screen vertical */
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%; /* Fill screen */
-        padding: env(safe-area-inset-top) 1rem 100px 1rem; /* Padding for notch and bottom bar */
-        
-        /* Change grid to vertical flex */
-        display: none; /* JS toggles this to flex */
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        
-        background: #000;
-        transform: none; /* Remove desktop centering transform */
-        border-radius: 0;
-        border: none;
-    }
-
-    #search-overlay.active {
-        display: flex; /* Ensure flex is used when active */
-    }
-
-    /* Make Input Area Top & Prominent */
-    .search-header, .input-group {
-        width: 100%;
-        margin-bottom: 20px;
-    }
-    
-    #search-input {
-        width: 100%;
-        font-size: 18px; /* Prevents iOS auto-zoom */
-        padding: 15px;
-        background: #1a1a1a;
-        border: 1px solid #333;
-    }
-
-    /* Make Results/Keyboard flow naturally vertically */
-    .keyboard-section {
-        width: 100%;
-        border: none;
-        padding: 0;
-        /* If using on-screen keyboard, this ensures it fits, 
-           but if using phone keyboard, this pushes content up */
-        flex: 1;
-        overflow-y: auto; 
-    }
-}
     </style>
