@@ -2,7 +2,7 @@
 
 // 1. VERSION CONTROL & CACHE NAMES
 // *** IMPORTANT: Change this version number (v4) every time you update any cached file. ***
-const CACHE_VERSION = 'v6';
+const CACHE_VERSION = 'v7';
 const CORE_CACHE_NAME = 'core-assets-' + CACHE_VERSION;
 const FONT_CACHE_NAME = 'google-fonts-' + CACHE_VERSION;
 const ALL_CACHE_NAMES = [CORE_CACHE_NAME, FONT_CACHE_NAME];
