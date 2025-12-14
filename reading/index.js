@@ -373,8 +373,12 @@
             const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
             const heroBtn = document.getElementById('door-play-btn');
             
-            fillRow('trending-row', [36, 67, 18, 55, 1, 112, 113, 114].map(id => id-1));
-            fillRow('all-row', Array.from({length: 114}, (_, i) => i));
+          const allIndices = Array.from({length: 114}, (_, i) => i);
+          const shortRowIndices = allIndices.slice(78, 114);
+
+          fillRow('trending-row', [36, 67, 18, 55, 1, 112, 113, 114].map(id => id - 1));
+         fillRow('all-row', allIndices);
+         fillRow('short-row', shortRowIndices);
 
             if(saved.chapter !== undefined && quranData[saved.chapter]) {
                 const chNum = quranData[saved.chapter].chapterNumber;
