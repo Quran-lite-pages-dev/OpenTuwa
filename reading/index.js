@@ -409,6 +409,10 @@
                 card.onfocus = handler;
                 card.onmouseenter = () => card.focus(); 
                 container.appendChild(card);
+
+// NEW CODE:
+            playNetflixIntro(() => {
+            switchView('dashboard'); // This now runs ONLY after intro finishes
             });
         }
 
@@ -1147,31 +1151,41 @@
             document.getElementById('door-play-btn').focus();
         }
 
-        // NEW: Netflix-style Intro Logic
-        function playNetflixIntro() {
+
+        function playNetflixIntro(onComplete) { // <--- ADD 'onComplete' HERE
             const intro = document.getElementById('intro-overlay');
             const audio = document.getElementById('intro-sound');
-            if(!intro || !audio) return;
+            
+            // Safety check: if elements missing, just proceed immediately
+            if(!intro || !audio) {
+                if(onComplete) onComplete();
+                return;
+            }
             
             intro.style.display = 'flex'; // Ensure visible
             
-            // Attempt autoplay (might be blocked by browser without interaction)
+            // --- KEEP INTRO AUDIO HERE ---
+            // This ensures the intro sound (int.mp3) plays WHILE the logo is showing
             const playPromise = audio.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
-                    console.log("Intro autoplay blocked by policy - user must interact first");
-                    // Optionally force hide if blocked to avoid stuck screen, 
-                    // or leave it for the animation to handle.
+                    console.log("Intro autoplay blocked - user interaction required");
                 });
             }
 
-            // Sync fade out with audio length (approx 3-4s)
+            // Sync fade out with audio length
             setTimeout(() => {
                 intro.classList.add('intro-fade-out');
                 setTimeout(() => {
                     intro.style.display = 'none';
+                    
+                    // --- TRIGGER DASHBOARD HERE ---
+                    // This ensures the dashboard (and its "last verse" audio) 
+                    // only starts AFTER the intro is completely gone.
+                    if(onComplete) onComplete(); 
+
                 }, 1000);
-            }, 10000); 
+            }, 10000); // 3 seconds wait time
         }
 
         document.addEventListener('DOMContentLoaded', initializeApp);
