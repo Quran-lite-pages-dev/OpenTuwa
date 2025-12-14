@@ -1,13 +1,24 @@
 <style>
 
-   /* --- 0. NETFLIX TV STYLE OVERRIDES & SCROLLBAR BAN --- */
-        ::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; background: transparent !important; }
+/* --- 0. TV STYLE OVERRIDES & SCROLLBAR BAN --- */
+        /* Target EVERY element to hide scrollbars */
+        * {
+            scrollbar-width: none !important;       /* Firefox */
+            -ms-overflow-style: none !important;    /* IE 10+ */
+        }
+
+        /* Webkit (Chrome/Safari/Edge) */
+        *::-webkit-scrollbar { 
+            display: none !important; 
+            width: 0 !important; 
+            height: 0 !important; 
+            background: transparent !important; 
+        }
         
-        /* *** CRITICAL FIX: Added overflow: hidden !important to the main viewport to stop scrolling itself *** */
+        /* Keep your existing Critical Fix */
         html, body { 
-            scrollbar-width: none !important; 
-            -ms-overflow-style: none !important;
-            overflow: hidden !important; /* <--- THIS IS THE MOST IMPORTANT FIX HERE */
+            overflow: hidden !important; 
+            height: 100vh;
         }
         
         /* Sidebar Navigation */
