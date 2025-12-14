@@ -3,7 +3,7 @@ export async function onRequest(context) {
 
     // --- CONFIGURATION ---
     // Use the newest 8b model for better reasoning, or stick to llama-3 if preferred
-    const AI_MODEL = '@cf/meta/llama-3-8b-instruct'; 
+    const AI_MODEL = '@cf/meta/llama-3.1-8b-instruct'; 
     const CACHE_TTL = 86400; // Cache results for 24 Hours (Important for stability)
 
     // 1. CORS HEADERS
