@@ -316,14 +316,14 @@
             transition: opacity 0.8s ease-out;
         }
         .intro-logo {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            font-size: 5rem;
-            font-weight: 700;
-            color: #fff; /* Charismatic White for Quran */
-            letter-spacing: 1px;
-            animation: logoZoom 3.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-            text-transform: uppercase;
-        }
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 2.2rem; /* Adjusted REM size */
+    font-weight: 700;
+    color: #fff; /* Charismatic White for Quran */
+    letter-spacing: 1px;
+    animation: logoZoom 3.5s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+    text-transform: uppercase;
+}
         @keyframes logoZoom {
             0% { transform: scale(1); opacity: 0; }
             20% { opacity: 1; }
@@ -336,7 +336,7 @@
         }
         /* Mobile adjustment */
         @media (max-width: 768px) {
-            .intro-logo { font-size: 3rem; }
+            .intro-logo { font-size: 2.2rem; }
         }
 /* AI Section Specifics */
         .ai-card-border {
