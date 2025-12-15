@@ -1,27 +1,44 @@
-/* tv-fix.css */
+/* tv-fix.css - OTT Performance Mode */
 
-/* 1. Fix "Content Overflow" (Safe Area for TV) */
 :root {
-    --safe-area-inset: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 50px) env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 50px);
+    --accent: #0FB;
+    --transition-speed: 0.25s; /* Snappy like Netflix */
 }
 
-body {
-    padding: var(--safe-area-inset) !important;
-    overflow: hidden !important; /* Stop the whole page from scrolling like a web browser */
-    height: 100vh !important;
-    box-sizing: border-box !important;
+body, html {
+    overflow: hidden !important;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    background: #000;
 }
 
-/* 2. Strong Focus Ring (So you know where you are) */
-:focus {
-    outline: 4px solid #0FB !important; /* Bright Cyan color */
-    outline-offset: 4px !important;
-    box-shadow: 0 0 20px rgba(0, 255, 187, 0.6) !important;
-    transform: scale(1.02);
-    z-index: 9999 !important;
+/* Force hardware acceleration on everything that moves */
+.surah-card, .card-scroller, #dashboard-view, .hero-banner {
+    backface-visibility: hidden;
+    transform: translateZ(0);
+    will-change: transform;
 }
 
-/* 3. Hide Scrollbars completely */
-*::-webkit-scrollbar {
-    display: none !important;
+/* Remove 'word' scrolling. We will move the container instead. */
+.card-scroller {
+    display: flex;
+    overflow: visible !important; /* Critical: native scroll is off */
+    transition: transform var(--transition-speed) cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+/* High-Visibility Focus (OTT Standard) */
+.surah-card:focus {
+    outline: none !important;
+    transform: scale(1.1) !important;
+    border: 4px solid var(--accent) !important;
+    z-index: 100;
+}
+
+/* Prevent text selection and long-press menus on TV */
+* {
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    cursor: none !important; /* Hide mouse cursor on TV */
 }
