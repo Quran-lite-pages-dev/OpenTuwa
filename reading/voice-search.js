@@ -1,6 +1,6 @@
 (function() {
     // --- Configuration ---
-    const API_ENDPOINT = '/api/transcribe'; // The Cloudflare Pages Function endpoint
+    const API_ENDPOINT = 'transcribe.js'; // The Cloudflare Pages Function endpoint
     
     // --- Global Elements ---
     const voiceBtn = document.getElementById('voice-search-btn');
