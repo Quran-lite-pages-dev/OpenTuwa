@@ -3,41 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Puter OS AI · Unified & Live</title>
+    <title>Puter OS AI · tvOS Edition</title>
     <script src="https://js.puter.com/v2/"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* --- CORE DESIGN SYSTEM (Apple TV / Glassmorphism) --- */
+        /* --- APPLE TV / GLASSMORPHISM DESIGN SYSTEM --- */
         :root {
             --bg-color: #000000;
-            --glass-panel: rgba(28, 28, 30, 0.75);
+            --glass-panel: rgba(28, 28, 30, 0.65);
             --glass-border: rgba(255, 255, 255, 0.12);
             --accent-blue: #0A84FF;
-            --accent-green: #30D158; /* Call Green */
-            --accent-red: #FF453A;   /* Hangup Red */
-            --accent-amber: #FF9F0A; /* Mic Active */
+            --accent-green: #30D158;
+            --accent-amber: #FF9F0A; /* Mic Active Color */
+            --accent-red: #FF453A;
             --text-primary: #FFFFFF;
             --text-secondary: rgba(235, 235, 245, 0.6);
-            --blur-strength: 50px;
-            --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
+            --message-user-bg: #0A84FF;
+            --message-ai-bg: rgba(255, 255, 255, 0.1);
+            --blur-strength: 40px;
+            --radius-large: 24px;
+            --radius-small: 12px;
+            --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
         body {
             font-family: var(--font-stack);
             background-color: var(--bg-color);
+            /* Abstract Modern Background */
             background-image: 
-                radial-gradient(circle at 10% 20%, rgba(10, 132, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 90% 80%, rgba(48, 209, 88, 0.1) 0%, transparent 50%);
+                radial-gradient(circle at 10% 20%, rgba(10, 132, 255, 0.2) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 69, 58, 0.15) 0%, transparent 40%);
             margin: 0;
             height: 100vh;
-            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
             color: var(--text-primary);
+            overflow: hidden;
         }
 
-        /* --- MAIN APP WINDOW --- */
+        /* --- MAIN CONTAINER (The "TV Screen") --- */
         .app-container {
             width: 95%;
             max-width: 1000px;
@@ -45,13 +50,13 @@
             background: var(--glass-panel);
             backdrop-filter: blur(var(--blur-strength));
             -webkit-backdrop-filter: blur(var(--blur-strength));
-            border-radius: 24px;
+            border-radius: var(--radius-large);
             border: 1px solid var(--glass-border);
             display: flex;
             flex-direction: column;
-            box-shadow: 0 40px 80px rgba(0,0,0,0.6);
-            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             overflow: hidden;
+            position: relative;
         }
 
         /* --- HEADER --- */
@@ -62,16 +67,23 @@
             align-items: center;
             border-bottom: 1px solid var(--glass-border);
             background: rgba(255, 255, 255, 0.03);
-            z-index: 10;
         }
 
         .header h1 {
             font-size: 1.1rem;
             font-weight: 600;
+            letter-spacing: 0.5px;
             margin: 0;
             display: flex;
             align-items: center;
             gap: 10px;
+        }
+
+        .header h1 i { color: var(--accent-blue); }
+
+        /* Custom Select Dropdown (Styled like a pill) */
+        .model-selector-wrapper {
+            position: relative;
         }
 
         select {
@@ -79,17 +91,28 @@
             background: rgba(255, 255, 255, 0.1);
             color: var(--text-primary);
             border: 1px solid var(--glass-border);
-            padding: 8px 30px 8px 15px;
-            border-radius: 12px;
+            padding: 8px 35px 8px 15px;
+            border-radius: 20px;
             font-family: var(--font-stack);
-            font-size: 0.85rem;
+            font-size: 0.9rem;
             cursor: pointer;
             outline: none;
+            transition: background 0.2s;
         }
-        
-        select optgroup { color: #000; background: #fff; }
 
-        /* --- CHAT SCROLL AREA --- */
+        select:hover { background: rgba(255, 255, 255, 0.2); }
+        
+        .select-arrow {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        /* --- CHAT AREA --- */
         .chat-area {
             flex-grow: 1;
             padding: 30px;
@@ -99,209 +122,196 @@
             gap: 20px;
             scroll-behavior: smooth;
         }
-        .chat-area::-webkit-scrollbar { width: 0px; } /* Hide scrollbar for cleaner look */
+
+        /* Scrollbar styling */
+        .chat-area::-webkit-scrollbar { width: 8px; }
+        .chat-area::-webkit-scrollbar-track { background: transparent; }
+        .chat-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
 
         .message {
             max-width: 80%;
             padding: 14px 20px;
             border-radius: 22px;
-            font-size: 1rem;
+            font-size: 1.05rem;
             line-height: 1.5;
-            animation: popIn 0.3s ease-out;
+            position: relative;
+            animation: popIn 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
         @keyframes popIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from { opacity: 0; transform: translateY(10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
 
         .user-message {
             align-self: flex-end;
-            background: var(--accent-blue);
+            background: var(--message-user-bg);
             color: white;
             border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(10, 132, 255, 0.3);
         }
 
         .ai-message {
             align-self: flex-start;
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--message-ai-bg);
             color: var(--text-primary);
             border-bottom-left-radius: 4px;
+            border: 1px solid var(--glass-border);
         }
 
-        /* --- BOTTOM CONTROLS --- */
-        .controls-area {
-            padding: 20px 30px;
-            background: rgba(0, 0, 0, 0.3);
+        .message-meta {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* --- INPUT AREA (The "Remote") --- */
+        .input-area {
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.2);
             border-top: 1px solid var(--glass-border);
             display: flex;
-            flex-direction: column;
+            align-items: center;
             gap: 15px;
-            z-index: 10;
+            position: relative;
+            transition: border-color 0.3s;
         }
 
-        /* Input Row */
-        .input-row {
-            display: flex;
-            gap: 15px;
-            align-items: center;
+        /* When Mic is Active, the whole bar glows amber */
+        .input-area.listening-mode {
+            border-top: 1px solid var(--accent-amber);
+            background: rgba(255, 159, 10, 0.05);
+            box-shadow: 0 -10px 40px rgba(255, 159, 10, 0.1);
         }
 
         .input-wrapper {
             flex-grow: 1;
             position: relative;
+            display: flex;
+            align-items: center;
         }
 
         input[type="text"] {
             width: 100%;
             background: rgba(255, 255, 255, 0.08);
             border: none;
-            padding: 16px 20px;
-            border-radius: 18px;
+            padding: 16px 50px 16px 20px; /* Space for mic icon inside */
+            border-radius: 30px;
             color: white;
             font-size: 1rem;
+            font-family: var(--font-stack);
             outline: none;
-            box-sizing: border-box;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus {
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
+        }
+
+        /* The Big Mic Button inside the input */
+        #mic-btn {
+            position: absolute;
+            right: 8px;
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #mic-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Active Mic State - Pulse Animation */
+        #mic-btn.active {
+            color: var(--accent-amber);
+            background: rgba(255, 159, 10, 0.15);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 159, 10, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 159, 10, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 159, 10, 0); }
         }
 
         #send-btn {
-            background: rgba(255,255,255,0.15);
+            background: var(--accent-blue);
             color: white;
             border: none;
             width: 50px;
             height: 50px;
             border-radius: 50%;
             cursor: pointer;
-            transition: 0.2s;
-        }
-        #send-btn:hover { background: var(--accent-blue); }
-
-        /* Call Button Row */
-        .action-row {
-            display: flex;
-            justify-content: center;
-        }
-
-        #start-call-btn {
-            background: var(--accent-green);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
             display: flex;
             align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 15px rgba(48, 209, 88, 0.3);
+            justify-content: center;
+            font-size: 1.1rem;
             transition: transform 0.2s, background 0.2s;
+            box-shadow: 0 4px 12px rgba(10, 132, 255, 0.4);
         }
 
-        #start-call-btn:hover {
+        #send-btn:hover {
             transform: scale(1.05);
-            background: #28c04d;
+            background: #2996ff;
         }
 
-        /* --- LIVE CALL OVERLAY (THE PHONE MODE) --- */
-        .live-mode-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85); /* Darker background */
-            backdrop-filter: blur(60px);
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.5s ease;
-        }
-
-        .live-mode-overlay.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        /* The Glowing Orb */
-        .orb-container {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 50px;
-        }
-
-        .orb {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: white;
-            box-shadow: 0 0 60px 20px rgba(255,255,255,0.5);
-            transition: all 0.5s ease;
-        }
-
-        /* Orb States */
-        .orb.listening {
-            background: var(--accent-amber);
-            box-shadow: 0 0 80px 30px rgba(255, 159, 10, 0.4);
-            animation: breathe 2s infinite ease-in-out;
-        }
-
-        .orb.speaking {
-            background: var(--accent-blue);
-            box-shadow: 0 0 80px 30px rgba(10, 132, 255, 0.4);
-            animation: pulse-speak 0.8s infinite alternate;
-        }
-
-        .orb.processing {
-            background: #fff;
-            transform: scale(0.8);
+        #send-btn:disabled {
+            background: #3a3a3c;
+            box-shadow: none;
+            cursor: not-allowed;
             opacity: 0.7;
         }
 
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
+        /* --- VISUALIZER OVERLAY (Hidden by default) --- */
+        .listening-overlay {
+            position: absolute;
+            bottom: 85px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--accent-amber);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 159, 10, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
+        
+        .listening-overlay.show { opacity: 1; }
 
-        @keyframes pulse-speak {
-            from { transform: scale(1); }
-            to { transform: scale(1.2); }
+        .wave {
+            display: inline-block;
+            width: 3px;
+            height: 10px;
+            background: var(--accent-amber);
+            animation: waveAnim 1s infinite ease-in-out;
+            border-radius: 2px;
         }
-
-        .live-status-text {
-            font-size: 1.5rem;
-            font-weight: 500;
-            color: rgba(255,255,255,0.9);
-            margin-bottom: 10px;
+        .wave:nth-child(2) { animation-delay: 0.1s; height: 15px; }
+        .wave:nth-child(3) { animation-delay: 0.2s; height: 20px; }
+        .wave:nth-child(4) { animation-delay: 0.1s; height: 15px; }
+        
+        @keyframes waveAnim {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
         }
-
-        .live-subtext {
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.5);
-        }
-
-        #hangup-btn {
-            margin-top: 60px;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            background: var(--accent-red);
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(255, 69, 58, 0.4);
-            transition: transform 0.2s;
-        }
-        #hangup-btn:hover { transform: scale(1.1); }
 
     </style>
 </head>
@@ -311,284 +321,237 @@
     
     <div class="header">
         <h1><i class="fa-brands fa-apple"></i> Puter AI</h1>
-        <select id="model-select">
-            <optgroup label="Google Gemini (Recommended)">
-                <option value="gemini-1.5-pro">Gemini 1.5 Pro (Best Logic)</option>
-                <option value="gemini-1.5-flash">Gemini 1.5 Flash (Fastest)</option>
-                <option value="gemini-2.0-flash-exp">Gemini 2.0 Flash (Experimental)</option>
-            </optgroup>
-            <optgroup label="OpenAI GPT">
-                <option value="gpt-4o" selected>GPT-4o (Omni - Best Overall)</option>
-                <option value="gpt-4o-mini">GPT-4o Mini (Fast)</option>
-                <option value="gpt-4-turbo">GPT-4 Turbo</option>
-                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
-            </optgroup>
-            <optgroup label="Anthropic & Others">
-                <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
-                <option value="claude-3-opus">Claude 3 Opus</option>
-                <option value="mistral-large-latest">Mistral Large</option>
-            </optgroup>
-        </select>
+        <div class="model-selector-wrapper">
+            <select id="model-select">
+                <option value="gemini-2.5-pro">Gemini 2.5 Pro (Smartest)</option>
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Fastest)</option>
+                <option value="gpt-4o">GPT-4o (Omni)</option>
+                <option value="gpt-4o-mini">GPT-4o Mini</option>
+            </select>
+            <i class="fa-solid fa-chevron-down select-arrow"></i>
+        </div>
     </div>
 
     <div class="chat-area" id="chat-feed">
         <div class="message ai-message">
-            Hello. Select a model above. You can type below, or press <strong>Start Live Call</strong> for a hands-free voice experience.
+            Hi. I'm ready. Use the <strong>Microphone</strong> to speak, or type normally.
+            <div class="message-meta"><i class="fa-solid fa-robot"></i> System</div>
         </div>
     </div>
 
-    <div class="controls-area">
-        <div class="input-row">
-            <div class="input-wrapper">
-                <input type="text" id="user-input" placeholder="Type a message..." autocomplete="off">
-            </div>
-            <button id="send-btn"><i class="fa-solid fa-arrow-up"></i></button>
-        </div>
-        
-        <div class="action-row">
-            <button id="start-call-btn">
-                <i class="fa-solid fa-phone"></i> Start Live Call
+    <div class="listening-overlay" id="voice-indicator">
+        <span class="wave"></span><span class="wave"></span><span class="wave"></span><span class="wave"></span>
+        Listening...
+    </div>
+
+    <div class="input-area" id="input-bar">
+        <div class="input-wrapper">
+            <input type="text" id="user-input" placeholder="Type a message..." autocomplete="off">
+            <button id="mic-btn" title="Toggle Voice Input">
+                <i class="fa-solid fa-microphone"></i>
             </button>
         </div>
-    </div>
-
-    <div class="live-mode-overlay" id="live-overlay">
-        <div class="orb-container">
-            <div class="orb" id="live-orb"></div>
-        </div>
-        <div class="live-status-text" id="live-status">Connecting...</div>
-        <div class="live-subtext" id="live-model-name">Using GPT-4o</div>
-        
-        <button id="hangup-btn" title="End Call">
-            <i class="fa-solid fa-phone-slash"></i>
+        <button id="send-btn">
+            <i class="fa-solid fa-arrow-up"></i>
         </button>
     </div>
 
 </div>
 
 <script>
-    // --- CONFIG & STATE ---
+    /* --- CONFIGURATION --- */
     const UI = {
         chatFeed: document.getElementById('chat-feed'),
         input: document.getElementById('user-input'),
         sendBtn: document.getElementById('send-btn'),
-        startCallBtn: document.getElementById('start-call-btn'),
+        micBtn: document.getElementById('mic-btn'),
         modelSelect: document.getElementById('model-select'),
-        
-        // Live Mode UI
-        overlay: document.getElementById('live-overlay'),
-        orb: document.getElementById('live-orb'),
-        status: document.getElementById('live-status'),
-        subStatus: document.getElementById('live-model-name'),
-        hangupBtn: document.getElementById('hangup-btn')
+        inputBar: document.getElementById('input-bar'),
+        voiceIndicator: document.getElementById('voice-indicator')
     };
 
-    let state = {
-        isLiveMode: false,     // Are we in the phone call screen?
-        isAiSpeaking: false,   // Is the AI currently talking?
-        recognition: null,     // The Speech Object
-        audioPlayer: null,     // The Audio Object
-        selectedModel: 'gpt-4o'
-    };
+    let isVoiceActive = false;
+    let recognition = null;
+    let isProcessing = false;
 
-    // --- INITIALIZATION ---
+    /* --- INITIALIZATION --- */
     window.addEventListener('load', () => {
-        initSpeechRecognition();
+        UI.input.focus();
+        setupSpeechRecognition();
     });
 
-    // --- SPEECH RECOGNITION SETUP (Web Speech API) ---
-    function initSpeechRecognition() {
-        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        if (!SpeechRecognition) {
-            alert("Your browser does not support voice input. Please use Chrome/Edge/Safari.");
-            UI.startCallBtn.style.display = 'none';
-            return;
-        }
-
-        state.recognition = new SpeechRecognition();
-        state.recognition.continuous = false; // We want to process sentence by sentence
-        state.recognition.interimResults = false;
-        state.recognition.lang = 'en-US';
-
-        // 1. When user starts speaking
-        state.recognition.onstart = () => {
-            if (state.isLiveMode) {
-                setLiveVisuals('listening');
-            }
-        };
-
-        // 2. When user stops speaking (silence detected)
-        state.recognition.onend = () => {
-            // CRITICAL LOOP LOGIC:
-            // If we are in Live Mode AND the AI isn't currently talking,
-            // we must immediately restart the microphone to keep the "call" open.
-            if (state.isLiveMode && !state.isAiSpeaking) {
-                try {
-                    state.recognition.start();
-                } catch (e) { /* Ignore "already started" errors */ }
-            } else if (state.isLiveMode && state.isAiSpeaking) {
-                // If AI is speaking, do nothing. We wait for audio to finish.
-                setLiveVisuals('speaking'); 
-            }
-        };
-
-        // 3. When text is captured
-        state.recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            if (transcript.trim()) {
-                handleUserMessage(transcript);
-            }
-        };
-    }
-
-    // --- MAIN LOGIC ---
-
-    async function handleUserMessage(text) {
-        state.selectedModel = UI.modelSelect.value;
-        const modelName = UI.modelSelect.options[UI.modelSelect.selectedIndex].text;
-
-        // Visuals update
-        if (state.isLiveMode) {
-            setLiveVisuals('processing');
-        } else {
-            addChatMessage(text, 'user');
-            addChatMessage('Thinking...', 'ai', modelName, 'temp-loading');
-        }
-
-        try {
-            // 1. Call Puter AI
-            // We use non-streaming for the call mode to get full text for TTS
-            const response = await puter.ai.chat(text, { model: state.selectedModel });
-            const aiText = response.message.content;
-
-            // 2. Handle Response
-            if (state.isLiveMode) {
-                // In Live Mode: Speak it, don't show text
-                speakResponse(aiText);
-            } else {
-                // In Chat Mode: Show text
-                document.getElementById('temp-loading').remove();
-                addChatMessage(aiText, 'ai', modelName);
-            }
-
-        } catch (err) {
-            console.error(err);
-            if (state.isLiveMode) speakResponse("I'm sorry, I lost connection.");
-        }
-    }
-
-    // --- TTS (TEXT TO SPEECH) & LOOPING ---
-    async function speakResponse(text) {
-        state.isAiSpeaking = true;
-        setLiveVisuals('speaking');
-
-        try {
-            // Stop mic while AI generates audio
-            state.recognition.stop(); 
-
-            state.audioPlayer = await puter.ai.txt2speech(text, {
-                model: 'gpt-4o-mini-tts',
-                voice: 'alloy'
-            });
-
-            state.audioPlayer.play();
-
-            // When AI finishes talking -> TURN MIC BACK ON
-            state.audioPlayer.onended = () => {
-                state.isAiSpeaking = false;
-                if (state.isLiveMode) {
-                    setLiveVisuals('listening');
-                    try { state.recognition.start(); } catch(e){}
-                }
-            };
-
-        } catch (e) {
-            console.error("TTS Error", e);
-            state.isAiSpeaking = false;
-        }
-    }
-
-    // --- UI FUNCTIONS ---
-
-    // Switch between Orb States
-    function setLiveVisuals(mode) {
-        // Reset classes
-        UI.orb.className = 'orb';
-        
-        if (mode === 'listening') {
-            UI.orb.classList.add('listening');
-            UI.status.innerText = "Listening...";
-            UI.status.style.color = "#FF9F0A"; // Amber
-        } else if (mode === 'speaking') {
-            UI.orb.classList.add('speaking');
-            UI.status.innerText = "Speaking...";
-            UI.status.style.color = "#0A84FF"; // Blue
-        } else if (mode === 'processing') {
-            UI.orb.classList.add('processing');
-            UI.status.innerText = "Thinking...";
-            UI.status.style.color = "white";
-        }
-    }
-
-    function addChatMessage(text, sender, modelName = null, id = null) {
-        const div = document.createElement('div');
-        div.className = `message ${sender}-message`;
-        if(id) div.id = id;
-        
-        // Simple Markdown bold parsing
-        div.innerHTML = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>').replace(/\n/g, '<br>');
-        
-        if (modelName && sender === 'ai') {
-            const meta = document.createElement('div');
-            meta.style.fontSize = '0.75rem';
-            meta.style.marginTop = '5px';
-            meta.style.opacity = '0.6';
-            meta.innerText = modelName;
-            div.appendChild(meta);
-        }
-
-        UI.chatFeed.appendChild(div);
+    /* --- UI HELPERS --- */
+    function scrollToBottom() {
         UI.chatFeed.scrollTop = UI.chatFeed.scrollHeight;
     }
 
-    // --- EVENT LISTENERS ---
-
-    // 1. Send Button (Text Mode)
-    UI.sendBtn.addEventListener('click', () => {
-        const text = UI.input.value;
-        if(text) {
-            UI.input.value = '';
-            handleUserMessage(text);
-        }
-    });
-
-    UI.input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') UI.sendBtn.click();
-    });
-
-    // 2. START CALL
-    UI.startCallBtn.addEventListener('click', () => {
-        state.isLiveMode = true;
-        UI.overlay.classList.add('active');
-        UI.subStatus.innerText = "Using " + UI.modelSelect.options[UI.modelSelect.selectedIndex].text;
+    function createMessage(text, type, modelName = null) {
+        const div = document.createElement('div');
+        div.className = `message ${type}-message`;
         
-        // Start listening immediately
-        setLiveVisuals('listening');
-        try { state.recognition.start(); } catch(e){}
-    });
-
-    // 3. END CALL (Hang Up)
-    UI.hangupBtn.addEventListener('click', () => {
-        state.isLiveMode = false;
-        UI.overlay.classList.remove('active');
+        // Convert Markdown-style bolding to HTML for display
+        const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
         
-        // Stop audio and mic
-        if (state.audioPlayer) {
-            state.audioPlayer.pause();
-            state.audioPlayer = null;
+        div.innerHTML = formattedText;
+
+        if (modelName) {
+            const meta = document.createElement('div');
+            meta.className = 'message-meta';
+            meta.innerHTML = `<i class="fa-solid fa-microchip"></i> ${modelName}`;
+            div.appendChild(meta);
         }
-        state.recognition.stop();
-        state.isAiSpeaking = false;
+        
+        UI.chatFeed.appendChild(div);
+        scrollToBottom();
+        return div;
+    }
+
+    /* --- SPEECH RECOGNITION SETUP (Robust/Anti-Stubborn) --- */
+    function setupSpeechRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (!SpeechRecognition) {
+            UI.micBtn.style.display = 'none';
+            createMessage("Browser does not support Voice Input. Please use Chrome/Edge/Safari.", "ai");
+            return;
+        }
+
+        recognition = new SpeechRecognition();
+        recognition.continuous = false; // Stop after one sentence to prevent loops
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onstart = () => {
+            isVoiceActive = true;
+            UI.micBtn.classList.add('active');
+            UI.inputBar.classList.add('listening-mode');
+            UI.voiceIndicator.classList.add('show');
+            UI.input.placeholder = "Listening...";
+        };
+
+        recognition.onend = () => {
+            isVoiceActive = false;
+            UI.micBtn.classList.remove('active');
+            UI.inputBar.classList.remove('listening-mode');
+            UI.voiceIndicator.classList.remove('show');
+            UI.input.placeholder = "Type a message...";
+            
+            // If user stopped speaking but didn't say anything, just reset.
+            // If they said something, handleSend() is called in onresult.
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            if (transcript.trim().length > 0) {
+                UI.input.value = transcript;
+                handleSend(true); // True = Triggered by Voice
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.warn("Speech Error:", event.error);
+            // Don't alert "stubborn" errors, just visual reset
+            recognition.stop();
+        };
+
+        // Mic Button Logic
+        UI.micBtn.addEventListener('click', () => {
+            if (isVoiceActive) {
+                recognition.stop();
+            } else {
+                UI.input.value = ''; // Clear previous text
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.error("Mic start error", e);
+                }
+            }
+        });
+    }
+
+    /* --- CORE LOGIC --- */
+    async function handleSend(triggeredByVoice = false) {
+        const text = UI.input.value.trim();
+        const model = UI.modelSelect.value;
+        const modelNameDisplay = UI.modelSelect.options[UI.modelSelect.selectedIndex].text;
+
+        if (!text || isProcessing) return;
+
+        // Lock UI
+        isProcessing = true;
+        UI.input.value = '';
+        UI.input.disabled = true;
+        UI.sendBtn.disabled = true;
+
+        // 1. User Message
+        createMessage(text, 'user');
+
+        // 2. AI Placeholder
+        const aiContainer = createMessage("Thinking...", 'ai', modelNameDisplay);
+        
+        let fullResponse = "";
+
+        try {
+            // 3. Puter.js Chat Stream
+            const responseStream = await puter.ai.chat(text, {
+                model: model,
+                stream: true
+            });
+
+            aiContainer.innerHTML = ""; // Clear "Thinking..."
+            
+            for await (const part of responseStream) {
+                if (part?.text) {
+                    // Simple streaming text append
+                    // Note: Ideally use a markdown parser here, but kept simple for stability
+                    const cleanChunk = part.text.replace(/\n/g, '<br>'); 
+                    aiContainer.innerHTML += cleanChunk;
+                    fullResponse += part.text;
+                    scrollToBottom();
+                }
+            }
+
+            // Re-append meta tag since we cleared innerHTML
+            const meta = document.createElement('div');
+            meta.className = 'message-meta';
+            meta.innerHTML = `<i class="fa-solid fa-microchip"></i> ${modelNameDisplay}`;
+            aiContainer.appendChild(meta);
+
+            // 4. Voice Output (TTS) - Only if input was voice
+            if (triggeredByVoice && fullResponse) {
+                const playingIcon = document.createElement('span');
+                playingIcon.innerHTML = ' <i class="fa-solid fa-volume-high" style="color:var(--accent-blue); margin-left:5px;"></i>';
+                meta.appendChild(playingIcon);
+
+                try {
+                    const audio = await puter.ai.txt2speech(fullResponse, {
+                        model: 'gpt-4o-mini-tts',
+                        voice: 'alloy'
+                    });
+                    audio.play();
+                } catch (err) {
+                    console.error("TTS Error", err);
+                }
+            }
+
+        } catch (error) {
+            aiContainer.innerHTML = `<span style="color:var(--accent-red)">Error: ${error.message || "Connection failed"}</span>`;
+        } finally {
+            // Unlock UI
+            isProcessing = false;
+            UI.input.disabled = false;
+            UI.sendBtn.disabled = false;
+            UI.input.focus();
+        }
+    }
+
+    /* --- EVENT LISTENERS --- */
+    UI.sendBtn.addEventListener('click', () => handleSend(false));
+    
+    UI.input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !isProcessing) {
+            handleSend(false);
+        }
     });
 
 </script>
