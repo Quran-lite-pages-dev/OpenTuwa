@@ -1,0 +1,27 @@
+/* tv-fix.css */
+
+/* 1. Fix "Content Overflow" (Safe Area for TV) */
+:root {
+    --safe-area-inset: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 50px) env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 50px);
+}
+
+body {
+    padding: var(--safe-area-inset) !important;
+    overflow: hidden !important; /* Stop the whole page from scrolling like a web browser */
+    height: 100vh !important;
+    box-sizing: border-box !important;
+}
+
+/* 2. Strong Focus Ring (So you know where you are) */
+:focus {
+    outline: 4px solid #0FB !important; /* Bright Cyan color */
+    outline-offset: 4px !important;
+    box-shadow: 0 0 20px rgba(0, 255, 187, 0.6) !important;
+    transform: scale(1.02);
+    z-index: 9999 !important;
+}
+
+/* 3. Hide Scrollbars completely */
+*::-webkit-scrollbar {
+    display: none !important;
+}
