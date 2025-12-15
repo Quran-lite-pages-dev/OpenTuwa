@@ -84,11 +84,38 @@
         .key:focus, .key:hover { border-color: #fff; background: #555; transform: scale(1.1); z-index: 2; outline: none; }
         .key.wide { grid-column: span 2; aspect-ratio: auto; height: 50px; }
         
-        .results-section { padding: 4rem; overflow-y: auto; }
-        .results-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;
-        }
-        .no-results { color: #666; font-size: 2rem; margin-top: 4rem; }
+        /* index.css - Search Performance Patch */
+
+.results-section {
+    padding: 4rem;
+    overflow: hidden !important; /* Kill the browser scrollbar */
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    /* Transition results with GPU instead of CPU scrolling */
+    transition: transform 0.3s cubic-bezier(0.2, 0, 0.2, 1);
+    will-change: transform;
+}
+
+/* Make sure the "No Results" text doesn't jitter */
+.no-results {
+    font-size: 2.2rem;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    margin-top: 20%;
+}
+
+/* Focus state for Results (OTT Red/Cyan style) */
+.results-grid .surah-card:focus {
+    border-color: var(--accent);
+    background: #222;
+    transform: scale(1.05) translateZ(0); /* Force GPU */
+    box-shadow: 0 0 40px rgba(0, 255, 187, 0.4);
+}
+
 
         /* --- 1. GLOBAL & TV RESET --- */
         :root { --vh: 100vh; --accent: #0FB; --bg: #050505; --surface: #111; --text: #f0f0f0; }
