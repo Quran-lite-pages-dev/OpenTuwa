@@ -1,49 +1,51 @@
-// tv-fix.js - OTT Spatial Navigation Engine
+// tv-fix.js - Optimized for Real OTT Feel
 (function() {
-    let lastInputTime = 0;
-    const INPUT_DELAY = 150; // Ignore clicks faster than 150ms to prevent "ghosting"
+    // REMOVED: The 150ms INPUT_DELAY blocking mechanism.
 
     function initOTTNavigation() {
-        document.addEventListener('keydown', (e) => {
-            const now = Date.now();
-            if (now - lastInputTime < INPUT_DELAY) {
-                e.preventDefault();
-                return; // Debounce
-            }
-            lastInputTime = now;
-
-            const current = document.activeElement;
-            if (!current) return;
-
-            // Handle Row Shifting
-            if (current.classList.contains('surah-card')) {
-                shiftRowToVisible(current);
-            }
-        }, true);
+        // Listen for capture phase to ensure we handle it before other scripts
+        document.addEventListener('keydown', handleKeyNavigation, true);
     }
 
-    // tv-fix.js - Precision Snap Logic
+    function handleKeyNavigation(e) {
+        // Only intervene for navigation keys to prevent blocking other interactions
+        const navKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+        if (!navKeys.includes(e.key)) return;
 
-function shiftRowToVisible(element) {
-    const row = element.parentElement;
-    if (!row || !row.classList.contains('card-scroller') && !row.classList.contains('results-grid')) return;
+        // Optional: slight throttle (16ms = 1 frame) just to prevent event flooding
+        // without dropping user intent.
+        requestAnimationFrame(() => {
+            const current = document.activeElement;
+            if (current && current.classList.contains('surah-card')) {
+                smoothScrollToElement(current);
+            }
+        });
+    }
 
-    // Use element.offsetLeft instead of getBoundingClientRect for speed
-    const scrollPos = element.offsetLeft - 50; 
-    
-    // APPLY TO GPU LAYER
-    row.style.transform = `translateX(-${scrollPos}px)`;
-}
-    
+    function smoothScrollToElement(element) {
+        // This is the native "Netflix-style" scroll
+        // 'nearest' prevents the page from jumping up/down unnecessarily
+        // 'inline: center' keeps the focused item in the middle of the screen
+        element.scrollIntoView({
+            behavior: 'smooth', 
+            block: 'nearest', 
+            inline: 'center'
+        });
+    }
 
-    // Custom Focus Reset (If user hits a dead end)
-    document.addEventListener('keydown', (e) => {
-        if (!document.activeElement || document.activeElement === document.body) {
-            document.querySelector('.nav-item, .surah-card')?.focus();
-        }
+    // Safety Focus Reset: Only run if focus is explicitly LOST to body
+    // (Debounced to avoid stealing focus during load)
+    let focusDebounce;
+    document.addEventListener('focusout', () => {
+        clearTimeout(focusDebounce);
+        focusDebounce = setTimeout(() => {
+            if (document.activeElement === document.body) {
+                const firstItem = document.querySelector('.surah-card, .nav-item');
+                if (firstItem) firstItem.focus();
+            }
+        }, 100);
     });
 
-    // Run when ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initOTTNavigation);
     } else {
