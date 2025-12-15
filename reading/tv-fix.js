@@ -22,20 +22,19 @@
         }, true);
     }
 
-    function shiftRowToVisible(element) {
-        const row = element.parentElement;
-        if (!row || !row.classList.contains('card-scroller')) return;
+    // tv-fix.js - Precision Snap Logic
 
-        const rowRect = row.getBoundingClientRect();
-        const itemRect = element.getBoundingClientRect();
+function shiftRowToVisible(element) {
+    const row = element.parentElement;
+    if (!row || !row.classList.contains('card-scroller') && !row.classList.contains('results-grid')) return;
 
-        // Calculate offset relative to the row's start
-        // We want the focused item to be roughly 10% from the left (Netflix style)
-        const targetX = element.offsetLeft - 100; 
-        
-        // Use transform instead of scrollLeft for 60fps performance
-        row.style.transform = `translateX(-${targetX}px)`;
-    }
+    // Use element.offsetLeft instead of getBoundingClientRect for speed
+    const scrollPos = element.offsetLeft - 50; 
+    
+    // APPLY TO GPU LAYER
+    row.style.transform = `translateX(-${scrollPos}px)`;
+}
+    
 
     // Custom Focus Reset (If user hits a dead end)
     document.addEventListener('keydown', (e) => {
