@@ -55,63 +55,57 @@
     // --- Core Voice Search Flow ---
 
     async function handleVoiceSearch() {
+        // If already recording, assume the click means "I'm done speaking"
         if (isRecording) {
-            console.log("Recording is already in progress. Stopping and submitting.");
+            console.log("Recording is in progress. Stopping and submitting.");
             stopRecordingAndSubmit();
             return;
         }
 
+        // Basic Browser Check
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            alert("Error: Voice search is not supported on this device/browser.");
+            alert("Error: Voice search is not supported on this device/browser (HTTPS required).");
             return;
         }
         
-        // Disable the button to prevent multiple simultaneous clicks
         voiceBtn.disabled = true;
 
         try {
-            // 1. Check and Request Permission (Triggers prompt reliably)
-            await ensureMicrophonePermission();
-
-            // 2. Start the Actual Recording Session
+            // DIRECTLY start recording. This ensures the stream opens and stays open.
             await startRecording();
 
         } catch (err) {
-            // This catches permission denials or fatal stream errors
             console.error("FATAL MIC/PERMISSION ERROR:", err);
             updateListeningUI("Error", err.message || "Could not access microphone.", false);
+            
+            // Clean up if we failed halfway
+            isRecording = false; 
+            if (streamReference) {
+                streamReference.getTracks().forEach(t => t.stop());
+                streamReference = null;
+            }
+
             setTimeout(() => listeningOverlay.classList.remove('active'), 2000);
-            isRecording = false;
         } finally {
-            voiceBtn.disabled = false; // Re-enable the button
-        }
-    }
-
-    async function ensureMicrophonePermission() {
-        updateListeningUI("Requesting Access...", "Please grant microphone permission to proceed.");
-
-        try {
-            // Request permission. This call is critical for triggering the browser prompt
-            // and checking the pre-granted state for Android TV WebViews.
-            const tempStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            
-            // Permission granted, immediately stop the temporary stream to release resources
-            tempStream.getTracks().forEach(track => track.stop());
-            console.log("Microphone access confirmed (or pre-granted by OS settings).");
-            
-            // The function returns implicitly, allowing the flow to continue to startRecording
-            
-        } catch (error) {
-            // This happens on permission denial by the user or OS.
-            console.error("Permission Denial:", error);
-            throw new Error("Microphone access denied. Check your application settings.");
+            voiceBtn.disabled = false;
         }
     }
 
     async function startRecording() {
-        // We re-request the stream, ensuring we get a clean one for the recorder
+        updateListeningUI("Listening...", "Speak now...");
+
+        // 1. Get the Stream (Triggers prompt if not already granted)
         streamReference = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorder = new MediaRecorder(streamReference, { mimeType: 'audio/webm; codecs=opus' });
+        
+        // 2. Determine Supported MIME Type (Safeguard for Windows/Safari)
+        let mimeType = 'audio/webm; codecs=opus';
+        if (!MediaRecorder.isTypeSupported(mimeType)) {
+            console.warn(`${mimeType} not supported, falling back to default.`);
+            mimeType = ''; // Let browser choose default
+        }
+
+        const options = mimeType ? { mimeType } : {};
+        mediaRecorder = new MediaRecorder(streamReference, options);
         audioChunks = [];
 
         // --- Recorder Event Handlers ---
@@ -127,142 +121,113 @@
                 streamReference.getTracks().forEach(track => track.stop());
                 streamReference = null;
             }
-
             clearAutoStopTimeout();
-            
+
             // Only proceed if the recording was intended to be submitted (not cancelled)
             if (audioChunks.length > 0 && isRecording) {
-                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const audioBlob = new Blob(audioChunks, { type: 'audio/webm' }); 
                 await processAudio(audioBlob);
             } else {
-                // If cancelled or no data, just hide the overlay
+                console.log("Recording stopped without data or was cancelled.");
                 listeningOverlay.classList.remove('active');
             }
-            isRecording = false; // Final state reset
+            isRecording = false; // Reset state
         };
-        
-        // --- Start Recording ---
+
+        // 3. Start Recording
         mediaRecorder.start();
         isRecording = true;
-        updateListeningUI("Listening...", "Speak the Surah name or topic now.");
-        
-        // 4.5 second Auto-stop (YouTube/Netflix TV style timeout)
+        console.log("MediaRecorder started", mediaRecorder.state);
+
+        // 4. Set Safety Timeout (Stop after 5 seconds of silence/recording)
         timeoutId = setTimeout(() => {
-            if (isRecording) {
-                console.log("4.5 second timeout reached. Stopping recording.");
+            if (isRecording && mediaRecorder.state === 'recording') {
+                console.log("Auto-stopping recording due to timeout.");
                 stopRecordingAndSubmit();
             }
-        }, 4500); 
+        }, 5000);
     }
 
     function stopRecordingAndSubmit() {
-        clearAutoStopTimeout();
         if (mediaRecorder && mediaRecorder.state === 'recording') {
-            // isRecording remains true until mediaRecorder.onstop fires and processes data
+            // We do NOT set isRecording = false here. 
+            // We want existing 'true' state to trigger processing in onstop.
             mediaRecorder.stop();
-        } else if (isRecording) {
-            // If the recorder is in pending state (e.g., starting), trigger manual stop
-            // This is a safety net
-            if (streamReference) streamReference.getTracks().forEach(track => track.stop());
-            listeningOverlay.classList.remove('active');
-            isRecording = false;
         }
     }
 
     function stopRecordingAndCancel() {
+        isRecording = false; // Explicitly flag to ignore data
         clearAutoStopTimeout();
-        if (isRecording) {
-            console.log("Voice search cancelled by user.");
-            isRecording = false; // Set to false so onstop does NOT process audioChunks
-            
-            if (mediaRecorder && mediaRecorder.state === 'recording') {
-                mediaRecorder.stop(); // Triggers onstop, which will see isRecording=false
-            } else if (streamReference) {
-                // If recorder hasn't started, manually stop the tracks
-                streamReference.getTracks().forEach(track => track.stop());
-                listeningOverlay.classList.remove('active');
-            }
-        } else {
-            // If the overlay is active but we are not recording (e.g., during permission request), just hide it
-            listeningOverlay.classList.remove('active');
+        if (mediaRecorder && mediaRecorder.state === 'recording') {
+            mediaRecorder.stop();
         }
+        if (streamReference) {
+            streamReference.getTracks().forEach(t => t.stop());
+            streamReference = null;
+        }
+        updateListeningUI("Cancelled", "", false);
     }
 
     // --- Backend Processing ---
 
     async function processAudio(blob) {
-        updateListeningUI("Thinking...", "Analyzing with Cloudflare AI (Whisper)...");
-
+        updateListeningUI("Thinking...", "Analyzing with Cloudflare AI...");
         const formData = new FormData();
-        // Append the audio blob as 'file'
         formData.append('file', blob, 'voice.webm');
 
         try {
-            const response = await fetch(API_ENDPOINT, {
-                method: 'POST',
-                body: formData
-            });
-
+            const response = await fetch(API_ENDPOINT, { method: 'POST', body: formData });
+            
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: "Unknown AI server response" }));
-                throw new Error(errorData.error || `Server Error: ${response.status} ${response.statusText}`);
+                 const errorData = await response.json().catch(() => ({}));
+                 throw new Error(errorData.error || "Transcription failed");
             }
 
             const data = await response.json();
-            const transcript = data.text;
-            console.log("Whisper Transcript:", transcript);
-
-            if (transcript && transcript.trim().length > 0) {
-                applySearch(transcript);
-            } else {
-                throw new Error("No clear speech detected. Please try again.");
-            }
-
-        } catch (error) {
-            console.error("AI Transcription Failed:", error);
-            updateListeningUI("Error", error.message, true); // Keep overlay up briefly
-            setTimeout(() => listeningOverlay.classList.remove('active'), 2500);
-        }
-    }
-
-    // --- Bridge to index.js and Search Execution ---
-
-    function applySearch(text) {
-        // Clean text (remove trailing periods, common in Whisper output)
-        const cleanText = text.replace(/[.,!?;:"]+/g, '').trim();
-
-        // 1. Check for necessary globals from index.js
-        if (typeof window.searchString === 'undefined' || typeof window.performAISearch === 'undefined') {
-            console.error("Integration Error: Globals 'searchString' or 'performAISearch' not found in window scope.");
-            updateListeningUI("Error", "Integration failure: Missing core script variables.", false);
-            return;
-        }
-
-        // 2. Update the Global Variable (required by index.js logic)
-        window.searchString = cleanText;
-
-        // 3. Update the Display Element
-        const display = document.getElementById('search-input-display');
-        if (display) display.textContent = cleanText;
-
-        // 4. Close Overlay
-        listeningOverlay.classList.remove('active');
-
-        // 5. Trigger the AI Search function from index.js
-        if (typeof performAISearch === 'function') {
-            // Show loading state in the results grid for immediate feedback
-            const grid = document.getElementById('search-results-grid');
-            if(grid) {
-                grid.innerHTML = `
-                <div class="loader-content" style="padding-top:2rem; text-align:center;">
-                    <div class="loader-spinner" style="width:30px;height:30px;border-width:2px; margin: 0 auto;"></div>
-                    <div style="color:#666; font-size:1.2rem; margin-top: 10px;">Searching for "${cleanText}"...</div>
-                </div>`;
-            }
+            // Adjust this based on your exact API response structure (e.g., data.result.text)
+            const cleanText = data.text || (data.result && data.result.text) || ""; 
             
-            performAISearch();
+            if (!cleanText) throw new Error("No text detected.");
+
+            // --- Success Logic ---
+            // Ensure global search variables exist (from index.js)
+            if (typeof window.searchString === 'undefined' || typeof window.performAISearch === 'undefined') {
+                console.error("Integration Error: Globals 'searchString' or 'performAISearch' not found in window scope.");
+                updateListeningUI("Error", "Integration failure: Missing core script variables.", false);
+                return;
+            }
+
+            // 1. Update the Global Variable
+            window.searchString = cleanText;
+
+            // 2. Update the Display Element
+            const display = document.getElementById('search-input-display');
+            if (display) display.textContent = cleanText;
+
+            // 3. Close Overlay
+            listeningOverlay.classList.remove('active');
+
+            // 4. Trigger the AI Search function from index.js
+            if (typeof performAISearch === 'function') {
+                // Show loading state in the results grid for immediate feedback
+                const grid = document.getElementById('search-results-grid');
+                if(grid) {
+                    grid.innerHTML = `
+                    <div class="loader-content" style="padding-top:2rem; text-align:center;">
+                        <div class="loader-spinner" style="width:30px;height:30px;border-width:2px; margin: 0 auto;"></div>
+                        <div style="color:#666; font-size:1.2rem; margin-top: 10px;">Searching for "${cleanText}"...</div>
+                    </div>`;
+                }
+                
+                performAISearch();
+            }
+
+        } catch (err) {
+            console.error("Transcription Error:", err);
+            updateListeningUI("Error", "Could not understand audio. Try again.", false);
+            setTimeout(() => listeningOverlay.classList.remove('active'), 2000);
         }
     }
 
 })();
-                                                    
