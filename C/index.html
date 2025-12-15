@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Puter.js Unified AI Chat (Voice I/O)</title>
+    <script src="https://js.puter.com/v2/"></script>
+    <style>
+        /* --- CSS STYLES --- */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+        }
+
+        .chat-container {
+            width: 90%;
+            max-width: 800px;
+            height: 90vh;
+            border-radius: 12px;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            background-color: #ffffff;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 15px;
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 600;
+            border-top-left-radius: 12px;
+            border-top-right-radius: 12px;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f7f9fc;
+            scroll-behavior: smooth;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            border-radius: 18px;
+            max-width: 85%;
+            line-height: 1.5;
+            word-wrap: break-word;
+            clear: both;
+        }
+
+        .user-message {
+            background-color: #007bff;
+            color: white;
+            float: right;
+            margin-left: auto;
+            border-bottom-right-radius: 4px;
+        }
+
+        .ai-message {
+            background-color: #e9ecef;
+            color: #333;
+            float: left;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            position: relative;
+        }
+        
+        .ai-message::before {
+            content: attr(data-model);
+            display: block;
+            font-size: 0.75em;
+            color: #6c757d;
+            margin-bottom: 4px;
+            font-weight: bold;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid #dee2e6;
+            background-color: #ffffff;
+            align-items: center;
+        }
+
+        #model-select {
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            flex-shrink: 0;
+            width: 30%; 
+            font-size: 0.9em;
+        }
+
+        #user-input {
+            flex-grow: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+            margin-right: 10px;
+        }
+
+        #send-button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #send-button:disabled {
+            background-color: #90ee90;
+            cursor: not-allowed;
+        }
+
+        #mic-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            color: #dc3545; /* Red for recording */
+            font-size: 1.5em;
+            line-height: 1;
+            margin-right: 5px;
+            flex-shrink: 0;
+            transition: color 0.2s;
+        }
+
+        #mic-button.listening {
+            color: #ffc107; /* Yellow/Orange when active */
+            animation: pulse 1s infinite alternate;
+        }
+        
+        @keyframes pulse {
+            from { transform: scale(1); opacity: 1; }
+            to { transform: scale(1.1); opacity: 0.7; }
+        }
+
+        .tts-status {
+            position: absolute;
+            bottom: -5px;
+            right: 0;
+            font-size: 0.7em;
+            color: #17a2b8;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-header">Puter.js Unified AI Chat (Voice Enabled)</div>
+    <div class="chat-messages" id="chat-messages">
+        <div class="message ai-message" data-model="System">
+            Select a model, and click the **🎤 microphone** to speak your message. The AI will read its response aloud if you use the voice input.
+        </div>
+    </div>
+    <div class="chat-input-area">
+        <select id="model-select">
+            
+            <optgroup label="--- Google Gemini Models (Newest) ---">
+                <option value="gemini-3-pro">Gemini 3 Pro (Preview/Flagship)</option>
+                <option value="gemini-2.5-pro">Gemini 2.5 Pro (Flagship Stable)</option>
+                <option value="gemini-2.5-flash">Gemini 2.5 Flash (Speed/Cost)</option>
+                <option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite (Budget/Lite)</option>
+            </optgroup>
+            <optgroup label="--- Google Gemini Models (Legacy 1.0/1.5/2.0) ---">
+                <option value="gemini-1.5-pro">Gemini 1.5 Pro (Long Context Legacy)</option>
+                <option value="gemini-1.0-ultra">Gemini 1.0 Ultra (Original Flagship)</option>
+            </optgroup>
+
+            <optgroup label="--- OpenAI GPT Models (Current) ---">
+                <option value="gpt-4o" selected>GPT-4o (Omni - Multimodal)</option>
+                <option value="gpt-4o-mini">GPT-4o Mini (Budget Multimodal)</option>
+                <option value="gpt-4-turbo">GPT-4 Turbo (Current General)</option>
+            </optgroup>
+            <optgroup label="--- OpenAI GPT Models (Legacy/Historical) ---">
+                 <option value="gpt-4">GPT-4 (Original Stable Legacy)</option>
+                <option value="gpt-3.5-turbo">GPT-3.5 Turbo (ChatGPT Engine)</option>
+                <option value="gpt-3">GPT-3 (175B Parameters - Historical)</option>
+                <option value="gpt-2">GPT-2 (1.5B Parameters - Historical)</option>
+                <option value="gpt-1">GPT-1 (117M Parameters - Historical)</option>
+            </optgroup>
+        </select>
+        <button id="mic-button" title="Speak your message">🎤</button>
+        <input type="text" id="user-input" placeholder="Type your message or click 🎤 to speak..." autofocus>
+        <button id="send-button">Send</button>
+    </div>
+</div>
+
+<script>
+    // --- PUTER.JS & CHAT LOGIC ---
+
+    const CHAT_MESSAGES = document.getElementById('chat-messages');
+    const USER_INPUT = document.getElementById('user-input');
+    const SEND_BUTTON = document.getElementById('send-button');
+    const MODEL_SELECT = document.getElementById('model-select');
+    const MIC_BUTTON = document.getElementById('mic-button');
+
+    // Global flag to track if the last message was sent via voice
+    let lastInputWasVoice = false;
+
+    // List of models that are historical/unsupported for chat (for client-side warning)
+    const UNAVAILABLE_MODELS = ['gpt-1', 'gpt-2', 'gpt-3', 'gpt-4', 'gemini-1.0-ultra', 'gemini-1.0-pro', 'gemini-2.0-flash'];
+    
+    // --- TTS MODEL SELECTION ---
+    // Use the fastest/highest quality TTS model available through Puter.js
+    const TTS_MODEL_OPTIONS = {
+        model: "gpt-4o-mini-tts", // A modern, high-quality TTS model from Puter.js's integrated providers
+        provider: "openai",
+        voice: "alloy" // A pleasant voice option
+    };
+
+    // Function to add a message to the chat window
+    function addMessage(text, sender, modelName = null) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('message');
+        messageDiv.classList.add(sender === 'user' ? 'user-message' : 'ai-message');
+        messageDiv.textContent = text;
+        
+        if (modelName) {
+            messageDiv.setAttribute('data-model', modelName);
+        }
+
+        CHAT_MESSAGES.appendChild(messageDiv);
+        CHAT_MESSAGES.scrollTop = CHAT_MESSAGES.scrollHeight;
+        return messageDiv; // Return the created div for potential updates (like TTS status)
+    }
+
+    // Main function to handle sending messages
+    async function sendMessage() {
+        const userText = USER_INPUT.value.trim();
+        const selectedModel = MODEL_SELECT.value;
+        const modelDisplay = MODEL_SELECT.options[MODEL_SELECT.selectedIndex].textContent;
+        
+        const currentInputWasVoice = lastInputWasVoice;
+        lastInputWasVoice = false; // Reset flag immediately
+
+        if (userText === '') return;
+        
+        // Check for unavailable models
+        if (UNAVAILABLE_MODELS.includes(selectedModel)) {
+            addMessage(
+                `The model "${modelDisplay}" is a historical, retired, or internal version and is not directly callable via the Puter.js chat API. Please select a currently active model (e.g., GPT-4o, Gemini 2.5 Pro).`, 
+                'ai', 
+                'System'
+            );
+            return;
+        }
+
+        // 1. Display User Message & Prepare UI
+        addMessage(userText, 'user');
+        USER_INPUT.value = '';
+        SEND_BUTTON.disabled = true; 
+        MIC_BUTTON.disabled = true;
+        USER_INPUT.placeholder = `Waiting for response from ${modelDisplay}...`;
+        
+        const aiMessageDiv = document.createElement('div');
+        aiMessageDiv.classList.add('message', 'ai-message');
+        aiMessageDiv.setAttribute('data-model', modelDisplay);
+        aiMessageDiv.textContent = '...';
+        CHAT_MESSAGES.appendChild(aiMessageDiv);
+        CHAT_MESSAGES.scrollTop = CHAT_MESSAGES.scrollHeight;
+        
+        let fullAiResponse = '';
+
+        try {
+            // 2. Puter.js API Call - STREAMING RESPONSE
+            const responseStream = await puter.ai.chat(userText, {
+                model: selectedModel,
+                stream: true 
+            });
+
+            aiMessageDiv.textContent = ''; // Clear '...'
+            
+            // Stream the response parts
+            for await (const part of responseStream) {
+                if (part?.text) {
+                    aiMessageDiv.textContent += part.text;
+                    fullAiResponse += part.text;
+                    CHAT_MESSAGES.scrollTop = CHAT_MESSAGES.scrollHeight;
+                }
+            }
+
+        } catch (error) {
+            console.error('Puter.js Chat Error:', error);
+            aiMessageDiv.textContent = `Error: Could not get a response from ${modelDisplay}. The API call failed. (Did you sign in via the pop-up?)`;
+
+        } finally {
+            SEND_BUTTON.disabled = false;
+            MIC_BUTTON.disabled = false;
+            USER_INPUT.placeholder = "Type your message or click 🎤 to speak...";
+            USER_INPUT.focus(); 
+            
+            // 3. TEXT-TO-SPEECH (TTS) - ONLY if input was via microphone
+            if (currentInputWasVoice && fullAiResponse.length > 0) {
+                
+                const ttsStatusSpan = document.createElement('span');
+                ttsStatusSpan.classList.add('tts-status');
+                aiMessageDiv.appendChild(ttsStatusSpan);
+                
+                try {
+                    ttsStatusSpan.textContent = ' (Synthesizing Voice...)';
+                    
+                    // Use Puter's dedicated TTS model
+                    const audio = await puter.ai.txt2speech(fullAiResponse, TTS_MODEL_OPTIONS);
+                    
+                    ttsStatusSpan.textContent = ' (AI Speaking)';
+                    audio.play();
+
+                    audio.onended = () => {
+                        ttsStatusSpan.textContent = ' (Speech Complete)';
+                    };
+
+                } catch (ttsError) {
+                    console.error('Puter.js TTS Error:', ttsError);
+                    ttsStatusSpan.textContent = ' (TTS Failed)';
+                }
+            }
+        }
+    }
+
+
+    // --- WEB SPEECH API (Speech-to-Text) LOGIC ---
+    
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (SpeechRecognition) {
+        const recognition = new SpeechRecognition();
+        recognition.continuous = false; // Only get one result per mic click
+        recognition.interimResults = false;
+        recognition.lang = 'en-US'; // You might want to let the user change this
+
+        recognition.onstart = () => {
+            MIC_BUTTON.classList.add('listening');
+            USER_INPUT.placeholder = "Listening... Speak now!";
+        };
+
+        recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            USER_INPUT.value = transcript;
+            lastInputWasVoice = true; // Set flag
+            // Automatically send the message after a result is finalized
+            sendMessage(); 
+        };
+
+        recognition.onend = () => {
+            MIC_BUTTON.classList.remove('listening');
+            if (USER_INPUT.placeholder.includes('Listening')) {
+                 USER_INPUT.placeholder = "Type your message or click 🎤 to speak...";
+            }
+        };
+
+        recognition.onerror = (event) => {
+            console.error('Speech Recognition Error:', event.error);
+            MIC_BUTTON.classList.remove('listening');
+            USER_INPUT.placeholder = "Error: " + event.error + ". Click 🎤 to try again.";
+            lastInputWasVoice = false;
+        };
+
+        MIC_BUTTON.addEventListener('click', () => {
+            if (MIC_BUTTON.classList.contains('listening')) {
+                recognition.stop();
+            } else {
+                // Clear input before listening
+                USER_INPUT.value = ''; 
+                recognition.start();
+            }
+        });
+
+    } else {
+        // Fallback if browser doesn't support Web Speech API
+        MIC_BUTTON.style.display = 'none'; 
+        addMessage("⚠️ **Warning:** Your browser does not support the Web Speech API (Microphone Input). You can still type your messages.", 'ai', 'System');
+    }
+
+    // --- INITIAL EVENT LISTENERS ---
+    SEND_BUTTON.addEventListener('click', sendMessage);
+    USER_INPUT.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !SEND_BUTTON.disabled) {
+            sendMessage();
+        }
+    });
+
+</script>
+</body>
+  </html>
