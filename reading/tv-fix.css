@@ -1,44 +1,42 @@
-/* tv-fix.css - OTT Performance Mode */
+/* tv-fix.css - Clean Performance */
 
 :root {
     --accent: #0FB;
-    --transition-speed: 0.25s; /* Snappy like Netflix */
 }
 
 body, html {
-    overflow: hidden !important;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    margin: 0;
+    overflow: hidden !important; /* Keep this to prevent full page scroll */
     background: #000;
 }
 
-/* Force hardware acceleration on everything that moves */
-.surah-card, .card-scroller, #dashboard-view, .hero-banner {
-    backface-visibility: hidden;
-    transform: translateZ(0);
-    will-change: transform;
-}
-
-/* Remove 'word' scrolling. We will move the container instead. */
+/* HARDWARE ACCELERATION: Only apply to the container moving, not every child */
 .card-scroller {
     display: flex;
-    overflow: visible !important; /* Critical: native scroll is off */
-    transition: transform var(--transition-speed) cubic-bezier(0.2, 0, 0.2, 1);
+    overflow-x: auto !important; /* Enable native scroll behavior */
+    white-space: nowrap;
+    scroll-behavior: smooth; /* Native CSS smooth scrolling */
+    
+    /* Critical: Hide scrollbars but allow scrolling */
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+}
+.card-scroller::-webkit-scrollbar { 
+    display: none; 
 }
 
-/* High-Visibility Focus (OTT Standard) */
+/* HIGH PERFORMANCE FOCUS */
+.surah-card {
+    /* Remove 'will-change' to save RAM */
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Ensure z-index is handled correctly */
+    position: relative;
+    z-index: 1;
+}
+
 .surah-card:focus {
     outline: none !important;
-    transform: scale(1.1) !important;
-    border: 4px solid var(--accent) !important;
-    z-index: 100;
-}
-
-/* Prevent text selection and long-press menus on TV */
-* {
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
-    cursor: none !important; /* Hide mouse cursor on TV */
+    transform: scale(1.1);
+    border: 4px solid var(--accent);
+    z-index: 100; /* Pop on top */
+    background-color: #222; /* Visual feedback */
 }
