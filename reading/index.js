@@ -392,29 +392,36 @@
             }
         }
 
-        function fillRow(elementId, indexArray) {
-            const container = document.getElementById(elementId);
-            container.innerHTML = '';
-            indexArray.forEach(idx => {
-                if(!quranData[idx]) return;
-                const surah = quranData[idx];
-                const card = document.createElement('div');
-                card.className = 'surah-card';
-                card.tabIndex = 0;
-                card.innerHTML = `
-                    <div class="card-bg-num">${surah.chapterNumber}</div>
-                    <div class="card-title">${surah.title}</div>
-                    <div class="card-sub">${surah.english_name || ''}</div>
-                `;
-                card.onclick = () => launchPlayer(surah.chapterNumber, 1);
-                card.onkeydown = (e) => { if(e.key === 'Enter') launchPlayer(surah.chapterNumber, 1); };
-                
-                const handler = () => schedulePreview(surah.chapterNumber);
-                card.onfocus = handler;
-                card.onmouseenter = () => card.focus(); 
-                container.appendChild(card);
-            });
-        }
+function fillRow(elementId, indexArray) {
+    const container = document.getElementById(elementId);
+    const fragment = document.createDocumentFragment(); // Use fragment for speed
+    
+    indexArray.forEach(idx => {
+        if(!quranData[idx]) return;
+        const surah = quranData[idx];
+        const card = document.createElement('div');
+        card.className = 'surah-card';
+        card.tabIndex = 0;
+        card.innerHTML = `
+            <div class="card-bg-num">${surah.chapterNumber}</div>
+            <div class="card-title">${surah.title}</div>
+            <div class="card-sub">${surah.english_name || ''}</div>
+        `;
+        
+        // Use specialized TV events
+        card.onclick = () => launchPlayer(surah.chapterNumber, 1);
+        card.onfocus = () => {
+            // Preview logic here
+            schedulePreview(surah.chapterNumber);
+        };
+        
+        fragment.appendChild(card);
+    });
+    
+    container.innerHTML = '';
+    container.appendChild(fragment);
+                                  }
+
 
         function schedulePreview(chapterNum) {
             if (previewTimeout) clearTimeout(previewTimeout);
