@@ -241,7 +241,39 @@
 <script src="index.js"></script>
 
 <script src="AI2.js"></script>
-<script src="consent.js"></script>
-<script src="downloader.js"></script>
+<script>
+// --- Voice Search Bridge ---
+
+// 1. Global variable for the voice text
+window.searchString = ""; 
+
+// 2. The function that voice-search.js calls
+window.performAISearch = function() {
+    console.log("Voice search triggered for:", window.searchString);
+
+    const searchInput = document.getElementById('search-input');
+    
+    if (searchInput) {
+        // A. Put the text in the box
+        searchInput.value = window.searchString;
+        
+        // B. Tell index.js that the text changed (triggers 'input' listeners)
+        searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+        
+        // C. Simulate pressing 'Enter' (triggers 'keyup' or submit listeners)
+        const enterEvent = new KeyboardEvent('keyup', {
+            key: 'Enter',
+            code: 'Enter',
+            keyCode: 13,
+            which: 13,
+            bubbles: true
+        });
+        searchInput.dispatchEvent(enterEvent);
+    } else {
+        console.error("Could not find element with ID 'search-input'");
+    }
+};
+</script>
+    
 </body>
 </html>
