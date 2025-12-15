@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Puter OS AI · tvOS Edition</title>
-    <script src="https://js.puter.com/v2/"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="[https://js.puter.com/v2/](https://js.puter.com/v2/)"></script>
+    <script src="[https://cdn.jsdelivr.net/npm/marked/marked.min.js](https://cdn.jsdelivr.net/npm/marked/marked.min.js)"></script>
+    <link href="[https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css](https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css)" rel="stylesheet">
     <style>
         /* --- APPLE TV / GLASSMORPHISM DESIGN SYSTEM --- */
         :root {
@@ -14,7 +15,7 @@
             --glass-border: rgba(255, 255, 255, 0.12);
             --accent-blue: #0A84FF;
             --accent-green: #30D158;
-            --accent-amber: #FF9F0A; /* Mic Active Color */
+            --accent-amber: #FF9F0A;
             --accent-red: #FF453A;
             --text-primary: #FFFFFF;
             --text-secondary: rgba(235, 235, 245, 0.6);
@@ -24,12 +25,12 @@
             --radius-large: 24px;
             --radius-small: 12px;
             --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            --font-mono: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
         }
 
         body {
             font-family: var(--font-stack);
             background-color: var(--bg-color);
-            /* Abstract Modern Background */
             background-image: 
                 radial-gradient(circle at 10% 20%, rgba(10, 132, 255, 0.2) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(255, 69, 58, 0.15) 0%, transparent 40%);
@@ -42,7 +43,6 @@
             overflow: hidden;
         }
 
-        /* --- MAIN CONTAINER (The "TV Screen") --- */
         .app-container {
             width: 95%;
             max-width: 1000px;
@@ -59,7 +59,6 @@
             position: relative;
         }
 
-        /* --- HEADER --- */
         .header {
             padding: 20px 30px;
             display: flex;
@@ -81,10 +80,7 @@
 
         .header h1 i { color: var(--accent-blue); }
 
-        /* Custom Select Dropdown (Styled like a pill) */
-        .model-selector-wrapper {
-            position: relative;
-        }
+        .model-selector-wrapper { position: relative; }
 
         select {
             appearance: none;
@@ -112,7 +108,6 @@
             color: var(--text-secondary);
         }
 
-        /* --- CHAT AREA --- */
         .chat-area {
             flex-grow: 1;
             padding: 30px;
@@ -123,7 +118,6 @@
             scroll-behavior: smooth;
         }
 
-        /* Scrollbar styling */
         .chat-area::-webkit-scrollbar { width: 8px; }
         .chat-area::-webkit-scrollbar-track { background: transparent; }
         .chat-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
@@ -133,10 +127,58 @@
             padding: 14px 20px;
             border-radius: 22px;
             font-size: 1.05rem;
-            line-height: 1.5;
+            line-height: 1.6;
             position: relative;
             animation: popIn 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
+
+        /* --- MARKDOWN STYLES (New) --- */
+        .message strong { font-weight: 700; color: #fff; }
+        .message em { font-style: italic; opacity: 0.9; }
+        
+        /* Headers */
+        .message h1, .message h2, .message h3 {
+            margin: 10px 0 5px 0;
+            font-weight: 600;
+            color: white;
+        }
+        .message h3 { font-size: 1.2rem; }
+
+        /* Code Blocks */
+        .message pre {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 10px 0;
+            overflow-x: auto;
+            position: relative;
+        }
+        
+        .message code {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: #ff9f0a;
+        }
+
+        .message p { margin: 5px 0; }
+        .message ul, .message ol { margin: 5px 0; padding-left: 20px; }
+
+        /* Copy Button for Code */
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .copy-btn:hover { background: rgba(255, 255, 255, 0.2); color: white; }
 
         @keyframes popIn {
             from { opacity: 0; transform: translateY(10px) scale(0.98); }
@@ -162,13 +204,14 @@
         .message-meta {
             font-size: 0.7rem;
             color: var(--text-secondary);
-            margin-top: 6px;
+            margin-top: 8px;
             display: flex;
             align-items: center;
             gap: 5px;
+            padding-top: 5px;
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* --- INPUT AREA (The "Remote") --- */
         .input-area {
             padding: 25px;
             background: rgba(0, 0, 0, 0.2);
@@ -180,7 +223,6 @@
             transition: border-color 0.3s;
         }
 
-        /* When Mic is Active, the whole bar glows amber */
         .input-area.listening-mode {
             border-top: 1px solid var(--accent-amber);
             background: rgba(255, 159, 10, 0.05);
@@ -198,7 +240,7 @@
             width: 100%;
             background: rgba(255, 255, 255, 0.08);
             border: none;
-            padding: 16px 50px 16px 20px; /* Space for mic icon inside */
+            padding: 16px 50px 16px 20px;
             border-radius: 30px;
             color: white;
             font-size: 1rem;
@@ -212,7 +254,6 @@
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
         }
 
-        /* The Big Mic Button inside the input */
         #mic-btn {
             position: absolute;
             right: 8px;
@@ -232,7 +273,6 @@
             transform: scale(1.1);
         }
 
-        /* Active Mic State - Pulse Animation */
         #mic-btn.active {
             color: var(--accent-amber);
             background: rgba(255, 159, 10, 0.15);
@@ -273,7 +313,6 @@
             opacity: 0.7;
         }
 
-        /* --- VISUALIZER OVERLAY (Hidden by default) --- */
         .listening-overlay {
             position: absolute;
             bottom: 85px;
@@ -320,7 +359,7 @@
 <div class="app-container">
     
     <div class="header">
-        <h1><i class="fa-brands fa-apple"></i> Puter AI</h1>
+        
         <div class="model-selector-wrapper">
             <select id="model-select">
                 <option value="gemini-2.5-pro">Gemini 2.5 Pro (Smartest)</option>
@@ -389,10 +428,8 @@
         const div = document.createElement('div');
         div.className = `message ${type}-message`;
         
-        // Convert Markdown-style bolding to HTML for display
-        const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-        
-        div.innerHTML = formattedText;
+        // Initial render (user message is plain, AI will be updated by stream)
+        div.innerHTML = text;
 
         if (modelName) {
             const meta = document.createElement('div');
@@ -406,7 +443,7 @@
         return div;
     }
 
-    /* --- SPEECH RECOGNITION SETUP (Robust/Anti-Stubborn) --- */
+    /* --- SPEECH RECOGNITION SETUP --- */
     function setupSpeechRecognition() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
@@ -417,7 +454,7 @@
         }
 
         recognition = new SpeechRecognition();
-        recognition.continuous = false; // Stop after one sentence to prevent loops
+        recognition.continuous = false; 
         recognition.interimResults = false;
         recognition.lang = 'en-US';
 
@@ -435,41 +472,34 @@
             UI.inputBar.classList.remove('listening-mode');
             UI.voiceIndicator.classList.remove('show');
             UI.input.placeholder = "Type a message...";
-            
-            // If user stopped speaking but didn't say anything, just reset.
-            // If they said something, handleSend() is called in onresult.
         };
 
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
             if (transcript.trim().length > 0) {
                 UI.input.value = transcript;
-                handleSend(true); // True = Triggered by Voice
+                handleSend(true); // Trigger Voice logic
             }
         };
 
         recognition.onerror = (event) => {
             console.warn("Speech Error:", event.error);
-            // Don't alert "stubborn" errors, just visual reset
             recognition.stop();
         };
 
-        // Mic Button Logic
         UI.micBtn.addEventListener('click', () => {
             if (isVoiceActive) {
                 recognition.stop();
             } else {
-                UI.input.value = ''; // Clear previous text
+                UI.input.value = '';
                 try {
                     recognition.start();
-                } catch (e) {
-                    console.error("Mic start error", e);
-                }
+                } catch (e) { console.error("Mic start error", e); }
             }
         });
     }
 
-    /* --- CORE LOGIC --- */
+    /* --- CORE LOGIC (UPDATED FOR MARKDOWN & TTS FIX) --- */
     async function handleSend(triggeredByVoice = false) {
         const text = UI.input.value.trim();
         const model = UI.modelSelect.value;
@@ -502,58 +532,59 @@
             
             for await (const part of responseStream) {
                 if (part?.text) {
-                    // Simple streaming text append
-                    // Note: Ideally use a markdown parser here, but kept simple for stability
-                    const cleanChunk = part.text.replace(/\n/g, '<br>'); 
-                    aiContainer.innerHTML += cleanChunk;
                     fullResponse += part.text;
+                    
+                    // --- FIX 2: REAL-TIME MARKDOWN RENDERING ---
+                    // Using marked.parse handles **bold**, ### headers, and ```code``` blocks automatically
+                    aiContainer.innerHTML = marked.parse(fullResponse);
                     scrollToBottom();
                 }
             }
 
-            // Re-append meta tag since we cleared innerHTML
+            // --- ADD COPY BUTTONS TO CODE BLOCKS ---
+            const codeBlocks = aiContainer.querySelectorAll('pre');
+            codeBlocks.forEach(pre => {
+                const btn = document.createElement('button');
+                btn.className = 'copy-btn';
+                btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
+                btn.onclick = () => {
+                    navigator.clipboard.writeText(pre.querySelector('code').innerText);
+                    btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
+                    setTimeout(() => btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy', 2000);
+                };
+                pre.appendChild(btn);
+            });
+
+            // Re-append meta tag since innerHTML overwrite removed it
             const meta = document.createElement('div');
             meta.className = 'message-meta';
             meta.innerHTML = `<i class="fa-solid fa-microchip"></i> ${modelNameDisplay}`;
             aiContainer.appendChild(meta);
 
-            // 4. Voice Output (TTS) - Only if input was voice
+            // 4. Voice Output (TTS) - UPDATED FIX
             if (triggeredByVoice && fullResponse) {
                 const playingIcon = document.createElement('span');
                 playingIcon.innerHTML = ' <i class="fa-solid fa-volume-high" style="color:var(--accent-blue); margin-left:5px;"></i>';
                 meta.appendChild(playingIcon);
 
                 try {
-                    const audio = await puter.ai.txt2speech(fullResponse, {
+                    // --- FIX 1: CLEAN TEXT FOR AUDIO ---
+                    // Remove Markdown symbols (*, #, `) so the voice doesn't read them literally
+                    // and strip HTML tags that might be in the parsed output.
+                    let cleanText = fullResponse.replace(/[*#`]/g, ''); 
+                    
+                    const audio = await puter.ai.txt2speech(cleanText, {
                         model: 'gpt-4o-mini-tts',
                         voice: 'alloy'
                     });
+                    
+                    // Force play
                     audio.play();
+
                 } catch (err) {
                     console.error("TTS Error", err);
                 }
             }
 
         } catch (error) {
-            aiContainer.innerHTML = `<span style="color:var(--accent-red)">Error: ${error.message || "Connection failed"}</span>`;
-        } finally {
-            // Unlock UI
-            isProcessing = false;
-            UI.input.disabled = false;
-            UI.sendBtn.disabled = false;
-            UI.input.focus();
-        }
-    }
-
-    /* --- EVENT LISTENERS --- */
-    UI.sendBtn.addEventListener('click', () => handleSend(false));
-    
-    UI.input.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && !isProcessing) {
-            handleSend(false);
-        }
-    });
-
-</script>
-</body>
-</html>
+            aiContainer.innerHTML = `<span style="color:var(--accent-red)">E
