@@ -1038,47 +1038,78 @@ function fillRow(elementId, indexArray) {
             });
         }
 
-        function renderKeyboard() {
-            const grid = elements.search.keyboardGrid;
-            grid.innerHTML = '';
-            KEYBOARD_KEYS.forEach(key => {
-                const btn = document.createElement('div');
-                btn.className = 'key';
-                btn.textContent = key;
-                btn.tabIndex = 0;
-                
-                if (['SPACE', 'DEL', 'CLEAR'].includes(key)) {
-                    btn.classList.add('wide');
+        // index.js - OTT Optimized Search Logic
+
+let searchGrid = []; // To store rows for index-based jumping
+let currentKeyRow = 0;
+let currentKeyCol = 0;
+
+function renderKeyboard() {
+    const grid = elements.search.keyboardGrid;
+    grid.innerHTML = '';
+    
+    // Group keys into rows of 6 for predictable D-Pad movement
+    const keysPerRow = 6;
+    searchGrid = [];
+    
+    for (let i = 0; i < KEYBOARD_KEYS.length; i += keysPerRow) {
+        searchGrid.push(KEYBOARD_KEYS.slice(i, i + keysPerRow));
+    }
+
+    searchGrid.forEach((row, rowIndex) => {
+        row.forEach((key, colIndex) => {
+            const btn = document.createElement('div');
+            btn.className = 'key';
+            btn.textContent = key;
+            btn.tabIndex = 0;
+            btn.dataset.row = rowIndex;
+            btn.dataset.col = colIndex;
+            
+            if (['SPACE', 'DEL', 'CLEAR'].includes(key)) {
+                btn.classList.add('wide');
+            }
+
+            // GPU-Accelerated Focus
+            btn.onfocus = () => {
+                currentKeyRow = rowIndex;
+                currentKeyCol = colIndex;
+            };
+
+            btn.onclick = () => handleKeyPress(key);
+            
+            // Explicit D-Pad overrides to stop "Ghost Scrolling"
+            btn.onkeydown = (e) => {
+                if (e.key === 'Enter') handleKeyPress(key);
+                // When moving RIGHT from the end of a row, jump to results
+                if (e.key === 'ArrowRight' && colIndex === row.length - 1) {
+                    elements.search.resultsGrid.querySelector('.surah-card')?.focus();
+                    e.preventDefault();
                 }
+            };
 
-                btn.onclick = () => handleKeyPress(key);
-                btn.onkeydown = (e) => { if(e.key === 'Enter') handleKeyPress(key); };
-                grid.appendChild(btn);
-            });
-        }
+            grid.appendChild(btn);
+        });
+    });
+}
 
-        function handleKeyPress(key) {
-            if (key === 'SPACE') searchString += ' ';
-            else if (key === 'DEL') searchString = searchString.slice(0, -1);
-            else if (key === 'CLEAR') searchString = "";
-            else searchString += key;
-            
-            elements.search.inputDisplay.textContent = searchString;
-            
-            // Debounce the AI search (wait 800ms after last keypress)
-            clearTimeout(searchDebounceTimer);
-            
-            if (searchString.length > 2) {
-                // Show loading immediately while typing implies waiting
-                elements.search.resultsGrid.innerHTML = `
-                    <div class="loader-content" style="padding-top:2rem">
-                        <div class="loader-spinner" style="width:30px;height:30px;border-width:2px;"></div>
-                        <div style="color:#666; font-size:1.2rem">AI is searching...</div>
-                    </div>`;
-                
-                searchDebounceTimer = setTimeout(() => {
-                    performAISearch();
-                }, 800);
+function handleKeyPress(key) {
+    // Add a small "haptic" scale effect for visual confirmation
+    const activeKey = document.activeElement;
+    activeKey.style.transform = 'scale(0.9)';
+    setTimeout(() => activeKey.style.transform = 'scale(1.1)', 100);
+
+    if (key === 'SPACE') searchString += ' ';
+    else if (key === 'DEL') searchString = searchString.slice(0, -1);
+    else if (key === 'CLEAR') searchString = "";
+    else searchString += key;
+    
+    elements.search.inputDisplay.textContent = searchString;
+    
+    // Snappy AI Search Debounce
+    clearTimeout(searchDebounceTimer);
+    if (searchString.length > 2) {
+        searchDebounceTimer = setTimeout(() => performAISearch(), 500);
+
             } else {
                 elements.search.resultsGrid.innerHTML = '<div class="no-results">Type at least 3 characters...</div>';
             }
