@@ -15,7 +15,7 @@
             --glass-border: rgba(255, 255, 255, 0.12);
             --accent-blue: #0A84FF;
             --accent-green: #30D158;
-            --accent-amber: #FF9F0A; /* Mic Active Color */
+            --accent-amber: #FF9F0A; 
             --accent-red: #FF453A;
             --text-primary: #FFFFFF;
             --text-secondary: rgba(235, 235, 245, 0.6);
@@ -31,7 +31,6 @@
         body {
             font-family: var(--font-stack);
             background-color: var(--bg-color);
-            /* Abstract Modern Background */
             background-image: 
                 radial-gradient(circle at 10% 20%, rgba(10, 132, 255, 0.2) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(255, 69, 58, 0.15) 0%, transparent 40%);
@@ -44,7 +43,6 @@
             overflow: hidden;
         }
 
-        /* --- MAIN CONTAINER (The "TV Screen") --- */
         .app-container {
             width: 95%;
             max-width: 1000px;
@@ -69,6 +67,9 @@
             align-items: center;
             border-bottom: 1px solid var(--glass-border);
             background: rgba(255, 255, 255, 0.03);
+            /* FIX: Ensure Header is above other layers */
+            position: relative;
+            z-index: 20; 
         }
 
         .header h1 {
@@ -83,10 +84,7 @@
 
         .header h1 i { color: var(--accent-blue); }
 
-        /* Custom Select Dropdown (Styled like a pill) */
-        .model-selector-wrapper {
-            position: relative;
-        }
+        .model-selector-wrapper { position: relative; }
 
         select {
             appearance: none;
@@ -101,7 +99,6 @@
             outline: none;
             transition: background 0.2s;
         }
-
         select:hover { background: rgba(255, 255, 255, 0.2); }
         
         .select-arrow {
@@ -123,9 +120,10 @@
             flex-direction: column;
             gap: 20px;
             scroll-behavior: smooth;
+            /* FIX: Ensure chat is strictly behind input bar */
+            z-index: 1; 
         }
 
-        /* Scrollbar styling */
         .chat-area::-webkit-scrollbar { width: 8px; }
         .chat-area::-webkit-scrollbar-track { background: transparent; }
         .chat-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
@@ -171,16 +169,12 @@
             gap: 5px;
         }
 
-        /* --- ADDED: FORMATTING STYLES FOR CODE & MARKDOWN --- */
-        .ai-message h1, .ai-message h2, .ai-message h3 {
-            margin: 10px 0 5px 0;
-            font-weight: 700;
-        }
+        /* FORMATTING STYLES */
+        .ai-message h1, .ai-message h2, .ai-message h3 { margin: 10px 0 5px 0; font-weight: 700; }
         .ai-message h3 { font-size: 1.2rem; }
-        
         .ai-message p { margin: 5px 0; }
-        
         .ai-message strong { color: #fff; font-weight: 700; }
+        .ai-message ul, .ai-message ol { margin: 5px 0; padding-left: 20px; }
 
         /* Code Block Container */
         .code-container {
@@ -216,25 +210,9 @@
         }
         .copy-btn:hover { background: rgba(10, 132, 255, 0.1); }
 
-        pre {
-            margin: 0;
-            padding: 15px;
-            overflow-x: auto;
-        }
-
-        code {
-            font-family: var(--code-font);
-            font-size: 0.9rem;
-            color: #e0e0e0;
-        }
-        
-        /* Inline code */
-        p code {
-            background: rgba(255,255,255,0.15);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 0.9em;
-        }
+        pre { margin: 0; padding: 15px; overflow-x: auto; }
+        code { font-family: var(--code-font); font-size: 0.9rem; color: #e0e0e0; }
+        p code { background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
 
         /* --- INPUT AREA (The "Remote") --- */
         .input-area {
@@ -246,9 +224,10 @@
             gap: 15px;
             position: relative;
             transition: border-color 0.3s;
+            /* FIX: Crucial Z-Index to ensure it is always clickable */
+            z-index: 100; 
         }
 
-        /* When Mic is Active, the whole bar glows amber */
         .input-area.listening-mode {
             border-top: 1px solid var(--accent-amber);
             background: rgba(255, 159, 10, 0.05);
@@ -266,7 +245,7 @@
             width: 100%;
             background: rgba(255, 255, 255, 0.08);
             border: none;
-            padding: 16px 50px 16px 20px; /* Space for mic icon inside */
+            padding: 16px 50px 16px 20px; 
             border-radius: 30px;
             color: white;
             font-size: 1rem;
@@ -274,13 +253,11 @@
             outline: none;
             transition: all 0.2s ease;
         }
-
         input[type="text"]:focus {
             background: rgba(255, 255, 255, 0.12);
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
         }
 
-        /* The Big Mic Button inside the input */
         #mic-btn {
             position: absolute;
             right: 8px;
@@ -291,21 +268,12 @@
             cursor: pointer;
             padding: 10px;
             border-radius: 50%;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s;
+            /* FIX: Ensure Mic is above Input field */
+            z-index: 10;
         }
-
-        #mic-btn:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            transform: scale(1.1);
-        }
-
-        /* Active Mic State - Pulse Animation */
-        #mic-btn.active {
-            color: var(--accent-amber);
-            background: rgba(255, 159, 10, 0.15);
-            animation: pulse 1.5s infinite;
-        }
+        #mic-btn:hover { background: rgba(255,255,255,0.1); color: white; transform: scale(1.1); }
+        #mic-btn.active { color: var(--accent-amber); background: rgba(255, 159, 10, 0.15); animation: pulse 1.5s infinite; }
 
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(255, 159, 10, 0.4); }
@@ -327,21 +295,13 @@
             font-size: 1.1rem;
             transition: transform 0.2s, background 0.2s;
             box-shadow: 0 4px 12px rgba(10, 132, 255, 0.4);
+            /* FIX: Ensure Send button is top layer */
+            z-index: 10; 
         }
+        #send-btn:hover { transform: scale(1.05); background: #2996ff; }
+        #send-btn:disabled { background: #3a3a3c; box-shadow: none; cursor: not-allowed; opacity: 0.7; }
 
-        #send-btn:hover {
-            transform: scale(1.05);
-            background: #2996ff;
-        }
-
-        #send-btn:disabled {
-            background: #3a3a3c;
-            box-shadow: none;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        /* --- VISUALIZER OVERLAY (Hidden by default) --- */
+        /* --- VISUALIZER OVERLAY --- */
         .listening-overlay {
             position: absolute;
             bottom: 85px;
@@ -352,7 +312,7 @@
             border-radius: 20px;
             font-size: 0.8rem;
             color: var(--accent-amber);
-            pointer-events: none;
+            pointer-events: none; /* Crucial: clicks pass through this */
             opacity: 0;
             transition: opacity 0.3s;
             backdrop-filter: blur(10px);
@@ -360,8 +320,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            z-index: 50; /* Above chat, below input bar */
         }
-        
         .listening-overlay.show { opacity: 1; }
 
         .wave {
@@ -375,11 +335,7 @@
         .wave:nth-child(2) { animation-delay: 0.1s; height: 15px; }
         .wave:nth-child(3) { animation-delay: 0.2s; height: 20px; }
         .wave:nth-child(4) { animation-delay: 0.1s; height: 15px; }
-        
-        @keyframes waveAnim {
-            0%, 100% { transform: scaleY(1); }
-            50% { transform: scaleY(1.5); }
-        }
+        @keyframes waveAnim { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.5); } }
 
     </style>
 </head>
@@ -447,12 +403,8 @@
         UI.input.focus();
         setupSpeechRecognition();
         
-        // Configure Marked.js options
         if(window.marked) {
-            marked.setOptions({
-                breaks: true, // Enable line breaks
-                gfm: true     // Enable Github Flavored Markdown
-            });
+            marked.setOptions({ breaks: true, gfm: true });
         }
     });
 
@@ -465,18 +417,15 @@
         const div = document.createElement('div');
         div.className = `message ${type}-message`;
         
-        // For user messages, we do simple rendering
-        // For AI, we will update it dynamically via updateMessageContent
         if(type === 'user') {
              div.textContent = text;
         } else {
-             div.innerHTML = text; // Placeholder or formatting handled later
+             div.innerHTML = text; 
         }
 
         if (modelName) {
             const meta = document.createElement('div');
             meta.className = 'message-meta';
-            meta.id = 'current-meta'; // Temporary ID for easy appending
             meta.innerHTML = `<i class="fa-solid fa-microchip"></i> ${modelName}`;
             div.appendChild(meta);
         }
@@ -486,27 +435,17 @@
         return div;
     }
 
-    // NEW: Function to handle Markdown parsing and Copy Buttons
     function updateMessageContent(container, fullMarkdown) {
-        // Parse Markdown to HTML
         let htmlContent = marked.parse(fullMarkdown);
-        
-        // Remove the existing meta tag momentarily to update content
         const metaInfo = container.querySelector('.message-meta');
-        
         container.innerHTML = htmlContent;
         
-        // Add Copy Buttons to Code Blocks
         container.querySelectorAll('pre').forEach(pre => {
-            // Wrap in container
             const wrapper = document.createElement('div');
             wrapper.className = 'code-container';
-            
-            // Create Header
             const header = document.createElement('div');
             header.className = 'code-header';
             header.innerHTML = '<span>Code</span>';
-            
             const copyBtn = document.createElement('button');
             copyBtn.className = 'copy-btn';
             copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
@@ -519,24 +458,21 @@
             };
             
             header.appendChild(copyBtn);
-            
-            // Insert into DOM
             pre.parentNode.insertBefore(wrapper, pre);
             wrapper.appendChild(header);
             wrapper.appendChild(pre);
         });
 
-        // Re-append meta tag
         if(metaInfo) container.appendChild(metaInfo);
     }
 
-    /* --- SPEECH RECOGNITION SETUP --- */
+    /* --- SPEECH RECOGNITION --- */
     function setupSpeechRecognition() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
         if (!SpeechRecognition) {
             UI.micBtn.style.display = 'none';
-            createMessage("Browser does not support Voice Input. Please use Chrome/Edge/Safari.", "ai");
+            createMessage("Browser does not support Voice Input.", "ai");
             return;
         }
 
@@ -565,7 +501,7 @@
             const transcript = event.results[0][0].transcript;
             if (transcript.trim().length > 0) {
                 UI.input.value = transcript;
-                handleSend(true); // True = Triggered by Voice
+                handleSend(true); 
             }
         };
 
@@ -579,16 +515,12 @@
                 recognition.stop();
             } else {
                 UI.input.value = ''; 
-                try {
-                    recognition.start();
-                } catch (e) {
-                    console.error("Mic start error", e);
-                }
+                try { recognition.start(); } catch (e) { console.error(e); }
             }
         });
     }
 
-    /* --- CORE LOGIC --- */
+    /* --- LOGIC --- */
     async function handleSend(triggeredByVoice = false) {
         const text = UI.input.value.trim();
         const model = UI.modelSelect.value;
@@ -596,14 +528,41 @@
 
         if (!text || isProcessing) return;
 
-        // Lock UI
         isProcessing = true;
         UI.input.value = '';
         UI.input.disabled = true;
         UI.sendBtn.disabled = true;
 
-        // 1. User Message
         createMessage(text, 'user');
+        const aiContainer = createMessage("Thinking...", 'ai', modelNameDisplay);
+        
+        let fullResponse = "";
 
-        // 2. AI Placeholder
-        const aiContainer = createMessage
+        try {
+            const responseStream = await puter.ai.chat(text, { model: model, stream: true });
+            aiContainer.innerHTML = ""; 
+
+            const meta = document.createElement('div');
+            meta.className = 'message-meta';
+            meta.innerHTML = `<i class="fa-solid fa-microchip"></i> ${modelNameDisplay}`;
+            aiContainer.appendChild(meta);
+            
+            for await (const part of responseStream) {
+                if (part?.text) {
+                    fullResponse += part.text;
+                    updateMessageContent(aiContainer, fullResponse);
+                    scrollToBottom();
+                }
+            }
+
+            if (triggeredByVoice && fullResponse) {
+                const metaTag = aiContainer.querySelector('.message-meta');
+                if(metaTag) {
+                    const playingIcon = document.createElement('span');
+                    playingIcon.innerHTML = ' <i class="fa-solid fa-volume-high" style="color:var(--accent-blue); margin-left:5px;"></i>';
+                    metaTag.appendChild(playingIcon);
+                }
+
+                // Clean text for speech
+                const cleanTextForSpeech = fullResponse
+                    .replace(/```[\s\S]*?```/g, " Code bl
