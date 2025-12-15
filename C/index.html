@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Puter OS AI · tvOS Edition</title>
     <script src="https://js.puter.com/v2/"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         /* --- APPLE TV / GLASSMORPHISM DESIGN SYSTEM --- */
@@ -15,7 +14,7 @@
             --glass-border: rgba(255, 255, 255, 0.12);
             --accent-blue: #0A84FF;
             --accent-green: #30D158;
-            --accent-amber: #FF9F0A; 
+            --accent-amber: #FF9F0A; /* Mic Active Color */
             --accent-red: #FF453A;
             --text-primary: #FFFFFF;
             --text-secondary: rgba(235, 235, 245, 0.6);
@@ -25,12 +24,12 @@
             --radius-large: 24px;
             --radius-small: 12px;
             --font-stack: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            --code-font: "SF Mono", "Menlo", "Monaco", "Consolas", "Courier New", monospace;
         }
 
         body {
             font-family: var(--font-stack);
             background-color: var(--bg-color);
+            /* Abstract Modern Background */
             background-image: 
                 radial-gradient(circle at 10% 20%, rgba(10, 132, 255, 0.2) 0%, transparent 40%),
                 radial-gradient(circle at 90% 80%, rgba(255, 69, 58, 0.15) 0%, transparent 40%);
@@ -43,6 +42,7 @@
             overflow: hidden;
         }
 
+        /* --- MAIN CONTAINER (The "TV Screen") --- */
         .app-container {
             width: 95%;
             max-width: 1000px;
@@ -67,9 +67,6 @@
             align-items: center;
             border-bottom: 1px solid var(--glass-border);
             background: rgba(255, 255, 255, 0.03);
-            /* FIX: Ensure Header is above other layers */
-            position: relative;
-            z-index: 20; 
         }
 
         .header h1 {
@@ -84,7 +81,10 @@
 
         .header h1 i { color: var(--accent-blue); }
 
-        .model-selector-wrapper { position: relative; }
+        /* Custom Select Dropdown (Styled like a pill) */
+        .model-selector-wrapper {
+            position: relative;
+        }
 
         select {
             appearance: none;
@@ -99,6 +99,7 @@
             outline: none;
             transition: background 0.2s;
         }
+
         select:hover { background: rgba(255, 255, 255, 0.2); }
         
         .select-arrow {
@@ -120,10 +121,9 @@
             flex-direction: column;
             gap: 20px;
             scroll-behavior: smooth;
-            /* FIX: Ensure chat is strictly behind input bar */
-            z-index: 1; 
         }
 
+        /* Scrollbar styling */
         .chat-area::-webkit-scrollbar { width: 8px; }
         .chat-area::-webkit-scrollbar-track { background: transparent; }
         .chat-area::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
@@ -136,7 +136,6 @@
             line-height: 1.5;
             position: relative;
             animation: popIn 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            word-wrap: break-word;
         }
 
         @keyframes popIn {
@@ -169,51 +168,6 @@
             gap: 5px;
         }
 
-        /* FORMATTING STYLES */
-        .ai-message h1, .ai-message h2, .ai-message h3 { margin: 10px 0 5px 0; font-weight: 700; }
-        .ai-message h3 { font-size: 1.2rem; }
-        .ai-message p { margin: 5px 0; }
-        .ai-message strong { color: #fff; font-weight: 700; }
-        .ai-message ul, .ai-message ol { margin: 5px 0; padding-left: 20px; }
-
-        /* Code Block Container */
-        .code-container {
-            position: relative;
-            margin: 10px 0;
-            background: #111;
-            border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.1);
-            overflow: hidden;
-        }
-
-        .code-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 5px 10px;
-            background: rgba(255,255,255,0.05);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            font-family: var(--font-stack);
-        }
-
-        .copy-btn {
-            background: transparent;
-            border: none;
-            color: var(--accent-blue);
-            cursor: pointer;
-            font-size: 0.8rem;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: background 0.2s;
-        }
-        .copy-btn:hover { background: rgba(10, 132, 255, 0.1); }
-
-        pre { margin: 0; padding: 15px; overflow-x: auto; }
-        code { font-family: var(--code-font); font-size: 0.9rem; color: #e0e0e0; }
-        p code { background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; }
-
         /* --- INPUT AREA (The "Remote") --- */
         .input-area {
             padding: 25px;
@@ -224,10 +178,9 @@
             gap: 15px;
             position: relative;
             transition: border-color 0.3s;
-            /* FIX: Crucial Z-Index to ensure it is always clickable */
-            z-index: 100; 
         }
 
+        /* When Mic is Active, the whole bar glows amber */
         .input-area.listening-mode {
             border-top: 1px solid var(--accent-amber);
             background: rgba(255, 159, 10, 0.05);
@@ -245,7 +198,7 @@
             width: 100%;
             background: rgba(255, 255, 255, 0.08);
             border: none;
-            padding: 16px 50px 16px 20px; 
+            padding: 16px 50px 16px 20px; /* Space for mic icon inside */
             border-radius: 30px;
             color: white;
             font-size: 1rem;
@@ -253,11 +206,13 @@
             outline: none;
             transition: all 0.2s ease;
         }
+
         input[type="text"]:focus {
             background: rgba(255, 255, 255, 0.12);
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.1);
         }
 
+        /* The Big Mic Button inside the input */
         #mic-btn {
             position: absolute;
             right: 8px;
@@ -268,12 +223,21 @@
             cursor: pointer;
             padding: 10px;
             border-radius: 50%;
-            transition: all 0.3s;
-            /* FIX: Ensure Mic is above Input field */
-            z-index: 10;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        #mic-btn:hover { background: rgba(255,255,255,0.1); color: white; transform: scale(1.1); }
-        #mic-btn.active { color: var(--accent-amber); background: rgba(255, 159, 10, 0.15); animation: pulse 1.5s infinite; }
+
+        #mic-btn:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+            transform: scale(1.1);
+        }
+
+        /* Active Mic State - Pulse Animation */
+        #mic-btn.active {
+            color: var(--accent-amber);
+            background: rgba(255, 159, 10, 0.15);
+            animation: pulse 1.5s infinite;
+        }
 
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(255, 159, 10, 0.4); }
@@ -295,13 +259,21 @@
             font-size: 1.1rem;
             transition: transform 0.2s, background 0.2s;
             box-shadow: 0 4px 12px rgba(10, 132, 255, 0.4);
-            /* FIX: Ensure Send button is top layer */
-            z-index: 10; 
         }
-        #send-btn:hover { transform: scale(1.05); background: #2996ff; }
-        #send-btn:disabled { background: #3a3a3c; box-shadow: none; cursor: not-allowed; opacity: 0.7; }
 
-        /* --- VISUALIZER OVERLAY --- */
+        #send-btn:hover {
+            transform: scale(1.05);
+            background: #2996ff;
+        }
+
+        #send-btn:disabled {
+            background: #3a3a3c;
+            box-shadow: none;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* --- VISUALIZER OVERLAY (Hidden by default) --- */
         .listening-overlay {
             position: absolute;
             bottom: 85px;
@@ -312,7 +284,7 @@
             border-radius: 20px;
             font-size: 0.8rem;
             color: var(--accent-amber);
-            pointer-events: none; /* Crucial: clicks pass through this */
+            pointer-events: none;
             opacity: 0;
             transition: opacity 0.3s;
             backdrop-filter: blur(10px);
@@ -320,8 +292,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            z-index: 50; /* Above chat, below input bar */
         }
+        
         .listening-overlay.show { opacity: 1; }
 
         .wave {
@@ -335,7 +307,11 @@
         .wave:nth-child(2) { animation-delay: 0.1s; height: 15px; }
         .wave:nth-child(3) { animation-delay: 0.2s; height: 20px; }
         .wave:nth-child(4) { animation-delay: 0.1s; height: 15px; }
-        @keyframes waveAnim { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(1.5); } }
+        
+        @keyframes waveAnim {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
 
     </style>
 </head>
@@ -402,10 +378,6 @@
     window.addEventListener('load', () => {
         UI.input.focus();
         setupSpeechRecognition();
-        
-        if(window.marked) {
-            marked.setOptions({ breaks: true, gfm: true });
-        }
     });
 
     /* --- UI HELPERS --- */
@@ -417,11 +389,10 @@
         const div = document.createElement('div');
         div.className = `message ${type}-message`;
         
-        if(type === 'user') {
-             div.textContent = text;
-        } else {
-             div.innerHTML = text; 
-        }
+        // Convert Markdown-style bolding to HTML for display
+        const formattedText = text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+        
+        div.innerHTML = formattedText;
 
         if (modelName) {
             const meta = document.createElement('div');
@@ -435,49 +406,18 @@
         return div;
     }
 
-    function updateMessageContent(container, fullMarkdown) {
-        let htmlContent = marked.parse(fullMarkdown);
-        const metaInfo = container.querySelector('.message-meta');
-        container.innerHTML = htmlContent;
-        
-        container.querySelectorAll('pre').forEach(pre => {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'code-container';
-            const header = document.createElement('div');
-            header.className = 'code-header';
-            header.innerHTML = '<span>Code</span>';
-            const copyBtn = document.createElement('button');
-            copyBtn.className = 'copy-btn';
-            copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
-            
-            copyBtn.onclick = () => {
-                const code = pre.querySelector('code').innerText;
-                navigator.clipboard.writeText(code);
-                copyBtn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
-                setTimeout(() => copyBtn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy', 2000);
-            };
-            
-            header.appendChild(copyBtn);
-            pre.parentNode.insertBefore(wrapper, pre);
-            wrapper.appendChild(header);
-            wrapper.appendChild(pre);
-        });
-
-        if(metaInfo) container.appendChild(metaInfo);
-    }
-
-    /* --- SPEECH RECOGNITION --- */
+    /* --- SPEECH RECOGNITION SETUP (Robust/Anti-Stubborn) --- */
     function setupSpeechRecognition() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
         if (!SpeechRecognition) {
             UI.micBtn.style.display = 'none';
-            createMessage("Browser does not support Voice Input.", "ai");
+            createMessage("Browser does not support Voice Input. Please use Chrome/Edge/Safari.", "ai");
             return;
         }
 
         recognition = new SpeechRecognition();
-        recognition.continuous = false; 
+        recognition.continuous = false; // Stop after one sentence to prevent loops
         recognition.interimResults = false;
         recognition.lang = 'en-US';
 
@@ -495,32 +435,41 @@
             UI.inputBar.classList.remove('listening-mode');
             UI.voiceIndicator.classList.remove('show');
             UI.input.placeholder = "Type a message...";
+            
+            // If user stopped speaking but didn't say anything, just reset.
+            // If they said something, handleSend() is called in onresult.
         };
 
         recognition.onresult = (event) => {
             const transcript = event.results[0][0].transcript;
             if (transcript.trim().length > 0) {
                 UI.input.value = transcript;
-                handleSend(true); 
+                handleSend(true); // True = Triggered by Voice
             }
         };
 
         recognition.onerror = (event) => {
             console.warn("Speech Error:", event.error);
+            // Don't alert "stubborn" errors, just visual reset
             recognition.stop();
         };
 
+        // Mic Button Logic
         UI.micBtn.addEventListener('click', () => {
             if (isVoiceActive) {
                 recognition.stop();
             } else {
-                UI.input.value = ''; 
-                try { recognition.start(); } catch (e) { console.error(e); }
+                UI.input.value = ''; // Clear previous text
+                try {
+                    recognition.start();
+                } catch (e) {
+                    console.error("Mic start error", e);
+                }
             }
         });
     }
 
-    /* --- LOGIC --- */
+    /* --- CORE LOGIC --- */
     async function handleSend(triggeredByVoice = false) {
         const text = UI.input.value.trim();
         const model = UI.modelSelect.value;
@@ -528,41 +477,83 @@
 
         if (!text || isProcessing) return;
 
+        // Lock UI
         isProcessing = true;
         UI.input.value = '';
         UI.input.disabled = true;
         UI.sendBtn.disabled = true;
 
+        // 1. User Message
         createMessage(text, 'user');
+
+        // 2. AI Placeholder
         const aiContainer = createMessage("Thinking...", 'ai', modelNameDisplay);
         
         let fullResponse = "";
 
         try {
-            const responseStream = await puter.ai.chat(text, { model: model, stream: true });
-            aiContainer.innerHTML = ""; 
+            // 3. Puter.js Chat Stream
+            const responseStream = await puter.ai.chat(text, {
+                model: model,
+                stream: true
+            });
 
-            const meta = document.createElement('div');
-            meta.className = 'message-meta';
-            meta.innerHTML = `<i class="fa-solid fa-microchip"></i> ${modelNameDisplay}`;
-            aiContainer.appendChild(meta);
+            aiContainer.innerHTML = ""; // Clear "Thinking..."
             
             for await (const part of responseStream) {
                 if (part?.text) {
+                    // Simple streaming text append
+                    // Note: Ideally use a markdown parser here, but kept simple for stability
+                    const cleanChunk = part.text.replace(/\n/g, '<br>'); 
+                    aiContainer.innerHTML += cleanChunk;
                     fullResponse += part.text;
-                    updateMessageContent(aiContainer, fullResponse);
                     scrollToBottom();
                 }
             }
 
-            if (triggeredByVoice && fullResponse) {
-                const metaTag = aiContainer.querySelector('.message-meta');
-                if(metaTag) {
-                    const playingIcon = document.createElement('span');
-                    playingIcon.innerHTML = ' <i class="fa-solid fa-volume-high" style="color:var(--accent-blue); margin-left:5px;"></i>';
-                    metaTag.appendChild(playingIcon);
-                }
+            // Re-append meta tag since we cleared innerHTML
+            const meta = document.createElement('div');
+            meta.className = 'message-meta';
+            meta.innerHTML = `<i class="fa-solid fa-microchip"></i> ${modelNameDisplay}`;
+            aiContainer.appendChild(meta);
 
-                // Clean text for speech
-                const cleanTextForSpeech = fullResponse
-                    .replace(/```[\s\S]*?```/g, " Code bl
+            // 4. Voice Output (TTS) - Only if input was voice
+            if (triggeredByVoice && fullResponse) {
+                const playingIcon = document.createElement('span');
+                playingIcon.innerHTML = ' <i class="fa-solid fa-volume-high" style="color:var(--accent-blue); margin-left:5px;"></i>';
+                meta.appendChild(playingIcon);
+
+                try {
+                    const audio = await puter.ai.txt2speech(fullResponse, {
+                        model: 'gpt-4o-mini-tts',
+                        voice: 'alloy'
+                    });
+                    audio.play();
+                } catch (err) {
+                    console.error("TTS Error", err);
+                }
+            }
+
+        } catch (error) {
+            aiContainer.innerHTML = `<span style="color:var(--accent-red)">Error: ${error.message || "Connection failed"}</span>`;
+        } finally {
+            // Unlock UI
+            isProcessing = false;
+            UI.input.disabled = false;
+            UI.sendBtn.disabled = false;
+            UI.input.focus();
+        }
+    }
+
+    /* --- EVENT LISTENERS --- */
+    UI.sendBtn.addEventListener('click', () => handleSend(false));
+    
+    UI.input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !isProcessing) {
+            handleSend(false);
+        }
+    });
+
+</script>
+</body>
+    </html>
