@@ -45,14 +45,12 @@ body {
     width: 350px;
     /* Subtle noise texture simulation via gradient */
     background: conic-gradient(from 0deg at 50% 50%, transparent 0%, rgba(255, 255, 255, 0.03) 15%, transparent 30%);
-    animation: rotateLight 30s linear infinite;
     border-right: 1px solid var(--border-dim);
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 40px;
     z-index: 10;
-    pointer-events: none;
     box-shadow: 20px 0 60px rgba(0,0,0,0.5);
     position: relative;
 }
