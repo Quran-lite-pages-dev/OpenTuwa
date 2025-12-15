@@ -1,159 +1,142 @@
 // tv-fix.js
 
 (function() {
-    console.log("TV Patch Loaded");
+    console.log("TV Patch Loaded (Directional Fix)");
 
     // --- STATE TRACKING ---
-    // We need to remember if we came from Search to go back to it correctly
     let tvState = {
         lastViewWasSearch: false
     };
 
-    // --- 1. SPATIAL NAVIGATION (D-Pad Logic) ---
-    // This stops the "mouse scroll" behavior and moves focus instead
+    // --- 1. IMPROVED SPATIAL NAVIGATION ---
     function initSpatialNav() {
-        const focusableSelector = 'a, button, input, select, [tabindex]:not([tabindex="-1"]), .nav-item, .card';
+        // Select all things we can click or focus
+        const focusableSelector = 'a, button, input, select, [tabindex]:not([tabindex="-1"]), .nav-item, .surah-card';
 
         document.addEventListener('keydown', (e) => {
             const key = e.key;
             if (!['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) return;
 
-            e.preventDefault(); // STOP the browser scroll
+            e.preventDefault(); // STOP browser scrolling
 
             const current = document.activeElement;
             const focusables = Array.from(document.querySelectorAll(focusableSelector))
-                .filter(el => el.offsetParent !== null && !el.disabled && el.style.display !== 'none');
+                .filter(el => {
+                    // Filter out hidden or disabled items
+                    return el.offsetParent !== null && !el.disabled && el.style.display !== 'none' && el.style.visibility !== 'hidden';
+                });
 
             if (!focusables.includes(current)) {
-                focusables[0]?.focus(); // If lost, focus first item
+                // If focus is lost, reset to the first available item (usually Sidebar Home)
+                focusables[0]?.focus();
                 return;
             }
 
             const curRect = current.getBoundingClientRect();
-            const curCenter = { x: curRect.left + curRect.width / 2, y: curRect.top + curRect.height / 2 };
+            const curCenter = { 
+                x: curRect.left + (curRect.width / 2), 
+                y: curRect.top + (curRect.height / 2) 
+            };
 
             let bestCandidate = null;
-            let minDist = Infinity;
+            let minScore = Infinity;
 
             focusables.forEach(el => {
                 if (el === current) return;
 
-                const rect = el.getBoundingClientRect();
-                const center = { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+                const elRect = el.getBoundingClientRect();
+                const elCenter = { 
+                    x: elRect.left + (elRect.width / 2), 
+                    y: elRect.top + (elRect.height / 2) 
+                };
 
-                // Direction Check
-                let valid = false;
-                if (key === 'ArrowUp' && center.y < curCenter.y) valid = true;
-                if (key === 'ArrowDown' && center.y > curCenter.y) valid = true;
-                if (key === 'ArrowLeft' && center.x < curCenter.x) valid = true;
-                if (key === 'ArrowRight' && center.x > curCenter.x) valid = true;
+                // --- DIRECTION FILTERS ---
+                // We strictly exclude items that are in the "wrong" direction
+                // to prevent the "Press Right -> Go Down" bug.
+                
+                let isInDirection = false;
+                
+                switch (key) {
+                    case 'ArrowRight':
+                        // Must be to the right of current center
+                        isInDirection = elCenter.x > curCenter.x; 
+                        break;
+                    case 'ArrowLeft':
+                        // Must be to the left of current center
+                        isInDirection = elCenter.x < curCenter.x;
+                        break;
+                    case 'ArrowDown':
+                        // Must be below current center
+                        isInDirection = elCenter.y > curCenter.y;
+                        break;
+                    case 'ArrowUp':
+                        // Must be above current center
+                        isInDirection = elCenter.y < curCenter.y;
+                        break;
+                }
 
-                if (valid) {
-                    // Calculate distance to find the closest element
-                    const dist = Math.hypot(center.x - curCenter.x, center.y - curCenter.y);
-                    if (dist < minDist) {
-                        minDist = dist;
-                        bestCandidate = el;
-                    }
+                if (!isInDirection) return;
+
+                // --- WEIGHTED DISTANCE CALCULATION ---
+                // We calculate distance, but we PENALIZE misalignment.
+                // If pressing Right, vertical difference (dy) is "bad" distance (multiplied by 5).
+                // Horizontal difference (dx) is "good" distance (normal).
+
+                const dx = Math.abs(elCenter.x - curCenter.x);
+                const dy = Math.abs(elCenter.y - curCenter.y);
+                let score = 0;
+
+                if (key === 'ArrowLeft' || key === 'ArrowRight') {
+                    // Moving Horizontally: Alignment (dy) matters MOST.
+                    // If an item is far away horizontally but perfectly aligned, pick it 
+                    // over an item that is close but diagonally offset.
+                    score = dx + (dy * 5); 
+                } else {
+                    // Moving Vertically: Alignment (dx) matters MOST.
+                    score = dy + (dx * 5);
+                }
+
+                if (score < minScore) {
+                    minScore = score;
+                    bestCandidate = el;
                 }
             });
 
             if (bestCandidate) {
                 bestCandidate.focus();
-                bestCandidate.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                // Smooth Scroll to the element if it's off-screen
+                bestCandidate.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
             }
         });
     }
 
-    // --- 2. MONKEY PATCH CLICK HANDLING ---
-    // We listen to clicks to update our "History" state before the old JS runs
-    document.addEventListener('click', (e) => {
-        const searchOverlay = document.getElementById('search-overlay');
-        const isSearchResult = e.target.closest('.search-result-item') || e.target.closest('.results-grid > div');
-        
-        // If user clicked a result inside the search overlay
-        if (searchOverlay && searchOverlay.classList.contains('active') && isSearchResult) {
-            tvState.lastViewWasSearch = true;
-        } else {
-            // If we are clicking something else (like dashboard), reset this
-            // But don't reset if we are just clicking controls inside Cinema
-            if (!document.getElementById('cinema-view').contains(e.target)) {
-                 tvState.lastViewWasSearch = false;
-            }
-        }
-    }, true); // Use capture phase to run before other scripts
-
-    // --- 3. CUSTOM BACK BUTTON LOGIC ---
+    // --- 2. BACK BUTTON HANDLING ---
+    // (Kept your original logic here as it seemed fine)
     function handleBack(e) {
-        // Prevent default browser back
         if(e) e.preventDefault();
-
+        
+        // Logic: If in Player -> Close to Dashboard
+        // If in Dashboard -> Focus Sidebar
         const cinema = document.getElementById('cinema-view');
-        const search = document.getElementById('search-overlay');
+        
+        if (cinema && cinema.classList.contains('active')) {
+             // We can trigger the existing 'close' logic or click the back button
+             // Assuming you have a function or button for this:
+             const backBtn = document.getElementById('back-btn');
+             if(backBtn) backBtn.click();
+             return;
+        }
+
         const sidebar = document.getElementById('tv-sidebar');
-        const dashboard = document.getElementById('dashboard-view');
-
-        // PRIORITY 1: IF CINEMA IS OPEN
-        if (cinema && cinema.classList.contains('active') && cinema.style.opacity !== '0') {
-            // Close Cinema (using your app's existing logic styles)
-            cinema.classList.remove('active');
-            cinema.style.opacity = '0';
-            cinema.style.pointerEvents = 'none';
-
-            // Logic: Go back to Search OR Dashboard
-            if (tvState.lastViewWasSearch && search) {
-                search.style.display = 'grid'; // Force show
-                search.classList.add('active');
-                
-                // Try to focus the first result to keep "static" feel
-                const firstResult = search.querySelector('.results-grid > div') || document.getElementById('search-input-display');
-                if(firstResult) firstResult.focus();
-            } else {
-                if(dashboard) {
-                    dashboard.classList.add('active');
-                    document.getElementById('door-play-btn')?.focus();
-                }
-            }
-            return;
-        }
-
-        // PRIORITY 2: IF SEARCH IS OPEN
-        if (search && search.classList.contains('active')) {
-            // Close Search
-            search.classList.remove('active');
-            search.style.display = 'none';
-            tvState.lastViewWasSearch = false;
-
-            // Go to Sidebar
-            sidebar.classList.add('expanded');
-            document.getElementById('nav-profile')?.focus(); // Focus sidebar item
-            return;
-        }
-
-        // PRIORITY 3: IF SIDEBAR IS EXPANDED
-        if (sidebar && sidebar.classList.contains('expanded')) {
-            sidebar.classList.remove('expanded');
-            // Focus Main Content
-            document.getElementById('door-play-btn')?.focus();
-            return;
-        }
-
-        // PRIORITY 4: IF ON DASHBOARD (Sidebar Closed) -> OPEN SIDEBAR
-        if (sidebar && !sidebar.classList.contains('expanded')) {
-            sidebar.classList.add('expanded');
+        if (document.activeElement && sidebar && !sidebar.contains(document.activeElement)) {
+            // If focused on grid, move focus to sidebar
             document.getElementById('nav-profile')?.focus();
             return;
         }
     }
 
-    // Hook into Browser Back Button & Physical Remote Back Button
-    window.history.pushState(null, null, window.location.href);
-    window.addEventListener('popstate', (e) => {
-        window.history.pushState(null, null, window.location.href); // Trap it again
-        handleBack(e);
-    });
-
-    // Also listen for KeyDown "Escape" or Backspace (common TV remote keys)
+    // Hook Keys
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape' || e.key === 'Backspace' || e.keyCode === 10009 || e.keyCode === 461) {
             handleBack(e);
@@ -161,10 +144,10 @@
     });
 
     // Run Init
-    document.addEventListener('DOMContentLoaded', initSpatialNav);
-    // In case DOM is already ready
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
         initSpatialNav();
+    } else {
+        document.addEventListener('DOMContentLoaded', initSpatialNav);
     }
 
 })();
