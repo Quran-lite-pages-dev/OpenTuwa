@@ -19,7 +19,7 @@ export async function onRequest(context) {
 
     // 4. Run OpenAI Whisper
     // We use the 'int8' generic model or specifically '@cf/openai/whisper'
-    const response = await context.env.AI.run('@cf/openai/whisper', {
+    const response = await context.env.AI.run('@cf/openai/whisper-tiny-en', {
       audio: [...uint8Array] // Spread syntax to convert to standard array if needed by specific binding version
     });
 
