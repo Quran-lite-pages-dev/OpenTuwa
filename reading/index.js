@@ -171,8 +171,7 @@
             'uz': { name: 'Uzbek (Muhammad Sodik)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/uz.sodik.xml' }
         };
 
-// ADD THIS LINE HERE:
-window.TRANSLATIONS_CONFIG = TRANSLATIONS_CONFIG;
+
 
         const RECITERS_CONFIG = {
             'alafasy': { name: 'Mishary Alafasy', path: 'Alafasy_128kbps' },
@@ -191,6 +190,9 @@ window.TRANSLATIONS_CONFIG = TRANSLATIONS_CONFIG;
             'id_ministry': { name: 'Indonesian (Ministry)', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/play/id' },
             'es': { name: 'Español', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/play' }
         };
+
+// ADD THIS LINE HERE:
+window.TRANSLATIONS__AUDIO_CONFIG = TRANSLATIONS_AUDIO_CONFIG;
 
         const FTT_URL = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/FTT.XML';
         const RTL_CODES = new Set(['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ur', 'ug']);
