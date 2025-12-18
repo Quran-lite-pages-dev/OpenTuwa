@@ -7,7 +7,7 @@
 (function() {
     // --- CONFIGURATION ---
     // 1. PASTE YOUR ELEVENLABS API KEY HERE
-    const ELEVEN_LABS_API_KEY = 'YOUR_ELEVENLABS_API_KEY_HERE'; 
+    const ELEVEN_LABS_API_KEY = 'sk_47a79d8bf4952b5f54553a1b0171d1c5389a354f16a421bf'; 
     
     // 2. Voice Settings (Using 'Turbo' model for low latency/cost)
     const VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // "Rachel" - Clear & Neutral
