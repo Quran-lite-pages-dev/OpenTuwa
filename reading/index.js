@@ -171,6 +171,9 @@
             'uz': { name: 'Uzbek (Muhammad Sodik)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/uz.sodik.xml' }
         };
 
+// ADD THIS LINE HERE:
+window.TRANSLATIONS_CONFIG = TRANSLATIONS_CONFIG;
+
         const RECITERS_CONFIG = {
             'alafasy': { name: 'Mishary Alafasy', path: 'Alafasy_128kbps' },
             'juhaynee': { name: 'Al Juhany', path: 'Abdullaah_3awwaad_Al-Juhaynee_128kbps' },
