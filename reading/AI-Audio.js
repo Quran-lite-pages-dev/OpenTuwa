@@ -1,143 +1,179 @@
 /**
- * AI-Audio.js
- * Extends the existing Quran Player to generate audio for non-hosted languages.
- * INTERCEPTS the audio logic without modifying the original index.js.
+ * AI-Audio.js (v2.0)
+ * 1. Intercepts Audio Logic.
+ * 2. AUTOMATICALLY updates the dropdown list to include all languages.
  */
 
 (function() {
-    // --- 1. CONFIGURATION ---
-    // PASTE YOUR FREE ELEVENLABS API KEY HERE
+    // --- CONFIGURATION ---
     const ELEVEN_LABS_API_KEY = 'sk_47a79d8bf4952b5f54553a1b0171d1c5389a354f16a421bf'; 
-    
-    // Voice Settings (Using Multilingual v2 for best language support)
-    const VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // "Rachel" - specific voice ID
+    const VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; 
     const MODEL_ID = 'eleven_multilingual_v2';
     
-    // These languages use your existing MP3 files (NO AI for these)
+    // Languages that use original hosted MP3s (No AI)
     const NATIVE_LANGS = ['en', 'id', 'es']; 
 
-    // --- 2. INITIALIZATION BRIDGE ---
-    // We wait for index.js to fully load its globals (TRANSLATIONS_CONFIG, elements)
-    const bridgeInterval = setInterval(() => {
-        // Safe check for global variables defined in index.js
-        const globalsReady = (
-            typeof TRANSLATIONS_CONFIG !== 'undefined' &&
-            typeof elements !== 'undefined' &&
-            typeof updateTranslationAudio === 'function' &&
-            typeof translationCache !== 'undefined'
-        );
-
-        if (globalsReady) {
-            clearInterval(bridgeInterval);
-            console.log("AI-Audio Bridge: Connected to Quran Player.");
-            activateAILogic();
+    // --- INITIALIZATION ---
+    const initInterval = setInterval(() => {
+        // Wait until the app is fully ready
+        if (typeof window.TRANSLATIONS_CONFIG !== 'undefined' && 
+            typeof window.elements !== 'undefined') {
+            
+            clearInterval(initInterval);
+            console.log("AI-Audio: App ready. Injecting languages...");
+            
+            // 1. Update the Dropdown List
+            updateAudioDropdown();
+            
+            // 2. Activate the Logic Interceptor
+            activateInterceptor();
         }
-    }, 200);
+    }, 500);
 
-    function activateAILogic() {
-        // Capture the original function from index.js
+    // --- FUNCTION 1: UPDATE THE DROPDOWN LIST ---
+    function updateAudioDropdown() {
+        // Try to find the audio select element. 
+        // Based on standard versions of this app, it's usually inside settings or elements.
+        // We look for the one currently holding 'en' or 'id'.
+        
+        let audioSelect = document.getElementById('translationAudioSelect');
+        
+        // If not found by ID, try to find it in the 'elements' object
+        if (!audioSelect && elements.selects) {
+            // Sometimes it's stored as elements.selects.translationAudio or similar
+            // We search for the select that controls translation audio
+            Object.values(elements.selects).forEach(el => {
+                if (el && el.tagName === 'SELECT' && el.innerHTML.includes('English')) {
+                    audioSelect = el;
+                }
+            });
+        }
+
+        if (!audioSelect) {
+            console.error("AI-Audio: Could not find the Translation Audio dropdown.");
+            return;
+        }
+
+        console.log("AI-Audio: Found dropdown. Adding languages...");
+
+        // Clear current options to rebuild cleanly
+        audioSelect.innerHTML = '';
+
+        // Add "None" option if you want it
+        const noneOpt = document.createElement('option');
+        noneOpt.value = 'none';
+        noneOpt.textContent = 'None';
+        audioSelect.appendChild(noneOpt);
+
+        // Loop through ALL available text translations
+        Object.keys(TRANSLATIONS_CONFIG).forEach(langKey => {
+            const langName = TRANSLATIONS_CONFIG[langKey].name || TRANSLATIONS_CONFIG[langKey].englishName || langKey;
+            
+            const option = document.createElement('option');
+            option.value = langKey;
+
+            // Label it based on type
+            if (NATIVE_LANGS.includes(langKey)) {
+                option.textContent = `${langName} (Original MP3)`;
+            } else {
+                option.textContent = `${langName} (AI Generated)`;
+            }
+
+            audioSelect.appendChild(option);
+        });
+
+        // Set default back to English so it doesn't break on load
+        audioSelect.value = 'en';
+    }
+
+    // --- FUNCTION 2: INTERCEPT AUDIO REQUESTS ---
+    function activateInterceptor() {
         const originalUpdateFn = window.updateTranslationAudio;
 
-        // --- 3. THE INTERCEPTOR ---
-        // We overwrite the global function to inject our logic
         window.updateTranslationAudio = async function(chapterNum, verseNum, autoplay) {
-            
-            // Get currently selected translation ID (e.g., 'fr', 'sq', 'en')
-            const currentLangId = elements.selects.trans ? elements.selects.trans.value : 'en';
+            // Get the language directly from the select we found earlier (or query it again)
+            let audioSelect = document.getElementById('translationAudioSelect');
+            // Fallback search again if needed
+            if (!audioSelect && elements.selects) {
+                Object.values(elements.selects).forEach(el => {
+                    if (el && el.tagName === 'SELECT' && el.options.length > 5) audioSelect = el;
+                });
+            }
 
-            // CASE A: Original Hosted Audio (English, Indo, Spanish)
+            const currentLangId = audioSelect ? audioSelect.value : 'en';
+
+            // 1. Handle "None"
+            if (currentLangId === 'none') {
+                if(elements.transAudio) elements.transAudio.pause();
+                return;
+            }
+
+            // 2. Handle Native MP3s (English, Indo, Spanish)
             if (NATIVE_LANGS.includes(currentLangId)) {
-                // Pass control back to the original function exactly as before
                 return originalUpdateFn(chapterNum, verseNum, autoplay);
             }
 
-            // CASE B: AI Generation (Everything else)
-            console.log(`AI-Audio: Generating speech for lang '${currentLangId}' [${chapterNum}:${verseNum}]`);
+            // 3. Handle AI Generation
+            console.log(`AI-Audio: Generating ${currentLangId}...`);
+            
+            // Stop any playing audio
+            if(elements.transAudio) {
+                elements.transAudio.pause();
+                elements.transAudio.src = '';
+            }
 
-            // 1. Reset Audio Player to avoid playing old buffer
-            elements.transAudio.pause();
-            elements.transAudio.src = '';
-
-            // 2. Retrieve Text from the XML Cache
-            // (index.js loads the XML into 'translationCache', we just read it)
-            if (!translationCache[currentLangId]) {
-                // If text isn't loaded yet, try to load it using the original helper
-                if (typeof loadTranslationData === 'function') {
+            // Fetch Text
+            if (!window.translationCache[currentLangId]) {
+                 if (typeof loadTranslationData === 'function') {
                     await loadTranslationData(currentLangId);
                 }
             }
 
-            const verseText = extractVerseText(currentLangId, chapterNum, verseNum);
-            
-            if (!verseText) {
-                console.warn("AI-Audio: Could not find text for this verse.");
-                return;
-            }
+            const text = getVerseText(currentLangId, chapterNum, verseNum);
+            if (!text) return;
 
-            // 3. Call ElevenLabs API
+            // Call API
             try {
-                const streamUrl = `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}/stream?optimize_streaming_latency=3`;
-                
-                const response = await fetch(streamUrl, {
+                const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}/stream`, {
                     method: 'POST',
                     headers: {
                         'xi-api-key': ELEVEN_LABS_API_KEY,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        text: verseText,
-                        model_id: MODEL_ID,
-                        voice_settings: {
-                            stability: 0.5,
-                            similarity_boost: 0.75
-                        }
+                        text: text,
+                        model_id: MODEL_ID
                     })
                 });
 
-                if (!response.ok) throw new Error("ElevenLabs API Error");
-
-                const blob = await response.blob();
-                const audioUrl = URL.createObjectURL(blob);
-                
-                elements.transAudio.src = audioUrl;
-                
-                if (autoplay) {
-                    elements.transAudio.play().catch(e => console.log("AI Playback blocked:", e));
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = URL.createObjectURL(blob);
+                    elements.transAudio.src = url;
+                    if (autoplay) elements.transAudio.play();
+                } else {
+                    console.log("AI-Audio: API Error");
                 }
-
-                // Cleanup memory when audio ends
-                elements.transAudio.onended = () => URL.revokeObjectURL(audioUrl);
-
-            } catch (err) {
-                console.error("AI-Audio Error:", err);
+            } catch (e) {
+                console.error(e);
             }
         };
     }
 
-    // --- 4. XML TEXT PARSER HELPER ---
-    // Extracts text safely regardless of XML format variations
-    function extractVerseText(langId, ch, v) {
-        const doc = translationCache[langId];
-        if (!doc) return null;
-
+    // XML Parser Helper
+    function getVerseText(lang, ch, v) {
+        const doc = window.translationCache[lang];
+        if (!doc) return "";
         try {
-            // Strategy 1: Standard Tanzil Format <sura index="1"><aya index="1" text="..."/></sura>
-            const suraNode = doc.querySelector(`sura[index="${ch}"]`);
-            if (suraNode) {
-                const ayaNode = suraNode.querySelector(`aya[index="${v}"]`);
-                if (ayaNode) return ayaNode.getAttribute('text');
-            }
-
-            // Strategy 2: Direct Verse attributes <Verse Chapter="1" Verse="1">...</Verse>
-            const verseNode = doc.querySelector(`Verse[Chapter="${ch}"][Verse="${v}"]`);
-            if (verseNode) {
-                return verseNode.textContent || verseNode.getAttribute('Text');
-            }
+            // Try standard format
+            let el = doc.querySelector(`sura[index="${ch}"] aya[index="${v}"]`);
+            if (el) return el.getAttribute('text');
             
-        } catch (e) {
-            console.error("AI-Audio: XML Parse error", e);
-        }
-        return null;
+            // Try alternate format
+            el = doc.querySelector(`Verse[Chapter="${ch}"][Verse="${v}"]`);
+            if (el) return el.textContent;
+        } catch(e){}
+        return "";
     }
 
 })();
