@@ -193,7 +193,7 @@ const SURAH_METADATA = [
         const ELEVENLABS_API_KEY = 'sk_4724c94209a232558d2be1037718dd67d98579bea0eafbc6'; 
         const ELEVEN_MODEL_ID = 'eleven_multilingual_v2'; // Best for mixed languages
         // "Rachel" is a versatile voice. You can change this ID if you prefer a different voice.
-        const DEFAULT_TTS_VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; 
+        const DEFAULT_TTS_VOICE_ID = 'nPczCjzI2devNBz1zQrb'; 
 
         const FTT_URL = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/FTT.XML';
         const RTL_CODES = new Set(['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ur', 'ug']);
