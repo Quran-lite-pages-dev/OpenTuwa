@@ -190,7 +190,7 @@ const SURAH_METADATA = [
 
         // --- ELEVENLABS CONFIGURATION ---
         // PLEASE PASTE YOUR KEY BELOW
-        const ELEVENLABS_API_KEY = 'sk_4724c94209a232558d2be1037718dd67d98579bea0eafbc6'; 
+        const ELEVENLABS_API_KEY = ''; 
         const ELEVEN_MODEL_ID = 'eleven_multilingual_v2'; // Best for mixed languages
         // "Rachel" is a versatile voice. You can change this ID if you prefer a different voice.
         const DEFAULT_TTS_VOICE_ID = 'nPczCjzI2devNBz1zQrb'; 
