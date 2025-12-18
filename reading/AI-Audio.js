@@ -1,56 +1,72 @@
 /**
  * AI-Audio.js
- * Integrated with Puter.js for OpenAI TTS
- * Handles User Authentication automatically.
+ * Intercepts translation playback to use ElevenLabs API
+ * Model: eleven_flash_v2_5 (Best for speed & free tier efficiency)
  */
 
 (function() {
-    console.log("Initializing AI Audio Module...");
+    console.log("Initializing ElevenLabs AI Audio...");
 
-    // 1. Wait for index.js to load the config
+    // ==========================================
+    // ⚠️ CONFIGURATION: ENTER YOUR KEY HERE
+    // ==========================================
+    const ELEVEN_API_KEY = "sk_47a79d8bf4952b5f54553a1b0171d1c5389a354f16a421bf"; 
+    
+    // Voice IDs (Standard ElevenLabs IDs)
+    // You can swap these ID strings with others from the Voice Lab
+    const VOICES = {
+        french: "21m00Tcm4TlvDq8ikWAM",  // Rachel 
+        german: "D38z5RcWu1voky8WS1ja",  // Fin 
+        russian: "JBFqnCBsd6RMkjVDRZzb", // George 
+        turkish: "FGY2WhTYpPnrIDTdsKH5", // Laura 
+        default: "21m00Tcm4TlvDq8ikWAM"
+    };
+
+    // 1. Wait for index.js to load, then inject new languages
     setTimeout(() => {
         if (typeof window.TRANSLATIONS_CONFIG !== 'undefined') {
             
-            // Add your new AI languages
+            // Add your new AI languages to the global config
             Object.assign(window.TRANSLATIONS_CONFIG, {
                 'fr-ai': { 
-                    name: 'French (AI Voice - Alloy)', 
+                    name: 'French (AI - Flash)', 
                     url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/fr.hamidullah.xml', 
                     type: 'ai',   
-                    voice: 'alloy' 
+                    voiceId: VOICES.french
                 },
                 'de-ai': { 
-                    name: 'German (AI Voice - Onyx)', 
+                    name: 'German (AI - Flash)', 
                     url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/de.aburida.xml', 
                     type: 'ai',
-                    voice: 'onyx'
+                    voiceId: VOICES.german
                 },
                 'ru-ai': { 
-                    name: 'Russian (AI Voice - Fable)', 
+                    name: 'Russian (AI - Flash)', 
                     url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ru.kuliev.xml', 
                     type: 'ai',
-                    voice: 'fable'
+                    voiceId: VOICES.russian
                 },
                 'tr-ai': { 
-                    name: 'Turkish (AI Voice - Nova)', 
+                    name: 'Turkish (AI - Flash)', 
                     url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/tr.yuksel.xml', 
                     type: 'ai',
-                    voice: 'nova'
+                    voiceId: VOICES.turkish
                 }
             });
-            console.log("AI Languages added to config.");
+            console.log("ElevenLabs Languages added to config.");
 
         } else {
-            console.error("ERROR: TRANSLATIONS_CONFIG not found. Please add 'window.TRANSLATIONS_CONFIG = TRANSLATIONS_CONFIG;' to the end of your index.js file.");
+            console.error("ERROR: TRANSLATIONS_CONFIG not found. Add 'window.TRANSLATIONS_CONFIG = TRANSLATIONS_CONFIG;' to index.js");
         }
-    }, 500); 
+    }, 500);
 
 
-    // 2. INTERCEPT PLAYBACK
+    // 2. INTERCEPT PLAYBACK LOGIC
     const originalUpdateTranslationAudio = window.updateTranslationAudio;
 
     window.updateTranslationAudio = async function(chNum, vNum, autoplay) {
         
+        // Safety checks
         if (!elements || !elements.selects || !elements.selects.trans) {
             if (originalUpdateTranslationAudio) originalUpdateTranslationAudio(chNum, vNum, autoplay);
             return;
@@ -61,79 +77,73 @@
 
         // --- CHECK: IS THIS AN AI LANGUAGE? ---
         if (config && config.type === 'ai') {
-            console.log(`[AI-Audio] Intercepting playback for ${config.name}`);
+            
+            console.log(`[ElevenLabs] Intercepting for: ${config.name}`);
 
             try {
+                // Show buffering UI
                 if (typeof toggleBuffering === 'function') toggleBuffering(true);
 
+                // Get text
                 const textEl = document.getElementById('translation-text');
                 const textToRead = textEl ? textEl.innerText : "";
 
-                if (!textToRead || textToRead.includes("Select a Surah")) {
+                if (!textToRead || textToRead.length < 2 || textToRead.includes("Select a Surah")) {
+                    console.warn("[ElevenLabs] Text too short or invalid.");
                     if (typeof toggleBuffering === 'function') toggleBuffering(false);
                     return;
                 }
 
-                // --- ATTEMPT 1: TRY TO GENERATE AUDIO ---
-                // If user is logged in, this works immediately.
-                // If not, it throws an error (often 401).
-                const audioObj = await puter.ai.txt2speech(textToRead, {
-                    provider: "openai",
-                    model: "tts-1",
-                    voice: config.voice || "alloy"
+                // --- CALL ELEVENLABS API ---
+                const voiceId = config.voiceId || VOICES.default;
+                const modelId = "eleven_flash_v2_5"; // Fastest & most credit-efficient
+
+                const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'audio/mpeg',
+                        'Content-Type': 'application/json',
+                        'xi-api-key': ELEVEN_API_KEY
+                    },
+                    body: JSON.stringify({
+                        text: textToRead,
+                        model_id: modelId,
+                        voice_settings: {
+                            stability: 0.5,
+                            similarity_boost: 0.5
+                        }
+                    })
                 });
 
-                // Play the result
-                if (elements.transAudio) {
-                    elements.transAudio.src = audioObj.src;
-                    if (autoplay) elements.transAudio.play();
+                if (!response.ok) {
+                    const errData = await response.json();
+                    throw new Error(errData.detail?.message || "API Error");
                 }
 
-            } catch (err) {
-                console.error("[AI-Audio] Generation failed:", err);
+                // Convert response blob to audio URL
+                const audioBlob = await response.blob();
+                const audioUrl = URL.createObjectURL(audioBlob);
 
-                // --- ATTEMPT 2: HANDLE LOGIN (401 ERROR) ---
-                // If the error suggests they aren't logged in
-                if (err.toString().includes("401") || err.message === "Unauthorized") {
-                    
-                    // Pause the Arabic audio so it doesn't keep playing while they login
-                    if(elements.audio) elements.audio.pause();
-
-                    // Ask user to sign in
-                    const confirmLogin = confirm("Enable AI Voice?\n\nThis high-quality voice requires a free Puter.com account. Click OK to sign in.");
-                    
-                    if (confirmLogin) {
-                        try {
-                            // Launch Puter Login Popup
-                            await puter.auth.signIn();
-                            
-                            // Once logged in, try generating again immediately
-                            const audioObjRetry = await puter.ai.txt2speech(textToRead, {
-                                provider: "openai",
-                                model: "tts-1",
-                                voice: config.voice || "alloy"
-                            });
-                            
-                            if (elements.transAudio) {
-                                elements.transAudio.src = audioObjRetry.src;
-                                elements.transAudio.play();
-                            }
-                        } catch (loginErr) {
-                            console.log("Login cancelled or failed:", loginErr);
-                        }
+                // Play it using existing player
+                if (elements.transAudio) {
+                    elements.transAudio.src = audioUrl;
+                    if (autoplay) {
+                        elements.transAudio.play().catch(e => console.log("Autoplay blocked:", e));
                     }
                 }
 
+            } catch (err) {
+                console.error("[ElevenLabs] Error:", err);
+                alert("ElevenLabs Error: " + err.message + "\n\nCheck your API Key and Credit Balance.");
             } finally {
                 if (typeof toggleBuffering === 'function') toggleBuffering(false);
             }
 
         } else {
-            // --- ORIGINAL MP3 BEHAVIOR ---
+            // --- ORIGINAL MP3 BEHAVIOR (Old JS) ---
             if (originalUpdateTranslationAudio) {
                 originalUpdateTranslationAudio(chNum, vNum, autoplay);
             }
         }
     };
-
 })();
