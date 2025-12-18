@@ -1,4 +1,4 @@
-        const SURAH_METADATA = [
+const SURAH_METADATA = [
           { "chapter": 1, "english_name": "The Opening", "description": "Revealed in Mecca, this is the fundamental prayer of Islam, summarizing the core relationship between God and humanity. It is recited in every unit of prayer. (7 verses)" },
           { "chapter": 2, "english_name": "The Cow", "description": "The longest Surah, revealed in Medina. It establishes Islamic laws, recounts the stories of Moses (Peace be upon him), and guides the new Muslim community. (286 verses)" },
           { "chapter": 3, "english_name": "The Family of Imran", "description": "A Medinan chapter focusing on the Oneness of God, the family of Mary (Peace be upon her) and Jesus (Peace be upon him), and lessons from the Battle of Uhud. (200 verses)" },
@@ -137,7 +137,6 @@
             'cs': { name: 'Czech (Hrbek)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/cs.hrbek.xml' },
             'dv': { name: 'Divehi (Maldives)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/dv.divehi.xml' },
             'nl': { name: 'Dutch (Siregar)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/nl.siregar.xml' },
-            'en': { name: 'English (Saheeh Intl)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/en.xml' },
             'fr': { name: 'French (Hamidullah)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/fr.hamidullah.xml' },
             'de': { name: 'German (Bubenheim)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/de.bubenheim.xml' },
             'ha': { name: 'Hausa (Gumi)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ha.gumi.xml' },
@@ -189,6 +188,13 @@
             'es': { name: 'Español', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/play' }
         };
 
+        // --- ELEVENLABS CONFIGURATION ---
+        // PLEASE PASTE YOUR KEY BELOW
+        const ELEVENLABS_API_KEY = 'sk_4724c94209a232558d2be1037718dd67d98579bea0eafbc6'; 
+        const ELEVEN_MODEL_ID = 'eleven_multilingual_v2'; // Best for mixed languages
+        // "Rachel" is a versatile voice. You can change this ID if you prefer a different voice.
+        const DEFAULT_TTS_VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; 
+
         const FTT_URL = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/FTT.XML';
         const RTL_CODES = new Set(['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ur', 'ug']);
 
@@ -239,6 +245,8 @@
 
         let quranData = []; 
         let translationCache = {}; 
+        // Cache for generated TTS blobs to save quota (Free Forever Optimization)
+        let ttsCache = {}; 
         let currentChapterData = {};
         let inactivityTimer;
         let forbiddenToTranslateSet = new Set();
@@ -327,8 +335,8 @@
 
                 populateChapterSelect();
                 populateReciterSelect();
-                populateTranslationAudioSelect();
                 populateTranslationSelectOptions();
+                populateTranslationAudioSelect(); // Called after Translations loaded
 
                 const urlParams = new URLSearchParams(window.location.search);
                 if (urlParams.has('chapter')) {
@@ -373,8 +381,8 @@
             const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
             const heroBtn = document.getElementById('door-play-btn');
 
-                const allIndices = Array.from({length: 114}, (_, i) => i);
-          const shortRowIndices = allIndices.slice(77, 114);
+            const allIndices = Array.from({length: 114}, (_, i) => i);
+            const shortRowIndices = allIndices.slice(77, 114);
             
             fillRow('trending-row', [36, 67, 18, 55, 1, 112, 113, 114].map(id => id-1));
             fillRow('short-row', shortRowIndices);
@@ -392,36 +400,35 @@
             }
         }
 
-function fillRow(elementId, indexArray) {
-    const container = document.getElementById(elementId);
-    const fragment = document.createDocumentFragment(); // Use fragment for speed
-    
-    indexArray.forEach(idx => {
-        if(!quranData[idx]) return;
-        const surah = quranData[idx];
-        const card = document.createElement('div');
-        card.className = 'surah-card';
-        card.tabIndex = 0;
-        card.innerHTML = `
-            <div class="card-bg-num">${surah.chapterNumber}</div>
-            <div class="card-title">${surah.title}</div>
-            <div class="card-sub">${surah.english_name || ''}</div>
-        `;
-        
-        // Use specialized TV events
-        card.onclick = () => launchPlayer(surah.chapterNumber, 1);
-        card.onfocus = () => {
-            // Preview logic here
-            schedulePreview(surah.chapterNumber);
-        };
-        
-        fragment.appendChild(card);
-    });
-    
-    container.innerHTML = '';
-    container.appendChild(fragment);
-                                  }
-
+        function fillRow(elementId, indexArray) {
+            const container = document.getElementById(elementId);
+            const fragment = document.createDocumentFragment(); // Use fragment for speed
+            
+            indexArray.forEach(idx => {
+                if(!quranData[idx]) return;
+                const surah = quranData[idx];
+                const card = document.createElement('div');
+                card.className = 'surah-card';
+                card.tabIndex = 0;
+                card.innerHTML = `
+                    <div class="card-bg-num">${surah.chapterNumber}</div>
+                    <div class="card-title">${surah.title}</div>
+                    <div class="card-sub">${surah.english_name || ''}</div>
+                `;
+                
+                // Use specialized TV events
+                card.onclick = () => launchPlayer(surah.chapterNumber, 1);
+                card.onfocus = () => {
+                    // Preview logic here
+                    schedulePreview(surah.chapterNumber);
+                };
+                
+                fragment.appendChild(card);
+            });
+            
+            container.innerHTML = '';
+            container.appendChild(fragment);
+        }
 
         function schedulePreview(chapterNum) {
             if (previewTimeout) clearTimeout(previewTimeout);
@@ -573,9 +580,13 @@ function fillRow(elementId, indexArray) {
             if (!TRANSLATIONS_CONFIG[trans]) trans = 'en';
             elements.selects.trans.value = trans;
 
-            if (urlParams.has('audio_trans') && TRANSLATION_AUDIO_CONFIG[urlParams.get('audio_trans')]) {
-                elements.selects.transAudio.value = urlParams.get('audio_trans');
-            } else if (saved.audio_trans && TRANSLATION_AUDIO_CONFIG[saved.audio_trans]) {
+            if (urlParams.has('audio_trans')) {
+                const param = urlParams.get('audio_trans');
+                // Check if it's a valid config OR a tts: id
+                if(TRANSLATION_AUDIO_CONFIG[param] || param.startsWith('tts:')) {
+                    elements.selects.transAudio.value = param;
+                }
+            } else if (saved.audio_trans && (TRANSLATION_AUDIO_CONFIG[saved.audio_trans] || saved.audio_trans.startsWith('tts:'))) {
                 elements.selects.transAudio.value = saved.audio_trans;
             }
         }
@@ -714,10 +725,37 @@ function fillRow(elementId, indexArray) {
 
         function populateTranslationAudioSelect() {
             elements.selects.transAudio.innerHTML = '';
+            
+            // 1. Add Existing MP3 configs (Static)
             Object.entries(TRANSLATION_AUDIO_CONFIG).forEach(([k, v]) => {
                 const opt = document.createElement('option');
-                opt.value = k; opt.textContent = v.name;
+                opt.value = k; 
+                opt.textContent = v.name;
                 elements.selects.transAudio.appendChild(opt);
+            });
+
+            // 2. Add AI TTS options for languages NOT in static list
+            // Logic: Iterate TRANSLATIONS_CONFIG, if key not in TRANSLATION_AUDIO_CONFIG, add as TTS
+            Object.entries(TRANSLATIONS_CONFIG).forEach(([code, config]) => {
+                // Check if this code already has a manual entry (like 'en', 'es', 'id')
+                // Note: 'en' is in CONFIG as 'en', MP3 is 'en_walk'. We check rough match or precise needs.
+                // Simplified: If the exact code key isn't a key in AUDIO_CONFIG, or if it is 'en' but we want to offer TTS too? 
+                // The prompt asked to add more languages.
+                
+                // Let's filter out ones that have high quality audio already if desired, 
+                // BUT user might want TTS for them too. Let's add all as "AI" options except 'none'.
+                
+                const opt = document.createElement('div'); // dummy
+                const ttsValue = `tts:${code}`;
+                
+                // Check if already exists in dropdown (simple check)
+                let exists = false;
+                // We just append. The user can choose "English (Walk)" or "English (AI)".
+                
+                const ttsOpt = document.createElement('option');
+                ttsOpt.value = ttsValue;
+                ttsOpt.textContent = `${config.name.split('|')[0].trim()} (AI Voice)`;
+                elements.selects.transAudio.appendChild(ttsOpt);
             });
         }
 
@@ -791,6 +829,9 @@ function fillRow(elementId, indexArray) {
             if (isForbidden) {
                 elements.transAudio.src = '';
             } else {
+                // Determine if we need to auto-switch the translation text to match audio language?
+                // The current logic allows Text and Audio to be different (e.g. Arabic Audio, English Text, Spanish Audio Trans).
+                // We keep it as is.
                 updateTranslationAudio(chNum, vNum, false);
             }
 
@@ -826,7 +867,7 @@ function fillRow(elementId, indexArray) {
             aud.preload = 'auto'; 
 
             const taId = elements.selects.transAudio.value;
-            if (taId !== 'none') {
+            if (taId !== 'none' && !taId.startsWith('tts:')) {
                 const config = TRANSLATION_AUDIO_CONFIG[taId];
                 let tUrl;
                 if (config.path.startsWith('httpIA')) tUrl = `${config.path.replace('httpIA', 'https')}/${padCh}${padV}.mp3`;
@@ -865,25 +906,115 @@ function fillRow(elementId, indexArray) {
             if(play) elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
         }
 
-        function updateTranslationAudio(chNum, vNum, play) {
+        async function updateTranslationAudio(chNum, vNum, play) {
             const taId = elements.selects.transAudio.value;
+            
             if (taId === 'none') {
                 elements.transAudio.src = '';
                 return;
             }
 
-            const config = TRANSLATION_AUDIO_CONFIG[taId];
-            const padCh = String(chNum).padStart(3, '0');
-            const padV = String(vNum).padStart(3, '0');
-            
-            let url;
-            if (config.path.startsWith('httpIA')) url = `${config.path.replace('httpIA', 'https')}/${padCh}${padV}.mp3`;
-            else if (config.path.startsWith('http')) url = `${config.path}/${padCh}${padV}.mp3`;
-            else url = `https://everyayah.com/data/${config.path}/${padCh}${padV}.mp3`;
+            // --- 1. HANDLE STATIC MP3 FILES (Original Logic) ---
+            if (!taId.startsWith('tts:')) {
+                const config = TRANSLATION_AUDIO_CONFIG[taId];
+                const padCh = String(chNum).padStart(3, '0');
+                const padV = String(vNum).padStart(3, '0');
+                
+                let url;
+                if (config.path.startsWith('httpIA')) url = `${config.path.replace('httpIA', 'https')}/${padCh}${padV}.mp3`;
+                else if (config.path.startsWith('http')) url = `${config.path}/${padCh}${padV}.mp3`;
+                else url = `https://everyayah.com/data/${config.path}/${padCh}${padV}.mp3`;
 
-            if(!url.endsWith('.mp3')) url += `/${padCh}${padV}.mp3`;
-            elements.transAudio.src = url;
-            if(play) elements.transAudio.play();
+                if(!url.endsWith('.mp3')) url += `/${padCh}${padV}.mp3`;
+                elements.transAudio.src = url;
+                if(play) elements.transAudio.play();
+                return;
+            }
+
+            // --- 2. HANDLE AI TTS (ElevenLabs Logic) ---
+            // taId format: "tts:fr" or "tts:de"
+            const langCode = taId.split(':')[1];
+            
+            // Note: The text to speak is currently on screen in elements.display.trans.textContent
+            // BUT: If the user selected "French AI" audio but has "English" text selected, we need the French TEXT.
+            // We must fetch the text for the requested audio language first.
+            
+            let textToSpeak = "";
+            
+            // Check if current text matches requested audio lang
+            const currentTextId = elements.selects.trans.value;
+            if (currentTextId === langCode) {
+                textToSpeak = elements.display.trans.textContent;
+            } else {
+                // We need to fetch/lookup the text for the audio language specifically
+                if (!translationCache[langCode]) {
+                    await loadTranslationData(langCode);
+                }
+                const cache = translationCache[langCode];
+                if(cache) {
+                    const sura = cache.querySelector(`sura[index="${chNum}"]`);
+                    const aya = sura ? sura.querySelector(`aya[index="${vNum}"]`) : null;
+                    textToSpeak = aya ? aya.getAttribute('text') : "";
+                }
+            }
+
+            if (!textToSpeak || textToSpeak.length < 2) {
+                console.warn("No text available for TTS");
+                return;
+            }
+
+            // Cache Key for reuse (Free Forever Optimization)
+            const cacheKey = `${langCode}_${chNum}_${vNum}`;
+            
+            if (ttsCache[cacheKey]) {
+                elements.transAudio.src = ttsCache[cacheKey];
+                if(play) elements.transAudio.play();
+                return;
+            }
+
+            // Call ElevenLabs API
+            try {
+                if(!ELEVENLABS_API_KEY || ELEVENLABS_API_KEY.includes('PASTE')) {
+                    console.error("ElevenLabs API Key missing");
+                    return;
+                }
+
+                toggleBuffering(true);
+
+                const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${DEFAULT_TTS_VOICE_ID}`, {
+                    method: 'POST',
+                    headers: {
+                        'xi-api-key': ELEVENLABS_API_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        text: textToSpeak,
+                        model_id: ELEVEN_MODEL_ID,
+                        voice_settings: {
+                            stability: 0.5,
+                            similarity_boost: 0.5
+                        }
+                    })
+                });
+
+                if (!response.ok) {
+                    const err = await response.json();
+                    console.error("ElevenLabs API Error:", err);
+                    throw new Error("TTS Failed");
+                }
+
+                const blob = await response.blob();
+                const audioUrl = URL.createObjectURL(blob);
+                
+                ttsCache[cacheKey] = audioUrl; // Save to Cache
+                elements.transAudio.src = audioUrl;
+                if(play) elements.transAudio.play();
+
+            } catch (e) {
+                console.error("TTS Stream Error", e);
+            } finally {
+                toggleBuffering(false);
+            }
         }
 
         function handleQuranEnd() {
@@ -1217,5 +1348,3 @@ function handleKeyPress(key) {
         }
 
         document.addEventListener('DOMContentLoaded', initializeApp);
-
-    
