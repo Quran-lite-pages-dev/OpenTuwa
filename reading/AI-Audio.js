@@ -24,12 +24,12 @@
     // 1. INJECT LANGUAGES SAFELY
     // We wait for index.js to be ready, then we add the languages naturally.
     setTimeout(() => {
-        if (typeof window.TRANSLATIONS_CONFIG !== 'undefined') {
+        if (typeof window.TRANSLATIONS_AUDIO_CONFIG !== 'undefined') {
             
             // We extend the config with standard languages.
             // They look just like your English/Spanish entries.
             // We add a special hidden flag 'isAI: true'.
-            Object.assign(window.TRANSLATIONS_CONFIG, {
+            Object.assign(window.TRANSLATIONS_AUDIO_CONFIG, {
                 'fr': { 
                     name: 'French (Hamidullah)', 
                     url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/fr.hamidullah.xml', 
@@ -61,7 +61,7 @@
             // if (typeof populateTranslationSelect === 'function') populateTranslationSelect();
 
         } else {
-            console.error("ERROR: TRANSLATIONS_CONFIG not found. Add 'window.TRANSLATIONS_CONFIG = TRANSLATIONS_CONFIG;' to index.js");
+            console.error("ERROR: TRANSLATIONS_AUDIO_CONFIG not found. Add 'window.TRANSLATIONS_AUDIO_CONFIG = TRANSLATIONS_AUDIO_CONFIG;' to index.js");
         }
     }, 500);
 
@@ -78,7 +78,7 @@
         }
 
         const currentLangId = elements.selects.trans.value;
-        const config = window.TRANSLATIONS_CONFIG ? window.TRANSLATIONS_CONFIG[currentLangId] : null;
+        const config = window.TRANSLATIONS_AUDIO_CONFIG ? window.TRANSLATIONS_AUDIO_CONFIG[currentLangId] : null;
 
         // --- DECISION LOGIC ---
         // If it is 'en', 'es', 'id' (Standard MP3) -> Use Old Code.
