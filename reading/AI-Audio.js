@@ -1,59 +1,64 @@
 /**
  * AI-Audio.js
- * Intercepts translation playback to use ElevenLabs API
- * Model: eleven_flash_v2_5 (Best for speed & free tier efficiency)
+ * Seamlessly adds AI Audio support to new languages.
+ * Uses ElevenLabs (Flash v2.5) for high speed and free-tier efficiency.
  */
 
 (function() {
-    console.log("Initializing ElevenLabs AI Audio...");
+    console.log("Initializing AI Audio Module...");
 
     // ==========================================
-    // ⚠️ CONFIGURATION: ENTER YOUR KEY HERE
+    // ⚠️ PASTE YOUR ELEVENLABS API KEY HERE
     // ==========================================
     const ELEVEN_API_KEY = "sk_47a79d8bf4952b5f54553a1b0171d1c5389a354f16a421bf"; 
-    
-    // Voice IDs (Standard ElevenLabs IDs)
-    // You can swap these ID strings with others from the Voice Lab
-    const VOICES = {
-        french: "21m00Tcm4TlvDq8ikWAM",  // Rachel 
-        german: "D38z5RcWu1voky8WS1ja",  // Fin 
-        russian: "JBFqnCBsd6RMkjVDRZzb", // George 
-        turkish: "FGY2WhTYpPnrIDTdsKH5", // Laura 
-        default: "21m00Tcm4TlvDq8ikWAM"
+
+    // Voice Configuration (Hidden from UI, used by logic)
+    const VOICE_MAP = {
+        'fr': "21m00Tcm4TlvDq8ikWAM",  // French (Rachel)
+        'de': "D38z5RcWu1voky8WS1ja",  // German (Fin)
+        'ru': "JBFqnCBsd6RMkjVDRZzb",  // Russian (George)
+        'tr': "FGY2WhTYpPnrIDTdsKH5",  // Turkish (Laura)
+        'ur': "Xb7hH8MSUDp1N1sqb7dO"   // Urdu (Example)
     };
 
-    // 1. Wait for index.js to load, then inject new languages
+    // 1. INJECT LANGUAGES SAFELY
+    // We wait for index.js to be ready, then we add the languages naturally.
     setTimeout(() => {
         if (typeof window.TRANSLATIONS_CONFIG !== 'undefined') {
             
-            // Add your new AI languages to the global config
+            // We extend the config with standard languages.
+            // They look just like your English/Spanish entries.
+            // We add a special hidden flag 'isAI: true'.
             Object.assign(window.TRANSLATIONS_CONFIG, {
-                'fr-ai': { 
-                    name: 'French (AI - Flash)', 
+                'fr': { 
+                    name: 'French (Hamidullah)', 
                     url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/fr.hamidullah.xml', 
                     type: 'ai',   
-                    voiceId: VOICES.french
+                    voiceId: VOICE_MAP['fr']
                 },
-                'de-ai': { 
-                    name: 'German (AI - Flash)', 
+                'de': { 
+                    name: 'German (Abu Rida)', 
                     url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/de.aburida.xml', 
                     type: 'ai',
-                    voiceId: VOICES.german
+                    voiceId: VOICE_MAP['de']
                 },
-                'ru-ai': { 
-                    name: 'Russian (AI - Flash)', 
+                'ru': { 
+                    name: 'Russian (Kuliev)', 
                     url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ru.kuliev.xml', 
                     type: 'ai',
-                    voiceId: VOICES.russian
+                    voiceId: VOICE_MAP['ru']
                 },
-                'tr-ai': { 
-                    name: 'Turkish (AI - Flash)', 
+                'tr': { 
+                    name: 'Turkish (Yuksel)', 
                     url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/tr.yuksel.xml', 
                     type: 'ai',
-                    voiceId: VOICES.turkish
+                    voiceId: VOICE_MAP['tr']
                 }
             });
-            console.log("ElevenLabs Languages added to config.");
+            console.log("AI Languages integrated seamlessly.");
+
+            // Optional: Refresh dropdown if it was already built (depends on index.js logic)
+            // if (typeof populateTranslationSelect === 'function') populateTranslationSelect();
 
         } else {
             console.error("ERROR: TRANSLATIONS_CONFIG not found. Add 'window.TRANSLATIONS_CONFIG = TRANSLATIONS_CONFIG;' to index.js");
@@ -61,44 +66,46 @@
     }, 500);
 
 
-    // 2. INTERCEPT PLAYBACK LOGIC
+    // 2. INTELLIGENT AUDIO INTERCEPTOR
     const originalUpdateTranslationAudio = window.updateTranslationAudio;
 
     window.updateTranslationAudio = async function(chNum, vNum, autoplay) {
         
-        // Safety checks
+        // Safety Check
         if (!elements || !elements.selects || !elements.selects.trans) {
             if (originalUpdateTranslationAudio) originalUpdateTranslationAudio(chNum, vNum, autoplay);
             return;
         }
 
-        const currentTransId = elements.selects.trans.value;
-        const config = window.TRANSLATIONS_CONFIG ? window.TRANSLATIONS_CONFIG[currentTransId] : null;
+        const currentLangId = elements.selects.trans.value;
+        const config = window.TRANSLATIONS_CONFIG ? window.TRANSLATIONS_CONFIG[currentLangId] : null;
 
-        // --- CHECK: IS THIS AN AI LANGUAGE? ---
+        // --- DECISION LOGIC ---
+        // If it is 'en', 'es', 'id' (Standard MP3) -> Use Old Code.
+        // If it is 'fr', 'de', 'ru' (AI Type)      -> Use New Code.
+        
         if (config && config.type === 'ai') {
             
-            console.log(`[ElevenLabs] Intercepting for: ${config.name}`);
+            console.log(`[AI-Audio] Generating audio for: ${config.name}`);
 
             try {
-                // Show buffering UI
                 if (typeof toggleBuffering === 'function') toggleBuffering(true);
 
-                // Get text
+                // 1. GET TEXT (This is the "Text Section" you mentioned)
                 const textEl = document.getElementById('translation-text');
-                const textToRead = textEl ? textEl.innerText : "";
+                let textToRead = textEl ? textEl.innerText : "";
 
-                if (!textToRead || textToRead.length < 2 || textToRead.includes("Select a Surah")) {
-                    console.warn("[ElevenLabs] Text too short or invalid.");
+                // Cleanup text (remove verse numbers or footnotes if necessary)
+                // textToRead = textToRead.replace(/\[.*?\]/g, ''); 
+
+                if (!textToRead || textToRead.length < 2) {
                     if (typeof toggleBuffering === 'function') toggleBuffering(false);
                     return;
                 }
 
-                // --- CALL ELEVENLABS API ---
-                const voiceId = config.voiceId || VOICES.default;
-                const modelId = "eleven_flash_v2_5"; // Fastest & most credit-efficient
-
-                const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+                // 2. FETCH AUDIO FROM ELEVENLABS
+                // We use the 'eleven_flash_v2_5' model for speed/free-tier.
+                const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${config.voiceId}`, {
                     method: 'POST',
                     headers: {
                         'Accept': 'audio/mpeg',
@@ -107,40 +114,31 @@
                     },
                     body: JSON.stringify({
                         text: textToRead,
-                        model_id: modelId,
-                        voice_settings: {
-                            stability: 0.5,
-                            similarity_boost: 0.5
-                        }
+                        model_id: "eleven_flash_v2_5",
+                        voice_settings: { stability: 0.5, similarity_boost: 0.5 }
                     })
                 });
 
-                if (!response.ok) {
-                    const errData = await response.json();
-                    throw new Error(errData.detail?.message || "API Error");
-                }
+                if (!response.ok) throw new Error("ElevenLabs API Error");
 
-                // Convert response blob to audio URL
                 const audioBlob = await response.blob();
                 const audioUrl = URL.createObjectURL(audioBlob);
 
-                // Play it using existing player
+                // 3. INJECT & PLAY
                 if (elements.transAudio) {
                     elements.transAudio.src = audioUrl;
-                    if (autoplay) {
-                        elements.transAudio.play().catch(e => console.log("Autoplay blocked:", e));
-                    }
+                    if (autoplay) elements.transAudio.play();
                 }
 
             } catch (err) {
-                console.error("[ElevenLabs] Error:", err);
-                alert("ElevenLabs Error: " + err.message + "\n\nCheck your API Key and Credit Balance.");
+                console.error("AI Audio Error:", err);
             } finally {
                 if (typeof toggleBuffering === 'function') toggleBuffering(false);
             }
 
         } else {
-            // --- ORIGINAL MP3 BEHAVIOR (Old JS) ---
+            // --- STANDARD BEHAVIOR (MP3) ---
+            // This runs for English, Indonesian, Spanish, etc.
             if (originalUpdateTranslationAudio) {
                 originalUpdateTranslationAudio(chNum, vNum, autoplay);
             }
