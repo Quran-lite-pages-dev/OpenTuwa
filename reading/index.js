@@ -124,7 +124,7 @@ const SURAH_METADATA = [
         const STORAGE_KEY = `quranState_${ACTIVE_PROFILE_ID}`;
 
         const TRANSLATIONS_CONFIG = {
-           'en': { name: 'English (Saheeh Intl) | Preferred', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/en.xml' },
+            'en': { name: 'English (Saheeh Intl) | Preferred', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/en.xml' },
             'sq': { name: 'Albanian (Sherif Ahmeti)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/sq.ahmeti.xml' },
             'ber': { name: 'Amazigh (At Mansour)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ber.mensur.xml' },
             'am': { name: 'Amharic (Sadiq & Sani)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/am.sadiq.xml' },
@@ -188,11 +188,15 @@ const SURAH_METADATA = [
             'es': { name: 'Español', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/play' }
         };
 
-        // --- ELEVENLABS CONFIGURATION ---
+        
+        // --- ELEVENLABS CONFIGURATION (STABLE & RESPECTFUL) ---
         // PLEASE PASTE YOUR KEY BELOW
         const ELEVENLABS_API_KEY = 'sk_4724c94209a232558d2be1037718dd67d98579bea0eafbc6'; 
-        const ELEVEN_MODEL_ID = 'eleven_multilingual_v2'; // Best for mixed languages
-        // "Rachel" is a versatile voice. You can change this ID if you prefer a different voice.
+        
+        // "eleven_multilingual_v2" is best for languages, but we tune it to be respectful.
+        const ELEVEN_MODEL_ID = 'eleven_multilingual_v2'; 
+        
+        // "voice.
         const DEFAULT_TTS_VOICE_ID = 'nPczCjzI2devNBz1zQrb'; 
 
         const FTT_URL = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/FTT.XML';
@@ -736,22 +740,20 @@ const SURAH_METADATA = [
 
             // 2. Add AI TTS options for languages NOT in static list
             // Logic: Iterate TRANSLATIONS_CONFIG, if key not in TRANSLATION_AUDIO_CONFIG, add as TTS
+            
+            // NEW: Filter out unsupported languages for v2 model (The "Red" List)
+            const UNSUPPORTED_TTS_LANGS = new Set([
+                'sq', 'ber', 'am', 'az', 'bn', 'bs', 'dv', 'ha', 'he', 'ku', 
+                'ml', 'no', 'ps', 'fa', 'sd', 'so', 'sw', 'tt', 'th', 'ur', 'ug', 'uz'
+            ]);
+
             Object.entries(TRANSLATIONS_CONFIG).forEach(([code, config]) => {
-                // Check if this code already has a manual entry (like 'en', 'es', 'id')
-                // Note: 'en' is in CONFIG as 'en', MP3 is 'en_walk'. We check rough match or precise needs.
-                // Simplified: If the exact code key isn't a key in AUDIO_CONFIG, or if it is 'en' but we want to offer TTS too? 
-                // The prompt asked to add more languages.
-                
-                // Let's filter out ones that have high quality audio already if desired, 
-                // BUT user might want TTS for them too. Let's add all as "AI" options except 'none'.
-                
-                const opt = document.createElement('div'); // dummy
+                // If it's in the unsupported list, skip it - user will only see text option
+                if (UNSUPPORTED_TTS_LANGS.has(code)) return;
+
                 const ttsValue = `tts:${code}`;
                 
-                // Check if already exists in dropdown (simple check)
-                let exists = false;
-                // We just append. The user can choose "English (Walk)" or "English (AI)".
-                
+                // We assume if it's not unsupported, it is supported.
                 const ttsOpt = document.createElement('option');
                 ttsOpt.value = ttsValue;
                 ttsOpt.textContent = `${config.name.split('|')[0].trim()} (AI Voice)`;
@@ -931,13 +933,9 @@ const SURAH_METADATA = [
                 return;
             }
 
-            // --- 2. HANDLE AI TTS (ElevenLabs Logic) ---
+            // --- 2. HANDLE AI TTS (ElevenLabs Emotional Logic) ---
             // taId format: "tts:fr" or "tts:de"
             const langCode = taId.split(':')[1];
-            
-            // Note: The text to speak is currently on screen in elements.display.trans.textContent
-            // BUT: If the user selected "French AI" audio but has "English" text selected, we need the French TEXT.
-            // We must fetch the text for the requested audio language first.
             
             let textToSpeak = "";
             
@@ -964,7 +962,7 @@ const SURAH_METADATA = [
             }
 
             // Cache Key for reuse (Free Forever Optimization)
-            const cacheKey = `${langCode}_${chNum}_${vNum}`;
+            const cacheKey = `${langCode}_${chNum}_${vNum}_v2`;
             
             if (ttsCache[cacheKey]) {
                 elements.transAudio.src = ttsCache[cacheKey];
@@ -981,6 +979,7 @@ const SURAH_METADATA = [
 
                 toggleBuffering(true);
 
+                // High-End Emotion Logic (NO COUGHING MODE):
                 const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${DEFAULT_TTS_VOICE_ID}`, {
                     method: 'POST',
                     headers: {
@@ -991,8 +990,14 @@ const SURAH_METADATA = [
                         text: textToSpeak,
                         model_id: ELEVEN_MODEL_ID,
                         voice_settings: {
-                            stability: 0.5,
-                            similarity_boost: 0.5
+                            // "Respectful" Settings (No Coughing/Acting):
+                            // Stability 0.50: Removes random "stage" noises, keeps it clean but human.
+                            // Style 0.0: Turns off the "Acting" engine completely.
+                            // Similarity 0.75: Ensures it sounds like the professional voice actor.
+                            stability: 0.50, 
+                            similarity_boost: 0.75, 
+                            style: 0.0,
+                            use_speaker_boost: true
                         }
                     })
                 });
