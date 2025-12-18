@@ -1,17 +1,17 @@
 /**
  * AI-Audio.js
  * Integrated with Puter.js for OpenAI TTS
+ * Handles User Authentication automatically.
  */
 
 (function() {
     console.log("Initializing AI Audio Module...");
 
     // 1. Wait for index.js to load the config
-    // We use a small timeout to ensure index.js has finished execution
     setTimeout(() => {
         if (typeof window.TRANSLATIONS_CONFIG !== 'undefined') {
             
-            // Add your new AI languages here
+            // Add your new AI languages
             Object.assign(window.TRANSLATIONS_CONFIG, {
                 'fr-ai': { 
                     name: 'French (AI Voice - Alloy)', 
@@ -43,7 +43,7 @@
         } else {
             console.error("ERROR: TRANSLATIONS_CONFIG not found. Please add 'window.TRANSLATIONS_CONFIG = TRANSLATIONS_CONFIG;' to the end of your index.js file.");
         }
-    }, 500); // 500ms delay to be safe
+    }, 500); 
 
 
     // 2. INTERCEPT PLAYBACK
@@ -51,14 +51,12 @@
 
     window.updateTranslationAudio = async function(chNum, vNum, autoplay) {
         
-        // Safety check if elements exist
         if (!elements || !elements.selects || !elements.selects.trans) {
             if (originalUpdateTranslationAudio) originalUpdateTranslationAudio(chNum, vNum, autoplay);
             return;
         }
 
         const currentTransId = elements.selects.trans.value;
-        // Use window.TRANSLATIONS_CONFIG to be safe
         const config = window.TRANSLATIONS_CONFIG ? window.TRANSLATIONS_CONFIG[currentTransId] : null;
 
         // --- CHECK: IS THIS AN AI LANGUAGE? ---
@@ -72,12 +70,13 @@
                 const textToRead = textEl ? textEl.innerText : "";
 
                 if (!textToRead || textToRead.includes("Select a Surah")) {
-                    console.warn("[AI-Audio] No text available.");
                     if (typeof toggleBuffering === 'function') toggleBuffering(false);
                     return;
                 }
 
-                // Call Puter.js (OpenAI)
+                // --- ATTEMPT 1: TRY TO GENERATE AUDIO ---
+                // If user is logged in, this works immediately.
+                // If not, it throws an error (often 401).
                 const audioObj = await puter.ai.txt2speech(textToRead, {
                     provider: "openai",
                     model: "tts-1",
@@ -87,17 +86,42 @@
                 // Play the result
                 if (elements.transAudio) {
                     elements.transAudio.src = audioObj.src;
-                    if (autoplay) {
-                        elements.transAudio.play().catch(e => console.log("Autoplay blocked:", e));
-                    }
+                    if (autoplay) elements.transAudio.play();
                 }
 
             } catch (err) {
-                console.error("[AI-Audio] Error:", err);
-                
-                // HANDLE 401 UNAUTHORIZED SPECIFICALLY
-                if (err.toString().includes("401")) {
-                    alert("Puter.js Authentication Required.\n\nSince this uses the 'User-Pays' model, you (the user) must be signed into Puter.com to generate AI audio.\n\nPlease sign in at Puter.com and refresh.");
+                console.error("[AI-Audio] Generation failed:", err);
+
+                // --- ATTEMPT 2: HANDLE LOGIN (401 ERROR) ---
+                // If the error suggests they aren't logged in
+                if (err.toString().includes("401") || err.message === "Unauthorized") {
+                    
+                    // Pause the Arabic audio so it doesn't keep playing while they login
+                    if(elements.audio) elements.audio.pause();
+
+                    // Ask user to sign in
+                    const confirmLogin = confirm("Enable AI Voice?\n\nThis high-quality voice requires a free Puter.com account. Click OK to sign in.");
+                    
+                    if (confirmLogin) {
+                        try {
+                            // Launch Puter Login Popup
+                            await puter.auth.signIn();
+                            
+                            // Once logged in, try generating again immediately
+                            const audioObjRetry = await puter.ai.txt2speech(textToRead, {
+                                provider: "openai",
+                                model: "tts-1",
+                                voice: config.voice || "alloy"
+                            });
+                            
+                            if (elements.transAudio) {
+                                elements.transAudio.src = audioObjRetry.src;
+                                elements.transAudio.play();
+                            }
+                        } catch (loginErr) {
+                            console.log("Login cancelled or failed:", loginErr);
+                        }
+                    }
                 }
 
             } finally {
@@ -105,7 +129,7 @@
             }
 
         } else {
-            // --- ORIGINAL MP3 BEHAVIOR (English, Spanish, etc.) ---
+            // --- ORIGINAL MP3 BEHAVIOR ---
             if (originalUpdateTranslationAudio) {
                 originalUpdateTranslationAudio(chNum, vNum, autoplay);
             }
