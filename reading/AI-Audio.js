@@ -1,133 +1,81 @@
 /**
  * AI-Audio.js
- * Adds Text-to-Speech capabilities to the Quran Player using ElevenLabs API.
- * Intercepts existing audio logic to support all languages defined in TRANSLATIONS_CONFIG.
+ * Extends the existing Quran Player to generate audio for non-hosted languages.
+ * INTERCEPTS the audio logic without modifying the original index.js.
  */
 
 (function() {
-    // --- CONFIGURATION ---
-    // 1. PASTE YOUR ELEVENLABS API KEY HERE
+    // --- 1. CONFIGURATION ---
+    // PASTE YOUR FREE ELEVENLABS API KEY HERE
     const ELEVEN_LABS_API_KEY = 'sk_47a79d8bf4952b5f54553a1b0171d1c5389a354f16a421bf'; 
     
-    // 2. Voice Settings (Using 'Turbo' model for low latency/cost)
-    const VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // "Rachel" - Clear & Neutral
-    const MODEL_ID = 'eleven_multilingual_v2'; // Supports vast array of languages
+    // Voice Settings (Using Multilingual v2 for best language support)
+    const VOICE_ID = '21m00Tcm4TlvDq8ikWAM'; // "Rachel" - specific voice ID
+    const MODEL_ID = 'eleven_multilingual_v2';
     
-    // 3. Native MP3 Languages (These will NOT use AI, preserving original hosting)
-    // Matches the keys in TRANSLATIONS_CONFIG (en, id, es)
-    const NATIVE_AUDIO_LANGS = ['en', 'id', 'es'];
+    // These languages use your existing MP3 files (NO AI for these)
+    const NATIVE_LANGS = ['en', 'id', 'es']; 
 
-    // --- INITIALIZATION ---
-    // Wait for index.js to load its config and elements
-    const initInterval = setInterval(() => {
-        if (window.TRANSLATIONS_CONFIG && window.elements && window.quranData) {
-            clearInterval(initInterval);
-            console.log("AI Audio Bridge: Hooking into Quran Player...");
-            setupAIAudio();
+    // --- 2. INITIALIZATION BRIDGE ---
+    // We wait for index.js to fully load its globals (TRANSLATIONS_CONFIG, elements)
+    const bridgeInterval = setInterval(() => {
+        // Safe check for global variables defined in index.js
+        const globalsReady = (
+            typeof TRANSLATIONS_CONFIG !== 'undefined' &&
+            typeof elements !== 'undefined' &&
+            typeof updateTranslationAudio === 'function' &&
+            typeof translationCache !== 'undefined'
+        );
+
+        if (globalsReady) {
+            clearInterval(bridgeInterval);
+            console.log("AI-Audio Bridge: Connected to Quran Player.");
+            activateAILogic();
         }
     }, 200);
 
-    function setupAIAudio() {
-        const audioSelect = document.getElementById('translationAudioSelect');
-        
-        // 1. RE-POPULATE THE AUDIO SELECTOR
-        // We overwrite the default list to include ALL languages from the XML config
-        if (audioSelect) {
-            const currentVal = audioSelect.value; // preserve selection if any
-            audioSelect.innerHTML = ''; // Clear existing
-            
-            // Add "Off" or default option if needed, currently mimicking typical behavior
-            const noneOpt = document.createElement('option');
-            noneOpt.value = 'none';
-            noneOpt.textContent = 'None (Off)';
-            audioSelect.appendChild(noneOpt);
+    function activateAILogic() {
+        // Capture the original function from index.js
+        const originalUpdateFn = window.updateTranslationAudio;
 
-            Object.keys(TRANSLATIONS_CONFIG).forEach(key => {
-                const config = TRANSLATIONS_CONFIG[key];
-                const opt = document.createElement('option');
-                opt.value = key;
-                
-                // Visual indicator for AI vs Native
-                const typeLabel = NATIVE_AUDIO_LANGS.includes(key) ? '[MP3]' : '[AI]';
-                opt.textContent = `${config.name} ${typeLabel}`;
-                
-                audioSelect.appendChild(opt);
-            });
-
-            // Restore selection or default to English if available
-            if(currentVal && TRANSLATIONS_CONFIG[currentVal]) {
-                audioSelect.value = currentVal;
-            } else {
-                audioSelect.value = 'en'; 
-            }
-        }
-
-        // 2. INTERCEPT THE AUDIO UPDATE FUNCTION
-        // We save the old function to call it when we need Native MP3s
-        const originalUpdateTranslationAudio = window.updateTranslationAudio || function(){};
-
+        // --- 3. THE INTERCEPTOR ---
+        // We overwrite the global function to inject our logic
         window.updateTranslationAudio = async function(chapterNum, verseNum, autoplay) {
-            const audioLang = audioSelect ? audioSelect.value : 'en';
-
-            // A. Handle "None"
-            if (audioLang === 'none') {
-                elements.transAudio.src = '';
-                return;
-            }
-
-            // B. Handle Native MP3s (English, Indo, Spanish)
-            if (NATIVE_AUDIO_LANGS.includes(audioLang)) {
-                console.log(`AI Bridge: Delegating ${audioLang} to native player.`);
-                // We must ensure the select value matches what the original logic expects
-                // The original logic likely reads elements.selects.translationAudioSelect or similar
-                // We just call the original function.
-                return originalUpdateTranslationAudio(chapterNum, verseNum, autoplay);
-            }
-
-            // C. Handle AI Generation (Everything else)
-            console.log(`AI Bridge: Generating AI Audio for ${audioLang} (Ch:${chapterNum}, V:${verseNum})`);
             
-            // 1. Ensure Text Data is Loaded
-            if (!translationCache[audioLang]) {
-                console.log("AI Bridge: Loading XML for speech generation...");
-                await loadTranslationData(audioLang);
+            // Get currently selected translation ID (e.g., 'fr', 'sq', 'en')
+            const currentLangId = elements.selects.trans ? elements.selects.trans.value : 'en';
+
+            // CASE A: Original Hosted Audio (English, Indo, Spanish)
+            if (NATIVE_LANGS.includes(currentLangId)) {
+                // Pass control back to the original function exactly as before
+                return originalUpdateFn(chapterNum, verseNum, autoplay);
             }
 
-            // 2. Extract Text from XML
-            // Assuming standard Tanzil/Quran XML format structure
-            const doc = translationCache[audioLang];
-            let textToSpeak = "";
+            // CASE B: AI Generation (Everything else)
+            console.log(`AI-Audio: Generating speech for lang '${currentLangId}' [${chapterNum}:${verseNum}]`);
 
-            try {
-                // Try finding by Chapter/Verse attributes
-                // Selector strategy: Look for Sura ID -> Verse ID
-                // Common XML format: <sura index="1"><aya index="1" text="..."/></sura>
-                const suras = doc.querySelectorAll('sura');
-                const sura = suras[chapterNum - 1]; // 0-indexed
-                if (sura) {
-                    const ayas = sura.querySelectorAll('aya');
-                    const aya = ayas[verseNum - 1];
-                    textToSpeak = aya ? aya.getAttribute('text') : "";
-                }
-                
-                // Fallback for different XML structures (Verse tag style)
-                if (!textToSpeak) {
-                    const verseNode = doc.querySelector(`Verse[Chapter="${chapterNum}"][Verse="${verseNum}"]`);
-                    if (verseNode) textToSpeak = verseNode.textContent || verseNode.getAttribute('Text');
-                }
+            // 1. Reset Audio Player to avoid playing old buffer
+            elements.transAudio.pause();
+            elements.transAudio.src = '';
 
-            } catch (e) {
-                console.error("AI Bridge: Error parsing XML text", e);
+            // 2. Retrieve Text from the XML Cache
+            // (index.js loads the XML into 'translationCache', we just read it)
+            if (!translationCache[currentLangId]) {
+                // If text isn't loaded yet, try to load it using the original helper
+                if (typeof loadTranslationData === 'function') {
+                    await loadTranslationData(currentLangId);
+                }
             }
 
-            if (!textToSpeak) {
-                console.warn("AI Bridge: No text found to speak.");
+            const verseText = extractVerseText(currentLangId, chapterNum, verseNum);
+            
+            if (!verseText) {
+                console.warn("AI-Audio: Could not find text for this verse.");
                 return;
             }
 
             // 3. Call ElevenLabs API
             try {
-                // Construct URL for streaming to avoid waiting for full download
                 const streamUrl = `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}/stream?optimize_streaming_latency=3`;
                 
                 const response = await fetch(streamUrl, {
@@ -137,7 +85,7 @@
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        text: textToSpeak,
+                        text: verseText,
                         model_id: MODEL_ID,
                         voice_settings: {
                             stability: 0.5,
@@ -146,31 +94,50 @@
                     })
                 });
 
-                if (!response.ok) {
-                    throw new Error(`ElevenLabs API Error: ${response.statusText}`);
-                }
+                if (!response.ok) throw new Error("ElevenLabs API Error");
 
-                // 4. Play the Audio Blob
                 const blob = await response.blob();
                 const audioUrl = URL.createObjectURL(blob);
                 
                 elements.transAudio.src = audioUrl;
                 
-                // Clean up Blob URL when audio changes to prevent memory leaks
-                elements.transAudio.onended = () => URL.revokeObjectURL(audioUrl);
-                
                 if (autoplay) {
-                    elements.transAudio.play().catch(e => console.log("AI Autoplay blocked:", e));
+                    elements.transAudio.play().catch(e => console.log("AI Playback blocked:", e));
                 }
 
+                // Cleanup memory when audio ends
+                elements.transAudio.onended = () => URL.revokeObjectURL(audioUrl);
+
             } catch (err) {
-                console.error("AI Bridge: TTS Failed", err);
-                // Optional: UI feedback that quota might be exceeded
+                console.error("AI-Audio Error:", err);
             }
         };
+    }
 
-        // Trigger an update to refresh the list logic immediately
-        console.log("AI Audio Bridge: Ready.");
+    // --- 4. XML TEXT PARSER HELPER ---
+    // Extracts text safely regardless of XML format variations
+    function extractVerseText(langId, ch, v) {
+        const doc = translationCache[langId];
+        if (!doc) return null;
+
+        try {
+            // Strategy 1: Standard Tanzil Format <sura index="1"><aya index="1" text="..."/></sura>
+            const suraNode = doc.querySelector(`sura[index="${ch}"]`);
+            if (suraNode) {
+                const ayaNode = suraNode.querySelector(`aya[index="${v}"]`);
+                if (ayaNode) return ayaNode.getAttribute('text');
+            }
+
+            // Strategy 2: Direct Verse attributes <Verse Chapter="1" Verse="1">...</Verse>
+            const verseNode = doc.querySelector(`Verse[Chapter="${ch}"][Verse="${v}"]`);
+            if (verseNode) {
+                return verseNode.textContent || verseNode.getAttribute('Text');
+            }
+            
+        } catch (e) {
+            console.error("AI-Audio: XML Parse error", e);
+        }
+        return null;
     }
 
 })();
