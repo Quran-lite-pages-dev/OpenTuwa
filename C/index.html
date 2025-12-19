@@ -144,7 +144,12 @@
             let fullText = "";
 
             try {
-                const response = await puter.ai.chat(userQuestion, { model: "gpt-4o", stream: true });
+                   const response = await puter.ai.chat(userQuestion, { 
+    model: "gpt-5.2-pro", 
+    driver: "openrouter", // Specifies OpenRouter as the provider
+    stream: true 
+});
+
                 resultDiv.innerText = "";
 
                 for await (const part of response) {
