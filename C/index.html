@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Puter AI Chat - Persistent Workspace</title>
+    <title>Puter AI Chat - Voice Enabled</title>
     <script src="https://js.puter.com/v2/"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -13,7 +13,7 @@
     <style>
         * { box-sizing: border-box; }
         body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background-color: #f4f4f9; }
-
+        
         .app-container { display: flex; height: 100vh; width: 100vw; }
 
         /* SIDEBAR */
@@ -59,9 +59,30 @@
         #questionInput { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; margin-bottom: 10px; }
         
         .button-group { display: flex; gap: 10px; }
-        button { padding: 10px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; }
+        button { padding: 10px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; transition: 0.2s; }
+        
         #submitButton { background-color: #007bff; color: white; }
         #stopButton { background-color: #dc3545; color: white; display: none; }
+        
+        /* VOICE BUTTON STYLES */
+        #voiceButton { 
+            background-color: #6c757d; 
+            color: white; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            min-width: 50px;
+        }
+        #voiceButton.listening {
+            background-color: #dc3545;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+        }
 
         #result {
             background: white; padding: 25px; border-radius: 8px; margin-top: 20px;
@@ -92,11 +113,14 @@
         <div id="main-content">
             <div id="chat-window">
                 <h1>AI Workspace</h1>
-                <input type="text" id="questionInput" placeholder="Ask a question...">
+                <input type="text" id="questionInput" placeholder="Ask a question or click the mic...">
+                
                 <div class="button-group">
                     <button id="submitButton">Ask AI</button>
+                    <button id="voiceButton" title="Click to Speak">🎤</button>
                     <button id="stopButton">Stop</button>
                 </div>
+
                 <div id="result">Your answer will appear here...</div>
             </div>
         </div>
@@ -106,6 +130,7 @@
         const inputElement = document.getElementById('questionInput');
         const submitBtn = document.getElementById('submitButton');
         const stopBtn = document.getElementById('stopButton');
+        const voiceBtn = document.getElementById('voiceButton');
         const resultDiv = document.getElementById('result');
         const historyList = document.getElementById('history-list');
         const clearBtn = document.getElementById('clearBtn');
@@ -119,8 +144,12 @@
             if (savedHistory) {
                 chatHistory = JSON.parse(savedHistory);
                 updateSidebar();
-                // Optionally load the last item
                 if (chatHistory.length > 0) loadHistoryItem(0);
+            }
+            // Check Voice Support
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                voiceBtn.style.display = 'none';
+                console.warn("Speech Recognition not supported in this browser.");
             }
         };
 
@@ -132,6 +161,55 @@
             breaks: true
         });
 
+        // --- VOICE RECOGNITION LOGIC ---
+        let recognition;
+        
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            
+            // "continuous = false" automatically stops capturing after a pause (silence)
+            recognition.continuous = false; 
+            recognition.lang = 'en-US'; 
+            recognition.interimResults = false; // Only get final result
+
+            recognition.onstart = () => {
+                voiceBtn.classList.add('listening');
+                inputElement.placeholder = "Listening...";
+            };
+
+            recognition.onend = () => {
+                voiceBtn.classList.remove('listening');
+                inputElement.placeholder = "Ask a question...";
+            };
+
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                inputElement.value = transcript;
+                
+                // Automatically hit send after receiving text
+                console.log("Voice recognized: " + transcript);
+                setTimeout(() => {
+                    askAI();
+                }, 500);
+            };
+
+            recognition.onerror = (event) => {
+                console.error("Speech recognition error", event.error);
+                voiceBtn.classList.remove('listening');
+                inputElement.placeholder = "Error. Try again.";
+            };
+
+            voiceBtn.onclick = () => {
+                if (voiceBtn.classList.contains('listening')) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                }
+            };
+        }
+
+        // --- AI LOGIC ---
         async function askAI() {
             const userQuestion = inputElement.value.trim();
             if (userQuestion === "" || isGenerating) return;
@@ -139,30 +217,30 @@
             isGenerating = true;
             submitBtn.disabled = true;
             stopBtn.style.display = "inline-block";
-            resultDiv.innerHTML = "<em>Thinking...</em>"; 
-            
+            voiceBtn.disabled = true; // Disable voice while generating
+            resultDiv.innerHTML = "<em>Thinking...</em>";
+
             let fullText = "";
 
             try {
-                   const response = await puter.ai.chat(userQuestion, { 
-    model: "gpt-5.2-pro", 
-    driver: "openrouter", // Specifies OpenRouter as the provider
-    stream: true 
-});
+                // Using Puter.js
+                const response = await puter.ai.chat(userQuestion, {
+                    model: "gpt-4o-mini", // Faster model, good for chat
+                    stream: true
+                });
 
                 resultDiv.innerText = "";
 
                 for await (const part of response) {
-                    if (!isGenerating) break; 
+                    if (!isGenerating) break;
                     if (part?.text) {
                         fullText += part.text;
-                        resultDiv.innerText = fullText; 
+                        resultDiv.innerText = fullText;
                     }
                 }
 
                 if (fullText) {
                     chatHistory.unshift({ question: userQuestion, answer: fullText });
-                    // --- 2. SAVE: Save to Local Storage ---
                     localStorage.setItem('puterChatHistory', JSON.stringify(chatHistory));
                     updateSidebar();
                 }
@@ -173,6 +251,7 @@
                 renderFinalOutput(fullText);
                 isGenerating = false;
                 submitBtn.disabled = false;
+                voiceBtn.disabled = false;
                 stopBtn.style.display = "none";
                 inputElement.value = "";
             }
@@ -192,15 +271,14 @@
         function loadHistoryItem(index) {
             const item = chatHistory[index];
             renderFinalOutput(item.answer);
-            // Put the question back in the box in case they want to refine it
-            inputElement.value = item.question; 
+            inputElement.value = item.question;
         }
 
         function renderFinalOutput(text) {
             if (!text) return;
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = marked.parse(text);
-            
+
             tempDiv.querySelectorAll('pre').forEach((pre) => {
                 const container = document.createElement('div');
                 container.className = 'code-container';
@@ -226,7 +304,7 @@
         submitBtn.addEventListener('click', askAI);
         stopBtn.addEventListener('click', () => isGenerating = false);
         inputElement.addEventListener('keypress', (e) => { if (e.key === 'Enter') askAI(); });
-        
+
         clearBtn.onclick = () => {
             if (confirm("Delete all saved chats?")) {
                 localStorage.removeItem('puterChatHistory');
