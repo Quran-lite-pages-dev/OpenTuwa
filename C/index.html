@@ -12,34 +12,43 @@
 
     <style>
         * { box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #f0f2f5; }
         .app-container { display: flex; height: 100vh; width: 100vw; }
 
         /* SIDEBAR */
-        #sidebar { width: 280px; background-color: #1a1a1b; color: #d7dadc; display: flex; flex-direction: column; padding: 15px; }
+        #sidebar { width: 280px; background-color: #1a1a1b; color: #d7dadc; display: flex; flex-direction: column; padding: 15px; border-right: 1px solid #343536; }
         #sidebar h2 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #818384; margin-bottom: 20px; }
-        .history-item { padding: 10px; background: #272729; border-radius: 4px; margin-bottom: 8px; cursor: pointer; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; }
+        #history-list { overflow-y: auto; flex-grow: 1; }
+        .history-item { padding: 12px; background: #272729; border-radius: 6px; margin-bottom: 8px; cursor: pointer; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: background 0.2s; }
+        .history-item:hover { background: #343536; }
         
         /* MAIN AREA */
         #main-content { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; }
         #chat-window { width: 100%; max-width: 900px; }
         
-        #questionInput { width: 100%; padding: 18px; border: 1px solid #343536; background: white; border-radius: 8px; font-size: 16px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        #questionInput { width: 100%; padding: 18px; border: 1px solid #ced4da; background: white; border-radius: 8px; font-size: 16px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); outline: none; }
+        #questionInput:focus { border-color: #007bff; }
         
-        .status-indicator { font-size: 0.8rem; color: #007bff; margin-bottom: 10px; height: 20px; font-weight: bold; }
+        .status-indicator { font-size: 0.85rem; color: #007bff; margin-bottom: 10px; height: 20px; font-weight: 600; }
         
         .button-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        button { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        button { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: opacity 0.2s; }
+        button:disabled { opacity: 0.6; cursor: not-allowed; }
         #submitButton { background-color: #007bff; color: white; }
         #stopButton { background-color: #ea4335; color: white; display: none; }
 
-        #result { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); line-height: 1.7; min-height: 200px; }
+        #result { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); line-height: 1.7; min-height: 200px; color: #1a1a1b; }
 
-        /* CODE & MARKDOWN */
+        /* CODE & MARKDOWN STYLING */
         .code-container { position: relative; margin: 20px 0; }
-        pre { background: #1e1e1e; padding: 15px; border-radius: 8px; overflow-x: auto; }
+        pre { background: #1e1e1e; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 0; }
         code { font-family: 'Fira Code', monospace; font-size: 14px; }
         .copy-btn { position: absolute; top: 10px; right: 10px; background: #444; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; }
+        .copy-btn:hover { background: #555; }
+        
+        /* Markdown Spacing */
+        #result h1, #result h2, #result h3 { margin-top: 1.5em; }
+        #result p { margin-bottom: 1em; }
     </style>
 </head>
 <body>
@@ -76,8 +85,14 @@
         let isGenerating = false;
         let chatHistory = JSON.parse(localStorage.getItem('puterSearchHistory') || '[]');
 
+        // Configure Markdown Renderer
         marked.setOptions({
-            highlight: (code, lang) => hljs.highlightAuto(code).value,
+            highlight: (code, lang) => {
+                if (lang && hljs.getLanguage(lang)) {
+                    return hljs.highlight(code, { language: lang }).value;
+                }
+                return hljs.highlightAuto(code).value;
+            },
             breaks: true
         });
 
@@ -88,52 +103,60 @@
             isGenerating = true;
             submitBtn.disabled = true;
             stopBtn.style.display = "inline-block";
-            resultDiv.innerHTML = "";
+            resultDiv.innerHTML = "Gathering data...";
             
             try {
-                // STEP 1: Google Search Access
-                statusText.innerText = "🌐 Accessing Google Search...";
-                const searchResults = await puter.google.search(query, { limit: 5 });
+                // STEP 1: Corrected Search Call
+                statusText.innerText = "🌐 Searching the web...";
+                const searchResults = await puter.ai.search(query); 
                 
-                // Format the search data into a digestible string
+                // Format search data
                 const dataContext = searchResults.map(res => 
                     `Source: ${res.title}\nSnippet: ${res.snippet}\nURL: ${res.link}`
                 ).join("\n\n");
 
                 // STEP 2: Construct the Rationalization Prompt
-                // This ensures the response isn't "1+1=2" but an "authentic" blend.
                 const systemPrompt = `
                     You are an advanced rationalization engine. 
                     USER REQUEST: "${query}"
+                    
                     RAW SEARCH DATA:
                     ${dataContext}
 
                     INSTRUCTION: 
                     Rationalize the user request against the search data. Do not simply summarize. 
                     Blend the facts into a cohesive, "authentic" narrative. If the data conflicts or 
-                    adds new dimensions (like 1+1 not being 2 in a specific context), explain that 
-                    nuance. Your response should feel like a deep-dive synthesis.
+                    adds new dimensions, explain that nuance. Use Markdown for formatting.
                 `;
 
-                statusText.innerText = "🧠 Rationalizing data...";
-                const response = await puter.ai.chat(systemPrompt, { model: "gpt-5.2-pro", stream: true });
+                statusText.innerText = "🧠 Synthesizing insights...";
+                
+                // STEP 3: Corrected Model and Chat Call
+                // Use 'gpt-4o' or 'claude-3-5-sonnet'
+                const response = await puter.ai.chat(systemPrompt, { model: "gpt-4o", stream: true });
 
                 let fullText = "";
+                resultDiv.innerText = ""; // Clear for streaming
+
                 for await (const part of response) {
                     if (!isGenerating) break;
                     if (part?.text) {
                         fullText += part.text;
-                        resultDiv.innerText = fullText;
+                        // For a better UX, we update the text content during streaming
+                        resultDiv.innerText = fullText; 
                     }
                 }
 
-                saveToHistory(query, fullText);
+                if (isGenerating) {
+                    saveToHistory(query, fullText);
+                }
 
             } catch (error) {
-                resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+                console.error(error);
+                resultDiv.innerHTML = `<div style="color: #ea4335;"><strong>Error:</strong> ${error.message}</div>`;
             } finally {
                 renderOutput(resultDiv.innerText);
-                statusText.innerText = "Done";
+                statusText.innerText = "Analysis Complete";
                 isGenerating = false;
                 submitBtn.disabled = false;
                 stopBtn.style.display = "none";
@@ -141,17 +164,29 @@
         }
 
         function renderOutput(text) {
+            if(!text) return;
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = marked.parse(text);
+            
+            // Add Copy Buttons to code blocks
             tempDiv.querySelectorAll('pre').forEach(pre => {
                 const container = document.createElement('div');
                 container.className = 'code-container';
                 const btn = document.createElement('button');
-                btn.className = 'copy-btn'; btn.innerText = 'Copy';
-                btn.onclick = () => { navigator.clipboard.writeText(pre.innerText); btn.innerText = 'Copied!'; };
+                btn.className = 'copy-btn'; 
+                btn.innerText = 'Copy';
+                
+                btn.onclick = () => { 
+                    navigator.clipboard.writeText(pre.innerText); 
+                    btn.innerText = 'Copied!'; 
+                    setTimeout(() => btn.innerText = 'Copy', 2000);
+                };
+
                 pre.parentNode.insertBefore(container, pre);
-                container.appendChild(btn); container.appendChild(pre);
+                container.appendChild(btn); 
+                container.appendChild(pre);
             });
+
             resultDiv.innerHTML = "";
             resultDiv.appendChild(tempDiv);
             resultDiv.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
@@ -159,23 +194,33 @@
 
         function saveToHistory(q, a) {
             chatHistory.unshift({ q, a });
-            localStorage.setItem('puterSearchHistory', JSON.stringify(chatHistory.slice(0, 20)));
+            // Keep last 20 items
+            chatHistory = chatHistory.slice(0, 20);
+            localStorage.setItem('puterSearchHistory', JSON.stringify(chatHistory));
             renderHistory();
         }
 
         function renderHistory() {
             historyList.innerHTML = "";
-            chatHistory.forEach((item, i) => {
+            chatHistory.forEach((item) => {
                 const d = document.createElement('div');
                 d.className = 'history-item';
                 d.innerText = item.q;
-                d.onclick = () => renderOutput(item.a);
+                d.title = item.q;
+                d.onclick = () => {
+                    inputElement.value = item.q;
+                    renderOutput(item.a);
+                };
                 historyList.appendChild(d);
             });
         }
 
+        // Event Listeners
         submitBtn.onclick = askAI;
-        stopBtn.onclick = () => isGenerating = false;
+        stopBtn.onclick = () => {
+            isGenerating = false;
+            statusText.innerText = "Stopped";
+        };
         inputElement.onkeypress = (e) => { if(e.key === 'Enter') askAI(); };
         window.onload = renderHistory;
     </script>
