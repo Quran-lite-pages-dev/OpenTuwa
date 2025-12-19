@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Puter AI - Authentic Search Engine</title>
+    <title>Puter AI Chat - Persistent Workspace</title>
     <script src="https://js.puter.com/v2/"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -12,64 +12,92 @@
 
     <style>
         * { box-sizing: border-box; }
-        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: #f0f2f5; }
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; background-color: #f4f4f9; }
+
         .app-container { display: flex; height: 100vh; width: 100vw; }
 
         /* SIDEBAR */
-        #sidebar { width: 280px; background-color: #1a1a1b; color: #d7dadc; display: flex; flex-direction: column; padding: 15px; border-right: 1px solid #343536; }
-        #sidebar h2 { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: #818384; margin-bottom: 20px; }
-        #history-list { overflow-y: auto; flex-grow: 1; }
-        .history-item { padding: 12px; background: #272729; border-radius: 6px; margin-bottom: 8px; cursor: pointer; font-size: 0.85rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; transition: background 0.2s; }
-        .history-item:hover { background: #343536; }
+        #sidebar {
+            width: 280px;
+            background-color: #202123;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        #sidebar h2 { font-size: 1.1rem; margin-bottom: 20px; color: #acacbe; border-bottom: 1px solid #444; padding-bottom: 10px; }
         
+        #history-list { flex-grow: 1; }
+        
+        .history-item {
+            padding: 10px;
+            background: #343541;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            transition: 0.2s;
+        }
+        .history-item:hover { background: #444654; }
+
+        #clearBtn {
+            background: #444;
+            color: #ff9999;
+            margin-top: 10px;
+            font-size: 12px;
+            padding: 8px;
+            text-align: center;
+        }
+
         /* MAIN AREA */
-        #main-content { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 20px; overflow-y: auto; }
-        #chat-window { width: 100%; max-width: 900px; }
+        #main-content { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 40px; overflow-y: auto; }
+        #chat-window { width: 100%; max-width: 850px; }
+        #questionInput { width: 100%; padding: 15px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; margin-bottom: 10px; }
         
-        #questionInput { width: 100%; padding: 18px; border: 1px solid #ced4da; background: white; border-radius: 8px; font-size: 16px; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); outline: none; }
-        #questionInput:focus { border-color: #007bff; }
-        
-        .status-indicator { font-size: 0.85rem; color: #007bff; margin-bottom: 10px; height: 20px; font-weight: 600; }
-        
-        .button-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        button { padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: opacity 0.2s; }
-        button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .button-group { display: flex; gap: 10px; }
+        button { padding: 10px 25px; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; }
         #submitButton { background-color: #007bff; color: white; }
-        #stopButton { background-color: #ea4335; color: white; display: none; }
+        #stopButton { background-color: #dc3545; color: white; display: none; }
 
-        #result { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 15px rgba(0,0,0,0.08); line-height: 1.7; min-height: 200px; color: #1a1a1b; }
+        #result {
+            background: white; padding: 25px; border-radius: 8px; margin-top: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); line-height: 1.6; min-height: 100px;
+            white-space: pre-wrap;
+        }
 
-        /* CODE & MARKDOWN STYLING */
-        .code-container { position: relative; margin: 20px 0; }
-        pre { background: #1e1e1e; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 0; }
-        code { font-family: 'Fira Code', monospace; font-size: 14px; }
-        .copy-btn { position: absolute; top: 10px; right: 10px; background: #444; color: #fff; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; }
-        .copy-btn:hover { background: #555; }
-        
-        /* Markdown Spacing */
-        #result h1, #result h2, #result h3 { margin-top: 1.5em; }
-        #result p { margin-bottom: 1em; }
+        /* CODE BLOCK STYLE */
+        .code-container { position: relative; margin: 15px 0; }
+        pre { background: #2d2d2d; padding: 15px; border-radius: 8px; overflow-x: auto; margin: 0; }
+        code { font-family: 'Consolas', monospace; color: #f8f8f2; }
+        .copy-btn {
+            position: absolute; top: 8px; right: 8px;
+            background: #555; color: #fff; border: none;
+            padding: 4px 8px; border-radius: 4px; font-size: 11px; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         <div id="sidebar">
-            <h2>Research History</h2>
+            <h2>Saved Chats</h2>
             <div id="history-list"></div>
+            <button id="clearBtn">🗑 Clear All History</button>
         </div>
 
         <div id="main-content">
             <div id="chat-window">
-                <div class="status-indicator" id="statusText">Ready</div>
-                <input type="text" id="questionInput" placeholder="Enter a topic to research and rationalize...">
-                
+                <h1>AI Workspace</h1>
+                <input type="text" id="questionInput" placeholder="Ask a question...">
                 <div class="button-group">
-                    <button id="submitButton">Search & Rationalize</button>
+                    <button id="submitButton">Ask AI</button>
                     <button id="stopButton">Stop</button>
                 </div>
-
-                <div id="result">The synthesis of web data and AI logic will appear here...</div>
+                <div id="result">Your answer will appear here...</div>
             </div>
         </div>
     </div>
@@ -79,150 +107,129 @@
         const submitBtn = document.getElementById('submitButton');
         const stopBtn = document.getElementById('stopButton');
         const resultDiv = document.getElementById('result');
-        const statusText = document.getElementById('statusText');
         const historyList = document.getElementById('history-list');
+        const clearBtn = document.getElementById('clearBtn');
 
         let isGenerating = false;
-        let chatHistory = JSON.parse(localStorage.getItem('puterSearchHistory') || '[]');
+        let chatHistory = [];
 
-        // Configure Markdown Renderer
+        // --- 1. INITIALIZE: Load from Local Storage ---
+        window.onload = () => {
+            const savedHistory = localStorage.getItem('puterChatHistory');
+            if (savedHistory) {
+                chatHistory = JSON.parse(savedHistory);
+                updateSidebar();
+                // Optionally load the last item
+                if (chatHistory.length > 0) loadHistoryItem(0);
+            }
+        };
+
         marked.setOptions({
             highlight: (code, lang) => {
-                if (lang && hljs.getLanguage(lang)) {
-                    return hljs.highlight(code, { language: lang }).value;
-                }
-                return hljs.highlightAuto(code).value;
+                const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+                return hljs.highlight(code, { language }).value;
             },
             breaks: true
         });
 
         async function askAI() {
-            const query = inputElement.value.trim();
-            if (!query || isGenerating) return;
+            const userQuestion = inputElement.value.trim();
+            if (userQuestion === "" || isGenerating) return;
 
             isGenerating = true;
             submitBtn.disabled = true;
             stopBtn.style.display = "inline-block";
-            resultDiv.innerHTML = "Gathering data...";
+            resultDiv.innerHTML = "<em>Thinking...</em>"; 
             
+            let fullText = "";
+
             try {
-                // STEP 1: Corrected Search Call
-                statusText.innerText = "🌐 Searching the web...";
-                const searchResults = await puter.ai.search(query); 
-                
-                // Format search data
-                const dataContext = searchResults.map(res => 
-                    `Source: ${res.title}\nSnippet: ${res.snippet}\nURL: ${res.link}`
-                ).join("\n\n");
-
-                // STEP 2: Construct the Rationalization Prompt
-                const systemPrompt = `
-                    You are an advanced rationalization engine. 
-                    USER REQUEST: "${query}"
-                    
-                    RAW SEARCH DATA:
-                    ${dataContext}
-
-                    INSTRUCTION: 
-                    Rationalize the user request against the search data. Do not simply summarize. 
-                    Blend the facts into a cohesive, "authentic" narrative. If the data conflicts or 
-                    adds new dimensions, explain that nuance. Use Markdown for formatting.
-                `;
-
-                statusText.innerText = "🧠 Synthesizing insights...";
-                
-                // STEP 3: Corrected Model and Chat Call
-                // Use 'gpt-4o' or 'claude-3-5-sonnet'
-                const response = await puter.ai.chat(systemPrompt, { model: "gpt-4o", stream: true });
-
-                let fullText = "";
-                resultDiv.innerText = ""; // Clear for streaming
+                const response = await puter.ai.chat(userQuestion, { model: "gpt-4o", stream: true });
+                resultDiv.innerText = "";
 
                 for await (const part of response) {
-                    if (!isGenerating) break;
+                    if (!isGenerating) break; 
                     if (part?.text) {
                         fullText += part.text;
-                        // For a better UX, we update the text content during streaming
                         resultDiv.innerText = fullText; 
                     }
                 }
 
-                if (isGenerating) {
-                    saveToHistory(query, fullText);
+                if (fullText) {
+                    chatHistory.unshift({ question: userQuestion, answer: fullText });
+                    // --- 2. SAVE: Save to Local Storage ---
+                    localStorage.setItem('puterChatHistory', JSON.stringify(chatHistory));
+                    updateSidebar();
                 }
 
             } catch (error) {
-                console.error(error);
-                resultDiv.innerHTML = `<div style="color: #ea4335;"><strong>Error:</strong> ${error.message}</div>`;
+                resultDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
             } finally {
-                renderOutput(resultDiv.innerText);
-                statusText.innerText = "Analysis Complete";
+                renderFinalOutput(fullText);
                 isGenerating = false;
                 submitBtn.disabled = false;
                 stopBtn.style.display = "none";
+                inputElement.value = "";
             }
         }
 
-        function renderOutput(text) {
-            if(!text) return;
+        function updateSidebar() {
+            historyList.innerHTML = "";
+            chatHistory.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerText = item.question;
+                div.onclick = () => loadHistoryItem(index);
+                historyList.appendChild(div);
+            });
+        }
+
+        function loadHistoryItem(index) {
+            const item = chatHistory[index];
+            renderFinalOutput(item.answer);
+            // Put the question back in the box in case they want to refine it
+            inputElement.value = item.question; 
+        }
+
+        function renderFinalOutput(text) {
+            if (!text) return;
             const tempDiv = document.createElement('div');
             tempDiv.innerHTML = marked.parse(text);
             
-            // Add Copy Buttons to code blocks
-            tempDiv.querySelectorAll('pre').forEach(pre => {
+            tempDiv.querySelectorAll('pre').forEach((pre) => {
                 const container = document.createElement('div');
                 container.className = 'code-container';
                 const btn = document.createElement('button');
-                btn.className = 'copy-btn'; 
+                btn.className = 'copy-btn';
                 btn.innerText = 'Copy';
-                
-                btn.onclick = () => { 
-                    navigator.clipboard.writeText(pre.innerText); 
-                    btn.innerText = 'Copied!'; 
+                btn.onclick = () => {
+                    navigator.clipboard.writeText(pre.innerText);
+                    btn.innerText = 'Copied!';
                     setTimeout(() => btn.innerText = 'Copy', 2000);
                 };
-
                 pre.parentNode.insertBefore(container, pre);
-                container.appendChild(btn); 
+                container.appendChild(btn);
                 container.appendChild(pre);
             });
 
             resultDiv.innerHTML = "";
             resultDiv.appendChild(tempDiv);
-            resultDiv.querySelectorAll('pre code').forEach(el => hljs.highlightElement(el));
+            resultDiv.querySelectorAll('pre code').forEach((el) => hljs.highlightElement(el));
         }
 
-        function saveToHistory(q, a) {
-            chatHistory.unshift({ q, a });
-            // Keep last 20 items
-            chatHistory = chatHistory.slice(0, 20);
-            localStorage.setItem('puterSearchHistory', JSON.stringify(chatHistory));
-            renderHistory();
-        }
-
-        function renderHistory() {
-            historyList.innerHTML = "";
-            chatHistory.forEach((item) => {
-                const d = document.createElement('div');
-                d.className = 'history-item';
-                d.innerText = item.q;
-                d.title = item.q;
-                d.onclick = () => {
-                    inputElement.value = item.q;
-                    renderOutput(item.a);
-                };
-                historyList.appendChild(d);
-            });
-        }
-
-        // Event Listeners
-        submitBtn.onclick = askAI;
-        stopBtn.onclick = () => {
-            isGenerating = false;
-            statusText.innerText = "Stopped";
+        // Action Listeners
+        submitBtn.addEventListener('click', askAI);
+        stopBtn.addEventListener('click', () => isGenerating = false);
+        inputElement.addEventListener('keypress', (e) => { if (e.key === 'Enter') askAI(); });
+        
+        clearBtn.onclick = () => {
+            if (confirm("Delete all saved chats?")) {
+                localStorage.removeItem('puterChatHistory');
+                chatHistory = [];
+                updateSidebar();
+                resultDiv.innerHTML = "History cleared.";
+            }
         };
-        inputElement.onkeypress = (e) => { if(e.key === 'Enter') askAI(); };
-        window.onload = renderHistory;
     </script>
 </body>
 </html>
