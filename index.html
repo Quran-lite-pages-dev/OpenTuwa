@@ -23,10 +23,10 @@
     <meta property="og:title" content="Quran for Every Soul - The Distraction-Free Quran Player">
     <meta property="og:description" content="Listen to the Noble Quran verse by verse with synchronized text and translations.">
     <meta property="og:image" content="https://Quran-lite.pages.dev/social-preview.jpg"> 
-    <meta property="og:url" content="https://Quran-lite.pages.dev/reading/">
+    <meta property="og:url" content="https://Quran-lite.pages.dev/">
     <meta property="og:type" content="website">
 
-    <link rel="canonical" id="dynamic-canonical" href="https://Quran-lite.pages.dev/reading/">
+    <link rel="canonical" id="dynamic-canonical" href="https://Quran-lite.pages.dev">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,7 +59,7 @@
       "url": "https://Quran-lite.pages.dev/",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://quran-lite.pages.dev/reading?search={search_term_string}",
+        "target": "https://Quran-lite.pages.dev/?search={search_term_string}",
         "query-input": "required name=search_term_string"
       }
     }
@@ -76,10 +76,10 @@
 <script src="voice-search.js"></script>
 <script>
     if ('serviceWorker' in navigator) {
-        // 1. Path to file: Use the absolute path '/reading/sw.js'
+        // 1. Path to file: Use the absolute path 'sw.js'
         // 2. Scope: Set the scope to '/reading/' so it only controls pages within that subdirectory.
         
-        navigator.serviceWorker.register('/reading/sw.js', { scope: '/reading/' })
+        navigator.serviceWorker.register('/sw.js', { scope: '/' });
         .then(registration => console.log('Service Worker Registered with scope:', registration.scope))
         .catch((err) => console.log('SW Failed:', err));
     }
@@ -135,7 +135,7 @@
                     <span>The  Clear  Book  | The Quran</span>
                     <span class="badge">AUDIO HD</span>
                 </div>
-                <h1 class="hero-title-text" id="door-hero-title">Reading Mode</h1>
+                <h1 class="hero-title-text" id="door-hero-title">THE QURAN</h1>
                 <div class="hero-subtitle" id="door-hero-subtitle">Surah Information</div>
                 <p class="hero-desc" id="door-hero-desc">Experience The Clear Quran with synchronized audio, distraction-free interface, and multi-language translations.</p>
                 <button id="door-play-btn" class="dash-btn" tabindex="10">
