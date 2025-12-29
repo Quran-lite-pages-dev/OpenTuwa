@@ -290,7 +290,7 @@ function switchView(viewName) {
         elements.views.cinema.classList.remove('active');
         elements.views.cinema.style.opacity = '0';
         elements.views.dashboard.classList.add('active');
-        elements.sidebar.container.style.display = 'flex'; // Show sidebar
+        elements.sidebar.container.style.display = 'none'; // Show sidebar
         elements.quranAudio.pause();
         elements.transAudio.pause();
         refreshDashboard();
