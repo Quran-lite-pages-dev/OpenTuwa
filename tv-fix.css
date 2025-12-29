@@ -1,27 +1,42 @@
-/* tv-fix.css */
+/* tv-fix.css - Clean Performance */
 
-/* 1. Fix "Content Overflow" (Safe Area for TV) */
 :root {
-    --safe-area-inset: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 50px) env(safe-area-inset-bottom, 20px) env(safe-area-inset-left, 50px);
+    --accent: #0FB;
 }
 
-body {
-    padding: var(--safe-area-inset) !important;
-    overflow: hidden !important; /* Stop the whole page from scrolling like a web browser */
-    height: 100vh !important;
-    box-sizing: border-box !important;
+body, html {
+    overflow: hidden !important; /* Keep this to prevent full page scroll */
+    background: #000;
 }
 
-/* 2. Strong Focus Ring (So you know where you are) */
-:focus {
-    outline: 4px solid #0FB !important; /* Bright Cyan color */
-    outline-offset: 4px !important;
-    box-shadow: 0 0 20px rgba(0, 255, 187, 0.6) !important;
-    transform: scale(1.02);
-    z-index: 9999 !important;
+/* HARDWARE ACCELERATION: Only apply to the container moving, not every child */
+.card-scroller {
+    display: flex;
+    overflow-x: auto !important; /* Enable native scroll behavior */
+    white-space: nowrap;
+    scroll-behavior: smooth; /* Native CSS smooth scrolling */
+    
+    /* Critical: Hide scrollbars but allow scrolling */
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+}
+.card-scroller::-webkit-scrollbar { 
+    display: none; 
 }
 
-/* 3. Hide Scrollbars completely */
-*::-webkit-scrollbar {
-    display: none !important;
+/* HIGH PERFORMANCE FOCUS */
+.surah-card {
+    /* Remove 'will-change' to save RAM */
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Ensure z-index is handled correctly */
+    position: relative;
+    z-index: 1;
+}
+
+.surah-card:focus {
+    outline: none !important;
+    transform: scale(1.1);
+    border: 4px solid var(--accent);
+    z-index: 100; /* Pop on top */
+    background-color: #222; /* Visual feedback */
 }
