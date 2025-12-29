@@ -183,13 +183,35 @@ async function initializeApp() {
         populateTranslationSelectOptions();
         populateTranslationAudioSelect(); // Called after Translations loaded
 
-        
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('chapter')) {
+            // Start in Cinema
+            switchView('cinema');
+            restoreState();
+            populateVerseSelect();
+            const savedVerse = getSavedVerseIndex();
+            if(savedVerse < elements.selects.verse.options.length) {
+                elements.selects.verse.value = savedVerse;
+            }
+            const activeTransId = elements.selects.trans.value;
+            await loadTranslationData(activeTransId);
+            loadVerse(false); // Old Logic
+            
+            elements.spinner.style.display = 'none';
+            elements.loaderText.style.display = 'none';
+            elements.startBtn.style.display = 'block';
+            elements.startBtn.textContent = "Continue";
+            elements.startBtn.focus();
+        } else {
+            // Start in Dashboard
+            switchView('dashboard');
+            refreshDashboard();
+            elements.overlay.style.display = 'none';
+        }
+
         setupEventListeners();
         initSidebarNavigation();
         initSearchInterface();
-        
-        // --- ACTIVATING SPATIAL NAVIGATION FOR ANDROID TV ---
-        initSpatialNavigation(); 
 
     } catch (error) {
         console.error("Critical Init Error:", error);
@@ -1114,145 +1136,6 @@ function closeSearch() {
     elements.search.overlay.classList.remove('active');
     setActiveNav(elements.sidebar.home);
     document.getElementById('door-play-btn').focus();
-}
-
-// NEW: Netflix-style Intro Logic
-function playNetflixIntro() {
-    const intro = document.getElementById('intro-overlay');
-    const audio = document.getElementById('intro-sound');
-    if(!intro || !audio) return;
-    
-    intro.style.display = 'flex'; // Ensure visible
-    
-    // Attempt autoplay (might be blocked by browser without interaction)
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-        playPromise.catch(error => {
-            console.log("Intro autoplay blocked by policy - user must interact first");
-            // Optionally force hide if blocked to avoid stuck screen, 
-            // or leave it for the animation to handle.
-        });
-    }
-
-    // Sync fade out with audio length (approx 3-4s)
-    setTimeout(() => {
-        intro.classList.add('intro-fade-out');
-        setTimeout(() => {
-            intro.style.display = 'none';
-        }, 1000);
-    }, 10000); 
-}
-
-// --- SPATIAL NAVIGATION (D-Pad Logic for Android TV) ---
-function initSpatialNavigation() {
-    // 1. Define what elements can be focused (buttons, cards, inputs)
-    const focusableSelector = '.nav-item, .surah-card, .dash-btn, input, button, .key, [tabindex="0"]';
-
-    window.addEventListener('keydown', (e) => {
-        // Map Android TV keys
-        const key = e.key;
-        const validKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
-
-        if (!validKeys.includes(key)) return;
-
-        // 2. STOP the default scrolling behavior!
-        e.preventDefault();
-
-        // 3. Find currently focused element
-        const current = document.activeElement;
-        
-        // Get all focusable items currently visible on screen
-        const allFocusable = Array.from(document.querySelectorAll(focusableSelector))
-            .filter(el => {
-                // Only interact with visible elements that aren't hidden/disabled
-                return el.offsetParent !== null && !el.disabled && el.style.display !== 'none'; 
-            });
-
-        // If nothing is focused (or focus is lost), start at the first item
-        if (!current || !allFocusable.includes(current)) {
-            // Prefer the "Continue/Play" button if visible, else the first card
-            const startBtn = document.getElementById('door-play-btn');
-            if(startBtn && startBtn.offsetParent !== null) startBtn.focus();
-            else allFocusable[0]?.focus();
-            return;
-        }
-
-        // 4. Calculate the best candidate to move to
-        const nextElement = findNextFocus(current, key, allFocusable);
-
-        if (nextElement) {
-            nextElement.focus();
-            // Smoothly scroll the page to keep the focused item in view
-            nextElement.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'center' });
-        }
-    });
-}
-
-// Math logic to find the "nearest neighbor" in the direction you pressed
-function findNextFocus(current, direction, candidates) {
-    const curRect = current.getBoundingClientRect();
-    const curCenter = {
-        x: curRect.left + curRect.width / 2,
-        y: curRect.top + curRect.height / 2
-    };
-
-    let bestCandidate = null;
-    let minDistance = Infinity;
-
-    candidates.forEach(cand => {
-        if (cand === current) return;
-
-        const candRect = cand.getBoundingClientRect();
-        const candCenter = {
-            x: candRect.left + candRect.width / 2,
-            y: candRect.top + candRect.height / 2
-        };
-
-        // Check if the candidate is generally in the correct direction
-        let isValid = false;
-        switch (direction) {
-            case 'ArrowRight':
-                // Must be to the right (x > x) and allow slight vertical overlap
-                isValid = candRect.left >= curRect.left + (curRect.width * 0.5); 
-                break;
-            case 'ArrowLeft':
-                isValid = candRect.right <= curRect.right - (curRect.width * 0.5);
-                break;
-            case 'ArrowDown':
-                isValid = candRect.top >= curRect.top + (curRect.height * 0.5);
-                break;
-            case 'ArrowUp':
-                isValid = candRect.bottom <= curRect.bottom - (curRect.height * 0.5);
-                break;
-        }
-
-        if (isValid) {
-            // Calculate distance to this candidate
-            const dx = candCenter.x - curCenter.x;
-            const dy = candCenter.y - curCenter.y;
-            // Euclidean distance (straight line)
-            const dist = Math.sqrt(dx * dx + dy * dy);
-
-            // PENALTY: Prefer items directly in line with the current one.
-            // If pressing UP/DOWN, penalize items that are far to the left/right.
-            // If pressing LEFT/RIGHT, penalize items that are far up/down.
-            let penalty = 0;
-            if (direction === 'ArrowUp' || direction === 'ArrowDown') {
-                penalty = Math.abs(dx) * 2.5; // High penalty for horizontal misalignment
-            } else {
-                penalty = Math.abs(dy) * 2.5; // High penalty for vertical misalignment
-            }
-
-            const totalScore = dist + penalty;
-
-            if (totalScore < minDistance) {
-                minDistance = totalScore;
-                bestCandidate = cand;
-            }
-        }
-    });
-
-    return bestCandidate;
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);
