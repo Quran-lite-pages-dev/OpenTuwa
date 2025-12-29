@@ -5,11 +5,7 @@ const SURAH_METADATA = [
 ];
 
 // --- 2. MULTI-PROFILE & LOGIC ---
-const ACTIVE_PROFILE_ID = localStorage.getItem('quran_active_profile');
-if (!ACTIVE_PROFILE_ID) {
-    window.location.href = '../'; 
-    throw new Error("Redirecting...");
-}
+const ACTIVE_PROFILE_ID = "1";
 const STORAGE_KEY = `quranState_${ACTIVE_PROFILE_ID}`;
 
 const TRANSLATIONS_CONFIG = {
@@ -187,34 +183,7 @@ async function initializeApp() {
         populateTranslationSelectOptions();
         populateTranslationAudioSelect(); // Called after Translations loaded
 
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('chapter')) {
-            // Start in Cinema
-            document.getElementById('intro-overlay').style.display = 'none'; // NEW: Hide intro if direct link
-            switchView('cinema');
-            restoreState();
-            populateVerseSelect();
-            const savedVerse = getSavedVerseIndex();
-            if(savedVerse < elements.selects.verse.options.length) {
-                elements.selects.verse.value = savedVerse;
-            }
-            const activeTransId = elements.selects.trans.value;
-            await loadTranslationData(activeTransId);
-            loadVerse(false); // Old Logic
-            
-            elements.spinner.style.display = 'none';
-            elements.loaderText.style.display = 'none';
-            elements.startBtn.style.display = 'block';
-            elements.startBtn.textContent = "Continue";
-            elements.startBtn.focus();
-        } else {
-            // Start in Dashboard
-            switchView('dashboard');
-            refreshDashboard();
-            elements.overlay.style.display = 'none';
-            playNetflixIntro(); // NEW: Trigger Intro
-        }
-
+        
         setupEventListeners();
         initSidebarNavigation();
         initSearchInterface();
