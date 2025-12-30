@@ -363,28 +363,5 @@ line-height: 1.4;
             border-color: var(--accent) !important;
             box-shadow: 0 0 25px rgba(0, 255, 187, 0.3);
         }
-                #smart-cast-btn {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 99999;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    display: none; /* Logic determines visibility */
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    backdrop-filter: blur(5px);
-}
-#smart-cast-btn:hover {
-    background: white;
-    color: black;
-}
-/* Hide default Google Cast button component if present */
-google-cast-launcher { display: none; }
 
 </style>
