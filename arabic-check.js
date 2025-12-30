@@ -1,13 +1,12 @@
 // arabic-check.js
 
-// Wait for the window to load so we are sure index.js has finished defining launchPlayer
 window.addEventListener('load', function() {
     
-    // 1. Backup the original launchPlayer function from index.js
+    // 1. Backup the original launchPlayer function
     const originalLaunchPlayer = window.launchPlayer;
 
     if (!originalLaunchPlayer) {
-        console.error("Original launchPlayer function not found. Make sure this script runs after index.js");
+        console.error("Original launchPlayer function not found.");
         return;
     }
 
@@ -18,7 +17,7 @@ window.addEventListener('load', function() {
         const btnNo = document.getElementById('btn-arabic-no');
         const cssLink = document.getElementById('main-css');
 
-        // Safety check: if modal elements are missing, just run the player
+        // Safety check
         if (!modal || !btnYes || !btnNo) {
             originalLaunchPlayer(chapter, verse);
             return;
@@ -27,21 +26,23 @@ window.addEventListener('load', function() {
         // Show the modal
         modal.style.display = 'flex';
 
-        // Define what happens when YES is clicked
+        // --- FIXED LOGIC HERE ---
+
+        // Handle YES: Force change BACK to index.css
         btnYes.onclick = function() {
             modal.style.display = 'none';
-            // Do nothing to CSS, just launch
+            if (cssLink) {
+                cssLink.href = 'index.css'; // RESET to default
+            }
             originalLaunchPlayer(chapter, verse);
         };
 
-        // Define what happens when NO is clicked
+        // Handle NO: Change to index1.css
         btnNo.onclick = function() {
             modal.style.display = 'none';
-            // Switch the CSS file
             if (cssLink) {
-                cssLink.href = 'index1.css';
+                cssLink.href = 'index1.css'; // SWITCH to modified
             }
-            // Then launch
             originalLaunchPlayer(chapter, verse);
         };
     };
