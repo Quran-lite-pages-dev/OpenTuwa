@@ -620,7 +620,7 @@ function saveState() {
         canonicalLink.href = fullUrl;
     }
 
-    const pageTitle = `${chObj.title} - Verse ${vNum} | QuranLite`;
+    const pageTitle = `${chObj.title} - Verse ${vNum}`;
     document.title = pageTitle;
     
     const metaDesc = `Read and Listen to Surah ${chObj.title} Verse ${vNum}. Translation: ${transName}. Recitation by ${reciterName}.`;
@@ -766,7 +766,8 @@ async function loadVerse(autoplay = true) {
     const verseKey = `${chNum}-${vNum}`;
     const isForbidden = forbiddenToTranslateSet.has(verseKey);
 
-    elements.display.title.textContent = `${currentChapterData.title} (${chNum}:${vNum})`;
+    // Change .textContent to .innerHTML
+elements.display.title.innerHTML = `${currentChapterData.title} <span class="chapter-subtitle">(${chNum}:${vNum})</span>`;
     
     const newSrc = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/img/${chNum}_${vNum}.png`;
     const img1 = elements.display.verse;
