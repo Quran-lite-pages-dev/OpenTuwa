@@ -363,5 +363,17 @@ line-height: 1.4;
             border-color: var(--accent) !important;
             box-shadow: 0 0 25px rgba(0, 255, 187, 0.3);
         }
+/* Sync Chapter Title with Control Panel on Landscape Desktop */
+@media (min-width: 769px) and (orientation: landscape) {
+    #chapter-title {
+        opacity: 1;
+        transition: opacity 0.4s ease; /* Matches control-panel transition */
+    }
 
+    /* Hide title when controls are hidden (Idle State) */
+    body.idle #chapter-title {
+        opacity: 0;
+    }
+}
+                
 </style>
