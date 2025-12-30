@@ -368,26 +368,29 @@ line-height: 1.4;
                 /* --- CRITICAL FIX: Ensure previous blocks are closed --- */
 }
 
-/* SYNC CHAPTER TITLE WITH CONTROL PANEL 
-   Condition: Landscape Screen ONLY (Desktop/TV) 
-   Behavior: 
-     - Show Title when Control Panel is Visible (Active)
-     - Hide Title when Control Panel is Hidden (Idle)
-*/
-@media (min-width: 769px) and (orientation: landscape) {
-    
-    /* 1. Default State (When Mouse Moves/Active) -> Visible */
-    #chapter-title {
-        opacity: 1 !important;
-        visibility: visible !important;
-        transition: opacity 0.4s ease, visibility 0.4s ease;
-    }
+/* --- CRITICAL FIX: Close any accidentally open blocks --- */
+}
 
-    /* 2. Idle State (When Mouse Stops/Hidden) -> Hidden 
-       matches body.idle #control-panel behavior */
-    body.idle #chapter-title {
+/* --- ROBUST CHAPTER TITLE SYNCHRONIZATION --- */
+/* Target: Landscape Screens (Desktop/TV) Only */
+@media (min-width: 769px) and (orientation: landscape) {
+
+    /* 1. DEFAULT STATE: HIDDEN */
+    /* Logic: If body.idle makes panel visible (opacity: 1), 
+       then the default state must be hidden. */
+    #chapter-title, 
+    .hero-title-text {
         opacity: 0 !important;
         visibility: hidden !important;
+        transition: opacity 0.4s ease, visibility 0.4s ease !important;
+    }
+
+    /* 2. IDLE STATE: VISIBLE */
+    /* Matches: body.idle #control-panel { opacity: 1; } found in your file */
+    body.idle #chapter-title, 
+    body.idle .hero-title-text {
+        opacity: 1 !important;
+        visibility: visible !important;
     }
 }
 
