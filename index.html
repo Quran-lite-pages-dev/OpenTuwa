@@ -248,6 +248,7 @@
   .arabic-modal-card {
     position: relative;
     background: linear-gradient(135deg, rgba(35, 35, 40, 0.95) 0%, rgba(20, 20, 25, 0.98) 100%);
+    opacity: 0.68; /* 50% transparent */
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
     padding: 50px 60px;
@@ -261,23 +262,26 @@
 
   /* Typography */
   .arabic-modal-card h2 {
+    opacity: 1; /* 50% transparent */
     margin: 0 0 40px 0;
     font-size: 1.8rem;
-    font-weight: 300;
+    font-weight: 400;
     letter-spacing: 0.5px;
     color: rgba(255, 255, 255, 0.95);
   }
       /* Typography */
   .arabic-modal-card h3 {
-    margin: 0 0 5px 0;
+    opacity: 1; /* 50% transparent */
+    margin: 0 0 40px 0;
     font-size: 1.5rem;
-    font-weight: 300;
+    font-weight: 350;
     letter-spacing: 0.5px;
     color: rgba(255, 255, 255, 0.95);
   }
 
   /* Button Container */
   .arabic-btn-group {
+    opacity: 1; /* 50% transparent */
     display: flex;
     justify-content: center;
     gap: 20px;
@@ -285,6 +289,7 @@
 
   /* Common Button Styles */
   .arabic-btn {
+    opacity: 1; /* 50% transparent */
     padding: 14px 40px;
     font-size: 1.1rem;
     font-weight: 500;
@@ -300,13 +305,15 @@
 
   /* YES Button - "Streaming App Primary" (Teal/Cyan gradient) */
   #btn-arabic-yes {
-    background: linear-gradient(135deg, #00b4db 0%, #0083b0 100%);
+    opacity: 1; /* 50% transparent */
+    background: linear-gradient(135deg, #0FB 0%, #00ccaa 100%);
     color: white;
     box-shadow: 0 4px 15px rgba(0, 180, 219, 0.3);
   }
 
   /* NO Button - "Streaming App Secondary" (Dark/Glass) */
   #btn-arabic-no {
+    opacity: 1; /* 50% transparent */
     background: rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.7);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -314,16 +321,19 @@
 
   /* Hover & Focus Effects (TV Interface Feel) */
   .arabic-btn:hover, .arabic-btn:focus {
+    opacity: 1; /* 50% transparent */
     transform: scale(1.08); /* slight grow like Apple TV/Android TV */
     outline: none;
     z-index: 1;
   }
 
   #btn-arabic-yes:hover {
+    opacity: 1; /* 50% transparent */
     box-shadow: 0 8px 25px rgba(0, 180, 219, 0.5);
   }
 
   #btn-arabic-no:hover {
+    opacity: 1; /* 50% transparent */
     background: rgba(255, 255, 255, 0.2);
     color: white;
     border-color: rgba(255, 255, 255, 0.3);
@@ -332,7 +342,7 @@
 
 <div id="arabic-modal">
     <div class="arabic-modal-card">
-        <h2>Do you know how to read Arabic?</h2>
+        <h2><b>Do you know how to read Arabic?</b></h2>
         <h3>Or you'll simply see only the translation.</h3>
         <div class="arabic-btn-group">
             <button id="btn-arabic-yes" class="arabic-btn">Yes</button>
