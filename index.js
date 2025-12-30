@@ -1,63 +1,170 @@
-/* =========================================
-   1. GOOGLE CAST & SMART VARIABLES
-   ========================================= */
-window.isCastingActive = false;
-let castPlayerController = null;
-
-// Initialize Cast API when Google loads it
-window['__onGCastApiAvailable'] = function(isAvailable) {
-    if (isAvailable) {
-        cast.framework.CastContext.getInstance().setOptions({
-            receiverApplicationId: chrome.cast.media.DEFAULT_MEDIA_RECEIVER_APP_ID,
-            autoJoinPolicy: chrome.cast.AutoJoinPolicy.ORIGIN_SCOPED
-        });
-
-        const player = new cast.framework.RemotePlayer();
-        castPlayerController = new cast.framework.RemotePlayerController(player);
-
-        // Listen for connection changes (Connected vs Disconnected)
-        castPlayerController.addEventListener(
-            cast.framework.RemotePlayerEventType.IS_CONNECTED_CHANGED,
-            function() {
-                if (player.isConnected) {
-                    console.log("Connected to TV");
-                    window.isCastingActive = true;
-                    // Pause local audio if it's playing
-                    const localAudio = document.getElementById('audio-player');
-                    if(localAudio) localAudio.pause();
-                    
-                    // Immediately cast the current verse
-                    const ch = document.getElementById('chapterSelect').value;
-                    const v = document.getElementById('verseSelect').value;
-                    // We trigger a reload to send media to TV
-                    loadVerse(true);
-                } else {
-                    console.log("Disconnected from TV");
-                    window.isCastingActive = false;
-                }
-            }
-        );
-    }
-};
-
-/* =========================================
-   2. EXISTING QURAN APP CONFIG
-   ========================================= */
-
 const SURAH_METADATA = [
-    { "chapter": 1, "english_name": "The Opening", "description": "Revealed in Mecca, this is the fundamental prayer of Islam, summarizing the core relationship between God and humanity. It is recited in every unit of prayer. (7 verses)" },
-    { "chapter": 2, "english_name": "The Cow", "description": "The longest Surah, revealed in Medina. It establishes Islamic laws, recounts the stories of Moses (Peace be upon him), and guides the new Muslim community. (286 verses)" }
-    // Add more metadata here as needed
-];
+          { "chapter": 1, "english_name": "The Opening", "description": "Revealed in Mecca, this is the fundamental prayer of Islam, summarizing the core relationship between God and humanity. It is recited in every unit of prayer. (7 verses)" },
+          { "chapter": 2, "english_name": "The Cow", "description": "The longest Surah, revealed in Medina. It establishes Islamic laws, recounts the stories of Moses (Peace be upon him), and guides the new Muslim community. (286 verses)" },
+          { "chapter": 3, "english_name": "The Family of Imran", "description": "A Medinan chapter focusing on the Oneness of God, the family of Mary (Peace be upon her) and Jesus (Peace be upon him), and lessons from the Battle of Uhud. (200 verses)" },
+          { "chapter": 4, "english_name": "The Women", "description": "Revealed in Medina after the Battle of Uhud, addressing the rights of women, care for orphans, inheritance laws, and the protection of the vulnerable within society. (176 verses)" },
+          { "chapter": 5, "english_name": "The Table Spread", "description": "One of the last revealed Surahs, finalizing dietary laws and discussing the miracle of the table requested by the disciples of Jesus (Peace be upon him) and the fulfillment of covenants. (120 verses)" },
+          { "chapter": 6, "english_name": "The Cattle", "description": "A late Meccan Surah emphasizing pure monotheism, rejecting superstition, and detailing the nature of God's infinite power over creation. (165 verses)" },
+          { "chapter": 7, "english_name": "The Heights", "description": "A Meccan chapter detailing the history of prophets from Adam (Peace be upon him) to Moses (Peace be upon him), warning against arrogance and describing the Day of Judgment. (206 verses)" },
+          { "chapter": 8, "english_name": "The Spoils of War", "description": "Revealed after the Battle of Badr, clarifying the ethics of warfare, the distribution of spoils, and the importance of placing full trust in God. (75 verses)" },
+          { "chapter": 9, "english_name": "The Repentance", "description": "A Medinan text issued before the Tabuk expedition, addressing treaty violations by polytheists and the issue of hypocrisy; it is the only Surah that does not begin with 'Bismillah'. (129 verses)" },
+          { "chapter": 10, "english_name": "Jonah", "description": "A Meccan Surah emphasizing God's Oneness and citing the story of the people of Jonah (Peace be upon him), who were saved by their timely repentance. (109 verses)" },
+          { "chapter": 11, "english_name": "Hud", "description": "Revealed during a difficult period in Mecca, recounting stories of previous prophets like Noah (Peace be upon him) and Hud (Peace be upon him) to comfort the Prophet Muhammad (Peace be upon him). (123 verses)" },
+          { "chapter": 12, "english_name": "Joseph", "description": "A unique Meccan Surah devoted entirely to the story of Joseph (Peace be upon him), illustrating patience, divine destiny, and family reconciliation. (111 verses)" },
+          { "chapter": 13, "english_name": "The Thunder", "description": "Revealed in Medina, utilizing natural phenomena like thunder to argue for the existence of God and the absolute truth of the resurrection. (43 verses)" },
+          { "chapter": 14, "english_name": "Abraham", "description": "A Meccan chapter highlighting the prayer of Abraham (Peace be upon him) for the sanctuary of Mecca and contrasting the gratitude of believers with the ingratitude of disbelievers. (52 verses)" },
+          { "chapter": 15, "english_name": "The Rocky Tract", "description": "A Meccan Surah reassuring the Prophet (Peace be upon him) against mockery and detailing the story of Satan's refusal to bow to Adam (Peace be upon him). (99 verses)" },
+          { "chapter": 16, "english_name": "The Bee", "description": "A Meccan chapter calling attention to God's blessings in nature, specifically the bee, and warning against associating partners with God. (128 verses)" },
+          { "chapter": 17, "english_name": "The Night Journey", "description": "Commemorates the Prophet Muhammad's (Peace be upon him) miraculous night journey from Mecca to Jerusalem and ascension to the heavens, establishing the five daily prayers. (111 verses)" },
+          { "chapter": 18, "english_name": "The Cave", "description": "A Meccan Surah telling the story of the Sleepers of the Cave and Moses (Peace be upon him), focusing on maintaining faith during times of trial. (110 verses)" },
+          { "chapter": 19, "english_name": "Mary", "description": "A Meccan chapter detailing the miraculous births of Jesus (Peace be upon him) and John (Peace be upon him), emphasizing God's mercy and refuting the concept of God having a son. (98 verses)" },
+          { "chapter": 20, "english_name": "Ta-Ha", "description": "Revealed in Mecca, this Surah details the story of Moses (Peace be upon him) confronting Pharaoh and offers comfort to the Prophet Muhammad (Peace be upon him). (135 verses)" },
+          { "chapter": 21, "english_name": "The Prophets", "description": "A Meccan text referencing many prophets (Peace be upon them) to show the continuity of the divine message and the inevitability of Judgment Day. (112 verses)" },
+          { "chapter": 22, "english_name": "The Pilgrimage", "description": "A Medinan Surah establishing the rituals of the Hajj pilgrimage and giving permission to believers to defend themselves against oppression. (78 verses)" },
+          { "chapter": 23, "english_name": "The Believers", "description": "Revealed in Mecca, outlining the moral qualities of true believers and the miraculous stages of human embryonic development. (118 verses)" },
+          { "chapter": 24, "english_name": "The Light", "description": "A Medinan chapter focusing on social ethics, laws against slander (specifically regarding Aisha, may Allah be pleased with her), and the famous 'Verse of Light'. (64 verses)" },
+          { "chapter": 25, "english_name": "The Criterion", "description": "A Meccan Surah distinguishing right from wrong, answering objections raised against the Quran, and describing the virtues of the 'Servants of the Most Merciful'. (77 verses)" },
+          { "chapter": 26, "english_name": "The Poets", "description": "A Meccan chapter recounting the struggles of past prophets (Peace be upon them) and criticizing poets who mislead people with falsehoods. (227 verses)" },
+          { "chapter": 27, "english_name": "The Ant", "description": "Revealed in Mecca, featuring the story of Solomon (Peace be upon him), the Queen of Sheba, and the ant, emphasizing knowledge and gratitude. (93 verses)" },
+          { "chapter": 28, "english_name": "The Narratives", "description": "A Meccan Surah detailing the life of Moses (Peace be upon him) before prophethood and the arrogance of Korah (Qarun) regarding wealth. (88 verses)" },
+          { "chapter": 29, "english_name": "The Spider", "description": "A Meccan chapter using the metaphor of a spider's web to describe the fragility of false beliefs and the necessity of testing one's faith. (69 verses)" },
+          { "chapter": 30, "english_name": "The Romans", "description": "Revealed in Mecca, predicting the Byzantine (Roman) victory over the Persians as a sign of God's control over historical events. (60 verses)" },
+          { "chapter": 31, "english_name": "Luqman", "description": "A Meccan Surah containing the wisdom and advice of the sage Luqman to his son regarding faith, gratitude, and behavior. (34 verses)" },
+          { "chapter": 32, "english_name": "The Prostration", "description": "A Meccan chapter emphasizing the creation of man, the revelation of the Book, and the absolute certainty of the Day of Judgment. (30 verses)" },
+          { "chapter": 33, "english_name": "The Combined Forces", "description": "Revealed in Medina during the Battle of the Trench, addressing social reforms, adoption, and the status of the Prophet's (Peace be upon him) wives. (73 verses)" },
+          { "chapter": 34, "english_name": "Sheba", "description": "A Meccan Surah contrasting the gratitude of David (Peace be upon him) and Solomon (Peace be upon him) with the ingratitude of the people of Sheba. (54 verses)" },
+          { "chapter": 35, "english_name": "The Originator", "description": "A Meccan chapter praising God as the Creator of angels and the universe, warning against the deception of worldly life. (45 verses)" },
+          { "chapter": 36, "english_name": "Ya-Sin", "description": "Known as the 'heart of the Quran', this Meccan Surah focuses on the Quran's divine source, the signs of nature, and the resurrection. (83 verses)" },
+          { "chapter": 37, "english_name": "Those Who Set The Ranks", "description": "A Meccan chapter describing the ranks of angels and the eventual triumph of God's messengers (Peace be upon them) over opposition. (182 verses)" },
+          { "chapter": 38, "english_name": "The Letter Sad", "description": "Revealed in Mecca, discussing the patience of prophets like David (Peace be upon him) and Job (Peace be upon him) and the arrogance of Satan. (88 verses)" },
+          { "chapter": 39, "english_name": "The Troops", "description": "A Meccan Surah focusing heavily on the Oneness of God (Tawhid) and the distinct outcomes for believers and disbelievers. (75 verses)" },
+          { "chapter": 40, "english_name": "The Forgiver", "description": "A Meccan chapter telling the story of a believing man in Pharaoh's court and emphasizing God's forgiveness and power. (85 verses)" },
+          { "chapter": 41, "english_name": "Explained in Detail", "description": "A Meccan Surah describing the Quran's clarity and the testimony of man's own faculties (skin and ears) against him on Judgment Day. (54 verses)" },
+          { "chapter": 42, "english_name": "The Consultation", "description": "A Meccan chapter emphasizing 'Shura' (consultation) among believers and the unity of the message given to all prophets (Peace be upon them). (53 verses)" },
+          { "chapter": 43, "english_name": "The Ornaments of Gold", "description": "A Meccan Surah criticizing the obsession with worldly wealth and correcting false attributions of daughters/offspring to God. (89 verses)" },
+          { "chapter": 44, "english_name": "The Smoke", "description": "A Meccan chapter warning of a coming punishment (smoke) and recounting the failure of Pharaoh to heed Moses (Peace be upon him). (59 verses)" },
+          { "chapter": 45, "english_name": "The Crouching", "description": "A Meccan Surah describing the humility of all nations kneeling before God on Judgment Day and the proofs of God in nature. (37 verses)" },
+          { "chapter": 46, "english_name": "The Wind-Curved Sandhills", "description": "A Meccan chapter mentioning the Jinn listening to the Quran and advising kindness and dutifulness to parents. (35 verses)" },
+          { "chapter": 47, "english_name": "Muhammad (Peace be upon him)", "description": "A Medinan Surah named after the Prophet (Peace be upon him), focused on the believers' struggle for the cause of truth and the nullification of disbelievers' deeds. (38 verses)" },
+          { "chapter": 48, "english_name": "The Victory", "description": "Revealed after the Treaty of Hudaybiyyah, declaring it a clear victory and promising the future peaceful conquest of Mecca. (29 verses)" },
+          { "chapter": 49, "english_name": "The Rooms", "description": "A Medinan chapter teaching manners, respect for the Prophet (Peace be upon him), and the brotherhood of all believers regardless of race. (18 verses)" },
+          { "chapter": 50, "english_name": "The Letter Qaf", "description": "A Meccan Surah emphasizing the resurrection and how every human deed is recorded by guardian angels. (45 verses)" },
+          { "chapter": 51, "english_name": "The Winnowing Winds", "description": "A Meccan chapter discussing the purpose of creating humans and Jinn—solely to worship God. (60 verses)" },
+          { "chapter": 52, "english_name": "The Mount", "description": "A Meccan Surah swearing by Mount Sinai, describing the bliss of Paradise for the righteous and the fate of deniers. (49 verses)" },
+          { "chapter": 53, "english_name": "The Star", "description": "A Meccan chapter confirming the divine source of the Prophet's (Peace be upon him) vision during his ascension and refuting idol worship. (62 verses)" },
+          { "chapter": 54, "english_name": "The Moon", "description": "A Meccan Surah referencing the splitting of the moon as a sign and recounting the punishments of past nations who rejected their prophets. (55 verses)" },
+          { "chapter": 55, "english_name": "The Beneficent", "description": "A Meccan chapter known as the 'Bride of the Quran,' repeatedly asking 'Which of the favors of your Lord will you deny?' (78 verses)" },
+          { "chapter": 56, "english_name": "The Inevitable", "description": "A Meccan Surah categorizing people into three groups in the afterlife: the foremost, the companions of the right, and the companions of the left. (96 verses)" },
+          { "chapter": 57, "english_name": "The Iron", "description": "A Medinan chapter encouraging charity, described as a 'goodly loan' to God, and mentioning iron as a tool given for humanity's benefit. (29 verses)" },
+          { "chapter": 58, "english_name": "The Pleading Woman", "description": "A Medinan Surah addressing marital issues and God's omniscience, hearing every conversation, including secret counsels. (22 verses)" },
+          { "chapter": 59, "english_name": "The Exile", "description": "Revealed in Medina concerning the consequences for the Banu Nadir tribe who broke their treaty, and the distribution of wealth. (24 verses)" },
+          { "chapter": 60, "english_name": "She That Is To Be Examined", "description": "A Medinan chapter regarding the treatment of women refugees and establishing that kindness is due to non-believers who do not fight against Muslims. (13 verses)" },
+          { "chapter": 61, "english_name": "The Ranks", "description": "A Medinan Surah urging believers to align their actions with their words and predicting the coming of a messenger named Ahmad (Muhammad, Peace be upon him). (14 verses)" },
+          { "chapter": 62, "english_name": "The Congregation", "description": "A Medinan chapter establishing the importance of the Friday congregational prayer (Jumu'ah) over worldly commerce. (11 verses)" },
+          { "chapter": 63, "english_name": "The Hypocrites", "description": "A Medinan Surah exposing the deceit of the hypocrites who internally opposed the Prophet (Peace be upon him) while pretending to believe. (11 verses)" },
+          { "chapter": 64, "english_name": "The Mutual Disillusion", "description": "A Medinan chapter describing Judgment Day as a day of mutual gain and loss, emphasizing reliance on God alone. (18 verses)" },
+          { "chapter": 65, "english_name": "The Divorce", "description": "A Medinan Surah outlining the specific laws, waiting periods (Iddah), and maintenance rights regarding divorce. (12 verses)" },
+          { "chapter": 66, "english_name": "The Prohibition", "description": "A Medinan chapter addressing a domestic incident in the Prophet's (Peace be upon him) household and holding up the righteous wives of Noah (Peace be upon him) and Lot (Peace be upon him) as examples. (12 verses)" },
+          { "chapter": 67, "english_name": "The Sovereignty", "description": "A Meccan Surah affirming God's dominion over life and death. (30 verses)" },
+          { "chapter": 68, "english_name": "The Pen", "description": "A Meccan chapter defending the Prophet's (Peace be upon him) sanity and character against accusers, and telling the parable of the owners of the garden. (52 verses)" },
+          { "chapter": 69, "english_name": "The Reality", "description": "A Meccan Surah describing the inevitable destruction of past nations and the terrifying events of the Day of Judgment. (52 verses)" },
+          { "chapter": 70, "english_name": "The Ascending Stairways", "description": "A Meccan chapter focusing on the patience required of the Prophet (Peace be upon him) and the eventual punishment of the disbelievers. (44 verses)" },
+          { "chapter": 71, "english_name": "Noah", "description": "A Meccan Surah dedicated to Noah's (Peace be upon him) tireless but largely rejected preaching to his people before the flood. (28 verses)" },
+          { "chapter": 72, "english_name": "The Jinn", "description": "A Meccan chapter recounting how a group of Jinn listened to the Quran and accepted Islam, acknowledging God's oneness. (28 verses)" },
+          { "chapter": 73, "english_name": "The Enshrouded One", "description": "A Meccan Surah instructing the Prophet (Peace be upon him) to pray during the night and to bear patiently with those who deny the truth. (20 verses)" },
+          { "chapter": 74, "english_name": "The Cloaked One", "description": "One of the earliest Meccan revelations, commanding the Prophet (Peace be upon him) to arise, warn the people, and purify himself. (56 verses)" },
+          { "chapter": 75, "english_name": "The Resurrection", "description": "A Meccan chapter emphasizing the certainty of the resurrection and the Prophet's (Peace be upon him) eagerness to memorize the revelation. (40 verses)" },
+          { "chapter": 76, "english_name": "Man", "description": "A Medinan Surah describing the rewards of the righteous in Paradise, particularly those who feed the poor, orphans, and captives. (31 verses)" },
+          { "chapter": 77, "english_name": "The Emissaries", "description": "A Meccan chapter swearing by the winds, emphasizing the inevitability of the Day of Decision and warning deniers. (50 verses)" },
+          { "chapter": 78, "english_name": "The Tidings", "description": "A Meccan Surah questioning those who deny the afterlife and vividly describing the day when the trumpet is blown. (40 verses)" },
+          { "chapter": 79, "english_name": "Those Who Drag Forth", "description": "A Meccan chapter describing the angels who take souls at death and the story of Moses (Peace be upon him) calling Pharaoh to account. (46 verses)" },
+          { "chapter": 80, "english_name": "He Frowned", "description": "A Meccan Surah correcting the Prophet (Peace be upon him) for prioritizing a wealthy leader over a blind man seeking knowledge. (42 verses)" },
+          { "chapter": 81, "english_name": "The Overthrowing", "description": "A Meccan chapter depicting the cosmic upheavals at the end of the world, such as the sun being darkened. (29 verses)" },
+          { "chapter": 82, "english_name": "The Cleaving", "description": "A Meccan Surah warning humanity about their delusion regarding God and describing the recording of deeds by angels. (19 verses)" },
+          { "chapter": 83, "english_name": "The Defrauding", "description": "A Meccan chapter condemning those who cheat in business weights and measures, warning of the record of the wicked. (36 verses)" },
+          { "chapter": 84, "english_name": "The Sundering", "description": "A Meccan Surah describing the sky splitting open and humanity laboring toward their Lord to receive their records. (25 verses)" },
+          { "chapter": 85, "english_name": "The Mansions of the Stars", "description": "A Meccan chapter recounting the story of the People of the Ditch who were persecuted for their faith. (22 verses)" },
+          { "chapter": 86, "english_name": "The Morning Star", "description": "A Meccan Surah discussing the creation of man and the distinctness of the Quran's message. (17 verses)" },
+          { "chapter": 87, "english_name": "The Most High", "description": "A Meccan chapter emphasizing the purification of the soul and reminding that the Hereafter is better and more enduring. (19 verses)" },
+          { "chapter": 88, "english_name": "The Overwhelming", "description": "A Meccan Surah contrasting the terrified state of the damned with the peaceful state of the believers in Paradise. (26 verses)" },
+          { "chapter": 89, "english_name": "The Dawn", "description": "A Meccan chapter warning against the greed for wealth and mentioning the punishment of ancient tribes like Ad and Thamud. (30 verses)" },
+          { "chapter": 90, "english_name": "The City", "description": "A Meccan Surah defining the 'steep path' of righteousness as freeing slaves and feeding the hungry. (20 verses)" },
+          { "chapter": 91, "english_name": "The Sun", "description": "A Meccan chapter linking the purification of the soul to success and corruption to failure, citing the Thamud. (15 verses)" },
+          { "chapter": 92, "english_name": "The Night", "description": "A Meccan Surah contrasting those who give in charity with those who are miserly, warning of the consequences. (21 verses)" },
+          { "chapter": 93, "english_name": "The Morning Hours", "description": "Revealed in Mecca to comfort the Prophet (Peace be upon him) after a pause in revelation, promising that his future will be better than his past. (11 verses)" },
+          { "chapter": 94, "english_name": "The Relief", "description": "A Meccan chapter reassuring the Prophet (Peace be upon him) that with every hardship comes ease and that his burden has been lifted. (8 verses)" },
+          { "chapter": 95, "english_name": "The Fig", "description": "A Meccan Surah stating that man was created in the best stature but will fall to the lowest depth unless he believes and does good works. (8 verses)" },
+          { "chapter": 96, "english_name": "The Clot", "description": "The first revelation received by the Prophet (Peace be upon him) in Mecca, commanding him to read in the name of his Lord. (19 verses)" },
+          { "chapter": 97, "english_name": "The Power", "description": "A Meccan chapter describing the Night of Decree (Laylat al-Qadr), which is better than a thousand months. (5 verses)" },
+          { "chapter": 98, "english_name": "The Clear Proof", "description": "A Medinan Surah distinguishing true believers from disbelievers among the People of the Book and polytheists. (8 verses)" },
+          { "chapter": 99, "english_name": "The Earthquake", "description": "A Medinan chapter vividly describing the earth shaking on Judgment Day and yielding up its burdens and secrets. (8 verses)" },
+          { "chapter": 100, "english_name": "The Courser", "description": "A Meccan Surah using the imagery of charging warhorses to describe the ungrateful nature of mankind. (11 verses)" },
+          { "chapter": 101, "english_name": "The Calamity", "description": "A Meccan chapter depicting the Day of Judgment where people will be like scattered moths and mountains like wool. (11 verses)" },
+          { "chapter": 102, "english_name": "The Rivalry in World Increase", "description": "A Meccan Surah warning that the obsession with accumulating more wealth and status distracts people until they reach the grave. (8 verses)" },
+          { "chapter": 103, "english_name": "The Declining Day", "description": "A Meccan chapter summarizing that all mankind is in loss except those who believe, do good, and advise one another to truth and patience. (3 verses)" },
+          { "chapter": 104, "english_name": "The Traducer", "description": "A Meccan Surah condemning the backbiter and the one who hoards wealth, warning of the crushing fire. (9 verses)" },
+          { "chapter": 105, "english_name": "The Elephant", "description": "A Meccan chapter recalling the destruction of Abraha's army of elephants who attempted to destroy the Kaaba. (5 verses)" },
+          { "chapter": 106, "english_name": "Quraysh", "description": "A Meccan Surah reminding the Quraysh tribe of God's protection and provision during their trading journeys. (4 verses)" },
+          { "chapter": 107, "english_name": "The Small Kindnesses", "description": "A Meccan chapter condemning those who deny the judgment by mistreating orphans and performing prayers only to be seen. (7 verses)" },
+          { "chapter": 108, "english_name": "The Abundance", "description": "The shortest Surah, revealed in Mecca, promising the Prophet (Peace be upon him) an abundance of good and the cutting off of his enemies. (3 verses)" },
+          { "chapter": 109, "english_name": "The Disbelievers", "description": "A Meccan Surah declaring the absolute distinction between the worship of Muslims and the worship of polytheists. (6 verses)" },
+          { "chapter": 110, "english_name": "The Divine Support", "description": "A Medinan chapter, one of the last revealed, predicting the mass entry of people into Islam and the Prophet's (Peace be upon him) passing. (3 verses)" },
+          { "chapter": 111, "english_name": "The Palm Fiber", "description": "A Meccan Surah condemning Abu Lahab, an uncle and enemy of the Prophet (Peace be upon him), and his wife to the Fire. (5 verses)" },
+          { "chapter": 112, "english_name": "The Sincerity", "description": "A Meccan chapter that is the essence of monotheism, declaring God is One, Eternal, with no offspring or equal. (4 verses)" },
+          { "chapter": 113, "english_name": "The Daybreak", "description": "A Meccan Surah seeking refuge in the Lord of the dawn from the evil of created things and envy. (5 verses)" },
+          { "chapter": 114, "english_name": "Mankind", "description": "A Meccan chapter seeking refuge in the Lord of mankind from the whispers of devils and men. (6 verses)" }
+        ];
 
+// --- 2. MULTI-PROFILE & LOGIC ---
 const ACTIVE_PROFILE_ID = "1";
 const STORAGE_KEY = `quranState_${ACTIVE_PROFILE_ID}`;
 
 const TRANSLATIONS_CONFIG = {
     'en': { name: 'English (Saheeh Intl) | Preferred', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/en.xml' },
-    'sq': { name: 'Albanian (Sherif Ahmeti)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/sq.ahmeti.xml' },
-    'ber': { name: 'Amazigh (At Mansour)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ber.mensur.xml' }
-};
+            'sq': { name: 'Albanian (Sherif Ahmeti)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/sq.ahmeti.xml' },
+            'ber': { name: 'Amazigh (At Mansour)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ber.mensur.xml' },
+            'am': { name: 'Amharic (Sadiq & Sani)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/am.sadiq.xml' },
+            'ar': { name: 'Arabic Tafsir (Al-Muyassar)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ar.muyassar.xml' },
+            'az': { name: 'Azerbaijani (Musayev)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/az.musayev.xml' },
+            'bn': { name: 'Bengali (Muhiuddin Khan)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/bn.bengali.xml' },
+            'bs': { name: 'Bosnian (Besim Korkut)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/bs.korkut.xml' },
+            'bg': { name: 'Bulgarian (Theophanov)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/bg.theophanov.xml' },
+            'zh': { name: 'Chinese (Ma Jian)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/zh.jian.xml' },
+            'cs': { name: 'Czech (Hrbek)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/cs.hrbek.xml' },
+            'dv': { name: 'Divehi (Maldives)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/dv.divehi.xml' },
+            'nl': { name: 'Dutch (Siregar)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/nl.siregar.xml' },
+            'fr': { name: 'French (Hamidullah)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/fr.hamidullah.xml' },
+            'de': { name: 'German (Bubenheim)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/de.bubenheim.xml' },
+            'ha': { name: 'Hausa (Gumi)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ha.gumi.xml' },
+            'he': { name: 'Hebrew (Darussalam Assn. Quran ENC)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/he.xml' },
+            'hi': { name: 'Hindi (Suhel Khan)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/hi.hindi.xml' },
+            'id': { name: 'Indonesian (Kemenag)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/id.indonesian.xml' },
+            'it': { name: 'Italian (Piccardo)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/it.piccardo.xml' },
+            'ja': { name: 'Japanese (Standard)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ja.japanese.xml' },
+            'ko': { name: 'Korean (Standard)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ko.korean.xml' },
+            'ku': { name: 'Kurdish (Burhan)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ku.asan.xml' },
+            'ms': { name: 'Malay (Basmeih)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ms.basmeih.xml' },
+            'ml': { name: 'Malayalam (Abdul Hameed)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ml.abdulhameed.xml' },
+            'no': { name: 'Norwegian (Berg)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/no.berg.xml' },
+            'ps': { name: 'Pashto (Abdulwali Khan)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ps.abdulwali.xml' },
+            'fa': { name: 'Persian (Mostafa)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/fa.khorramdel.xml' },
+            'pl': { name: 'Polish (Bielawskiego)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/pl.bielawskiego.xml' },
+            'pt': { name: 'Portuguese (El-Hayek)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/pt.elhayek.xml' },
+            'ro': { name: 'Romanian (Grigore)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ro.grigore.xml' },
+            'ru': { name: 'Russian (Kuliev)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ru.kuliev.xml' },
+            'sd': { name: 'Sindhi (Amroti)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/sd.amroti.xml' },
+            'so': { name: 'Somali (Abduh)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/so.abduh.xml' },
+            'es': { name: 'Spanish (Isa García)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/es.garcia.xml' },
+            'sw': { name: 'Swahili (Al-Barwani)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/sw.barwani.xml' },
+            'sv': { name: 'Swedish (Bernström)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/sv.bernstrom.xml' },
+            'ta': { name: 'Tamil (Jan Turst)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ta.tamil.xml' },
+            'tt': { name: 'Tatar (Nugman)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/tt.nugman.xml' },
+            'th': { name: 'Thai (King Fahad)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/th.thai.xml' },
+            'tr': { name: 'Turkish (Diyanet)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/tr.diyanet.xml' },
+            'ur': { name: 'Urdu (Junagarhi)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ur.junagarhi.xml' },
+            'ug': { name: 'Uyghur (Muhammad Saleh)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/ug.saleh.xml' },
+            'uz': { name: 'Uzbek (Muhammad Sodik)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/uz.sodik.xml' }
+        };
 
 const RECITERS_CONFIG = {
     'alafasy': { name: 'Mishary Alafasy', path: 'Alafasy_128kbps' },
@@ -78,8 +185,10 @@ const TRANSLATION_AUDIO_CONFIG = {
 };
 
 // --- ELEVENLABS CONFIGURATION ---
+// PLEASE PASTE YOUR KEY BELOW
 const ELEVENLABS_API_KEY = ''; 
-const ELEVEN_MODEL_ID = 'eleven_multilingual_v2'; 
+const ELEVEN_MODEL_ID = 'eleven_multilingual_v2'; // Best for mixed languages
+// "Rachel" is a versatile voice. You can change this ID if you prefer a different voice.
 const DEFAULT_TTS_VOICE_ID = 'nPczCjzI2devNBz1zQrb'; 
 
 const FTT_URL = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/a/FTT.XML';
@@ -114,6 +223,7 @@ const elements = {
         dashboard: document.getElementById('dashboard-view'),
         cinema: document.getElementById('cinema-view')
     },
+    // TV Navigation Elements
     sidebar: {
         container: document.getElementById('tv-sidebar'),
         home: document.getElementById('nav-home'),
@@ -131,6 +241,7 @@ const elements = {
 
 let quranData = []; 
 let translationCache = {}; 
+// Cache for generated TTS blobs to save quota (Free Forever Optimization)
 let ttsCache = {}; 
 let currentChapterData = {};
 let inactivityTimer;
@@ -173,20 +284,18 @@ function switchView(viewName) {
         elements.views.cinema.classList.add('active');
         elements.views.cinema.style.opacity = '1';
         stopPreview();
-        elements.sidebar.container.style.display = 'none'; 
+        elements.sidebar.container.style.display = 'none'; // Hide sidebar in cinema
         setTimeout(() => document.getElementById('control-panel').focus(), 100);
     } else {
         elements.views.cinema.classList.remove('active');
         elements.views.cinema.style.opacity = '0';
         elements.views.dashboard.classList.add('active');
-        elements.sidebar.container.style.display = 'none'; 
+        elements.sidebar.container.style.display = 'none'; // Show sidebar
         elements.quranAudio.pause();
         elements.transAudio.pause();
         refreshDashboard();
         document.getElementById('door-play-btn').focus();
     }
-    // Update Smart Button on view change
-    setTimeout(updateCastButtonVisibility, 500);
 }
 
 window.addEventListener('popstate', (event) => {
@@ -194,7 +303,7 @@ window.addEventListener('popstate', (event) => {
     if (params.has('chapter')) {
         switchView('cinema');
         restoreState();
-        loadVerse(false); 
+        loadVerse(false); // Using Old logic
     } else {
         switchView('dashboard');
     }
@@ -223,10 +332,11 @@ async function initializeApp() {
         populateChapterSelect();
         populateReciterSelect();
         populateTranslationSelectOptions();
-        populateTranslationAudioSelect(); 
+        populateTranslationAudioSelect(); // Called after Translations loaded
 
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('chapter')) {
+            // Start in Cinema
             switchView('cinema');
             restoreState();
             populateVerseSelect();
@@ -236,7 +346,7 @@ async function initializeApp() {
             }
             const activeTransId = elements.selects.trans.value;
             await loadTranslationData(activeTransId);
-            loadVerse(false); 
+            loadVerse(false); // Old Logic
             
             elements.spinner.style.display = 'none';
             elements.loaderText.style.display = 'none';
@@ -244,6 +354,7 @@ async function initializeApp() {
             elements.startBtn.textContent = "Continue";
             elements.startBtn.focus();
         } else {
+            // Start in Dashboard
             switchView('dashboard');
             refreshDashboard();
             elements.overlay.style.display = 'none';
@@ -252,11 +363,6 @@ async function initializeApp() {
         setupEventListeners();
         initSidebarNavigation();
         initSearchInterface();
-        
-        // --- START CAST BUTTON LOGIC ---
-        updateCastButtonVisibility();
-        window.addEventListener('resize', updateCastButtonVisibility);
-        setInterval(updateCastButtonVisibility, 2000);
 
     } catch (error) {
         console.error("Critical Init Error:", error);
@@ -268,6 +374,7 @@ async function initializeApp() {
 function refreshDashboard() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const heroBtn = document.getElementById('door-play-btn');
+
     const allIndices = Array.from({length: 114}, (_, i) => i);
     const shortRowIndices = allIndices.slice(77, 114);
     
@@ -289,7 +396,8 @@ function refreshDashboard() {
 
 function fillRow(elementId, indexArray) {
     const container = document.getElementById(elementId);
-    const fragment = document.createDocumentFragment(); 
+    const fragment = document.createDocumentFragment(); // Use fragment for speed
+    
     indexArray.forEach(idx => {
         if(!quranData[idx]) return;
         const surah = quranData[idx];
@@ -301,10 +409,17 @@ function fillRow(elementId, indexArray) {
             <div class="card-title">${surah.title}</div>
             <div class="card-sub">${surah.english_name || ''}</div>
         `;
+        
+        // Use specialized TV events
         card.onclick = () => launchPlayer(surah.chapterNumber, 1);
-        card.onfocus = () => { schedulePreview(surah.chapterNumber); };
+        card.onfocus = () => {
+            // Preview logic here
+            schedulePreview(surah.chapterNumber);
+        };
+        
         fragment.appendChild(card);
     });
+    
     container.innerHTML = '';
     container.appendChild(fragment);
 }
@@ -345,10 +460,13 @@ function updateHeroPreview(chapterNum, startVerse, reciterId, isSequence) {
     }
     previewSeqIndex = 0;
     
+    // Pre-load translation logic for preview
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const trans = saved.trans || 'en';
     if (!translationCache[trans]) {
-            loadTranslationData(trans).then(() => {});
+            loadTranslationData(trans).then(() => {
+                // If still in preview mode, it will pick up next tick
+            });
     }
 
     playPreviewStep(chapterNum, reciterId);
@@ -373,6 +491,7 @@ function playPreviewStep(chapterNum, reciterId) {
         };
     }, 200);
 
+    // Subtitle Update Logic
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const transId = saved.trans || 'en';
     const cache = translationCache[transId];
@@ -457,6 +576,7 @@ function restoreState() {
 
     if (urlParams.has('audio_trans')) {
         const param = urlParams.get('audio_trans');
+        // Check if it's a valid config OR a tts: id
         if(TRANSLATION_AUDIO_CONFIG[param] || param.startsWith('tts:')) {
             elements.selects.transAudio.value = param;
         }
@@ -646,7 +766,8 @@ async function loadVerse(autoplay = true) {
     const verseKey = `${chNum}-${vNum}`;
     const isForbidden = forbiddenToTranslateSet.has(verseKey);
 
-    elements.display.title.innerHTML = `${currentChapterData.title} <span class="chapter-subtitle">(${chNum}:${vNum})</span>`;
+    // Change .textContent to .innerHTML
+elements.display.title.innerHTML = `${currentChapterData.title} <span class="chapter-subtitle">(${chNum}:${vNum})</span>`;
     
     const newSrc = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/img/${chNum}_${vNum}.png`;
     const img1 = elements.display.verse;
@@ -685,7 +806,6 @@ async function loadVerse(autoplay = true) {
         updateTranslationText(chNum, vNum);
     }
 
-    // --- MODIFIED: Updates Audio but checks for CASTING logic inside ---
     updateQuranAudio(chNum, vNum, autoplay);
     
     if (isForbidden) {
@@ -724,6 +844,19 @@ function bufferNextResources(currentChIdx, currentVIdx) {
     const aud = new Audio();
     aud.src = `https://everyayah.com/data/${qPath}/${padCh}${padV}.mp3`;
     aud.preload = 'auto'; 
+
+    const taId = elements.selects.transAudio.value;
+    if (taId !== 'none' && !taId.startsWith('tts:')) {
+        const config = TRANSLATION_AUDIO_CONFIG[taId];
+        let tUrl;
+        if (config.path.startsWith('httpIA')) tUrl = `${config.path.replace('httpIA', 'https')}/${padCh}${padV}.mp3`;
+        else if (config.path.startsWith('http')) tUrl = `${config.path}/${padCh}${padV}.mp3`;
+        else tUrl = `https://everyayah.com/data/${config.path}/${padCh}${padV}.mp3`;
+        
+        const tAud = new Audio();
+        tAud.src = tUrl;
+        tAud.preload = 'auto';
+    }
 }
 
 function updateTranslationText(chNum, vNum) {
@@ -742,23 +875,13 @@ function updateTranslationText(chNum, vNum) {
     adjustFontSize();
 }
 
-/* --- UPDATED QURAN AUDIO TO HANDLE CASTING --- */
 function updateQuranAudio(chNum, vNum, play) {
     const rId = elements.selects.reciter.value;
     const path = RECITERS_CONFIG[rId].path;
     const padCh = String(chNum).padStart(3, '0');
     const padV = String(vNum).padStart(3, '0');
     
-    const audioUrl = `https://everyayah.com/data/${path}/${padCh}${padV}.mp3`;
-
-    // 1. If Casting, send to TV and STOP local logic
-    if (window.isCastingActive) {
-        castCurrentMedia(audioUrl, currentChapterData.title, vNum);
-        return; 
-    }
-
-    // 2. Normal Local Logic
-    elements.quranAudio.src = audioUrl;
+    elements.quranAudio.src = `https://everyayah.com/data/${path}/${padCh}${padV}.mp3`;
     if(play) elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
 }
 
@@ -782,21 +905,16 @@ async function updateTranslationAudio(chNum, vNum, play) {
         else url = `https://everyayah.com/data/${config.path}/${padCh}${padV}.mp3`;
 
         if(!url.endsWith('.mp3')) url += `/${padCh}${padV}.mp3`;
-        
-        // Cast Check
-        if(window.isCastingActive) return; 
-
         elements.transAudio.src = url;
         if(play) elements.transAudio.play();
         return;
     }
 
     // --- 2. HANDLE AI TTS (ElevenLabs Logic) ---
-    // If casting, we skip TTS for now as it's complex to stream blobs to Cast
-    if(window.isCastingActive) return;
-
     const langCode = taId.split(':')[1];
+    
     let textToSpeak = "";
+    
     const currentTextId = elements.selects.trans.value;
     if (currentTextId === langCode) {
         textToSpeak = elements.display.trans.textContent;
@@ -812,9 +930,13 @@ async function updateTranslationAudio(chNum, vNum, play) {
         }
     }
 
-    if (!textToSpeak || textToSpeak.length < 2) return;
+    if (!textToSpeak || textToSpeak.length < 2) {
+        console.warn("No text available for TTS");
+        return;
+    }
 
     const cacheKey = `${langCode}_${chNum}_${vNum}`;
+    
     if (ttsCache[cacheKey]) {
         elements.transAudio.src = ttsCache[cacheKey];
         if(play) elements.transAudio.play();
@@ -822,9 +944,13 @@ async function updateTranslationAudio(chNum, vNum, play) {
     }
 
     try {
-        if(!ELEVENLABS_API_KEY || ELEVENLABS_API_KEY.includes('PASTE')) return;
+        if(!ELEVENLABS_API_KEY || ELEVENLABS_API_KEY.includes('PASTE')) {
+            console.error("ElevenLabs API Key missing");
+            return;
+        }
 
         toggleBuffering(true);
+
         const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${DEFAULT_TTS_VOICE_ID}`, {
             method: 'POST',
             headers: {
@@ -834,14 +960,23 @@ async function updateTranslationAudio(chNum, vNum, play) {
             body: JSON.stringify({
                 text: textToSpeak,
                 model_id: ELEVEN_MODEL_ID,
-                voice_settings: { stability: 0.5, similarity_boost: 0.5 }
+                voice_settings: {
+                    stability: 0.5,
+                    similarity_boost: 0.5
+                }
             })
         });
 
-        if (!response.ok) throw new Error("TTS Failed");
+        if (!response.ok) {
+            const err = await response.json();
+            console.error("ElevenLabs API Error:", err);
+            throw new Error("TTS Failed");
+        }
+
         const blob = await response.blob();
         const audioUrl = URL.createObjectURL(blob);
-        ttsCache[cacheKey] = audioUrl;
+        
+        ttsCache[cacheKey] = audioUrl; // Save to Cache
         elements.transAudio.src = audioUrl;
         if(play) elements.transAudio.play();
 
@@ -853,7 +988,6 @@ async function updateTranslationAudio(chNum, vNum, play) {
 }
 
 function handleQuranEnd() {
-    if (window.isCastingActive) return; // TV handles its own ending
     if (elements.transAudio.src && elements.transAudio.src !== window.location.href) {
         elements.transAudio.play().catch(() => nextVerse());
     } else {
@@ -993,6 +1127,8 @@ let searchDebounceTimer;
 
 function initSearchInterface() {
     renderKeyboard();
+    
+    // Results delegation
     elements.search.resultsGrid.addEventListener('click', (e) => {
         const card = e.target.closest('.surah-card');
         if(card) {
@@ -1003,13 +1139,17 @@ function initSearchInterface() {
     });
 }
 
-let searchGrid = []; 
+// index.js - OTT Optimized Search Logic
+
+let searchGrid = []; // To store rows for index-based jumping
 let currentKeyRow = 0;
 let currentKeyCol = 0;
 
 function renderKeyboard() {
     const grid = elements.search.keyboardGrid;
     grid.innerHTML = '';
+    
+    // Group keys into rows of 6 for predictable D-Pad movement
     const keysPerRow = 6;
     searchGrid = [];
     
@@ -1029,24 +1169,32 @@ function renderKeyboard() {
             if (['SPACE', 'DEL', 'CLEAR'].includes(key)) {
                 btn.classList.add('wide');
             }
+
+            // GPU-Accelerated Focus
             btn.onfocus = () => {
                 currentKeyRow = rowIndex;
                 currentKeyCol = colIndex;
             };
+
             btn.onclick = () => handleKeyPress(key);
+            
+            // Explicit D-Pad overrides to stop "Ghost Scrolling"
             btn.onkeydown = (e) => {
                 if (e.key === 'Enter') handleKeyPress(key);
+                // When moving RIGHT from the end of a row, jump to results
                 if (e.key === 'ArrowRight' && colIndex === row.length - 1) {
                     elements.search.resultsGrid.querySelector('.surah-card')?.focus();
                     e.preventDefault();
                 }
             };
+
             grid.appendChild(btn);
         });
     });
 }
 
 function handleKeyPress(key) {
+    // Add a small "haptic" scale effect for visual confirmation
     const activeKey = document.activeElement;
     activeKey.style.transform = 'scale(0.9)';
     setTimeout(() => activeKey.style.transform = 'scale(1.1)', 100);
@@ -1058,6 +1206,7 @@ function handleKeyPress(key) {
     
     elements.search.inputDisplay.textContent = searchString;
     
+    // Snappy AI Search Debounce
     clearTimeout(searchDebounceTimer);
     if (searchString.length > 2) {
         searchDebounceTimer = setTimeout(() => performAISearch(), 500);
@@ -1074,10 +1223,13 @@ async function performAISearch() {
     if(!query) return;
 
     try {
+        // Call Cloudflare Workers AI Endpoint
         const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
         if (!response.ok) throw new Error("AI Search failed");
         
+        // Expecting array of Chapter Numbers: e.g., [1, 2, 55]
         const chapterIds = await response.json();
+
         resultsContainer.innerHTML = '';
 
         if (!chapterIds || chapterIds.length === 0) {
@@ -1085,9 +1237,11 @@ async function performAISearch() {
             return;
         }
 
+        // Map AI results (Integers) to your Local MetaData
+        // We map Chapter Number (1-based) to Array Index (0-based)
         const foundSurahs = chapterIds
             .map(num => quranData.find(s => s.chapterNumber === num))
-            .filter(Boolean); 
+            .filter(Boolean); // Remove nulls if AI hallucinates a number > 114
 
         if (foundSurahs.length === 0) {
             resultsContainer.innerHTML = '<div class="no-results">No matches found.</div>';
@@ -1099,6 +1253,7 @@ async function performAISearch() {
             card.className = 'surah-card';
             card.tabIndex = 0;
             card.dataset.chapter = surah.chapterNumber;
+            // Visual cue that this is an AI result
             card.style.borderColor = 'rgba(0, 255, 187, 0.3)'; 
             
             card.innerHTML = `
@@ -1134,94 +1289,5 @@ function closeSearch() {
     setActiveNav(elements.sidebar.home);
     document.getElementById('door-play-btn').focus();
 }
-
-/* =========================================
-   5. CAST HELPERS & SMART DETECTION LOGIC
-   ========================================= */
-
-// Called by the Cast Button on click
-function triggerCast() {
-    if(window.isCastingActive) {
-        // If already active, this opens the menu to disconnect
-        cast.framework.CastContext.getInstance().requestSession();
-    } else {
-        cast.framework.CastContext.getInstance().requestSession();
-    }
-}
-
-// Logic to load media on TV
-function castCurrentMedia(url, title, vNum) {
-    const session = cast.framework.CastContext.getInstance().getCurrentSession();
-    if (!session) return;
-
-    const mediaInfo = new chrome.cast.media.MediaInfo(url, 'audio/mp3');
-    mediaInfo.metadata = new chrome.cast.media.MusicTrackMediaMetadata();
-    mediaInfo.metadata.title = `${title} (Ayah ${vNum})`;
-    mediaInfo.metadata.artist = RECITERS_CONFIG[elements.selects.reciter.value].name;
-    mediaInfo.metadata.images = [new chrome.cast.Image('https://Quran-lite.pages.dev/social-preview.jpg')];
-
-    const request = new chrome.cast.media.LoadRequest(mediaInfo);
-    session.loadMedia(request).then(
-        () => console.log('Cast load succeed'),
-        (e) => console.log('Cast error: ' + e)
-    );
-}
-
-// --- SMART BUTTON VISIBILITY ---
-async function updateCastButtonVisibility() {
-    const btn = document.getElementById('smart-cast-btn');
-    const panel = document.getElementById('control-panel');
-    if (!btn) return;
-
-    const ua = navigator.userAgent;
-    
-    // 1. Detect if WE are the TV (Hide Button)
-    const isTV = /Android/.test(ua) && (/TV|SmartTV|GoogleTV/.test(ua) || /wv/.test(ua));
-    if (isTV) {
-        btn.style.display = 'none';
-        return;
-    }
-
-    // 2. Detect Mobile (Always Show)
-    const isMobile = /Mobi|Android|iPhone|iPad/i.test(ua);
-    if (isMobile) {
-        btn.style.display = 'flex';
-        return;
-    }
-
-    // 3. Detect HDMI (External Screen) - Requires Permission (Optional check)
-    if (window.screen && window.screen.isExtended) {
-         try {
-             const details = await window.getScreenDetails();
-             if (!details.currentScreen.isInternal) {
-                 btn.style.display = 'none'; 
-                 return;
-             }
-         } catch(e) {}
-    }
-
-    // 4. Laptop Logic: Show only if control panel is visible
-    if (panel && window.getComputedStyle(panel).display !== 'none') {
-        btn.style.display = 'flex';
-    } else {
-        btn.style.display = 'none';
-    }
-}
-
-/* --- GLOBAL PLAY/PAUSE FUNCTION --- */
-// Use this in your HTML: <button onclick="toggleMasterPlay()">
-window.toggleMasterPlay = function() {
-    // 1. If Casting, toggle TV
-    if(window.isCastingActive && castPlayerController) {
-        castPlayerController.playOrPause();
-        return;
-    }
-    // 2. Local Toggle
-    if (elements.quranAudio.paused) {
-        elements.quranAudio.play();
-    } else {
-        elements.quranAudio.pause();
-    }
-};
 
 document.addEventListener('DOMContentLoaded', initializeApp);
