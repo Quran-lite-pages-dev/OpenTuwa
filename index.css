@@ -363,16 +363,16 @@ line-height: 1.4;
             border-color: var(--accent) !important;
             box-shadow: 0 0 25px rgba(0, 255, 187, 0.3);
         }
-/* Sync Chapter Title with Control Panel on Landscape Desktop */
+/* Sync Chapter Title with Control Panel (Landscape Desktop Only) */
 @media (min-width: 769px) and (orientation: landscape) {
     #chapter-title {
-        opacity: 1;
-        transition: opacity 0.4s ease; /* Matches control-panel transition */
+        opacity: 0; /* Default to hidden when controls are hidden */
+        transition: opacity 0.4s ease; /* Smooth fade like the panel */
     }
 
-    /* Hide title when controls are hidden (Idle State) */
+    /* Only show title when the app is in 'idle' state (Control Panel visible) */
     body.idle #chapter-title {
-        opacity: 0;
+        opacity: 1;
     }
 }
                 
