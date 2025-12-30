@@ -220,16 +220,168 @@
         </div>
     </div>
 
-<div id="arabic-modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.9); justify-content:center; align-items:center;">
-    <div style="background:#1a1a1a; padding:30px; border-radius:15px; text-align:center; color:white; border: 1px solid #333; max-width: 90%;">
-        <h2 style="margin-bottom: 20px; font-family: sans-serif;">Do you know how to read Arabic?</h2>
-        <div style="display: flex; justify-content: center; gap: 20px;">
-            <button id="btn-arabic-yes" style="padding:10px 30px; font-size:1.1rem; cursor:pointer; background:#2ecc71; border:none; border-radius:5px; color:white;">Yes</button>
-            <button id="btn-arabic-no" style="padding:10px 30px; font-size:1.1rem; cursor:pointer; background:#e74c3c; border:none; border-radius:5px; color:white;">No</button>
+<div id="arabic-modal" class="tv-modal-overlay" style="display:flex;">
+    
+    <div class="tv-ambient-glow"></div>
+
+    <div class="tv-glass-card">
+        <div class="tv-content-wrapper">
+            <div class="tv-badge">Script Settings</div>
+            
+            <h2 class="tv-heading">Enable Arabic Script?</h2>
+            <p class="tv-subtext">Choose your preferred viewing experience for this session.</p>
+
+            <div class="tv-button-row">
+                <button id="btn-arabic-yes" class="tv-btn tv-btn-primary">
+                    <span class="btn-icon">✓</span> Yes, Enable
+                </button>
+                <button id="btn-arabic-no" class="tv-btn tv-btn-secondary">
+                    <span class="btn-icon">✕</span> No, Thanks
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
+<style>
+    /* 1. The Overlay - Dark cinematic backdrop */
+    .tv-modal-overlay {
+        position: fixed;
+        z-index: 9999;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(5, 5, 5, 0.85); /* Deep dark overlay */
+        display: flex; /* Flex is better than inline styles for centering */
+        justify-content: center;
+        align-items: center;
+        font-family: 'Roboto', 'Inter', system-ui, sans-serif;
+        opacity: 0;
+        animation: tvFadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    /* 2. Ambient Glow - Behind the card */
+    .tv-ambient-glow {
+        position: absolute;
+        width: 600px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(100, 100, 255, 0.15) 0%, rgba(0,0,0,0) 70%);
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    /* 3. The Glass Card - The core Modern UI element */
+    .tv-glass-card {
+        background: rgba(30, 30, 35, 0.65); /* Semi-transparent dark */
+        backdrop-filter: blur(24px) saturate(180%); /* The heavy blur */
+        -webkit-backdrop-filter: blur(24px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.12); /* Subtle glass edge */
+        box-shadow: 
+            0 20px 50px rgba(0, 0, 0, 0.5),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1); /* Inner highlight */
+        padding: 50px;
+        border-radius: 24px;
+        text-align: center;
+        color: white;
+        max-width: 500px;
+        width: 90%;
+        transform: scale(0.95);
+        animation: tvScaleUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* Typography */
+    .tv-badge {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 16px;
+        font-weight: 600;
+    }
+
+    .tv-heading {
+        margin: 0 0 12px 0;
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: -0.5px;
+        background: linear-gradient(to right, #ffffff, #e0e0e0);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .tv-subtext {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.1rem;
+        margin: 0 0 40px 0;
+        line-height: 1.5;
+    }
+
+    /* 4. Buttons - Designed for "Remote Control" feel */
+    .tv-button-row {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .tv-btn {
+        padding: 16px 32px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Primary Button (Yes) */
+    .tv-btn-primary {
+        background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+    }
+
+    /* Secondary Button (No) */
+    .tv-btn-secondary {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    /* Hover/Focus States (Simulates TV Selection) */
+    .tv-btn:hover, .tv-btn:focus {
+        transform: scale(1.08); /* Grows slightly */
+        outline: none;
+    }
+
+    .tv-btn-primary:hover {
+        box-shadow: 0 0 30px rgba(46, 204, 113, 0.6); /* Glows Green */
+        background: white; /* TV interfaces often flip to white on focus */
+        color: #27ae60;
+    }
+
+    .tv-btn-secondary:hover {
+        background: rgba(255, 255, 255, 0.25);
+        box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Animations */
+    @keyframes tvFadeIn {
+        to { opacity: 1; }
+    }
+    
+    @keyframes tvScaleUp {
+        to { transform: scale(1); }
+    }
+</style>
 
     
 
