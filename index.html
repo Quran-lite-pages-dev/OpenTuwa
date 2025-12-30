@@ -77,7 +77,7 @@
 <script>
     if ('serviceWorker' in navigator) {
         // 1. Path to file: Use the absolute path 'sw.js'
-        // 2. Scope: Set the scope to '/reading/' so it only controls pages within that subdirectory.
+        // 2. Scope: Set the scope to '/Listening/' so it only controls pages within that subdirectory.
         
         navigator.serviceWorker.register('/sw.js', { scope: '/' });
         .then(registration => console.log('Service Worker Registered with scope:', registration.scope))
@@ -145,7 +145,7 @@
         </div>
 
         <div class="row-section" id="continue-section" style="display:none;">
-            <div class="row-header">Continue Reading</div>
+            <div class="row-header">Continue Listening</div>
             <div class="card-scroller" id="continue-row"></div>
         </div>
 
@@ -180,7 +180,7 @@
         <div id="loading-overlay">
             <div class="loader-content">
                 <div class="loader-spinner"></div>
-                <div class="loader-text" id="loader-text">Initializing Quran for Every Soul...</div>
+                <div class="loader-text" id="loader-text"></div>
                 <button id="start-btn" class="start-btn">Start</button>
             </div>
             <nav id="splash-footer">
@@ -220,17 +220,7 @@
         </div>
     </div>
 
-    <div id="listening-overlay">
-    <div class="voice-waves">
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-        <div class="wave-bar"></div>
-    </div>
-    <div class="listening-text">Listening...</div>
-    <div class="listening-sub">Speak now</div>
-    </div>
+
     
 
             
