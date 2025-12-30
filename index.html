@@ -65,7 +65,7 @@
     }
     </script>
 <script src="nav.js" fetchpriority="high"></script>
-<link rel="stylesheet" href="index.css" fetchpriority="high">  
+<link id="main-css" rel="stylesheet" href="index.css" fetchpriority="high">
 <!-- Prioritize the download of this critical script -->
 
 
@@ -219,6 +219,16 @@
             <select id="translationAudioSelect" aria-label="Choose Audio Translation"></select>
         </div>
     </div>
+
+    <div id="arabic-modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.9); justify-content:center; align-items:center;">
+    <div style="background:#1a1a1a; padding:30px; border-radius:15px; text-align:center; color:white; border: 1px solid #333; max-width: 90%;">
+        <h2 style="margin-bottom: 20px; font-family: sans-serif;">Do you know how to read Arabic?</h2>
+        <div style="display: flex; justify-content: center; gap: 20px;">
+            <button id="btn-arabic-yes" style="padding:10px 30px; font-size:1.1rem; cursor:pointer; background:#2ecc71; border:none; border-radius:5px; color:white;">Yes</button>
+            <button id="btn-arabic-no" style="padding:10px 30px; font-size:1.1rem; cursor:pointer; background:#e74c3c; border:none; border-radius:5px; color:white;">No</button>
+        </div>
+    </div>
+</div>
 
 
     
