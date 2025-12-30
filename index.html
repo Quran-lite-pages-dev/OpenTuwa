@@ -271,6 +271,46 @@ window.performAISearch = function() {
     }
 };
 </script>
+    <script>
+        (function() {
+    "use strict";
+
+    // 1. Block Right Click (Context Menu)
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+    }, false);
+
+    // 2. Block Text Selection (Mouse based)
+    document.addEventListener('selectstart', function(e) {
+        e.preventDefault();
+    }, false);
+
+    // 3. Block Dragging (Images, Links, Text)
+    document.addEventListener('dragstart', function(e) {
+        e.preventDefault();
+    }, false);
+
+    // 4. (Optional) Block Copying via Keyboard Shortcuts (Ctrl+C / Cmd+C)
+    document.addEventListener('keydown', function(e) {
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
+            e.preventDefault();
+        }
+    });
+})();
+    </script>
+
+    <style>
+        /* Apply to the entire document */
+*, *::before, *::after {
+    -webkit-user-select: none; /* Chrome, Safari, Opera */
+    -moz-user-select: none;    /* Firefox */
+    -ms-user-select: none;     /* IE 10+ */
+    user-select: none;         /* Standard syntax */
+    
+    /* Prevent image dragging visually in some browsers */
+    -webkit-user-drag: none;
+}
+    </style>
     
 </body>
 </html>
