@@ -268,17 +268,25 @@
     color: #666;
     z-index: 100; 
     mix-blend-mode: difference;
-    /* meaningful line-height helps when breaking lines */
     line-height: 1.1; 
+    
+    /* ADD THIS LINE for the animation to work */
+    transition: transform 0.5s ease, opacity 0.5s ease;
 }
 
-/* Add this new section */
 #chapter-title .chapter-subtitle {
-    display: block;       /* Forces it to the second line */
-    font-size: 0.7em;     /* 0.7em = 70% size (30% smaller) */
-    margin-top: 0.25rem;   /* Optional: Adds a tiny gap between title and number */
-    font-weight: 400;     /* Optional: Makes the subtitle slightly thinner */
-line-height: 1.4;
+    display: block;       
+    font-size: 0.7em;     
+    margin-top: 0.25rem;  
+    font-weight: 400;     
+    line-height: 1.4;
+}
+
+/* The new idle state */
+body.idle #chapter-title {
+    transform: translateX(100%);
+    opacity: 0;
+    pointer-events: none;
 }
         #verse-container {
             position: relative; width: 100%; height: 50vh; margin-bottom: 3rem; display: flex; justify-content: center; align-items: center;
@@ -365,34 +373,7 @@ line-height: 1.4;
             border-color: var(--accent) !important;
             box-shadow: 0 0 25px rgba(0, 255, 187, 0.3);
         }
-                /* --- CRITICAL FIX: Ensure previous blocks are closed --- */
-}
 
-/* --- CRITICAL FIX: Close any accidentally open blocks --- */
-}
-
-/* --- ROBUST CHAPTER TITLE SYNCHRONIZATION --- */
-/* Target: Landscape Screens (Desktop/TV) Only */
-@media (min-width: 769px) and (orientation: landscape) {
-
-    /* 1. DEFAULT STATE: HIDDEN */
-    /* Logic: If body.idle makes panel visible (opacity: 1), 
-       then the default state must be hidden. */
-    #chapter-title, 
-    .hero-title-text {
-        opacity: 0 !important;
-        visibility: hidden !important;
-        transition: opacity 0.4s ease, visibility 0.4s ease !important;
-    }
-
-    /* 2. IDLE STATE: VISIBLE */
-    /* Matches: body.idle #control-panel { opacity: 1; } found in your file */
-    body.idle #chapter-title, 
-    body.idle .hero-title-text {
-        opacity: 1 !important;
-        visibility: visible !important;
-    }
-}
 
                 
 </style>
