@@ -259,10 +259,27 @@
             text-align: center; width: 100%; max-width: 1200px; margin: 0 auto;
             flex-grow: 1; display: flex; flex-direction: column; justify-content: center; position: relative;
         }
-        #chapter-title {
-            position: fixed; top: 2rem; left: 2rem; font-size: clamp(1.4rem, 2.5vw, 2.4rem); font-weight: 600; color: #666;
-            z-index: 100; mix-blend-mode: difference;
-        }
+#chapter-title {
+    position: fixed; 
+    top: 2rem; 
+    left: 2rem; 
+    font-size: clamp(1.4rem, 2.5vw, 2.4rem); 
+    font-weight: 600; 
+    color: #666;
+    z-index: 100; 
+    mix-blend-mode: difference;
+    /* meaningful line-height helps when breaking lines */
+    line-height: 1.1; 
+}
+
+/* Add this new section */
+#chapter-title .chapter-subtitle {
+    display: block;       /* Forces it to the second line */
+    font-size: 0.7em;     /* 0.7em = 70% size (30% smaller) */
+    margin-top: 0.25rem;   /* Optional: Adds a tiny gap between title and number */
+    font-weight: 400;     /* Optional: Makes the subtitle slightly thinner */
+line-height: 1.4;
+}
         #verse-container {
             position: relative; width: 100%; height: 50vh; margin-bottom: 3rem; display: flex; justify-content: center; align-items: center;
         }
