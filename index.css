@@ -349,6 +349,21 @@ line-height: 1.4;
             select { width: 100%; height: 48px; font-size: 1.4rem; }
             #chapterSelect { grid-column: 1 / -1; background-color: rgba(30,30,30,0.8); color: var(--accent); font-weight: 600; }
         }
+/* --- FIX: Close any accidental open blocks first --- */
+}
+
+/* Sync Chapter Title with Control Panel (Landscape Desktop Only) */
+@media (min-width: 769px) and (orientation: landscape) {
+    #chapter-title {
+        opacity: 1; /* Visible by default (when active) */
+        transition: opacity 0.4s ease;
+    }
+
+    /* Hide title when controls are hidden (Idle State) */
+    body.idle #chapter-title {
+        opacity: 0;
+    }
+}
 
 
         /* Mobile adjustment */
@@ -363,17 +378,6 @@ line-height: 1.4;
             border-color: var(--accent) !important;
             box-shadow: 0 0 25px rgba(0, 255, 187, 0.3);
         }
-/* Sync Chapter Title with Control Panel (Landscape Desktop Only) */
-@media (min-width: 769px) and (orientation: landscape) {
-    #chapter-title {
-        opacity: 0; /* Default to hidden when controls are hidden */
-        transition: opacity 0.4s ease; /* Smooth fade like the panel */
-    }
 
-    /* Only show title when the app is in 'idle' state (Control Panel visible) */
-    body.idle #chapter-title {
-        opacity: 1;
-    }
-}
                 
 </style>
