@@ -266,6 +266,14 @@ const KEYBOARD_KEYS = [
     'SPACE', 'DEL', 'CLEAR'
 ];
 
+// 2026 GDPR Helper (Call this from UI button to wipe data)
+window.wipeUserData = function() {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('quran_user_analytics');
+    alert('User data wiped.');
+    location.reload();
+};
+
 // --- MERGE METADATA ---
 function mergeMetadata(apiChapters) {
     return apiChapters.map((ch, idx) => {
@@ -1208,11 +1216,20 @@ function handleKeyPress(key) {
     }
 }
 
+// 2026 UPDATE: AI Thinking State
 async function performAISearch() {
     const query = searchString.trim();
     const resultsContainer = elements.search.resultsGrid;
 
     if(!query) return;
+
+    // 2026 UX: Show skeleton "thinking" state
+    resultsContainer.innerHTML = `
+        <div class="ai-thinking">
+            <div class="sparkle-icon">✨</div>
+            <span>Analyzing semantics for "${query}"...</span>
+        </div>
+    `;
 
     try {
         // Call Cloudflare Workers AI Endpoint

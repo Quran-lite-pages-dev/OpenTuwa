@@ -12,12 +12,16 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    
+    <meta name="display_override" content="window-controls-overlay, standalone">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#050505">
+    
     <title>Quran for Every Soul - Online Quran Audio, Surah Player & Translations</title>
     <meta name="description" content="Read and listen to the Noble Quran online. Features synchronized MP3 audio, verse-by-verse recitation (Surah), and translations.">
     
     <meta name="author" content="Quran for Every Soul Open Source">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#050505">
 
     <meta property="og:site_name" content="Quran for Every Soul">
     <meta property="og:title" content="Quran for Every Soul - The Distraction-Free Quran Player">
@@ -66,20 +70,14 @@
     </script>
 <script src="nav.js" fetchpriority="high"></script>
 <link id="main-css" rel="stylesheet" href="index.css" fetchpriority="high">
-<!-- Prioritize the download of this critical script -->
-
-
-    </head>
+</head>
 <body>
     <script src="AI2.js"></script>
 <script src="offline-ui.js"></script>
 <script src="voice-search.js"></script>
 <script>
     if ('serviceWorker' in navigator) {
-        // 1. Path to file: Use the absolute path 'sw.js'
-        // 2. Scope: Set the scope to '/Listening/' so it only controls pages within that subdirectory.
-        
-        navigator.serviceWorker.register('/sw.js', { scope: '/' });
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
         .then(registration => console.log('Service Worker Registered with scope:', registration.scope))
         .catch((err) => console.log('SW Failed:', err));
     }
@@ -162,8 +160,7 @@ AUDIO HD
             <div class="card-scroller" id="continue-row"></div>
         </div>
 
-<!-- AI RECOMMENDATION SECTION -->
-        <div class="row-section" id="ai-section" style="display:none;">
+<div class="row-section" id="ai-section" style="display:none;">
             <div class="row-header">
                 Recommended 
                 <span style="font-size:0.8rem; background:var(--accent); color:#000; padding:2px 6px; border-radius:4px; margin-left:10px; font-weight:900;">For you</span>
@@ -238,12 +235,11 @@ AUDIO HD
 #arabic-modal {
     display: none; 
     position: fixed;
-    inset: 0; /* Modern shorthand for top/left/bottom/right: 0 */
+    inset: 0; 
     z-index: 9999;
     background: radial-gradient(circle at center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%);
-    backdrop-filter: blur(20px) saturate(160%); /* Heavier blur for 2026 */
+    backdrop-filter: blur(20px) saturate(160%); 
     -webkit-backdrop-filter: blur(20px) saturate(160%);
-    display: none; /* Centering */
     justify-content: center;
     align-items: center;
     transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -252,17 +248,15 @@ AUDIO HD
 /* The Card */
 .arabic-modal-card {
     position: relative;
-    /* Use background alpha instead of element opacity */
     background: linear-gradient(165deg, rgba(40, 40, 45, 0.7) 0%, rgba(15, 15, 20, 0.9) 100%);
     border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
     padding: 60px;
-    border-radius: 32px; /* Softer, more modern corners */
+    border-radius: 32px;
     text-align: center;
     max-width: 540px;
     width: 90%;
     color: #ffffff;
-    /* Cleanest possible system stack */
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
@@ -271,7 +265,7 @@ AUDIO HD
     margin-bottom: 12px;
     font-size: 2.2rem;
     font-weight: 700;
-    letter-spacing: -0.02em; /* Tight tracking for modern look */
+    letter-spacing: -0.02em; 
     color: #fff;
 }
 
@@ -279,7 +273,7 @@ AUDIO HD
     margin-bottom: 48px;
     font-size: 1.4rem;
     font-weight: 400;
-    color: rgba(255, 255, 255, 0.6); /* Use alpha for hierarchy */
+    color: rgba(255, 255, 255, 0.6); 
 }
 
 /* Common Button Styles */
@@ -288,14 +282,14 @@ AUDIO HD
     font-size: 1.1rem;
     font-weight: 600;
     cursor: pointer;
-    border-radius: 16px; /* Match card softening */
+    border-radius: 16px; 
     transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
     border: none;
 }
 
 #btn-arabic-yes {
     background: #0FB;
-    color: #003322; /* Darker text on bright background for readability */
+    color: #003322; 
     box-shadow: 0 0 20px rgba(0, 255, 187, 0.2);
 }
 
@@ -308,7 +302,7 @@ AUDIO HD
 /* Focused state (The "TV Highlight" effect) */
 .arabic-btn:focus, .arabic-btn:hover {
     transform: scale(1.1);
-    outline: 3px solid #fff; /* Crucial for TV accessibility */
+    outline: 3px solid #fff; 
     outline-offset: 4px;
 }
 
@@ -330,33 +324,21 @@ AUDIO HD
     </div>
 </div>
 
-    
-
-            
 <script src="index.js"></script>
 
 <script src="AI2.js"></script>
 <script src="arabic-check.js"></script>
 <script>
 // --- Voice Search Bridge ---
-
-// 1. Global variable for the voice text
 window.searchString = ""; 
 
-// 2. The function that voice-search.js calls
 window.performAISearch = function() {
     console.log("Voice search triggered for:", window.searchString);
-
     const searchInput = document.getElementById('search-input');
     
     if (searchInput) {
-        // A. Put the text in the box
         searchInput.value = window.searchString;
-        
-        // B. Tell index.js that the text changed (triggers 'input' listeners)
         searchInput.dispatchEvent(new Event('input', { bubbles: true }));
-        
-        // C. Simulate pressing 'Enter' (triggers 'keyup' or submit listeners)
         const enterEvent = new KeyboardEvent('keyup', {
             key: 'Enter',
             code: 'Enter',
@@ -365,8 +347,6 @@ window.performAISearch = function() {
             bubbles: true
         });
         searchInput.dispatchEvent(enterEvent);
-    } else {
-        console.error("Could not find element with ID 'search-input'");
     }
 };
 </script>
@@ -375,25 +355,14 @@ window.performAISearch = function() {
     "use strict";
 
     // 1. Block Right Click (Context Menu)
-    document.addEventListener('contextmenu', function(e) {
-        e.preventDefault();
-    }, false);
-
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); }, false);
     // 2. Block Text Selection (Mouse based)
-    document.addEventListener('selectstart', function(e) {
-        e.preventDefault();
-    }, false);
-
-    // 3. Block Dragging (Images, Links, Text)
-    document.addEventListener('dragstart', function(e) {
-        e.preventDefault();
-    }, false);
-
-    // 4. (Optional) Block Copying via Keyboard Shortcuts (Ctrl+C / Cmd+C)
+    document.addEventListener('selectstart', function(e) { e.preventDefault(); }, false);
+    // 3. Block Dragging
+    document.addEventListener('dragstart', function(e) { e.preventDefault(); }, false);
+    // 4. Block Copying
     document.addEventListener('keydown', function(e) {
-        if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
-            e.preventDefault();
-        }
+        if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) { e.preventDefault(); }
     });
 })();
     </script>
@@ -401,12 +370,10 @@ window.performAISearch = function() {
     <style>
         /* Apply to the entire document */
 *, *::before, *::after {
-    -webkit-user-select: none; /* Chrome, Safari, Opera */
-    -moz-user-select: none;    /* Firefox */
-    -ms-user-select: none;     /* IE 10+ */
-    user-select: none;         /* Standard syntax */
-    
-    /* Prevent image dragging visually in some browsers */
+    -webkit-user-select: none; 
+    -moz-user-select: none;    
+    -ms-user-select: none;     
+    user-select: none;         
     -webkit-user-drag: none;
 }
     </style>
@@ -426,30 +393,22 @@ window.performAISearch = function() {
         currentIndex = index;
         const targetCard = cards[currentIndex];
 
-        // Visual sync only
         targetCard.focus({ preventScroll: true });
 
-        // Trigger preview ONLY if not scrolling
         if (!isScrolling && source !== 'wheel') {
             targetCard.dispatchEvent(new Event('mouseenter', { bubbles: true }));
             targetCard.dispatchEvent(new Event('mouseover', { bubbles: true }));
         }
 
-        // Keyboard scroll positioning
         if (source === 'keyboard') {
             const scrollY = Math.floor(currentIndex / 4) * SCROLL_STEP;
             grid.style.transform = `translateY(-${scrollY}px)`;
         }
     }
 
-    // -------------------------------
-    // WHEEL SCROLL HANDLING (SAFE)
-    // -------------------------------
     window.addEventListener('wheel', (e) => {
         const dashboard = document.getElementById('dashboard-view');
         if (getComputedStyle(dashboard).display === 'none') return;
-
-        // ❌ Ignore wheel events outside the grid
         if (!e.target.closest('.results-grid')) return;
 
         isScrolling = true;
@@ -465,11 +424,8 @@ window.performAISearch = function() {
         else updateSelection(currentIndex - 1, 'wheel');
     }, { passive: true });
 
-    // -------------------------------
-    // HOVER LOGIC (BLOCKED ON SCROLL)
-    // -------------------------------
     document.addEventListener('mouseover', (e) => {
-        if (isScrolling) return; // ✅ HARD BLOCK
+        if (isScrolling) return; 
 
         const card = e.target.closest('.surah-card');
         if (!card) return;
@@ -482,9 +438,6 @@ window.performAISearch = function() {
         }
     }, true);
 
-    // -------------------------------
-    // KEYBOARD NAV
-    // -------------------------------
     window.addEventListener('keydown', (e) => {
         const dashboard = document.getElementById('dashboard-view');
         if (getComputedStyle(dashboard).display === 'none') return;
@@ -504,8 +457,5 @@ window.performAISearch = function() {
 })();
 
 </script>
-
-
-    
 </body>
 </html>

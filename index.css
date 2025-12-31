@@ -76,10 +76,10 @@ border: 1px solid var(--glass-border);
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 2rem;
-transform: translateY(0);
-      transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1); /* Smooth "row change" easing */
+            transform: translateY(0);
+            transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1); /* Smooth "row change" easing */
             will-change: transform;
-padding-bottom: 300px;
+            padding-bottom: 300px;
         }
 
         .no-results {
@@ -89,15 +89,38 @@ padding-bottom: 300px;
             margin-top: 20%;
         }
 
-        .results-grid .surah-card:focus {
-            border-color: var(--accent);
-            background: #222;
-            transform: scale(1.05) translateZ(0); 
-            box-shadow: 0 0 40px rgba(0, 255, 187, 0.4);
+        /* 2026 AI Thinking Animation */
+        @keyframes pulse-gradient {
+            0% { color: #888; }
+            50% { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+            100% { color: #888; }
+        }
+        .ai-thinking {
+            grid-column: 1 / -1;
+            display: flex; gap: 10px; align-items: center; justify-content: center;
+            padding: 2rem;
+            font-size: 1.4rem;
+            animation: pulse-gradient 1.5s infinite;
         }
 
         /* --- 1. GLOBAL & TV RESET --- */
-        :root { --vh: 100vh; --accent: #00FFBB; --accent-glow: rgba(0, 255, 187, 0.3); --bg: #030303; --surface: rgba(255, 255, 255, 0.05); --text: #f0f0f0; --glass-border: rgba(255, 255, 255, 0.1); --radius-sm: 8px; --radius-md: 16px; --radius-lg: 24px; --transition-smooth: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); }
+        :root { 
+            --vh: 100vh; 
+            --accent: #00FFBB; 
+            --accent-glow: rgba(0, 255, 187, 0.3); 
+            --bg: #030303; 
+            --text: #f0f0f0; 
+            --radius-sm: 8px; 
+            --radius-md: 16px; 
+            --radius-lg: 24px; 
+            --transition-smooth: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            
+            /* 2026 Cinematic Glass Vars */
+            --glass-surface: rgba(20, 20, 20, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1); 
+            --glass-highlight: rgba(255, 255, 255, 0.08);
+            --surface: rgba(255, 255, 255, 0.05); /* Fallback */
+        }
 
         html { box-sizing: border-box; font-size: 62.5%; }
 
@@ -186,15 +209,14 @@ padding-bottom: 300px;
         
         .dash-btn {
             background: #fff; color: #000; border: none; padding: 1.2rem 3rem;
-/* Modern Approach */
-font-size: 1.125rem;       /* Slightly smaller, more refined scale */
-font-weight: 600;           /* Semi-bold is more modern than a chunky 700 */
-border: none;
-border-radius: 99px;        /* Increased "softness" (or use 99px for a pill shape) */
-padding: 14px 32px;         /* Added breathing room */
-letter-spacing: -0.02em;    /* Slight tracking pull-in for a premium feel */
-transition: var(--transition-smooth);
-cursor: pointer;
+            font-size: 1.125rem;       
+            font-weight: 600;          
+            border: none;
+            border-radius: 99px;       
+            padding: 14px 32px;         
+            letter-spacing: -0.02em;   
+            transition: var(--transition-smooth);
+            cursor: pointer;
             display: inline-flex; align-items: center; gap: 10px;
             transition: transform 0.2s, background 0.2s;
         }
@@ -202,20 +224,54 @@ cursor: pointer;
 
         .row-section { padding: 2rem 0 2rem 5%; position: relative; z-index: 5; margin-top: -8vh; background: linear-gradient(to bottom, transparent, #050505 20%); }
         .row-header { font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem; color: #e5e5e5; padding-left: 2px; }
-        .card-scroller { display: flex; gap: 1rem; overflow-x: auto; padding-right: 5%; padding-bottom: 3rem; scroll-behavior: smooth; }
         
+        /* 2026 Optimization: Content-Visibility */
+        .card-scroller { 
+            display: flex; gap: 1rem; overflow-x: auto; padding-right: 5%; padding-bottom: 3rem; scroll-behavior: smooth; 
+            content-visibility: auto; /* SKIP RENDERING OFFSCREEN CONTENT */
+            contain-intrinsic-size: 1px 280px; /* HEIGHT HINT */
+        }
+        
+        /* 2026 SPATIAL GLASS CARD */
         .surah-card {
             flex: 0 0 280px; 
-aspect-ratio: 16 / 9; /* Modern Standard */
-height: auto;
-backdrop-filter: blur(12px); /* Glassmorphism */
-transition: var(--transition-smooth);
-            background: var(--surface); border-radius: var(--radius-md);
-            cursor: pointer; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid var(--glass-border); overflow: hidden;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            
+            /* Glassmorphism 3.0 */
+            background: var(--glass-surface);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            
+            /* Inner Light Border */
+            border: 1px solid transparent;
+            background-image: 
+                linear-gradient(var(--glass-surface), var(--glass-surface)), 
+                linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.01) 100%);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+
+            border-radius: var(--radius-md);
+            cursor: pointer; 
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+            overflow: hidden;
             display: flex; flex-direction: column; justify-content: flex-end; padding: 2rem;
+            
+            will-change: transform, opacity;
         }
-        .surah-card:focus, .surah-card:hover { transform: translateY(-8px) scale(1.03); border-color: var(--accent); background: rgba(255, 255, 255, 0.08); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow); }
+        
+        /* SPOTLIGHT FOCUS */
+        .surah-card:focus, .surah-card:hover { 
+            transform: translateY(-8px) scale(1.03); 
+            /* Enhanced lighting on hover */
+            background-image: 
+                linear-gradient(rgba(30,30,30,0.8), rgba(30,30,30,0.8)), 
+                linear-gradient(145deg, var(--accent), transparent 60%);
+            
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow); 
+            border-color: transparent; /* Gradient handles border */
+        }
+        
         .card-bg-num { position: absolute; top: -15px; right: 5px; font-size: 7rem; font-weight: 900; color: rgba(255,255,255,0.03); line-height: 1; }
         .card-title { font-size: 1.6rem; font-weight: 700; color: #fff; z-index: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-sub { font-size: 1.1rem; color: #aaa; z-index: 2; margin-top: 0.2rem; }
