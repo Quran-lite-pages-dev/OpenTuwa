@@ -23,6 +23,7 @@ const CORE_FILES_TO_CACHE = [
   BASE_PATH + '/index.html',
   // Your main CSS files
   BASE_PATH + '/index.css',
+  BASE_PATH + '/index1.css',
   BASE_PATH + '/index.js',
   // Your offline UI script
   BASE_PATH + '/offline-ui.js',
