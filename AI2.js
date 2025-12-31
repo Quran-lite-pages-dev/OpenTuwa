@@ -119,8 +119,8 @@
                 card.tabIndex = 0;
                 card.innerHTML = `
                     <div class="card-bg-num" style="color:rgba(0,255,187,0.05)">${surah.chapterNumber}</div>
-                    <div class="card-title">${surah.title}</div>
-                    <div class="card-sub">${surah.english_name || ''}</div>
+                    <div class="card-title">${surah.english_name}</div>
+                    <div class="card-sub">${surah.title || ''}</div>
                 `;
                 
                 // Use the global launchPlayer (which is now patched!)
