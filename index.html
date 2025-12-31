@@ -132,13 +132,26 @@
             <div class="hero-content">
                 <div class="hero-super">
                     <span>The  Clear  Book  | The Quran</span>
-                    <span class="badge">AUDIO HD</span>
+                    <span class="badge">
+
+
+</span>
+                    <span class="badges">
+<svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><title>Spatial-audio SVG Icon</title><path fill="currentColor" d="M22.442 9.64q-1.657 0-3.176-.639q-1.52-.64-2.68-1.8t-1.798-2.678t-.64-3.177h1.02q0 1.464.544 2.787q.545 1.324 1.583 2.362t2.36 1.585t2.787.547zm0-4.513q-.755 0-1.447-.289t-1.224-.82q-.533-.533-.821-1.225q-.288-.691-.288-1.447h1.013q0 .548.212 1.062t.592.902q.388.387.902.592t1.061.206zM10.096 12q-1.237 0-2.119-.881T7.097 9t.88-2.119T10.097 6t2.118.881T13.096 9t-.881 2.119t-2.119.881m-7 7.23v-1.645q0-.69.348-1.195q.348-.503.983-.802q1.217-.592 2.702-.975t2.967-.382t2.967.382t2.702.975q.635.299.983.802t.348 1.195v1.646z"/></svg>
+AUDIO HD
+</span>
+<script src="res.js"></script>
+
+
+
+
                 </div>
                 <h1 class="hero-title-text" id="door-hero-title">THE QURAN</h1>
-                <div class="hero-subtitle" id="door-hero-subtitle">Surah Information</div>
-                <p class="hero-desc" id="door-hero-desc">Experience The Clear Quran with synchronized audio, distraction-free interface, and multi-language translations.</p>
+                <div class="hero-subtitle" id="door-hero-subtitle">El Corán</div>
                 <button id="door-play-btn" class="dash-btn" tabindex="10">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M18.25 12L7.75 5.75V18.25L18.25 12Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
                     <span>Resume</span>
                 </button>
             </div>
@@ -221,124 +234,90 @@
     </div>
 
 <style>
-  /* Base Overlay - Glass effect backdrop */
-  #arabic-modal {
-    display: none; /* Controlled by JS */
+/* Base Overlay */
+#arabic-modal {
+    display: none; 
     position: fixed;
+    inset: 0; /* Modern shorthand for top/left/bottom/right: 0 */
     z-index: 9999;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    
-    /* Deep dark cinematic background with blur */
-    background: rgba(5, 5, 5, 0.65);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    
-    /* Centering */
+    background: radial-gradient(circle at center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%);
+    backdrop-filter: blur(20px) saturate(160%); /* Heavier blur for 2026 */
+    -webkit-backdrop-filter: blur(20px) saturate(160%);
+    display: none; /* Centering */
     justify-content: center;
     align-items: center;
-    
-    /* Smooth fade in animation support */
-    transition: opacity 0.3s ease;
-  }
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-  /* The Card - Modern TV Interface style */
-  .arabic-modal-card {
+/* The Card */
+.arabic-modal-card {
     position: relative;
-    background: linear-gradient(135deg, rgba(35, 35, 40, 0.95) 0%, rgba(20, 20, 25, 0.98) 100%);
-    opacity: 0.68; /* 50% transparent */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6);
-    padding: 50px 60px;
-    border-radius: 24px;
+    /* Use background alpha instead of element opacity */
+    background: linear-gradient(165deg, rgba(40, 40, 45, 0.7) 0%, rgba(15, 15, 20, 0.9) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.8);
+    padding: 60px;
+    border-radius: 32px; /* Softer, more modern corners */
     text-align: center;
-    max-width: 500px;
+    max-width: 540px;
     width: 90%;
     color: #ffffff;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  }
+    /* Cleanest possible system stack */
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
 
-  /* Typography */
-  .arabic-modal-card h2 {
-    opacity: 1; /* 50% transparent */
-    margin: 0 0 40px 0;
-    font-size: 1.8rem;
+/* Typography */
+.arabic-modal-card h2 {
+    margin-bottom: 12px;
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em; /* Tight tracking for modern look */
+    color: #fff;
+}
+
+.arabic-modal-card h3 {
+    margin-bottom: 48px;
+    font-size: 1.4rem;
     font-weight: 400;
-    letter-spacing: 0.5px;
-    color: rgba(255, 255, 255, 0.95);
-  }
-      /* Typography */
-  .arabic-modal-card h3 {
-    opacity: 1; /* 50% transparent */
-    margin: 0 0 40px 0;
-    font-size: 1.5rem;
-    font-weight: 350;
-    letter-spacing: 0.5px;
-    color: rgba(255, 255, 255, 0.95);
-  }
+    color: rgba(255, 255, 255, 0.6); /* Use alpha for hierarchy */
+}
 
-  /* Button Container */
-  .arabic-btn-group {
-    opacity: 1; /* 50% transparent */
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-  }
-
-  /* Common Button Styles */
-  .arabic-btn {
-    opacity: 1; /* 50% transparent */
-    padding: 14px 40px;
+/* Common Button Styles */
+.arabic-btn {
+    padding: 16px 48px;
     font-size: 1.1rem;
-    font-weight: 500;
+    font-weight: 600;
     cursor: pointer;
+    border-radius: 16px; /* Match card softening */
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
     border: none;
-    border-radius: 12px;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    position: relative;
-    overflow: hidden;
-  }
+}
 
-  /* YES Button - "Streaming App Primary" (Teal/Cyan gradient) */
-  #btn-arabic-yes {
-    opacity: 1; /* 50% transparent */
-    background: linear-gradient(135deg, #0FB 0%, #00ccaa 100%);
-    color: white;
-    box-shadow: 0 4px 15px rgba(0, 180, 219, 0.3);
-  }
+#btn-arabic-yes {
+    background: #0FB;
+    color: #003322; /* Darker text on bright background for readability */
+    box-shadow: 0 0 20px rgba(0, 255, 187, 0.2);
+}
 
-  /* NO Button - "Streaming App Secondary" (Dark/Glass) */
-  #btn-arabic-no {
-    opacity: 1; /* 50% transparent */
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.7);
+#btn-arabic-no {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+}
 
-  /* Hover & Focus Effects (TV Interface Feel) */
-  .arabic-btn:hover, .arabic-btn:focus {
-    opacity: 1; /* 50% transparent */
-    transform: scale(1.08); /* slight grow like Apple TV/Android TV */
-    outline: none;
-    z-index: 1;
-  }
+/* Focused state (The "TV Highlight" effect) */
+.arabic-btn:focus, .arabic-btn:hover {
+    transform: scale(1.1);
+    outline: 3px solid #fff; /* Crucial for TV accessibility */
+    outline-offset: 4px;
+}
 
-  #btn-arabic-yes:hover {
-    opacity: 1; /* 50% transparent */
-    box-shadow: 0 8px 25px rgba(0, 180, 219, 0.5);
-  }
-
-  #btn-arabic-no:hover {
-    opacity: 1; /* 50% transparent */
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
-    border-color: rgba(255, 255, 255, 0.3);
-  }
-</style>
+#btn-arabic-yes:focus, #btn-arabic-yes:hover {
+    background: #fff;
+    color: #000;
+    box-shadow: 0 0 40px rgba(255, 255, 255, 0.4);
+}
+  </style>
 
 <div id="arabic-modal">
     <div class="arabic-modal-card">
@@ -431,6 +410,102 @@ window.performAISearch = function() {
     -webkit-user-drag: none;
 }
     </style>
+<script>
+(function () {
+    let currentIndex = -1;
+    let scrollTimer = null;
+    let isScrolling = false;
+
+    const SCROLL_STEP = 280;
+    const grid = document.querySelector('.results-grid');
+
+    function updateSelection(index, source) {
+        const cards = document.querySelectorAll('.surah-card');
+        if (!cards.length || index < 0 || index >= cards.length) return;
+
+        currentIndex = index;
+        const targetCard = cards[currentIndex];
+
+        // Visual sync only
+        targetCard.focus({ preventScroll: true });
+
+        // Trigger preview ONLY if not scrolling
+        if (!isScrolling && source !== 'wheel') {
+            targetCard.dispatchEvent(new Event('mouseenter', { bubbles: true }));
+            targetCard.dispatchEvent(new Event('mouseover', { bubbles: true }));
+        }
+
+        // Keyboard scroll positioning
+        if (source === 'keyboard') {
+            const scrollY = Math.floor(currentIndex / 4) * SCROLL_STEP;
+            grid.style.transform = `translateY(-${scrollY}px)`;
+        }
+    }
+
+    // -------------------------------
+    // WHEEL SCROLL HANDLING (SAFE)
+    // -------------------------------
+    window.addEventListener('wheel', (e) => {
+        const dashboard = document.getElementById('dashboard-view');
+        if (getComputedStyle(dashboard).display === 'none') return;
+
+        // ❌ Ignore wheel events outside the grid
+        if (!e.target.closest('.results-grid')) return;
+
+        isScrolling = true;
+        grid.style.pointerEvents = 'none';
+
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(() => {
+            isScrolling = false;
+            grid.style.pointerEvents = 'auto';
+        }, 200);
+
+        if (e.deltaY > 0) updateSelection(currentIndex + 1, 'wheel');
+        else updateSelection(currentIndex - 1, 'wheel');
+    }, { passive: true });
+
+    // -------------------------------
+    // HOVER LOGIC (BLOCKED ON SCROLL)
+    // -------------------------------
+    document.addEventListener('mouseover', (e) => {
+        if (isScrolling) return; // ✅ HARD BLOCK
+
+        const card = e.target.closest('.surah-card');
+        if (!card) return;
+
+        const cards = Array.from(document.querySelectorAll('.surah-card'));
+        const newIndex = cards.indexOf(card);
+
+        if (newIndex !== currentIndex) {
+            updateSelection(newIndex, 'mouse');
+        }
+    }, true);
+
+    // -------------------------------
+    // KEYBOARD NAV
+    // -------------------------------
+    window.addEventListener('keydown', (e) => {
+        const dashboard = document.getElementById('dashboard-view');
+        if (getComputedStyle(dashboard).display === 'none') return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            updateSelection(currentIndex + 1, 'keyboard');
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            updateSelection(currentIndex - 1, 'keyboard');
+        }
+
+        if (e.key === 'Enter' && currentIndex !== -1) {
+            document.querySelectorAll('.surah-card')[currentIndex].click();
+        }
+    });
+})();
+
+</script>
+
+
     
 </body>
 </html>

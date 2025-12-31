@@ -406,8 +406,8 @@ function fillRow(elementId, indexArray) {
         card.tabIndex = 0;
         card.innerHTML = `
             <div class="card-bg-num">${surah.chapterNumber}</div>
-            <div class="card-title">${surah.title}</div>
-            <div class="card-sub">${surah.english_name || ''}</div>
+            <div class="card-title">${surah.english_name}</div>
+            <div class="card-sub">${surah.title || ''}</div>
         `;
         
         // Use specialized TV events
@@ -428,9 +428,9 @@ function schedulePreview(chapterNum) {
     if (previewTimeout) clearTimeout(previewTimeout);
     stopPreview();
     const surah = quranData[chapterNum - 1];
-    document.getElementById('door-hero-title').textContent = surah.title;
-    document.getElementById('door-hero-subtitle').textContent = surah.english_name;
-    document.getElementById('door-hero-desc').textContent = surah.description;
+    document.getElementById('door-hero-title').textContent = surah.english_name;
+    document.getElementById('door-hero-subtitle').textContent = surah.title;
+    // document.getElementById('door-hero-desc').textContent = surah.description;
     document.getElementById('door-play-btn').onclick = () => launchPlayer(chapterNum, 1);
 
     previewTimeout = setTimeout(() => {
@@ -446,30 +446,44 @@ function stopPreview() {
     previewSequence = [];
 }
 
-function updateHeroPreview(chapterNum, startVerse, reciterId, isSequence) {
-    const surah = quranData[chapterNum - 1];
-    if (!surah) return;
-    document.getElementById('door-hero-title').textContent = surah.title;
-    document.getElementById('door-hero-subtitle').textContent = surah.english_name;
-    document.getElementById('door-hero-desc').textContent = surah.description;
-
-    if (isSequence) {
-        previewSequence = [0, 1, 2].map(offset => startVerse + offset).filter(v => v <= surah.verses.length);
-    } else {
-        previewSequence = [startVerse]; 
-    }
+async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
+    // 1. Reset Sequence
+    previewSequence = [];
     previewSeqIndex = 0;
     
-    // Pre-load translation logic for preview
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    const trans = saved.trans || 'en';
-    if (!translationCache[trans]) {
-            loadTranslationData(trans).then(() => {
-                // If still in preview mode, it will pick up next tick
-            });
+    // 2. Get Chapter Data
+    const chIdx = chapterNum - 1;
+    if (!quranData[chIdx]) return;
+    
+    const totalVerses = quranData[chIdx].verses.length;
+
+    // 3. Populate sequence with ALL verses
+    for (let i = 1; i <= totalVerses; i++) {
+        previewSequence.push(i);
     }
 
-    playPreviewStep(chapterNum, reciterId);
+    // 4. Update Hero Image (for the first verse)
+    const verseNum = previewSequence[0];
+    const imgUrl = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/img/${chapterNum}_${verseNum}.png`;
+    
+    const tempImg = new Image();
+    tempImg.src = imgUrl;
+    tempImg.onload = () => {
+        const heroImg = document.getElementById('door-hero-img');
+        if (heroImg) heroImg.src = imgUrl;
+    };
+
+    // 5. [THE FIX] Ensure Translation Data is Loaded
+    // We must ensure the XML is in cache before playPreviewStep tries to read it.
+    const transId = elements.selects.trans.value;
+    if (!translationCache[transId]) {
+        await loadTranslationData(transId);
+    }
+
+    // 6. Start playing if requested
+    if (autoPlay) {
+        playPreviewStep(chapterNum, reciterId);
+    }
 }
 
 function playPreviewStep(chapterNum, reciterId) {
@@ -639,7 +653,7 @@ function updateGoogleSchema(chapterNum, verseNum, chapterName, transName, recite
 
     const canonicalUrl = window.location.href; 
     const rootUrl = "https://Quran-lite.pages.dev/";
-    const surahUrl = `https://Quran-lite.pages.dev/reading/?chapter=${chapterNum}`;
+    const surahUrl = `https://Quran-lite.pages.dev/?chapter=${chapterNum}`;
     const metaDesc = `Read and Listen to Surah ${chapterName} Verse ${verseNum}. Translation: ${transName}. Recitation by ${reciterName}.`;
 
     const schemaData = {
@@ -650,7 +664,7 @@ function updateGoogleSchema(chapterNum, verseNum, chapterName, transName, recite
                 "itemListElement": [{
                     "@type": "ListItem",
                     "position": 1,
-                    "name": "Quran for Human", 
+                    "name": "Quran for Every Soul", 
                     "item": rootUrl
                 }, {
                     "@type": "ListItem",
@@ -673,7 +687,7 @@ function updateGoogleSchema(chapterNum, verseNum, chapterName, transName, recite
                 "isPartOf": {
                     "@type": "WebSite",
                     "url": rootUrl,
-                    "name": "Quran for Human"
+                    "name": "Quran for Every Soul"
                 }
             }
         ]
@@ -691,7 +705,7 @@ function populateChapterSelect() {
     quranData.forEach((c, i) => {
         const opt = document.createElement('option');
         opt.value = i;
-        opt.textContent = `${c.chapterNumber}. ${c.title} - ${c.english_name || ''}`;
+        opt.textContent = `${c.chapterNumber}. ${c.english_name} - ${c.title || ''}`;
         elements.selects.chapter.appendChild(opt);
     });
 }
@@ -1098,29 +1112,7 @@ function updateMediaSession(surah, verse, artist) {
     }
 }
 
-// --- 3. SIDEBAR LOGIC ---
-function initSidebarNavigation() {
-    elements.sidebar.container.addEventListener('mouseenter', () => elements.sidebar.container.classList.add('expanded'));
-    elements.sidebar.container.addEventListener('mouseleave', () => elements.sidebar.container.classList.remove('expanded'));
 
-    elements.sidebar.home.addEventListener('click', (e) => {
-        e.preventDefault();
-        closeSearch();
-        switchView('dashboard');
-        setActiveNav(elements.sidebar.home);
-    });
-
-    elements.sidebar.search.addEventListener('click', (e) => {
-        e.preventDefault();
-        openSearch();
-        setActiveNav(elements.sidebar.search);
-    });
-}
-
-function setActiveNav(el) {
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    el.classList.add('active');
-}
 
 // --- 4. SEARCH & KEYBOARD LOGIC (AI POWERED) ---
 let searchDebounceTimer;
@@ -1258,8 +1250,8 @@ async function performAISearch() {
             
             card.innerHTML = `
                 <div class="card-bg-num">${surah.chapterNumber}</div>
-                <div class="card-title">${surah.title}</div>
-                <div class="card-sub">${surah.english_name || ''}</div>
+                <div class="card-title">${surah.english_name}</div>
+                <div class="card-sub">${surah.title || ''}</div>
             `;
             card.onclick = () => { closeSearch(); launchPlayer(surah.chapterNumber, 1); };
             card.onkeydown = (e) => { if(e.key === 'Enter') card.click(); };
@@ -1286,7 +1278,6 @@ function openSearch() {
 
 function closeSearch() {
     elements.search.overlay.classList.remove('active');
-    setActiveNav(elements.sidebar.home);
     document.getElementById('door-play-btn').focus();
 }
 
