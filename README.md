@@ -8,7 +8,7 @@ Quran for Every Soul is a progressive web application (PWA) that provides an ele
 
 - **Synchronized Audio Playback**: Verse-by-verse recitation with multiple reciters
 - **Multiple Translations**: Support for 40+ languages
-- **Search Functionality**: AI-powered search with voice input support
+- **Algorithm Functionality**: AI-powered 'For You' Recommendations
 - **Offline Support**: Service worker caching for offline access
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 - **Modern UI**: Clean, minimalist interface with dark mode
@@ -19,11 +19,14 @@ Quran for Every Soul is a progressive web application (PWA) that provides an ele
 quran-lite.pages.dev/
 ├── index.html                  # Main HTML entry point
 ├── sw.js                       # Service worker for offline functionality
+├── LICENSE                       # License
+├── CREDITS.MD                      # Credits
 ├── README.md                   # This file
 │
 ├── src/                        # Source code directory
 │   ├── core/                   # Core application logic
-│   │   └── app.js              # Main application file
+│   │   └── app.js              # Main application fileerror-handling-img.js
+│   │   └── error-handling-img.js              # error-handling-img.js
 │   ├── components/             # UI components
 │   │   ├── navigation.js       # Navigation component
 │   │   ├── recommendations.js  # AI recommendations
@@ -176,7 +179,17 @@ This is an open-source project. Contributions are welcome! Please ensure:
 
 ## License
 
-[Specify license here]
+PROPRIETARY AND CONFIDENTIAL - ALL RIGHTS RESERVED
+
+Copyright (c) Haykal M. Zaidi 2024-2026
+
+This software and its source code are the exclusive property of Haykal M. Zaidi.
+Strictly no part of this software may be used, reproduced, modified, distributed,
+or copied in any form or by any means without the express prior written
+permission of the author.
+
+The receipt or possession of this source code does not convey or imply any
+rights to use it for any purpose.
 
 ## Support
 
