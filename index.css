@@ -1,5 +1,4 @@
 /* index.css - AUDITED & FIXED */
-<style>
 
 /* --- 0. TV STYLE OVERRIDES & SCROLLBAR BAN --- */
         * {
@@ -453,4 +452,3 @@ select:focus {
             #control-panel { display: grid; grid-template-columns: 1fr 1fr; }
             .ai-card-border { border-color: rgba(0, 255, 187, 0.4) !important; }
         }
-</style>

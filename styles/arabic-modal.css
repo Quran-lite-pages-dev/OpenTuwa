@@ -1,0 +1,113 @@
+/* Arabic Modal Styles */
+
+/* 1. Base Overlay - STABILIZED */
+#arabic-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    /* Industrial: Deep matte black instead of muddy gradients */
+    background: rgba(8, 8, 8, 0.95);
+    /* Performance: Light blur only, relying on opacity for focus */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.3s ease;
+}
+
+/* 2. The Card - FLAT & SOLID */
+.arabic-modal-card {
+    position: relative;
+    /* Industrial: Solid dark grey. No weird linear angles. */
+    background: #1a1a1a;
+    /* Crisp 1px border for definition */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    /* Clean, deep shadow. No "glowing" shadows. */
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+    padding: 48px;
+    /* Reduced radius: Looks more like a UI element, less like a toy */
+    border-radius: 24px;
+    text-align: center;
+    max-width: 500px;
+    width: 90%;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* 3. Typography - HIERARCHY */
+.arabic-modal-card h2 {
+    margin: 0 0 12px 0;
+    font-size: 1.8rem;
+    color: #ffffff;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+/* Target the <b> tag to ensure it doesn't look weird */
+.arabic-modal-card h2 b {
+    font-weight: 600;
+}
+
+.arabic-modal-card h3 {
+    margin: 0 0 40px 0;
+    font-size: 1.1rem;
+    /* Standardized secondary text color */
+    color: #a1a1aa;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+/* 4. Button Layout */
+.arabic-btn-group {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    width: 100%;
+}
+
+/* 5. Buttons - DE-SAKAIED */
+.arabic-btn {
+    flex: 1; /* Make them equal width */
+    padding: 16px 24px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    /* Industrial: Standard radius, not a pill */
+    border-radius: 12px;
+    transition: transform 0.2s ease, background 0.2s, box-shadow 0.2s;
+    outline: none;
+}
+
+/* Primary Action (Yes) - Pure White */
+#btn-arabic-yes {
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #ffffff;
+}
+
+/* Secondary Action (No) - Transparent */
+#btn-arabic-no {
+    background: transparent;
+    color: #e5e5e5;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* 6. TV/Focus States - NO JUMPING */
+.arabic-btn:focus,
+.arabic-btn:hover {
+    /* Stable: Tiny lift only. No popcorn effect. */
+    transform: scale(1.03);
+}
+
+#btn-arabic-yes:focus,
+#btn-arabic-yes:hover {
+    /* Subtle white glow */
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+#btn-arabic-no:focus,
+#btn-arabic-no:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: #ffffff;
+}
+

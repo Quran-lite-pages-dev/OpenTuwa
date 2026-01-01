@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline Audio Tagger (Dark Mode)</title>
+    <style>
+        /* * Custom Dark Mode for Low-Blue-Light / High-Focus 
+         * ---------------------------------------------------
+         * Background: Warm dark-grey (#1e1e1e) instead of pure black to reduce halation/eye-strain.
+         * Text: Off-white (#dcdcdc) instead of pure white for softer contrast.
+         * Surfaces: Slightly lighter grey (#2a2a2a) to create depth.
+         * Accents (Low Blue): Blues (#007bff, #004a99) are replaced with
+         * - Pale Yellow (#E6DB74) for high-contrast, low-blue-light readouts (Time).
+         * - Warm Amber (#D9822B) for primary actions (Import button, Status).
+         */
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: grid;
+            grid-template-areas:
+                "header"
+                "player"
+                "clips"
+                "io";
+            grid-template-rows: auto auto 1fr auto;
+            gap: 15px;
+            padding: 15px;
+            background-color: #1e1e1e; /* Warm dark grey */
+            color: #dcdcdc; /* Off-white text */
+            height: 95vh;
+        }
+
+        header { grid-area: header; }
+        #player-controls { grid-area: player; }
+        #clips-section { grid-area: clips; display: flex; flex-direction: column; min-height: 200px; }
+        #io-section { grid-area: io; }
+
+        h1, h2 {
+            margin: 0 0 10px 0;
+            border-bottom: 2px solid #444; /* Darker border */
+            padding-bottom: 5px;
+        }
+
+        /* Card/Section Styles */
+        #player-controls,
+        #clips-section,
+        #io-section > div {
+            background: #2a2a2a; /* Slightly lighter surface */
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4); /* Subtle shadow */
+        }
+
+        /* Form Elements */
+        #chapter-select {
+            font-size: 1.2em;
+            padding: 5px;
+            margin-right: 10px;
+            background-color: #333;
+            color: #dcdcdc;
+            border: 1px solid #555;
+            border-radius: 4px;
+        }
+
+        /* Status Indicator */
+        #tag-status {
+            padding: 10px 15px;
+            font-size: 1.1em;
+            font-weight: bold;
+            border-radius: 5px;
+            color: #fff;
+            display: inline-block;
+            width: 300px;
+            text-align: center;
+        }
+
+        /* Time Display (Low Blue Light) */
+        #time-display {
+            font-family: "Courier New", Courier, monospace;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #E6DB74; /* Pale warm yellow for low-blue-light high-contrast */
+            margin-left: 20px;
+        }
+
+        /* Dark Mode for Audio Player Controls */
+        audio {
+            width: 100%;
+            margin-top: 10px;
+            /* Invert and adjust to create a simple dark mode */
+            filter: invert(1) brightness(0.8) hue-rotate(180deg);
+        }
+
+        #clips-section {
+            overflow-y: auto;
+        }
+
+        #clips-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+        #clips-list li {
+            font-family: "Courier New", Courier, monospace;
+            padding: 8px 12px;
+            border-bottom: 1px solid #3a3a3a; /* Darker divider */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        #clips-list li:nth-child(odd) { background-color: #303030; } /* Subtle striping */
+        
+        /* List Buttons */
+        #clips-list li button {
+            margin-left: 10px;
+            cursor: pointer;
+            background-color: #444;
+            color: #dcdcdc;
+            border: 1px solid #666;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.9em;
+        }
+        #clips-list li button:hover {
+            background-color: #555;
+        }
+        
+        /* Specific Delete Button Style */
+        #clips-list li button.delete-btn {
+            color: #FF6B6B; /* More readable red */
+            border-color: #FF6B6B;
+            background-color: transparent;
+        }
+        #clips-list li button.delete-btn:hover {
+            background-color: #FF6B6B;
+            color: #000;
+            font-weight: bold;
+        }
+        
+        /* Separate content from buttons */
+        #clips-list li span.clip-text {
+            flex-grow: 1;
+        }
+
+
+        #io-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        #io-section > div {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Text Areas */
+        #io-section textarea {
+            width: 100%;
+            height: 150px;
+            font-family: "Courier New", Courier, monospace;
+            box-sizing: border-box; /* Ensures padding doesn't affect width */
+            background-color: #1a1a1a; /* Even darker for "code" */
+            color: #c0c0c0;
+            border: 1px solid #444;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        
+        /* Import Button (Low Blue Light Action) */
+        #import-button {
+            background-color: #D9822B; /* Warm amber/orange */
+            color: #000; /* Black text for high contrast */
+            font-weight: bold;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 5px;
+        }
+        #import-button:hover { background-color: #E69500; } /* Brighter hover */
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🎧 Offline Audio Tagger</h1>
+    </header>
+
+    <section id="player-controls">
+        <label for="chapter-select">Chapter:</label>
+        <select id="chapter-select"></select>
+
+        <span id="tag-status"></span>
+        <span id="time-display">00:00:00.000</span>
+        
+        <audio id="audio-player" controls></audio>
+        
+        <div>
+            <strong>Shortcuts:</strong> 
+            [Space]: Play/Pause |
+            [←]: Rewind 1s |
+            [→]: Forward 1s |
+            [1]: Mark Arabic End |
+            [2]: Mark Spanish End
+        </div>
+    </section>
+
+    <section id="clips-section">
+        <h2>Marked Clips for <span id="current-chapter-title">...</span></h2>
+        <ul id="clips-list">
+            </ul>
+    </section>
+
+    <section id="io-section">
+        <div>
+            <h2>Import JSON</h2>
+            <textarea id="import-json" placeholder="Paste your timestamps.json content here..."></textarea>
+            <button id="import-button">Import and Overwrite</button>
+        </div>
+        <div>
+            <h2>Live JSON Export</h2>
+            <textarea id="export-json" readonly placeholder="Your timestamp JSON will appear here..."></textarea>
+        </div>
+    </section>
+
+    <script>
+        // --- GLOBALS ---
+        const audioPlayer = document.getElementById('audio-player');
+        const chapterSelect = document.getElementById('chapter-select');
+        const tagStatus = document.getElementById('tag-status');
+        const timeDisplay = document.getElementById('time-display');
+        const clipsList = document.getElementById('clips-list');
+        const currentChapterTitle = document.getElementById('current-chapter-title');
+        const importJsonText = document.getElementById('import-json');
+        const exportJsonText = document.getElementById('export-json');
+        const importButton = document.getElementById('import-button');
+
+        let db = {}; // Master database for all timestamps
+        let playerState = { currentFile: null, currentTime: 0 }; // Last known state
+        let taggingState = 'orange'; // 'orange' (waiting for 1) or 'green' (waiting for 2)
+        let currentStartTime = null;
+
+        // --- CORE FUNCTIONS ---
+
+        /**
+         * Formats seconds into HH:MM:SS.mmm format
+         * @param {number} seconds - The time in seconds
+         * @returns {string} Formatted time string
+         */
+        function formatTime(seconds) {
+            const ms = Math.floor((seconds % 1) * 1000);
+            const totalSec = Math.floor(seconds);
+            const h = Math.floor(totalSec / 3600);
+            const m = Math.floor((totalSec % 3600) / 60);
+            const s = totalSec % 60;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}.${ms.toString().padStart(3, '0')}`;
+        }
+
+        /**
+         * Saves the entire timestamp database to localStorage and updates the export box
+         */
+        function saveDB() {
+            try {
+                const jsonString = JSON.stringify(db, null, 2);
+                localStorage.setItem('timestampDB', jsonString);
+                exportJsonText.value = jsonString;
+            } catch (e) {
+                console.error("Failed to save DB:", e);
+                alert("Error saving database. Your data might be too large for localStorage.");
+            }
+        }
+
+        /**
+         * Loads the timestamp database from localStorage
+         */
+        function loadDB() {
+            const storedDB = localStorage.getItem('timestampDB');
+            if (storedDB) {
+                try {
+                    db = JSON.parse(storedDB);
+                    exportJsonText.value = JSON.stringify(db, null, 2);
+                } catch (e) {
+                    console.error("Failed to parse stored DB:", e);
+                    db = {};
+                }
+            } else {
+                db = {};
+            }
+        }
+
+        /**
+         * Saves the current player state (file and time) to localStorage
+         */
+        function savePlayerState() {
+            localStorage.setItem('playerState', JSON.stringify(playerState));
+        }
+
+        /**
+         * Loads the last player state from localStorage
+         */
+        function loadPlayerState() {
+            const storedState = localStorage.getItem('playerState');
+            if (storedState) {
+                try {
+                    playerState = JSON.parse(storedState);
+                } catch (e) {
+                    console.error("Failed to parse player state:", e);
+                    playerState = { currentFile: null, currentTime: 0 };
+                }
+            }
+        }
+
+        /**
+         * Populates the chapter select dropdown (1-114)
+         */
+        function populateChapterSelect() {
+            for (let i = 1; i <= 114; i++) {
+                const chapterNum = i.toString().padStart(3, '0');
+                const option = document.createElement('option');
+                option.value = chapterNum;
+                option.text = `Chapter ${chapterNum}`;
+                chapterSelect.appendChild(option);
+            }
+        }
+
+        /**
+         * Loads a new chapter into the audio player
+         * @param {string} chapterNum - The 3-digit chapter number (e.g., "001")
+         */
+        function loadChapter(chapterNum) {
+            const fileName = `coran_${chapterNum}.mp3`;
+            const filePath = `https://ia801404.us.archive.org/34/items/elsagrado/${fileName}`;
+            
+            audioPlayer.src = filePath;
+            playerState.currentFile = fileName;
+            playerState.currentTime = 0; // Reset on new chapter load
+            savePlayerState();
+            
+            currentChapterTitle.textContent = `coran_${chapterNum}`;
+            renderCurrentChapterClips();
+            updateTagStatusUI('orange'); // Reset tag state
+        }
+
+        /**
+         * Renders the list of marked clips for the currently loaded chapter
+         */
+        function renderCurrentChapterClips() {
+            clipsList.innerHTML = ''; // Clear existing list
+            if (!playerState.currentFile) return;
+
+            const chapterKey = playerState.currentFile.split('.')[0]; // e.g., "coran_001"
+            const clips = db[chapterKey] || [];
+
+            if (clips.length === 0) {
+                clipsList.innerHTML = '<li>No clips marked for this chapter yet.</li>';
+            } else {
+                // Sort clips by verse number just in case
+                clips.sort((a, b) => a.verse - b.verse);
+
+                clips.forEach(clip => {
+                    const li = document.createElement('li');
+                    
+                    // Create a span for the text content to allow flex layout
+                    const textSpan = document.createElement('span');
+                    textSpan.className = 'clip-text';
+                    textSpan.textContent = `Verse ${clip.verse}: ${clip.start}  →  ${clip.end}`;
+                    li.appendChild(textSpan);
+
+                    // Wrapper for buttons
+                    const buttonWrapper = document.createElement('div');
+                    
+                    // Add a jump-to button
+                    const jumpBtn = document.createElement('button');
+                    jumpBtn.textContent = 'Jump'; // Shortened text
+                    jumpBtn.onclick = () => {
+                        audioPlayer.currentTime = timeStringToSeconds(clip.start);
+                        audioPlayer.play();
+                    };
+                    buttonWrapper.appendChild(jumpBtn);
+
+                    // Add a delete button
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.className = 'delete-btn'; // Use class for styling
+                    deleteBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        if (confirm(`Delete Verse ${clip.verse}?`)) {
+                            deleteClip(chapterKey, clip.verse);
+                        }
+                    };
+                    buttonWrapper.appendChild(deleteBtn);
+                    
+                    li.appendChild(buttonWrapper);
+                    clipsList.appendChild(li);
+                });
+            }
+        }
+
+        /**
+         * Deletes a specific clip and re-numbers subsequent verses
+         * @param {string} chapterKey - e.g., "coran_001"
+         * @param {number} verseToDelete - The verse number to delete
+         */
+        function deleteClip(chapterKey, verseToDelete) {
+            if (!db[chapterKey]) return;
+
+            // Filter out the deleted verse
+            let chapterClips = db[chapterKey];
+            chapterClips = chapterClips.filter(clip => clip.verse !== verseToDelete);
+
+            // Re-number all subsequent verses
+            chapterClips.forEach((clip, index) => {
+                clip.verse = index + 1;
+            });
+
+            db[chapterKey] = chapterClips;
+            saveDB();
+            renderCurrentChapterClips();
+        }
+
+        /**
+         * Converts "HH:MM:SS.mmm" string to seconds
+         * @param {string} timeString
+         * @returns {number} Time in seconds
+         */
+        function timeStringToSeconds(timeString) {
+            try {
+                const parts = timeString.split(':');
+                const secondsAndMs = parseFloat(parts[2]);
+                return (parseInt(parts[0]) * 3600) + (parseInt(parts[1]) * 60) + secondsAndMs;
+            } catch (e) {
+                console.error("Error parsing time string:", timeString, e);
+                return 0; // Fallback
+            }
+        }
+
+        /**
+         * Updates the status indicator UI
+         * @param {string} state - 'orange' or 'green'
+         */
+        function updateTagStatusUI(state) {
+            taggingState = state;
+            if (state === 'orange') {
+                // Use warm amber for "waiting" state
+                tagStatus.style.backgroundColor = '#D9822B'; 
+                tagStatus.style.color = '#000'; // Black text for high contrast
+                tagStatus.textContent = 'Waiting for Arabic End (Press 1)';
+            } else {
+                // Use standard light green for "active" state
+                tagStatus.style.backgroundColor = '#90EE90'; // lightgreen
+                tagStatus.style.color = '#000'; // Black text for high contrast
+                tagStatus.textContent = 'Waiting for Spanish End (Press 2)';
+            }
+        }
+
+        /**
+         * Handles the "Mark Start" action (Key '1')
+         */
+        function handleMarkStart() {
+            if (taggingState !== 'orange') {
+                console.warn("Ignored '1' press: not in correct state.");
+                return; // Can only mark start from orange state
+            }
+            currentStartTime = audioPlayer.currentTime;
+            updateTagStatusUI('green');
+            console.log(`Marked START at ${formatTime(currentStartTime)}`);
+        }
+
+        /**
+         * Handles the "Mark End" action (Key '2')
+         */
+        function handleMarkEnd() {
+            if (taggingState !== 'green') {
+                console.warn("Ignored '2' press: no start time marked.");
+                return; // Can only mark end from green state
+            }
+            
+            const endTime = audioPlayer.currentTime;
+            if (endTime <= currentStartTime) {
+                alert("End time must be after start time.");
+                return;
+            }
+
+            const chapterKey = playerState.currentFile.split('.')[0];
+            if (!db[chapterKey]) {
+                db[chapterKey] = [];
+            }
+            
+            const verseNum = db[chapterKey].length + 1;
+            const newClip = {
+                verse: verseNum,
+                start: formatTime(currentStartTime),
+                end: formatTime(endTime)
+            };
+
+            db[chapterKey].push(newClip);
+            saveDB(); // Save and update export box
+            renderCurrentChapterClips(); // Update UI list
+
+            console.log(`Saved CLIP ${verseNum}: ${newClip.start} -> ${newClip.end}`);
+
+            // Reset for next clip
+            currentStartTime = null;
+            updateTagStatusUI('orange');
+        }
+
+        /**
+         * Handles global key presses for shortcuts
+         * @param {KeyboardEvent} e
+         */
+        function handleGlobalKeydown(e) {
+            // If user is typing in the import box, don't trigger shortcuts
+            if (e.target === importJsonText || e.target.tagName === 'SELECT') {
+                return;
+            }
+
+            switch (e.key) {
+                case ' ':
+                    e.preventDefault();
+                    audioPlayer.paused ? audioPlayer.play() : audioPlayer.pause();
+                    break;
+                case 'ArrowLeft':
+                    e.preventDefault();
+                    audioPlayer.currentTime = Math.max(0, audioPlayer.currentTime - 1);
+                    break;
+                case 'ArrowRight':
+                    e.preventDefault();
+                    audioPlayer.currentTime += 1;
+                    break;
+                case '1':
+                    e.preventDefault();
+                    handleMarkStart();
+                    break;
+                case '2':
+                    e.preventDefault();
+                    handleMarkEnd();
+                    break;
+            }
+        }
+
+        /**
+         * Handles the click on the Import button
+         */
+        function handleImport() {
+            const jsonToImport = importJsonText.value;
+            if (!jsonToImport) {
+                alert("Import box is empty.");
+                return;
+            }
+            if (!confirm("This will OVERWRITE all locally saved data. Are you sure?")) {
+                return;
+            }
+
+            try {
+                const newData = JSON.parse(jsonToImport);
+                db = newData; // Overwrite in-memory DB
+                saveDB(); // Save to localStorage and update export box
+                renderCurrentChapterClips(); // Re-render UI
+                importJsonText.value = ""; // Clear import box
+                alert("Import successful! All data has been overwritten.");
+            } catch (e) {
+                console.error("Import failed:", e);
+                alert("Import failed. The JSON seems to be invalid. Check console for details.");
+            }
+        }
+
+        // --- INITIALIZATION ---
+        
+        window.addEventListener('load', () => {
+            // 1. Populate UI elements
+            populateChapterSelect();
+
+            // 2. Load data from localStorage
+            loadDB();
+            loadPlayerState();
+
+            // 3. Restore state
+            if (playerState.currentFile) {
+                const chapterNum = playerState.currentFile.split('_')[1].split('.')[0];
+                chapterSelect.value = chapterNum;
+                currentChapterTitle.textContent = `coran_${chapterNum}`;
+                audioPlayer.src = `https://ia801404.us.archive.org/34/items/elsagrado/${playerState.currentFile}`;
+
+                // Must wait for metadata to load before setting time
+                audioPlayer.addEventListener('loadedmetadata', () => {
+                    audioPlayer.currentTime = playerState.currentTime;
+                    timeDisplay.textContent = formatTime(playerState.currentTime);
+                }, { once: true }); // Only run this once
+            
+            } else {
+                // Load the first chapter by default if no state
+                chapterSelect.value = "001";
+                loadChapter("001");
+            }
+            
+            // 4. Render initial data
+            renderCurrentChapterClips();
+            updateTagStatusUI('orange');
+
+            // 5. Attach event listeners
+            document.addEventListener('keydown', handleGlobalKeydown);
+            chapterSelect.addEventListener('change', (e) => loadChapter(e.target.value));
+            importButton.addEventListener('click', handleImport);
+
+            // 6. Set up continuous state saving
+            audioPlayer.addEventListener('timeupdate', () => {
+                const currentTime = audioPlayer.currentTime;
+                timeDisplay.textContent = formatTime(currentTime);
+                
+                // Save state every timeupdate
+                playerState.currentTime = currentTime;
+                savePlayerState();
+            });
+
+            audioPlayer.addEventListener('play', () => console.log('Playback started.'));
+            audioPlayer.addEventListener('pause', () => console.log('Playback paused.'));
+        });
+
+    </script>
+</body>
+</html>
