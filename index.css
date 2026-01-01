@@ -1,3 +1,4 @@
+/* index.css - AUDITED & FIXED */
 <style>
 
 /* --- 0. TV STYLE OVERRIDES & SCROLLBAR BAN --- */
@@ -31,14 +32,14 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.9);
             z-index: 3000 !important; opacity: 0; transition: opacity 0.3s;
             background: rgba(0,0,0,0.2); padding: 1.5rem 2rem; border-radius: 4px;
-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: blur(20px) saturate(180%);
             pointer-events: none;
-border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
         }
         #hero-subtitle-overlay.active { opacity: 1; }
 
-        /* Search Overlay - FULL WIDTH (Sidebar Padding Removed) */
+        /* Search Overlay */
         #search-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: #141414; z-index: 2500; 
@@ -77,7 +78,7 @@ border: 1px solid var(--glass-border);
             grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 2rem;
             transform: translateY(0);
-            transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1); /* Smooth "row change" easing */
+            transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1); 
             will-change: transform;
             padding-bottom: 300px;
         }
@@ -143,10 +144,10 @@ border: 1px solid var(--glass-border);
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 2000;
             background: #050505;
-              overflow-y: auto !important;
-  overflow-x: hidden !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
             display: none;
-            padding-left: 0 !important; /* Force removal of sidebar gap */
+            padding-left: 0 !important;
         }
         #dashboard-view::-webkit-scrollbar { display: none !important; }
         #dashboard-view { scrollbar-width: none !important; -ms-overflow-style: none !important; }
@@ -175,13 +176,23 @@ border: 1px solid var(--glass-border);
             transform: scale(0.9); opacity: 0.6; transition: opacity 0.5s ease;
         }
 
+        /* [AUDIT FIX]: Clean Gradient */
         .hero-shadow-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 2;
-            background: 
-                radial-gradient(circle at 80% 20%, transparent 0%, #050505 120%),
-                linear-gradient(to top, #050505 10%, rgba(5,5,5,0.9) 25%, transparent 70%),
-                linear-gradient(to right, #050505 0%, rgba(5,5,5,0.8) 40%, transparent 100%);
+            background: linear-gradient(
+                to right, 
+                #000 0%, 
+                rgba(0,0,0,0.9) 20%, 
+                rgba(0,0,0,0.4) 60%, 
+                transparent 100%
+            );
+        }
+        /* Add bottom fade */
+        .hero-shadow-overlay::after {
+            content: '';
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 30%;
+            background: linear-gradient(to top, #000 10%, transparent 100%);
         }
 
         .hero-content { max-width: 650px; z-index: 5; position: relative; margin-top: 5vh; }
@@ -189,16 +200,37 @@ border: 1px solid var(--glass-border);
         .hero-super { 
             display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;
             font-weight: 700; color: #aaa; letter-spacing: 1px;
-            text-transform: uppercase; font-size: 1.1rem;
+            text-transform: uppercase; font-size: 1.1rem; align-items: baseline;
         }
-        .hero-super span.badge { background: rgba(255,255,255,0.2); color: #fff; padding: 2px 6px; border-radius: 2px; font-size: 1.2rem; }
+        .hero-super span.text-content {
+            position: relative;
+            top: -2px; 
+        }
+
+        /* [AUDIT FIX]: Tech Spec Badges (No Glow) */
+        .hero-super span.badge, 
+        .hero-super span.badges { 
+            background: transparent; 
+            color: var(--accent); 
+            padding: 2px 8px; 
+            border: 1px solid rgba(255,255,255,0.2); 
+            border-radius: 4px; 
+            font-size: 1rem; 
+            font-weight: 600;
+            letter-spacing: 1px;
+            box-shadow: none; 
+            opacity: 0.8;
+            transform: none;
+        }
+
         .hero-title-text { 
             font-size: clamp(3rem, 5vw, 6rem); font-weight: 900; line-height: 1; 
-            margin-bottom: 0.5rem; text-shadow: 0 4px 30px rgba(0,0,0,1); color: #fff;
+            margin-bottom: 0.5rem; text-shadow: 0 4px 30px rgba(0,0,0,1); color: #fff; opacity: 0.7;
         }
+
         .hero-subtitle {
-            font-family: 'Amiri', serif; font-size: 2.2rem; color: var(--accent);
-            margin-bottom: 1.5rem; font-weight: 400; text-shadow: 0 2px 10px rgba(0,0,0,0.8);
+            font-family: 'Amiri'; font-size: 2.2rem; color: var(--accent);
+            margin-bottom: 1.5rem; font-weight: 400; text-shadow: 0 2px 10px rgba(0,0,0,0.8); padding-left: 1%; opacity: 0.5;
         }
         .hero-desc { 
             display: none;
@@ -208,71 +240,119 @@ border: 1px solid var(--glass-border);
         }
         
         .dash-btn {
-            background: #fff; color: #000; border: none; padding: 1.2rem 3rem;
+            background: var(--glass-surface); color: white; border: none; 
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
             font-size: 1.125rem;       
             font-weight: 600;          
-            border: none;
+            border: 1px solid rgba(255,255,255,0.1); /* Subtle border instead of transparent */
             border-radius: 99px;       
             padding: 14px 32px;         
             letter-spacing: -0.02em;   
             transition: var(--transition-smooth);
             cursor: pointer;
             display: inline-flex; align-items: center; gap: 10px;
-            transition: transform 0.2s, background 0.2s;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+            will-change: transform, opacity;
         }
-        .dash-btn:focus, .dash-btn:hover { transform: scale(1.05); background: var(--accent); box-shadow: 0 0 40px var(--accent-glow); outline: none; }
+        .dash-btn:focus, .dash-btn:hover { 
+            transform: translateY(-4px) scale(1.03); /* Reduced movement */
+            background: rgba(255,255,255,0.1);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); /* Cleaner shadow */
+            outline: none; 
+        }
 
-        .row-section { padding: 2rem 0 2rem 5%; position: relative; z-index: 5; margin-top: -8vh; background: linear-gradient(to bottom, transparent, #050505 20%); }
-        .row-header { font-size: 1.8rem; font-weight: 700; margin-bottom: 1rem; color: #e5e5e5; padding-left: 2px; }
-        
-        /* 2026 Optimization: Content-Visibility */
-        .card-scroller { 
-            display: flex; gap: 1rem; overflow-x: auto; padding-right: 5%; padding-bottom: 3rem; scroll-behavior: smooth; 
-            content-visibility: auto; /* SKIP RENDERING OFFSCREEN CONTENT */
-            contain-intrinsic-size: 1px 280px; /* HEIGHT HINT */
+        .row-section { 
+            padding: 0 0 2rem 0; 
+            position: relative; z-index: 5; margin-top: -8vh; background: linear-gradient(to bottom, transparent, #050505 20%); 
         }
         
-        /* 2026 SPATIAL GLASS CARD */
+        .row-section:has(.surah-card:hover),
+        .row-section:has(.surah-card:focus),
+        .row-section:focus-within {
+            z-index: 100;
+        }
+
+        /* [AUDIT FIX]: Section Title (Not a Button) */
+        .row-header {
+            width: fit-content;
+            display: flex; 
+            align-items: center;
+            margin-left: 5%; 
+            margin-bottom: 1.5rem;
+            padding: 0;
+
+            /* Reset Sakai Properties */
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            box-shadow: none;
+
+            /* High End Typo */
+            font-size: 2rem;
+            font-weight: 500; 
+            color: #fff;
+            letter-spacing: -0.01em;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+            
+            /* Clean Accent Indicator */
+            border-left: 3px solid var(--accent);
+            padding-left: 1.5rem;
+        }
+
+        .card-scroller { 
+            display: flex; gap: 1rem; overflow-x: auto; 
+            padding: 4rem 5%; 
+            scroll-behavior: smooth; 
+            content-visibility: auto; 
+            contain-intrinsic-size: 1px 280px; 
+            transform-origin: left center;
+            transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
+        }
+
+        .card-scroller:has(.surah-card:hover),
+        .card-scroller:has(.surah-card:focus),
+        .card-scroller:focus-within {
+            transform: scale(1.08); 
+        }
+        
+        /* [AUDIT FIX]: Clean Glass Cards */
         .surah-card {
             flex: 0 0 280px; 
             aspect-ratio: 16 / 9;
             height: auto;
             
-            /* Glassmorphism 3.0 */
-            background: var(--glass-surface);
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            /* Clean Dark Glass */
+            background: rgba(20, 20, 20, 0.7); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
             
-            /* Inner Light Border */
-            border: 1px solid transparent;
-            background-image: 
-                linear-gradient(var(--glass-surface), var(--glass-surface)), 
-                linear-gradient(145deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.01) 100%);
-            background-origin: border-box;
-            background-clip: padding-box, border-box;
-
+            /* Structural Border */
+            border: 1px solid rgba(255,255,255,0.1);
             border-radius: var(--radius-md);
+            
             cursor: pointer; 
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             overflow: hidden;
             display: flex; flex-direction: column; justify-content: flex-end; padding: 2rem;
-            
             will-change: transform, opacity;
         }
         
-        /* SPOTLIGHT FOCUS */
+        /* [AUDIT FIX]: Pro Active State */
         .surah-card:focus, .surah-card:hover { 
-            transform: translateY(-8px) scale(1.03); 
-            /* Enhanced lighting on hover */
-            background-image: 
-                linear-gradient(rgba(30,30,30,0.8), rgba(30,30,30,0.8)), 
-                linear-gradient(145deg, var(--accent), transparent 60%);
+            transform: scale(1.05); 
+            z-index: 10;
+            background: rgba(30, 30, 30, 0.9); /* Solidify background for readability */
+            border-color: var(--accent); /* Only color border */
             
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 20px var(--accent-glow); 
-            border-color: transparent; /* Gradient handles border */
+            /* Sharp, expensive shadow */
+            box-shadow: 
+                0 10px 40px rgba(0,0,0,0.8), 
+                0 0 0 1px var(--accent); 
         }
         
-        .card-bg-num { position: absolute; top: -15px; right: 5px; font-size: 7rem; font-weight: 900; color: rgba(255,255,255,0.03); line-height: 1; }
+        .card-bg-num { position: absolute; top: -15px; right: 5px; font-size: 7rem; font-weight: 900; color: rgba(255,255,255,0.05); line-height: 1; }
         .card-title { font-size: 1.6rem; font-weight: 700; color: #fff; z-index: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .card-sub { font-size: 1.1rem; color: #aaa; z-index: 2; margin-top: 0.2rem; }
 
@@ -346,13 +426,25 @@ border: 1px solid var(--glass-border);
         }
         body.idle #control-panel { transform: translateY(100%); opacity: 0; pointer-events: none; }
 
-        select {
-            font-family: 'Inter', sans-serif; font-size: 1.3rem; padding: 0.8rem 2.5rem 0.8rem 1rem;
-            background-color: rgba(20,20,20,0.9); color: #ccc; border: 1px solid #333; border-radius: 99px;
-            cursor: pointer; appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='gray' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat; background-position: right 0.8rem center; min-width: 140px;
-        }
+/* In index.css */
+select {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.3rem; 
+    padding: 0.8rem 2.5rem 0.8rem 1rem;
+    background-color: #1a1a1a; /* Match the modal card background */
+    color: #e5e5e5;
+    border: 1px solid rgba(255,255,255,0.15); /* Match the modal border */
+    border-radius: 12px; /* <--- CHANGED from 99px to 12px */
+    cursor: pointer;
+    appearance: none;
+    /* ... keep your SVG icon ... */
+}
+
+select:focus {
+    outline: none;
+    border-color: #fff; /* Industrial Focus State */
+    background-color: #252525;
+}
 
         @media (max-width: 768px) {
             #dashboard-view { padding-left: 0 !important; }
@@ -361,5 +453,4 @@ border: 1px solid var(--glass-border);
             #control-panel { display: grid; grid-template-columns: 1fr 1fr; }
             .ai-card-border { border-color: rgba(0, 255, 187, 0.4) !important; }
         }
-
 </style>
