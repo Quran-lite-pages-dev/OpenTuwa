@@ -1,0 +1,100 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="io.github.muslim1446.quran"
+4    android:versionCode="1"
+5    android:versionName="1.0.0" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="21"
+9        android:targetSdkVersion="34" />
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:4:5-67
+11-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:4:22-64
+12
+13    <uses-feature
+13-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:6:5-86
+14        android:name="android.software.leanback"
+14-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:6:19-59
+15        android:required="true" />
+15-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:6:60-83
+16    <uses-feature
+16-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:7:5-90
+17        android:name="android.hardware.touchscreen"
+17-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:7:19-62
+18        android:required="false" />
+18-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:7:63-87
+19
+20    <permission
+20-->[androidx.core:core:1.9.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\b15544bd29ec5d9889c5ffdee464736f\transformed\core-1.9.0\AndroidManifest.xml:22:5-24:47
+21        android:name="io.github.muslim1446.quran.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+21-->[androidx.core:core:1.9.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\b15544bd29ec5d9889c5ffdee464736f\transformed\core-1.9.0\AndroidManifest.xml:23:9-81
+22        android:protectionLevel="signature" />
+22-->[androidx.core:core:1.9.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\b15544bd29ec5d9889c5ffdee464736f\transformed\core-1.9.0\AndroidManifest.xml:24:9-44
+23
+24    <uses-permission android:name="io.github.muslim1446.quran.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+24-->[androidx.core:core:1.9.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\b15544bd29ec5d9889c5ffdee464736f\transformed\core-1.9.0\AndroidManifest.xml:26:5-97
+24-->[androidx.core:core:1.9.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\b15544bd29ec5d9889c5ffdee464736f\transformed\core-1.9.0\AndroidManifest.xml:26:22-94
+25
+26    <application
+26-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:9:5-26:19
+27        android:allowBackup="true"
+27-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:10:9-35
+28        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+28-->[androidx.core:core:1.9.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\b15544bd29ec5d9889c5ffdee464736f\transformed\core-1.9.0\AndroidManifest.xml:28:18-86
+29        android:banner="@drawable/tv_banner"
+29-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:12:9-45
+30        android:debuggable="true"
+31        android:extractNativeLibs="true"
+32        android:icon="@mipmap/ic_launcher"
+32-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:11:9-43
+33        android:label="Quran for Every Soul"
+33-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:13:9-45
+34        android:supportsRtl="true"
+34-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:14:9-35
+35        android:theme="@style/Theme.AppCompat.NoActionBar" >
+35-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:15:9-59
+36        <activity
+36-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:17:9-25:20
+37            android:name="io.github.muslim1446.quran.MainActivity"
+37-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:18:13-41
+38            android:exported="true"
+38-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:19:13-36
+39            android:screenOrientation="landscape" >
+39-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:20:13-50
+40            <intent-filter>
+40-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:21:13-24:29
+41                <action android:name="android.intent.action.MAIN" />
+41-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:22:17-69
+41-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:22:25-66
+42
+43                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+43-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:23:17-86
+43-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:23:27-83
+44            </intent-filter>
+45        </activity>
+46
+47        <provider
+47-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+48            android:name="androidx.startup.InitializationProvider"
+48-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:25:13-67
+49            android:authorities="io.github.muslim1446.quran.androidx-startup"
+49-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:26:13-68
+50            android:exported="false" >
+50-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:27:13-37
+51            <meta-data
+51-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+52                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+52-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
+53                android:value="androidx.startup" />
+53-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
+54            <meta-data
+54-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\a6020ece0108e66a2ae669024cbc314d\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
+55                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+55-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\a6020ece0108e66a2ae669024cbc314d\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
+56                android:value="androidx.startup" />
+56-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\a6020ece0108e66a2ae669024cbc314d\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
+57        </provider>
+58    </application>
+59
+60</manifest>

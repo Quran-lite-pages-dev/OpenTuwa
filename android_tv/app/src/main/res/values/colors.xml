@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="islamic_green">#00695C</color> <color name="soft_white">#F5F5F5</color>
+    <color name="gold_accent">#FFD700</color>
+    
+    <color name="black">#00695C</color> <color name="white">#FFFFFF</color>
+    <color name="colorPrimary">#00695C</color>
+    <color name="colorPrimaryDark">#004D40</color>
+    <color name="colorAccent">#FFD700</color>
+</resources>

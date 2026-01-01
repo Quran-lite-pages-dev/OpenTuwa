@@ -1,0 +1,4 @@
+#Thu Jan 01 20:17:29 MYT 2026
+base.0=C\:\\Users\\SCSM11\\Downloads\\Quran-lite.pages.dev\\android_tv\\app\\build\\intermediates\\dex\\debugAndroidTest\\mergeProjectDexDebugAndroidTest\\0\\classes.dex
+path.0=0/classes.dex
+renamed.0=classes.dex

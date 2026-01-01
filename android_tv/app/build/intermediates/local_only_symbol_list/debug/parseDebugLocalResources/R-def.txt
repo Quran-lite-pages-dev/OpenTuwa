@@ -1,0 +1,14 @@
+R_DEF: Internal format may change without notice
+local
+color black
+color colorAccent
+color colorPrimary
+color colorPrimaryDark
+color gold_accent
+color islamic_green
+color soft_white
+color white
+drawable ic_logo_foreground
+drawable tv_banner
+mipmap colors
+mipmap ic_launcher
