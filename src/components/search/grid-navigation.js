@@ -1,3 +1,4 @@
+// Copyright (c) Haykal M. Zaidi 2024-2026. All rights reserved. PROPRIETARY AND CONFIDENTIAL.
 /**
  * Search Grid Navigation Component
  * Handles keyboard and mouse navigation within search results grid

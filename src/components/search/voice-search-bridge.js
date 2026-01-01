@@ -1,3 +1,4 @@
+// Copyright (c) Haykal M. Zaidi 2024-2026. All rights reserved. PROPRIETARY AND CONFIDENTIAL.
 /**
  * Voice Search Bridge Component
  * Connects voice search functionality to AI search system

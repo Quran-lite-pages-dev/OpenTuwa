@@ -1,3 +1,4 @@
+// Copyright (c) Haykal M. Zaidi 2024-2026. All rights reserved. PROPRIETARY AND CONFIDENTIAL.
 /**
  * Google Analytics Configuration
  * Initializes and configures Google Analytics tracking

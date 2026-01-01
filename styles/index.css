@@ -1,3 +1,4 @@
+/* Copyright (c) Haykal M. Zaidi 2024-2026. All rights reserved. PROPRIETARY AND CONFIDENTIAL. */
 /* index.css - AUDITED & FIXED */
 
 /* --- 0. TV STYLE OVERRIDES & SCROLLBAR BAN --- */
@@ -174,6 +175,25 @@
             filter: invert(1) drop-shadow(0 0 20px rgba(255,255,255,0.2));
             transform: scale(0.9); opacity: 0.6; transition: opacity 0.5s ease;
         }
+       /* 1. Prevents "ghost" borders and icons from showing while loading or if broken */
+img:not([src]), 
+img[src=""], 
+img[src="#"] {
+    visibility: hidden !important;
+}
+
+/* 2. Forces broken images to hide their built-in browser "ugliness" */
+img {
+    /* Hides the default broken image icon in most browsers */
+    color: transparent;
+    text-indent: -10000px;
+}
+
+/* 3. Ensures that if JS fails, the layout doesn't collapse into a mess */
+img:-moz-broken {
+    display: none !important;
+}
+
 
         /* [AUDIT FIX]: Clean Gradient */
         .hero-shadow-overlay {

@@ -1,3 +1,17 @@
+// Copyright (c) Haykal M. Zaidi 2024-2026. All rights reserved. PROPRIETARY AND CONFIDENTIAL.
+// Detects all current and future broken images site-wide
+document.addEventListener('error', function (event) {
+    const target = event.target;
+    if (target.tagName.toLowerCase() === 'img') {
+        // Option A: Hide completely
+        target.style.display = 'none'; 
+        
+        // Option B: Optional replacement with a 1x1 transparent pixel 
+        // to maintain layout/spacing without showing anything ugly
+        // target.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    }
+}, true); // 'true' is critical to catch events in the capturing phase
+
 const SURAH_METADATA = [
           { "chapter": 1, "english_name": "The Opening", "description": "Revealed in Mecca, this is the fundamental prayer of Islam, summarizing the core relationship between God and humanity. It is recited in every unit of prayer. (7 verses)" },
           { "chapter": 2, "english_name": "The Cow", "description": "The longest Surah, revealed in Medina. It establishes Islamic laws, recounts the stories of Moses (Peace be upon him), and guides the new Muslim community. (286 verses)" },
