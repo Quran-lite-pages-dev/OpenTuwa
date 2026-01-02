@@ -759,7 +759,7 @@ function populateReciterSelect() {
 function populateTranslationAudioSelect() {
     elements.selects.transAudio.innerHTML = '';
     
-    // 1. Add Existing MP3 configs (Static)
+    // 1. Add Existing MP3 configs (Static Files: English, Indonesian, Spanish)
     Object.entries(TRANSLATION_AUDIO_CONFIG).forEach(([k, v]) => {
         const opt = document.createElement('option');
         opt.value = k; 
@@ -767,15 +767,22 @@ function populateTranslationAudioSelect() {
         elements.selects.transAudio.appendChild(opt);
     });
 
-    // 2. Add AI TTS options for languages NOT in static list
+    // 2. Add AI TTS options ONLY for languages supported by Puter Fix
+    // We strictly filter this list so unsupported languages (like Albanian) don't appear.
+    const AI_SUPPORTED_LANGS = [
+        'ar', 'fr', 'de', 'it', 'ru', 'tr', 'zh', 'ur', 'ms', 'fa'
+    ];
+
     Object.entries(TRANSLATIONS_CONFIG).forEach(([code, config]) => {
-        const opt = document.createElement('div'); // dummy
-        const ttsValue = `tts:${code}`;
-        
-        const ttsOpt = document.createElement('option');
-        ttsOpt.value = ttsValue;
-        ttsOpt.textContent = `${config.name.split('|')[0].trim()} (AI Voice)`;
-        elements.selects.transAudio.appendChild(ttsOpt);
+        // FILTER: Only add if the language code is in our supported AI list
+        if (AI_SUPPORTED_LANGS.includes(code)) {
+            const ttsValue = `tts:${code}`;
+            
+            const ttsOpt = document.createElement('option');
+            ttsOpt.value = ttsValue;
+            ttsOpt.textContent = `${config.name.split('|')[0].trim()} (AI Voice)`;
+            elements.selects.transAudio.appendChild(ttsOpt);
+        }
     });
 }
 

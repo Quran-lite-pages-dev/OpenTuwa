@@ -27,20 +27,40 @@
         const originalTxt2Speech = puter.ai.txt2speech;
 
         puter.ai.txt2speech = function(text, arg2, arg3) {
+            // --- SAFETY LIMIT CHECK (NO-STUCK VERSION) ---
+            if (typeof text === 'string' && text.length > 2990) {
+                console.warn(`[Puter Fix] Text length (${text.length}) exceeds safety limit. Skipping AI TTS safely.`);
+                
+                // Return a "Dummy" Audio object so the player doesn't crash or freeze.
+                // This pretends to play successfully and finish instantly.
+                return Promise.resolve({
+                    play: () => Promise.resolve(), // Pretend to play
+                    pause: () => {},
+                    currentTime: 0,
+                    duration: 0,
+                    // If the app listens for 'ended' to go to next verse, this triggers it:
+                    addEventListener: function(event, callback) {
+                        if (event === 'ended') {
+                            setTimeout(callback, 10); // Fire 'ended' almost immediately
+                        }
+                    }
+                });
+            }
+            // ---------------------------------------------
+
             console.log(`[Puter Fix] Intercepting TTS request...`);
 
             // 1. Determine the requested language
             // arg2 can be a string ('en-US') or an options object
             let requestedLangCode = 'en-US'; // Default
-            
             if (typeof arg2 === 'string') {
                 requestedLangCode = arg2;
             } else if (typeof arg2 === 'object' && arg2.language) {
                 requestedLangCode = arg2.language;
             }
 
-            // 2. Resolve Language Name for Instructions
-            // We strip region codes (e.g. 'ar-AE' -> 'ar') to look up the name
+            // 2. Map to Full Language Name
+            // e.g., 'es-ES' -> 'Spanish', 'ar' -> 'Arabic'
             const shortCode = requestedLangCode.split('-')[0].toLowerCase();
             const langName = LANG_NAMES[requestedLangCode] || LANG_NAMES[shortCode] || shortCode;
 
@@ -51,13 +71,12 @@
                 voice: 'alloy',              // 'alloy' and 'echo' are excellent at multilingual
                 response_format: 'mp3',
                 // Explicitly tell the AI which language to speak to prevent "American accent" issues
-                instructions: `Read this text clearly in ${langName}. Pronounce correctly with native accent.`
+                instructions: `Read this text clearly in ${langName}. Pronounce correctly with native accent. And what you are reading now are actually the translation of Quran in ${langName} thus read it with suitable tone either it look like story mode or warning and etcetera.`
             };
 
             console.log(`[Puter Fix] Upgraded to OpenAI (${newOptions.voice}) for Language: ${langName}`);
 
             // 4. Call Original Function with New Options
-            // We ignore the original arg2/arg3 structure and force our options
             return originalTxt2Speech.call(this, text, newOptions);
         };
 
