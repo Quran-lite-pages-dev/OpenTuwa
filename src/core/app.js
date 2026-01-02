@@ -108,9 +108,9 @@ const SURAH_METADATA = [
           { "chapter": 93, "english_name": "The Morning Hours", "description": "Revealed in Mecca to comfort the Prophet (Peace be upon him) after a pause in revelation, promising that his future will be better than his past. (11 verses)" },
           { "chapter": 94, "english_name": "The Relief", "description": "A Meccan chapter reassuring the Prophet (Peace be upon him) that with every hardship comes ease and that his burden has been lifted. (8 verses)" },
           { "chapter": 95, "english_name": "The Fig", "description": "A Meccan Surah stating that man was created in the best stature but will fall to the lowest depth unless he believes and does good works. (8 verses)" },
-          { "chapter": 96, "english_name": "The Clot", "description": "The first revelation to the Prophet (Peace be upon him) in the Cave of Hira, commanding him to read in the name of his Lord. (19 verses)" },
+          { "chapter": 96, "english_name": "The Clot", "description": "The first revelation received by the Prophet (Peace be upon him) in Mecca, commanding him to read in the name of his Lord. (19 verses)" },
           { "chapter": 97, "english_name": "The Power", "description": "A Meccan chapter describing the Night of Decree (Laylat al-Qadr), which is better than a thousand months. (5 verses)" },
-          { "chapter": 98, "english_name": "The Clear Proof", "description": "A Medinan Surah distinguishing between the believers and disbelievers among the People of the Scripture and the polytheists. (8 verses)" },
+          { "chapter": 98, "english_name": "The Clear Proof", "description": "A Medinan Surah distinguishing true believers from disbelievers among the People of the Book and polytheists. (8 verses)" },
           { "chapter": 99, "english_name": "The Earthquake", "description": "A Medinan chapter vividly describing the earth shaking on Judgment Day and yielding up its burdens and secrets. (8 verses)" },
           { "chapter": 100, "english_name": "The Courser", "description": "A Meccan Surah using the imagery of charging warhorses to describe the ungrateful nature of mankind. (11 verses)" },
           { "chapter": 101, "english_name": "The Calamity", "description": "A Meccan chapter depicting the Day of Judgment where people will be like scattered moths and mountains like wool. (11 verses)" },
@@ -118,11 +118,11 @@ const SURAH_METADATA = [
           { "chapter": 103, "english_name": "The Declining Day", "description": "A Meccan chapter summarizing that all mankind is in loss except those who believe, do good, and advise one another to truth and patience. (3 verses)" },
           { "chapter": 104, "english_name": "The Traducer", "description": "A Meccan Surah condemning the backbiter and the one who hoards wealth, warning of the crushing fire. (9 verses)" },
           { "chapter": 105, "english_name": "The Elephant", "description": "A Meccan chapter recalling the destruction of Abraha's army of elephants who attempted to destroy the Kaaba. (5 verses)" },
-          { "chapter": 106, "english_name": "Quraysh", "description": "A Meccan Surah calling upon the Quraysh tribe to be grateful to God who provided them with security and sustenance. (4 verses)" },
-          { "chapter": 107, "english_name": "The Small Kindnesses", "description": "A Meccan chapter condemning those who deny the Judgment, neglect prayer, and refuse small acts of kindness. (7 verses)" },
-          { "chapter": 108, "english_name": "The Abundance", "description": "The shortest Surah in the Quran, revealed in Mecca, promising the Prophet (Peace be upon him) abundant good and cutting off his enemies. (3 verses)" },
-          { "chapter": 109, "english_name": "The Disbelievers", "description": "A Meccan Surah declaring the absolute separation of worship between believers and disbelievers: 'To you be your religion, and to me my religion.' (6 verses)" },
-          { "chapter": 110, "english_name": "The Divine Support", "description": "One of the last Medinan revelations, foretelling the mass entry of people into Islam and commanding praise of God. (3 verses)" },
+          { "chapter": 106, "english_name": "Quraysh", "description": "A Meccan Surah reminding the Quraysh tribe of God's protection and provision during their trading journeys. (4 verses)" },
+          { "chapter": 107, "english_name": "The Small Kindnesses", "description": "A Meccan chapter condemning those who deny the judgment by mistreating orphans and performing prayers only to be seen. (7 verses)" },
+          { "chapter": 108, "english_name": "The Abundance", "description": "The shortest Surah, revealed in Mecca, promising the Prophet (Peace be upon him) an abundance of good and the cutting off of his enemies. (3 verses)" },
+          { "chapter": 109, "english_name": "The Disbelievers", "description": "A Meccan Surah declaring the absolute distinction between the worship of Muslims and the worship of polytheists. (6 verses)" },
+          { "chapter": 110, "english_name": "The Divine Support", "description": "A Medinan chapter, one of the last revealed, predicting the mass entry of people into Islam and the Prophet's (Peace be upon him) passing. (3 verses)" },
           { "chapter": 111, "english_name": "The Palm Fiber", "description": "A Meccan Surah condemning Abu Lahab, an uncle and enemy of the Prophet (Peace be upon him), and his wife to the Fire. (5 verses)" },
           { "chapter": 112, "english_name": "The Sincerity", "description": "A Meccan chapter that is the essence of monotheism, declaring God is One, Eternal, with no offspring or equal. (4 verses)" },
           { "chapter": 113, "english_name": "The Daybreak", "description": "A Meccan Surah seeking refuge in the Lord of the dawn from the evil of created things and envy. (5 verses)" },
@@ -133,116 +133,109 @@ const SURAH_METADATA = [
 const ACTIVE_PROFILE_ID = "1";
 const STORAGE_KEY = `quranState_${ACTIVE_PROFILE_ID}`;
 
-// Supported Puter TTS Languages Map
-const TTS_LANGUAGE_MAP = {
-    'en': 'en-US',
-    'ar': 'ar-AE',
-    'cs': 'cs-CZ',
-    'da': 'da-DK',
-    'de': 'de-DE',
-    'es': 'es-ES',
-    'fr': 'fr-FR',
-    'hi': 'hi-IN',
-    'it': 'it-IT',
-    'ja': 'ja-JP',
-    'ko': 'ko-KR',
-    'nl': 'nl-NL',
-    'no': 'nb-NO',
-    'pl': 'pl-PL',
-    'pt': 'pt-PT',
-    'ro': 'ro-RO',
-    'ru': 'ru-RU',
-    'sv': 'sv-SE',
-    'tr': 'tr-TR',
-    'zh': 'cmn-CN'
-};
-
 const TRANSLATIONS_CONFIG = {
     'en': { name: 'English (Saheeh Intl) | Preferred', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/en.xml' },
-    'sq': { name: 'Albanian (Sherif Ahmeti)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sq.ahmeti.xml' },
-    'ber': { name: 'Amazigh (At Mansour)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ber.mensur.xml' },
-    'am': { name: 'Amharic (Sadiq & Sani)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/am.sadiq.xml' },
-    'ar': { name: 'Arabic Tafsir (Al-Muyassar)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ar.muyassar.xml' },
-    'az': { name: 'Azerbaijani (Mammadaliyev & Bunyadov)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/az.mammadaliyev.xml' },
-    'bn': { name: 'Bengali (Zohurul Hoque)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bn.bengali.xml' },
-    'bg': { name: 'Bulgarian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bg.theophanov.xml' },
-    'bs': { name: 'Bosnian (Korkut)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bs.korkut.xml' },
-    'cs': { name: 'Czech (Hrbek)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/cs.hrbek.xml' },
-    'de': { name: 'German (Bubenheim & Elyas)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/de.aburida.xml' },
-    'dv': { name: 'Divehi', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/dv.divehi.xml' },
-    'es': { name: 'Spanish (Cortes)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/es.cortes.xml' },
-    'fa': { name: 'Persian (Mostafa)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fa.khorramdel.xml' },
-    'fr': { name: 'French (Hamidullah)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fr.hamidullah.xml' },
-    'ha': { name: 'Hausa (Gumi)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ha.gumi.xml' },
-    'hi': { name: 'Hindi (Farooq Khan & Ahmed)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/hi.hindi.xml' },
-    'id': { name: 'Indonesian (Bahasa Indonesia)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/id.indonesian.xml' },
-    'it': { name: 'Italian (Piccardo)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/it.piccardo.xml' },
-    'ja': { name: 'Japanese', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ja.japanese.xml' },
-    'ko': { name: 'Korean', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ko.korean.xml' },
-    'ku': { name: 'Kurdish (Bamoki)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ku.asan.xml' },
-    'ml': { name: 'Malayalam (Abdul Hameed & Kunhi)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ml.abdulhameed.xml' },
-    'ms': { name: 'Malay (Basmeih)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ms.basmeih.xml' },
-    'nl': { name: 'Dutch (Keyzer)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/nl.keyzer.xml' },
-    'no': { name: 'Norwegian (Einar Berg)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/no.berg.xml' },
-    'pl': { name: 'Polish (Bielawskiego)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/pl.bielawskiego.xml' },
-    'pt': { name: 'Portuguese (El-Hayek)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/pt.elhayek.xml' },
-    'ro': { name: 'Romanian (Grigore)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ro.grigore.xml' },
-    'ru': { name: 'Russian (Kuliev)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ru.kuliev.xml' },
-    'sd': { name: 'Sindhi (Amroti)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sd.amroti.xml' },
-    'so': { name: 'Somali', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/so.abduh.xml' },
-    'sq': { name: 'Albanian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sq.ahmeti.xml' },
-    'sv': { name: 'Swedish (Bernström)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sv.bernstrom.xml' },
-    'sw': { name: 'Swahili (Al-Barwani)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sw.barwani.xml' },
-    'ta': { name: 'Tamil (Jan Turst)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ta.tamil.xml' },
-    'tg': { name: 'Tajik (AbdolMohammad)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/tg.ayati.xml' },
-    'th': { name: 'Thai', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/th.thai.xml' },
-    'tr': { name: 'Turkish (Yatir)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/tr.yazir.xml' },
-    'tt': { name: 'Tatar (Yakub)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/tt.nugman.xml' },
-    'ug': { name: 'Uyghur (Saleh)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ug.saleh.xml' },
-    'ur': { name: 'Urdu (Maududi)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ur.maududi.xml' },
-    'uz': { name: 'Uzbek (Mansour)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/uz.sodik.xml' },
-    'zh': { name: 'Chinese (Ma Jian)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/zh.jian.xml' }
-};
+            'sq': { name: 'Albanian (Sherif Ahmeti)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sq.ahmeti.xml' },
+            'ber': { name: 'Amazigh (At Mansour)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ber.mensur.xml' },
+            'am': { name: 'Amharic (Sadiq & Sani)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/am.sadiq.xml' },
+            'ar': { name: 'Arabic Tafsir (Al-Muyassar)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ar.muyassar.xml' },
+            'az': { name: 'Azerbaijani (Musayev)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/az.musayev.xml' },
+            'bn': { name: 'Bengali (Muhiuddin Khan)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bn.bengali.xml' },
+            'bs': { name: 'Bosnian (Besim Korkut)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bs.korkut.xml' },
+            'bg': { name: 'Bulgarian (Theophanov)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bg.theophanov.xml' },
+            'zh': { name: 'Chinese (Ma Jian)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/zh.jian.xml' },
+            'cs': { name: 'Czech (Hrbek)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/cs.hrbek.xml' },
+            'dv': { name: 'Divehi (Maldives)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/dv.divehi.xml' },
+            'nl': { name: 'Dutch (Siregar)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/nl.siregar.xml' },
+            'fr': { name: 'French (Hamidullah)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fr.hamidullah.xml' },
+            'de': { name: 'German (Bubenheim)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/de.bubenheim.xml' },
+            'ha': { name: 'Hausa (Gumi)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ha.gumi.xml' },
+            'he': { name: 'Hebrew (Darussalam Assn. Quran ENC)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/he.xml' },
+            'hi': { name: 'Hindi (Suhel Khan)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/hi.hindi.xml' },
+            'id': { name: 'Indonesian (Kemenag)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/id.indonesian.xml' },
+            'it': { name: 'Italian (Piccardo)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/it.piccardo.xml' },
+            'ja': { name: 'Japanese (Standard)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ja.japanese.xml' },
+            'ko': { name: 'Korean (Standard)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ko.korean.xml' },
+            'ku': { name: 'Kurdish (Burhan)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ku.asan.xml' },
+            'ms': { name: 'Malay (Basmeih)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ms.basmeih.xml' },
+            'ml': { name: 'Malayalam (Abdul Hameed)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ml.abdulhameed.xml' },
+            'no': { name: 'Norwegian (Berg)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/no.berg.xml' },
+            'ps': { name: 'Pashto (Abdulwali Khan)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ps.abdulwali.xml' },
+            'fa': { name: 'Persian (Mostafa)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fa.khorramdel.xml' },
+            'pl': { name: 'Polish (Bielawskiego)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/pl.bielawskiego.xml' },
+            'pt': { name: 'Portuguese (El-Hayek)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/pt.elhayek.xml' },
+            'ro': { name: 'Romanian (Grigore)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ro.grigore.xml' },
+            'ru': { name: 'Russian (Kuliev)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ru.kuliev.xml' },
+            'sd': { name: 'Sindhi (Amroti)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sd.amroti.xml' },
+            'so': { name: 'Somali (Abduh)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/so.abduh.xml' },
+            'es': { name: 'Spanish (Isa García)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/es.garcia.xml' },
+            'sw': { name: 'Swahili (Al-Barwani)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sw.barwani.xml' },
+            'sv': { name: 'Swedish (Bernström)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sv.bernstrom.xml' },
+            'ta': { name: 'Tamil (Jan Turst)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ta.tamil.xml' },
+            'tt': { name: 'Tatar (Nugman)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/tt.nugman.xml' },
+            'th': { name: 'Thai (King Fahad)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/th.thai.xml' },
+            'tr': { name: 'Turkish (Diyanet)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/tr.diyanet.xml' },
+            'ur': { name: 'Urdu (Junagarhi)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ur.junagarhi.xml' },
+            'ug': { name: 'Uyghur (Muhammad Saleh)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ug.saleh.xml' },
+            'uz': { name: 'Uzbek (Muhammad Sodik)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/uz.sodik.xml' }
+        };
 
 const RECITERS_CONFIG = {
-    'mishary': { name: 'Mishary Rashid Alafasy', path: 'Alafasy_128kbps' },
-    'sudais': { name: 'Abdur-Rahman as-Sudais', path: 'Abdurrahmaan_As-Sudais_192kbps' },
-    'shuraym': { name: 'Saud ash-Shuraym', path: 'Saood_ash-Shuraym_128kbps' },
-    'ghamdi': { name: 'Saad al-Ghamdi', path: 'Ghamadi_40kbps' },
-    'hudhaify': { name: 'Ali al-Hudhaify', path: 'Hudhaify_128kbps' },
-    'husary': { name: 'Mahmoud Khalil Al-Husary', path: 'Husary_128kbps' },
-    'minshawi': { name: 'Mohamed Siddiq al-Minshawi', path: 'Minshawy_Mujawwad_192kbps' },
-    'abdulbasit': { name: 'Abdul Basit Abdul Samad', path: 'Abdul_Basit_Mujawwad_128kbps' },
-    'juhany': { name: 'Abdullah Awad al-Juhany', path: 'Abdullaah_3awwaad_Al-Juhaynee_128kbps' },
-    'maher': { name: 'Maher Al-Muaiqly', path: 'MaherAlMuaiqly128kbps' },
-    'ajamy': { name: 'Ahmed al-Ajamy', path: 'Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net' },
-    'budair': { name: 'Salah Bukhatir', path: 'Salah_Bukhatir_128kbps' }
+    'alafasy': { name: 'Mishary Alafasy', path: 'Alafasy_128kbps' },
+    'juhaynee': { name: 'Al Juhany', path: 'Abdullaah_3awwaad_Al-Juhaynee_128kbps' },
+    'sudais': { name: 'As Sudais', path: 'Abdurrahmaan_As-Sudais_192kbps' },
+    'ghamadi': { name: 'Al Ghamdi', path: 'Ghamadi_40kbps' },
+    'abbad': { name: 'Fares Abbad', path: 'Fares_Abbad_64kbps' },
+    'muaiqly': { name: 'Al Muaiqly', path: 'MaherAlMuaiqly128kbps' },
+    'shuraym': { name: 'Ash Shuraym', path: 'Saood_ash-Shuraym_128kbps' },
+    'basit': { name: 'Abdul Basit', path: 'Abdul_Basit_Murattal_192kbps' },
+    'ayyoub': { name: 'Muhammad Ayyoub', path: 'Muhammad_Ayyoub_128kbps' },
+    'minshawy': { name: 'Minshawy', path: 'Minshawy_Murattal_128kbps' },
+    'jaber': { name: 'Ali Jaber', path: 'Ali_Jaber_64kbps' },
+    'ajamy': { name: 'Ahmed Ali Ajamy', path: 'ahmed_ibn_ali_al_ajamy_128kbps' },
+
+
+  
 };
 
 const TRANSLATION_AUDIO_CONFIG = {
-    'none': { name: 'None (Recitation Only)', path: '' },
-    'en': { name: 'English (Sahih Intl) - Audio', path: 'httpIA/archive.org/download/Quran_Translation_Sahih_International_English_Audio_128kbps/Quran_Translation_Sahih_International_English_Audio_128kbps' },
-    'ur': { name: 'Urdu (Jalandhry) - Audio', path: 'httpIA/archive.org/download/Quran_Translation_Urdu_Jalandhry_Audio_128kbps/Quran_Translation_Urdu_Jalandhry_Audio_128kbps' }
+    'none': { name: 'No Audio Translation' },
+    'en_walk': { name: 'English (Ibrahim Walk)', path: 'English/Sahih_Intnl_Ibrahim_Walk_192kbps' },
+    'id_ministry': { name: 'Indonesian (Ministry)', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/audio/play/id' },
+    'es': { name: 'Español', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/audio/play' }
 };
+
+// --- PUTER AI CONFIGURATION ---
+// Ensure <script src="https://js.puter.com/v2/"></script> is in your HTML header
+
+const FTT_URL = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/FTT.XML';
+const RTL_CODES = new Set(['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ur', 'ug']);
 
 const elements = {
     overlay: document.getElementById('loading-overlay'),
-    spinner: document.getElementById('loading-spinner'),
+    spinner: document.querySelector('.loader-spinner'),
     loaderText: document.getElementById('loader-text'),
     startBtn: document.getElementById('start-btn'),
-    selects: {
-        chapter: document.getElementById('chapter-select'),
-        verse: document.getElementById('verse-select'),
-        reciter: document.getElementById('reciter-select'),
-        trans: document.getElementById('trans-select'),
-        transAudio: document.getElementById('trans-audio-select')
-    },
-    verseText: document.getElementById('verse-text'),
-    transText: document.getElementById('translation-text'),
-    audio: document.getElementById('quran-audio'),
-    transAudio: document.getElementById('trans-audio'),
     
-    // View Management
+    quranAudio: document.getElementById('audio-player'),
+    transAudio: document.getElementById('translation-audio-player'),
+    previewAudio: document.getElementById('preview-audio'),
+    bufferInd: document.getElementById('buffering-indicator'),
+    
+    selects: {
+        chapter: document.getElementById('chapterSelect'),
+        verse: document.getElementById('verseSelect'),
+        trans: document.getElementById('translationSelect'),
+        reciter: document.getElementById('reciterSelect'),
+        transAudio: document.getElementById('translationAudioSelect')
+    },
+    display: {
+        title: document.getElementById('chapter-title'),
+        verse: document.getElementById('verse-text'),
+        verseNext: document.getElementById('verse-text-next'),
+        trans: document.getElementById('translation-text'),
+        container: document.getElementById('content-display')
+    },
     views: {
         dashboard: document.getElementById('dashboard-view'),
         cinema: document.getElementById('cinema-view')
@@ -263,11 +256,10 @@ const elements = {
     subtitle: document.getElementById('hero-subtitle-overlay')
 };
 
-let quranData = [];
-let translationCache = {};
+let quranData = []; 
+let translationCache = {}; 
 // Cache for generated TTS blobs to save quota (Free Forever Optimization)
-let ttsCache = {};
-
+let ttsCache = {}; 
 let currentChapterData = {};
 let inactivityTimer;
 let forbiddenToTranslateSet = new Set();
@@ -275,8 +267,8 @@ let isBuffering = false;
 
 // Preview Variables
 let previewTimeout;
-const PREVIEW_DELAY = 600;
-let previewSequence = [];
+const PREVIEW_DELAY = 600; 
+let previewSequence = []; 
 let previewSeqIndex = 0;
 
 // Search Variables
@@ -291,54 +283,96 @@ const KEYBOARD_KEYS = [
     'SPACE', 'DEL', 'CLEAR'
 ];
 
-// --- INITIALIZATION ---
-window.onload = async () => {
+// 2026 GDPR Helper (Call this from UI button to wipe data)
+window.wipeUserData = function() {
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem('quran_user_analytics');
+    alert('User data wiped.');
+    location.reload();
+};
+
+// --- MERGE METADATA ---
+function mergeMetadata(apiChapters) {
+    return apiChapters.map((ch, idx) => {
+        const meta = SURAH_METADATA.find(m => m.chapter === ch.chapterNumber);
+        if (meta) {
+            return { ...ch, english_name: meta.english_name, description: meta.description };
+        }
+        return ch;
+    });
+}
+
+// --- ROUTER ---
+function switchView(viewName) {
+    if(viewName === 'cinema') {
+        elements.views.dashboard.classList.remove('active');
+        elements.views.cinema.classList.add('active');
+        elements.views.cinema.style.opacity = '1';
+        stopPreview();
+        elements.sidebar.container.style.display = 'none'; // Hide sidebar in cinema
+        setTimeout(() => document.getElementById('control-panel').focus(), 100);
+    } else {
+        elements.views.cinema.classList.remove('active');
+        elements.views.cinema.style.opacity = '0';
+        elements.views.dashboard.classList.add('active');
+        elements.sidebar.container.style.display = 'none'; // Show sidebar
+        elements.quranAudio.pause();
+        elements.transAudio.pause();
+        refreshDashboard();
+        document.getElementById('door-play-btn').focus();
+    }
+}
+
+window.addEventListener('popstate', (event) => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('chapter')) {
+        switchView('cinema');
+        restoreState();
+        loadVerse(false); // Using Old logic
+    } else {
+        switchView('dashboard');
+    }
+});
+
+async function initializeApp() {
     try {
-        await loadQuranData();
+        const jsonResponse = await fetch('https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/2TM3TM.json');
+        if (!jsonResponse.ok) throw new Error("Failed to load Quran JSON");
+        const jsonData = await jsonResponse.json();
+        quranData = mergeMetadata(jsonData.chapters);
+
+        try {
+            const fttResp = await fetch(FTT_URL);
+            if (fttResp.ok) {
+                const fttText = await fttResp.text();
+                const fttDoc = new DOMParser().parseFromString(fttText, 'application/xml');
+                fttDoc.querySelectorAll('Verse').forEach(v => {
+                    const c = v.getAttribute('chapter')?.trim();
+                    const n = v.getAttribute('number')?.trim();
+                    if(c && n) forbiddenToTranslateSet.add(`${c}-${n}`);
+                });
+            }
+        } catch (e) { console.warn("FTT load failed", e); }
+
         populateChapterSelect();
         populateReciterSelect();
-        populateTranslationAudioSelect(); // Modified
-        populateTranslationSelect();
+        populateTranslationSelectOptions();
+        populateTranslationAudioSelect(); // Called after Translations loaded
 
-        // Restore State or Default
-        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-        
-        // Handle URL Params for Direct Link
         const urlParams = new URLSearchParams(window.location.search);
-        
-        let startInCinema = false;
-        
         if (urlParams.has('chapter')) {
-            startInCinema = true;
-            elements.selects.chapter.value = parseInt(urlParams.get('chapter')) - 1;
-            populateVerseSelect();
-            
-            if (urlParams.has('verse')) {
-                elements.selects.verse.value = parseInt(urlParams.get('verse')) - 1;
-            }
-            if (urlParams.has('reciter')) {
-                elements.selects.reciter.value = urlParams.get('reciter');
-            }
-        } else if (saved.chapter !== undefined) {
-            elements.selects.chapter.value = saved.chapter;
-            populateVerseSelect();
-            if (saved.verse !== undefined) elements.selects.verse.value = saved.verse;
-            if (saved.reciter) elements.selects.reciter.value = saved.reciter;
-        } else {
-            // Default
-            populateVerseSelect();
-        }
-
-        // Apply Translations Logic
-        applyTranslationSettings(saved, urlParams);
-
-        if(startInCinema) {
+            // Start in Cinema
             switchView('cinema');
+            restoreState();
+            populateVerseSelect();
+            const savedVerse = getSavedVerseIndex();
+            if(savedVerse < elements.selects.verse.options.length) {
+                elements.selects.verse.value = savedVerse;
+            }
             const activeTransId = elements.selects.trans.value;
             await loadTranslationData(activeTransId);
-            loadVerse(false);
+            loadVerse(false); // Old Logic
             
-            // Old Logic
             elements.spinner.style.display = 'none';
             elements.loaderText.style.display = 'none';
             elements.startBtn.style.display = 'block';
@@ -365,188 +399,338 @@ window.onload = async () => {
 function refreshDashboard() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const heroBtn = document.getElementById('door-play-btn');
-    
+
     const allIndices = Array.from({length: 114}, (_, i) => i);
     const shortRowIndices = allIndices.slice(77, 114);
-
+    
     fillRow('trending-row', [36, 67, 18, 55, 1, 112, 113, 114].map(id => id-1));
     fillRow('short-row', shortRowIndices);
     fillRow('all-row', Array.from({length: 114}, (_, i) => i));
 
-    if (saved.chapter !== undefined) {
-        const ch = parseInt(saved.chapter) + 1;
-        const v = parseInt(saved.verse) + 1;
-        const meta = SURAH_METADATA[saved.chapter];
-        
-        document.getElementById('hero-title').textContent = `Continue: ${meta.english_name}`;
-        document.getElementById('hero-desc').textContent = `Ayah ${v} • ${meta.description.substring(0, 100)}...`;
-        
-        const reciterId = saved.reciter || 'mishary';
-        const imgUrl = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${ch}_${v}.png`;
-        
-        // Background Hero
-        const tempImg = new Image();
-        tempImg.src = imgUrl;
-        tempImg.onload = () => {
-             const heroImg = document.getElementById('door-hero-img');
-             if (heroImg) heroImg.src = imgUrl;
-        };
-
-        heroBtn.textContent = "Resume Playback";
-        heroBtn.onclick = () => {
-             launchPlayer(ch, v);
-        };
-        
-        // Start Hero Preview Loop
-        startHeroPreview(ch, v, reciterId);
-
+    if(saved.chapter !== undefined && quranData[saved.chapter]) {
+        const chNum = quranData[saved.chapter].chapterNumber;
+        const vNum = (saved.verse || 0) + 1;
+        const reciter = saved.reciter || 'alafasy';
+        updateHeroPreview(chNum, vNum, reciter, false);
+        heroBtn.onclick = () => launchPlayer(chNum, vNum);
     } else {
-        document.getElementById('hero-title').textContent = "Welcome to Quran Lite";
-        document.getElementById('hero-desc').textContent = "Select a Surah below to begin.";
-        heroBtn.textContent = "Start Reading";
-        heroBtn.onclick = () => {
-            document.querySelector('#trending-row .surah-card').focus();
-        };
+        updateHeroPreview(1, 1, 'alafasy', false);
+        heroBtn.onclick = () => launchPlayer(1, 1);
     }
-    
-    // Initial Focus
-    heroBtn.focus();
 }
 
-function startHeroPreview(chapterNum, startVerse, reciterId) {
-    if (previewTimeout) clearTimeout(previewTimeout);
+function fillRow(elementId, indexArray) {
+    const container = document.getElementById(elementId);
+    const fragment = document.createDocumentFragment(); // Use fragment for speed
     
-    // Generate a sequence of 3 verses to cycle through silently
-    previewSequence = [startVerse, startVerse + 1, startVerse + 2];
-    previewSeqIndex = 0;
-    
-    playPreviewStep(chapterNum, reciterId);
-}
-
-async function playPreviewStep(chapterNum, reciterId) {
-    if (previewSeqIndex >= previewSequence.length) {
-        previewSeqIndex = 0; // Loop
-    }
-    
-    const verseNum = previewSequence[previewSeqIndex];
-    // Check bounds
-    const chIdx = chapterNum - 1;
-    if (!quranData[chIdx] || !quranData[chIdx].verses[verseNum-1]) {
-        previewSeqIndex = 0;
-        return;
-    }
-
-    // Load Image
-    const newSrc = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chapterNum}_${verseNum}.png`;
-    
-    // Load Translation Subtitle
-    const transId = elements.selects.trans.value;
-    
-    // Ensure Trans Data Loaded
-    if (!translationCache[transId]) {
-        try {
-            await loadTranslationData(transId);
-        } catch(e) { console.log("Preview trans load fail"); }
-    }
-    
-    let subText = "";
-    if (translationCache[transId] && translationCache[transId][chapterNum]) {
-        subText = translationCache[transId][chapterNum][verseNum] || "";
-    }
-
-    // Update UI
-    const heroImg = document.getElementById('door-hero-img');
-    const subtitle = elements.subtitle;
-    
-    // Fade effect
-    heroImg.style.transition = "opacity 1s";
-    heroImg.style.opacity = 0;
-    
-    setTimeout(() => {
-        heroImg.src = newSrc;
-        subtitle.textContent = subText;
-        heroImg.onload = () => {
-             heroImg.style.opacity = 0.4; // Dimmed
-        };
-        
-        previewSeqIndex++;
-        previewTimeout = setTimeout(() => {
-            playPreviewStep(chapterNum, reciterId);
-        }, 6000); // 6 seconds per slide
-    }, 1000);
-}
-
-function fillRow(rowId, indices) {
-    const row = document.getElementById(rowId);
-    row.innerHTML = '';
-    
-    indices.forEach(idx => {
-        if (!SURAH_METADATA[idx]) return;
-        const meta = SURAH_METADATA[idx];
+    indexArray.forEach(idx => {
+        if(!quranData[idx]) return;
+        const surah = quranData[idx];
         const card = document.createElement('div');
         card.className = 'surah-card';
         card.tabIndex = 0;
-        card.dataset.chapter = meta.chapter;
-        
         card.innerHTML = `
-            <div class="card-bg-num">${meta.chapter}</div>
-            <div class="card-title">${meta.english_name}</div>
-            <div class="card-sub">${meta.chapter} • ${meta.description.split(' ')[0]}...</div>
+            <div class="card-bg-num">${surah.chapterNumber}</div>
+            <div class="card-title">${surah.english_name}</div>
+            <div class="card-sub">${surah.title || ''}</div>
         `;
         
-        card.onclick = () => launchPlayer(meta.chapter, 1);
-        card.onkeydown = (e) => {
-            if (e.key === 'Enter') launchPlayer(meta.chapter, 1);
+        // Use specialized TV events
+        card.onclick = () => launchPlayer(surah.chapterNumber, 1);
+        card.onfocus = () => {
+            // Preview logic here
+            schedulePreview(surah.chapterNumber);
         };
         
-        row.appendChild(card);
+        fragment.appendChild(card);
     });
+    
+    container.innerHTML = '';
+    container.appendChild(fragment);
 }
 
-function launchPlayer(chapter, verse) {
-    // Stop Preview
+function schedulePreview(chapterNum) {
     if (previewTimeout) clearTimeout(previewTimeout);
+    stopPreview();
+    const surah = quranData[chapterNum - 1];
+    document.getElementById('door-hero-title').textContent = surah.english_name;
+    document.getElementById('door-hero-subtitle').textContent = surah.title;
+    // document.getElementById('door-hero-desc').textContent = surah.description;
+    document.getElementById('door-play-btn').onclick = () => launchPlayer(chapterNum, 1);
+
+    previewTimeout = setTimeout(() => {
+        updateHeroPreview(chapterNum, 1, 'alafasy', true); 
+    }, PREVIEW_DELAY);
+}
+
+function stopPreview() {
+    elements.previewAudio.pause();
+    elements.previewAudio.onended = null;
+    elements.subtitle.classList.remove('active');
+    clearTimeout(previewTimeout);
+    previewSequence = [];
+}
+
+async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
+    // 1. Reset Sequence
+    previewSequence = [];
+    previewSeqIndex = 0;
     
-    elements.selects.chapter.value = chapter - 1;
-    populateVerseSelect();
-    elements.selects.verse.value = verse - 1;
+    // 2. Get Chapter Data
+    const chIdx = chapterNum - 1;
+    if (!quranData[chIdx]) return;
     
+    const totalVerses = quranData[chIdx].verses.length;
+
+    // 3. Populate sequence with ALL verses
+    for (let i = 1; i <= totalVerses; i++) {
+        previewSequence.push(i);
+    }
+
+    // 4. Update Hero Image (for the first verse)
+    const verseNum = previewSequence[0];
+    const imgUrl = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chapterNum}_${verseNum}.png`;
+    
+    const tempImg = new Image();
+    tempImg.src = imgUrl;
+    tempImg.onload = () => {
+        const heroImg = document.getElementById('door-hero-img');
+        if (heroImg) heroImg.src = imgUrl;
+    };
+
+    // 5. [THE FIX] Ensure Translation Data is Loaded
+    // We must ensure the XML is in cache before playPreviewStep tries to read it.
+    const transId = elements.selects.trans.value;
+    if (!translationCache[transId]) {
+        await loadTranslationData(transId);
+    }
+
+    // 6. Start playing if requested
+    if (autoPlay) {
+        playPreviewStep(chapterNum, reciterId);
+    }
+}
+
+function playPreviewStep(chapterNum, reciterId) {
+    if (previewSeqIndex >= previewSequence.length) return;
+    const verseNum = previewSequence[previewSeqIndex];
+    const padCh = String(chapterNum).padStart(3, '0');
+    const padV = String(verseNum).padStart(3, '0');
+    
+    const imgLayer = document.getElementById('hero-preview-layer');
+    const previewImg = document.getElementById('preview-img');
+    const newSrc = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chapterNum}_${verseNum}.png`;
+
+    previewImg.style.opacity = 0;
+    setTimeout(() => {
+        previewImg.src = newSrc;
+        previewImg.onload = () => {
+            previewImg.style.opacity = 0.6;
+            imgLayer.classList.add('active');
+        };
+    }, 200);
+
+    // Subtitle Update Logic
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    const transId = saved.trans || 'en';
+    const cache = translationCache[transId];
+    if(cache) {
+        const sura = cache.querySelector(`sura[index="${chapterNum}"]`);
+        const aya = sura ? sura.querySelector(`aya[index="${verseNum}"]`) : null;
+        const text = aya ? aya.getAttribute('text') : "";
+        if(text) {
+            elements.subtitle.textContent = text;
+            elements.subtitle.classList.add('active');
+            if (RTL_CODES.has(transId)) elements.subtitle.dir = 'rtl';
+            else elements.subtitle.dir = 'ltr';
+        }
+    } else {
+        elements.subtitle.classList.remove('active');
+    }
+
+    const rPath = RECITERS_CONFIG[reciterId]?.path || RECITERS_CONFIG['alafasy'].path;
+    const audioUrl = `https://everyayah.com/data/${rPath}/${padCh}${padV}.mp3`;
+    elements.previewAudio.src = audioUrl;
+    elements.previewAudio.volume = 0.6;
+    elements.previewAudio.onended = () => {
+        previewSeqIndex++;
+        playPreviewStep(chapterNum, reciterId);
+    };
+    elements.previewAudio.play().catch(e => console.log("Autoplay blocked"));
+}
+
+function launchPlayer(chapterNum, verseNum = 1) {
+    const newUrl = `?chapter=${chapterNum}&verse=${verseNum}`;
+    history.pushState({view: 'cinema'}, '', newUrl);
     switchView('cinema');
+    
+    elements.selects.chapter.value = chapterNum - 1;
+    populateVerseSelect();
+    elements.selects.verse.value = verseNum - 1;
+    elements.overlay.style.display = 'none';
     loadVerse(true);
 }
 
-function switchView(viewName) {
-    Object.values(elements.views).forEach(el => el.classList.remove('active'));
-    elements.views[viewName].classList.add('active');
-    
-    // Update Sidebar Active State
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    if (viewName === 'dashboard') elements.sidebar.home.classList.add('active');
+// --- OLD PLAYER LOGIC HELPERS ---
+async function loadTranslationData(id) {
+    if (translationCache[id]) return; 
+    if (!TRANSLATIONS_CONFIG[id]) return;
+    try {
+        toggleBuffering(true);
+        const res = await fetch(TRANSLATIONS_CONFIG[id].url);
+        if (res.ok) {
+            const txt = await res.text();
+            translationCache[id] = new DOMParser().parseFromString(txt, 'application/xml');
+        }
+    } catch (e) {
+        console.error("Failed to load translation:", id);
+    } finally {
+        toggleBuffering(false);
+    }
 }
 
-// --- CORE FUNCTIONS ---
+function restoreState() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    const browserLang = navigator.language.split('-')[0];
 
-async function loadQuranData() {
-    // We only need metadata which is hardcoded now. 
-    // But we need verse counts. We can fetch a light index or just infer.
-    // For this app, we will use a light structure.
+    let ch = 0;
+    if (urlParams.has('chapter')) ch = parseInt(urlParams.get('chapter')) - 1; 
+    else if (saved.chapter !== undefined) ch = saved.chapter;
+    elements.selects.chapter.value = ch;
+
+    if (urlParams.has('reciter') && RECITERS_CONFIG[urlParams.get('reciter')]) {
+        elements.selects.reciter.value = urlParams.get('reciter');
+    } else if (saved.reciter) {
+        elements.selects.reciter.value = saved.reciter;
+    }
+
+    let trans = 'en';
+    if (urlParams.has('trans')) trans = urlParams.get('trans');
+    else if (saved.trans) trans = saved.trans;
+    else if (TRANSLATIONS_CONFIG[browserLang]) trans = browserLang; 
     
-    // Mocking structure for Verse counts based on standard Quran
-    // This avoids fetching a huge JSON initially
-    const verseCounts = [7,286,200,176,120,165,206,75,129,109,123,111,43,52,99,128,111,110,98,135,112,78,118,64,77,227,93,88,69,60,34,30,73,54,45,83,182,88,75,85,54,53,89,59,37,35,38,29,18,45,60,49,62,55,78,96,29,22,24,13,14,11,11,18,12,12,30,52,52,44,28,28,20,56,40,31,50,40,46,42,29,19,36,25,22,17,19,26,30,20,15,21,11,8,8,19,5,8,8,11,11,8,3,9,5,4,7,3,6,3,5,4,5,6];
+    if (!TRANSLATIONS_CONFIG[trans]) trans = 'en';
+    elements.selects.trans.value = trans;
+
+    if (urlParams.has('audio_trans')) {
+        const param = urlParams.get('audio_trans');
+        // Check if it's a valid config OR a tts: id
+        if(TRANSLATION_AUDIO_CONFIG[param] || param.startsWith('tts:')) {
+            elements.selects.transAudio.value = param;
+        }
+    } else if (saved.audio_trans && (TRANSLATION_AUDIO_CONFIG[saved.audio_trans] || saved.audio_trans.startsWith('tts:'))) {
+        elements.selects.transAudio.value = saved.audio_trans;
+    }
+}
+
+function getSavedVerseIndex() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    if (urlParams.has('verse')) return parseInt(urlParams.get('verse')) - 1;
+    if (saved.verse !== undefined) return saved.verse;
+    return 0;
+}
+
+function saveState() {
+    const state = {
+        chapter: parseInt(elements.selects.chapter.value),
+        verse: parseInt(elements.selects.verse.value),
+        reciter: elements.selects.reciter.value,
+        trans: elements.selects.trans.value,
+        audio_trans: elements.selects.transAudio.value 
+    };
     
-    quranData = verseCounts.map((count, i) => ({
-        chapterNumber: i + 1,
-        verses: Array.from({length: count}, (_, j) => ({ verseNumber: j + 1 }))
-    }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+    const chObj = quranData[state.chapter];
+    const chNum = chObj.chapterNumber;
+    const vNum = chObj.verses[state.verse].verseNumber;
+    const transName = TRANSLATIONS_CONFIG[state.trans].name;
+    const reciterName = RECITERS_CONFIG[state.reciter].name;
+
+    const newUrl = `?chapter=${chNum}&verse=${vNum}&reciter=${state.reciter}&trans=${state.trans}&audio_trans=${state.audio_trans}`;
+    
+    window.history.replaceState({path: newUrl, view: 'cinema'}, '', newUrl);
+
+    const canonicalLink = document.getElementById('dynamic-canonical');
+    const fullUrl = `https://Quran-lite.pages.dev/reading/${newUrl}`;
+    if (canonicalLink) {
+        canonicalLink.href = fullUrl;
+    }
+
+    const pageTitle = `${chObj.title} - Verse ${vNum}`;
+    document.title = pageTitle;
+    
+    const metaDesc = `Read and Listen to Surah ${chObj.title} Verse ${vNum}. Translation: ${transName}. Recitation by ${reciterName}.`;
+    const metaDescTag = document.querySelector('meta[name="description"]');
+    if(metaDescTag) metaDescTag.setAttribute("content", metaDesc);
+
+    const ogUrl = document.querySelector('meta[property="og:url"]');
+    if(ogUrl) ogUrl.content = fullUrl;
+
+    updateGoogleSchema(chNum, vNum, chObj.title, transName, reciterName);
+}
+
+function updateGoogleSchema(chapterNum, verseNum, chapterName, transName, reciterName) {
+    const oldSchema = document.getElementById('dynamic-schema-item');
+    if (oldSchema) oldSchema.remove();
+
+    const canonicalUrl = window.location.href; 
+    const rootUrl = "https://Quran-lite.pages.dev/";
+    const surahUrl = `https://Quran-lite.pages.dev/?chapter=${chapterNum}`;
+    const metaDesc = `Read and Listen to Surah ${chapterName} Verse ${verseNum}. Translation: ${transName}. Recitation by ${reciterName}.`;
+
+    const schemaData = {
+        "@context": "https://schema.org",
+        "@graph": [
+            {
+                "@type": "BreadcrumbList",
+                "itemListElement": [{
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "Quran for Every Soul", 
+                    "item": rootUrl
+                }, {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": `Surah ${chapterName}`,
+                    "item": surahUrl
+                }, {
+                    "@type": "ListItem",
+                    "position": 3,
+                    "name": `Ayah ${verseNum}`,
+                    "item": canonicalUrl 
+                }]
+            },
+            {
+                "@type": "WebPage", 
+                "@id": canonicalUrl,
+                "url": canonicalUrl,
+                "name": `${chapterName} - Verse ${verseNum} | QuranLite`,
+                "description": metaDesc, 
+                "isPartOf": {
+                    "@type": "WebSite",
+                    "url": rootUrl,
+                    "name": "Quran for Every Soul"
+                }
+            }
+        ]
+    };
+
+    const script = document.createElement('script');
+    script.id = 'dynamic-schema-item';
+    script.type = 'application/ld+json';
+    script.text = JSON.stringify(schemaData);
+    document.head.appendChild(script);
 }
 
 function populateChapterSelect() {
     elements.selects.chapter.innerHTML = '';
-    SURAH_METADATA.forEach((c, i) => {
+    quranData.forEach((c, i) => {
         const opt = document.createElement('option');
         opt.value = i;
-        opt.textContent = `${c.chapterNumber}. ${c.english_name} - ${c.description.substring(0, 30)}...`;
+        opt.textContent = `${c.chapterNumber}. ${c.english_name} - ${c.title || ''}`;
         elements.selects.chapter.appendChild(opt);
     });
 }
@@ -555,7 +739,6 @@ function populateVerseSelect() {
     elements.selects.verse.innerHTML = '';
     const chIdx = elements.selects.chapter.value || 0;
     currentChapterData = quranData[chIdx];
-    
     currentChapterData.verses.forEach((v, i) => {
         const opt = document.createElement('option');
         opt.value = i;
@@ -568,8 +751,7 @@ function populateReciterSelect() {
     elements.selects.reciter.innerHTML = '';
     Object.entries(RECITERS_CONFIG).forEach(([k, v]) => {
         const opt = document.createElement('option');
-        opt.value = k;
-        opt.textContent = v.name;
+        opt.value = k; opt.textContent = v.name;
         elements.selects.reciter.appendChild(opt);
     });
 }
@@ -580,261 +762,222 @@ function populateTranslationAudioSelect() {
     // 1. Add Existing MP3 configs (Static)
     Object.entries(TRANSLATION_AUDIO_CONFIG).forEach(([k, v]) => {
         const opt = document.createElement('option');
-        opt.value = k;
+        opt.value = k; 
         opt.textContent = v.name;
         elements.selects.transAudio.appendChild(opt);
     });
 
     // 2. Add AI TTS options for languages NOT in static list
-    // FILTERED: Only show languages supported by Puter
     Object.entries(TRANSLATIONS_CONFIG).forEach(([code, config]) => {
-        // Skip if already has static audio
-        if (TRANSLATION_AUDIO_CONFIG[code]) return;
+        const opt = document.createElement('div'); // dummy
+        const ttsValue = `tts:${code}`;
         
-        // Skip if NOT supported by Puter
-        if (!TTS_LANGUAGE_MAP[code]) return;
-
-        const opt = document.createElement('option');
-        opt.value = `tts:${code}`; // Special prefix
-        opt.textContent = `AI Voice: ${config.name.split('(')[0].trim()}`;
-        elements.selects.transAudio.appendChild(opt);
+        const ttsOpt = document.createElement('option');
+        ttsOpt.value = ttsValue;
+        ttsOpt.textContent = `${config.name.split('|')[0].trim()} (AI Voice)`;
+        elements.selects.transAudio.appendChild(ttsOpt);
     });
 }
 
-function populateTranslationSelect() {
+function populateTranslationSelectOptions() {
     elements.selects.trans.innerHTML = '';
-    Object.entries(TRANSLATIONS_CONFIG).forEach(([k, v]) => {
+    Object.entries(TRANSLATIONS_CONFIG).forEach(([id, config]) => {
         const opt = document.createElement('option');
-        opt.value = k;
-        opt.textContent = v.name;
+        opt.value = id;
+        opt.textContent = config.name;
         elements.selects.trans.appendChild(opt);
-    });
-}
-
-function applyTranslationSettings(saved, urlParams) {
-    const browserLang = navigator.language.split('-')[0];
-    
-    let trans = 'en';
-    if (urlParams.has('trans')) trans = urlParams.get('trans');
-    else if (saved.trans) trans = saved.trans;
-    else if (TRANSLATIONS_CONFIG[browserLang]) trans = browserLang;
-    
-    if (!TRANSLATIONS_CONFIG[trans]) trans = 'en';
-    elements.selects.trans.value = trans;
-
-    if (urlParams.has('audio_trans')) {
-        const param = urlParams.get('audio_trans');
-        // Check if it's a valid config OR a tts: id
-        if(TRANSLATION_AUDIO_CONFIG[param] || param.startsWith('tts:')) {
-             elements.selects.transAudio.value = param;
-        }
-    } else if (saved.audio_trans && (TRANSLATION_AUDIO_CONFIG[saved.audio_trans] || saved.audio_trans.startsWith('tts:'))) {
-        elements.selects.transAudio.value = saved.audio_trans;
-    }
-}
-
-async function loadTranslationData(langCode) {
-    if (translationCache[langCode]) return;
-
-    const url = TRANSLATIONS_CONFIG[langCode].url;
-    
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Net");
-        const str = await response.text();
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(str, "text/xml");
-        
-        const surahs = xmlDoc.getElementsByTagName('sura');
-        translationCache[langCode] = {};
-
-        for (let i = 0; i < surahs.length; i++) {
-            const sIdx = parseInt(surahs[i].getAttribute('index')); // 1-based
-            const verses = surahs[i].getElementsByTagName('aya');
-            translationCache[langCode][sIdx] = {};
-            
-            for (let j = 0; j < verses.length; j++) {
-                const vIdx = parseInt(verses[j].getAttribute('index')); // 1-based
-                translationCache[langCode][sIdx][vIdx] = verses[j].getAttribute('text');
-            }
-        }
-    } catch (error) {
-        console.error("Trans Error:", error);
-    }
-}
-
-// --- PLAYBACK LOGIC ---
-
-async function loadVerse(autoPlay = true) {
-    const chIdx = parseInt(elements.selects.chapter.value);
-    const vIdx = parseInt(elements.selects.verse.value);
-    
-    const chapterNum = currentChapterData.chapterNumber;
-    const verseNum = currentChapterData.verses[vIdx].verseNumber;
-
-    // Save State
-    saveState();
-
-    // 1. Update Image
-    const imgUrl = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chapterNum}_${verseNum}.png`;
-    
-    // Clear previous
-    elements.verseText.innerHTML = '<div class="spinner" style="margin:2rem auto"></div>';
-    
-    const img = new Image();
-    img.src = imgUrl;
-    img.className = 'quran-img fade-in';
-    img.onload = () => {
-        elements.verseText.innerHTML = '';
-        elements.verseText.appendChild(img);
-        
-        // Update Hero in background if visible? No, cinema mode is fullscreen-ish.
-        // Actually, let's update the background layer for cool effect
-        const heroImg = document.getElementById('door-hero-img');
-        if (heroImg) heroImg.src = imgUrl;
-    };
-    img.onerror = () => {
-        elements.verseText.textContent = "Image unavailable.";
-    };
-
-    // 2. Update Text Translation
-    const transId = elements.selects.trans.value;
-    if (!translationCache[transId]) {
-        elements.transText.textContent = "Loading translation...";
-        await loadTranslationData(transId);
-    }
-    
-    if (translationCache[transId] && translationCache[transId][chapterNum]) {
-        elements.transText.textContent = translationCache[transId][chapterNum][verseNum] || "Translation missing";
-    } else {
-         elements.transText.textContent = "Translation unavailable";
-    }
-
-    // 3. Audio Logic (Chain: Recitation -> Translation)
-    const reciterId = elements.selects.reciter.value;
-    const config = RECITERS_CONFIG[reciterId];
-    
-    const padCh = String(chapterNum).padStart(3, '0');
-    const padV = String(verseNum).padStart(3, '0');
-    
-    const audioUrl = `https://everyayah.com/data/${config.path}/${padCh}${padV}.mp3`;
-    
-    elements.audio.src = audioUrl;
-    
-    elements.audio.onended = () => {
-        playTranslationAudio(chapterNum, verseNum, true);
-    };
-    
-    elements.audio.onerror = () => {
-        console.error("Audio failed");
-        playTranslationAudio(chapterNum, verseNum, true); // Skip to trans
-    };
-
-    if (autoPlay) {
-        elements.audio.play().catch(e => console.log("Autoplay blocked", e));
-    }
-    
-    // Preload Next
-    preloadNext(chIdx, vIdx);
-}
-
-function preloadNext(chIdx, vIdx) {
-    // Simple preload next image & audio
-    let nextChIdx = chIdx;
-    let nextVIdx = vIdx + 1;
-    
-    if (nextVIdx >= quranData[chIdx].verses.length) {
-        nextChIdx = chIdx + 1;
-        nextVIdx = 0;
-    }
-    
-    if (nextChIdx >= quranData.length) return;
-    
-    const nextCh = quranData[nextChIdx].chapterNumber;
-    const nextV = quranData[nextChIdx].verses[nextVIdx].verseNumber;
-    
-    const img = new Image();
-    img.src = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${nextCh}_${nextV}.png`;
-    
-    const rId = elements.selects.reciter.value;
-    const qPath = RECITERS_CONFIG[rId].path;
-    const padCh = String(nextCh).padStart(3, '0');
-    const padV = String(nextV).padStart(3, '0');
-    
-    const aud = new Audio();
-    aud.src = `https://everyayah.com/data/${qPath}/${padCh}${padV}.mp3`;
-    aud.preload = 'auto';
-    
-    const taId = elements.selects.transAudio.value;
-    if (taId !== 'none' && !taId.startsWith('tts:')) {
-         const config = TRANSLATION_AUDIO_CONFIG[taId];
-         let tUrl;
-         if (config.path.startsWith('httpIA')) tUrl = `${config.path.replace('httpIA', 'https')}/${padCh}${padV}.mp3`;
-         else if (config.path.startsWith('https://')) tUrl = `${config.path}/${padCh}${padV}.mp3`;
-         
-         if(tUrl) {
-             const tAud = new Audio();
-             tAud.src = tUrl;
-             tAud.preload = 'auto';
-         }
-    }
-}
-
-async function playTranslationAudio(chapter, verse, autoContinue) {
-    const type = elements.selects.transAudio.value;
-    
-    if (type === 'none') {
-        if (autoContinue) nextVerse();
-        return;
-    }
-
-    if (type.startsWith('tts:')) {
-        // AI TTS Logic
-        const langCode = type.split(':')[1];
-        const text = elements.transText.textContent;
-        await speakText(text, langCode, chapter, verse, autoContinue);
-        return;
-    }
-
-    // Standard Static Audio
-    const config = TRANSLATION_AUDIO_CONFIG[type];
-    const padCh = String(chapter).padStart(3, '0');
-    const padV = String(verse).padStart(3, '0');
-    
-    let url = "";
-    if (config.path.startsWith('httpIA')) {
-        // Archive.org fix
-        url = `${config.path.replace('httpIA', 'https')}/${padCh}${padV}.mp3`;
-    } else {
-        url = `${config.path}/${padCh}${padV}.mp3`;
-    }
-
-    elements.transAudio.src = url;
-    elements.transAudio.onended = () => { if(autoContinue) nextVerse(); };
-    elements.transAudio.onerror = () => { 
-        console.warn("Trans Audio Missing"); 
-        if(autoContinue) nextVerse(); 
-    };
-    
-    elements.transAudio.play().catch(e => {
-        console.error("Trans AutoPlay block");
-        if(autoContinue) nextVerse();
     });
 }
 
 function toggleBuffering(show) {
     isBuffering = show;
-    // You could add a visual spinner overlay for TTS specifically if needed
-    if(show) elements.verseText.style.opacity = 0.5;
-    else elements.verseText.style.opacity = 1;
+    elements.bufferInd.style.display = show ? 'block' : 'none';
 }
 
-async function speakText(textToSpeak, langCode, ch, v, play) {
-    // 1. Check Cache
-    const cacheKey = `${langCode}_${ch}_${v}`;
+async function loadVerse(autoplay = true) {
+    const chIdx = elements.selects.chapter.value;
+    const vIdx = elements.selects.verse.value;
+    currentChapterData = quranData[chIdx];
+    const verseData = currentChapterData.verses[vIdx];
+    
+    const chNum = currentChapterData.chapterNumber;
+    const vNum = verseData.verseNumber;
+    const verseKey = `${chNum}-${vNum}`;
+    const isForbidden = forbiddenToTranslateSet.has(verseKey);
+
+    // Change .textContent to .innerHTML
+elements.display.title.innerHTML = `${currentChapterData.title} <span class="chapter-subtitle">(${chNum}:${vNum})</span>`;
+    
+    const newSrc = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chNum}_${vNum}.png`;
+    const img1 = elements.display.verse;
+    const img2 = elements.display.verseNext;
+
+    let imgReady = false;
+    if(img1.src === newSrc || img2.src === newSrc) imgReady = true;
+
+    const isImg1Active = img1.classList.contains('active-verse-img');
+    const activeImg = isImg1Active ? img1 : img2;
+    const nextImg = isImg1Active ? img2 : img1;
+
+    if(!imgReady && autoplay) toggleBuffering(true);
+
+    nextImg.src = newSrc;
+    nextImg.onload = () => {
+        activeImg.classList.remove('active-verse-img');
+        nextImg.classList.add('active-verse-img');
+        toggleBuffering(false); 
+    };
+    
+    if (nextImg.complete && nextImg.naturalHeight !== 0) {
+            activeImg.classList.remove('active-verse-img');
+            nextImg.classList.add('active-verse-img');
+            toggleBuffering(false);
+    }
+
+    const tid = elements.selects.trans.value;
+    if(!translationCache[tid]) {
+        await loadTranslationData(tid);
+    }
+
+    if (isForbidden) {
+        elements.display.trans.textContent = '';
+    } else {
+        updateTranslationText(chNum, vNum);
+    }
+
+    updateQuranAudio(chNum, vNum, autoplay);
+    
+    if (isForbidden) {
+        elements.transAudio.src = '';
+    } else {
+        updateTranslationAudio(chNum, vNum, false);
+    }
+
+    saveState(); 
+    updateMediaSession(currentChapterData.title, vNum, RECITERS_CONFIG[elements.selects.reciter.value].name);
+    
+    bufferNextResources(chIdx, parseInt(vIdx));
+}
+
+function bufferNextResources(currentChIdx, currentVIdx) {
+    let nextChIdx = currentChIdx;
+    let nextVIdx = currentVIdx + 1;
+    
+    if (nextVIdx >= quranData[nextChIdx].verses.length) {
+        nextChIdx = parseInt(nextChIdx) + 1;
+        nextVIdx = 0;
+    }
+
+    if (nextChIdx >= quranData.length) return; 
+
+    const nextCh = quranData[nextChIdx].chapterNumber;
+    const nextV = quranData[nextChIdx].verses[nextVIdx].verseNumber;
+
+    const img = new Image();
+    img.src = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${nextCh}_${nextV}.png`;
+
+    const rId = elements.selects.reciter.value;
+    const qPath = RECITERS_CONFIG[rId].path;
+    const padCh = String(nextCh).padStart(3, '0');
+    const padV = String(nextV).padStart(3, '0');
+    const aud = new Audio();
+    aud.src = `https://everyayah.com/data/${qPath}/${padCh}${padV}.mp3`;
+    aud.preload = 'auto'; 
+
+    const taId = elements.selects.transAudio.value;
+    if (taId !== 'none' && !taId.startsWith('tts:')) {
+        const config = TRANSLATION_AUDIO_CONFIG[taId];
+        let tUrl;
+        if (config.path.startsWith('httpIA')) tUrl = `${config.path.replace('httpIA', 'https')}/${padCh}${padV}.mp3`;
+        else if (config.path.startsWith('http')) tUrl = `${config.path}/${padCh}${padV}.mp3`;
+        else tUrl = `https://everyayah.com/data/${config.path}/${padCh}${padV}.mp3`;
+        
+        const tAud = new Audio();
+        tAud.src = tUrl;
+        tAud.preload = 'auto';
+    }
+}
+
+function updateTranslationText(chNum, vNum) {
+    const tid = elements.selects.trans.value;
+    if (!translationCache[tid]) return;
+    
+    if (RTL_CODES.has(tid)) {
+        elements.display.trans.dir = 'rtl';
+    } else {
+        elements.display.trans.dir = 'ltr';
+    }
+
+    const sura = translationCache[tid].querySelector(`sura[index="${chNum}"]`);
+    const aya = sura ? sura.querySelector(`aya[index="${vNum}"]`) : null;
+    elements.display.trans.textContent = aya ? aya.getAttribute('text') : "Translation unavailable";
+    adjustFontSize();
+}
+
+function updateQuranAudio(chNum, vNum, play) {
+    const rId = elements.selects.reciter.value;
+    const path = RECITERS_CONFIG[rId].path;
+    const padCh = String(chNum).padStart(3, '0');
+    const padV = String(vNum).padStart(3, '0');
+    
+    elements.quranAudio.src = `https://everyayah.com/data/${path}/${padCh}${padV}.mp3`;
+    if(play) elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
+}
+
+async function updateTranslationAudio(chNum, vNum, play) {
+    const taId = elements.selects.transAudio.value;
+    
+    if (taId === 'none') {
+        elements.transAudio.src = '';
+        return;
+    }
+
+    // --- 1. HANDLE STATIC MP3 FILES (Original Logic) ---
+    if (!taId.startsWith('tts:')) {
+        const config = TRANSLATION_AUDIO_CONFIG[taId];
+        const padCh = String(chNum).padStart(3, '0');
+        const padV = String(vNum).padStart(3, '0');
+        
+        let url;
+        if (config.path.startsWith('httpIA')) url = `${config.path.replace('httpIA', 'https')}/${padCh}${padV}.mp3`;
+        else if (config.path.startsWith('http')) url = `${config.path}/${padCh}${padV}.mp3`;
+        else url = `https://everyayah.com/data/${config.path}/${padCh}${padV}.mp3`;
+
+        if(!url.endsWith('.mp3')) url += `/${padCh}${padV}.mp3`;
+        elements.transAudio.src = url;
+        if(play) elements.transAudio.play();
+        return;
+    }
+
+    // --- 2. HANDLE AI TTS (Updated with Puter.js) ---
+    const langCode = taId.split(':')[1];
+    
+    let textToSpeak = "";
+    
+    const currentTextId = elements.selects.trans.value;
+    if (currentTextId === langCode) {
+        textToSpeak = elements.display.trans.textContent;
+    } else {
+        if (!translationCache[langCode]) {
+            await loadTranslationData(langCode);
+        }
+        const cache = translationCache[langCode];
+        if(cache) {
+            const sura = cache.querySelector(`sura[index="${chNum}"]`);
+            const aya = sura ? sura.querySelector(`aya[index="${vNum}"]`) : null;
+            textToSpeak = aya ? aya.getAttribute('text') : "";
+        }
+    }
+
+    if (!textToSpeak || textToSpeak.length < 2) {
+        console.warn("No text available for TTS");
+        return;
+    }
+
+    const cacheKey = `${langCode}_${chNum}_${vNum}`;
+    
     if (ttsCache[cacheKey]) {
         elements.transAudio.src = ttsCache[cacheKey];
-        elements.transAudio.onended = () => { if(play) nextVerse(); };
         if(play) elements.transAudio.play();
         return;
     }
@@ -847,30 +990,16 @@ async function speakText(textToSpeak, langCode, ch, v, play) {
 
         toggleBuffering(true);
 
-        // Puter AI Text-to-Speech FIXED
-        // Map generic code to supported Puter region code
-        const ttsLang = TTS_LANGUAGE_MAP[langCode];
-
-        if (!ttsLang) {
-             console.error("Language not supported by Puter TTS:", langCode);
-             if (play) nextVerse(); // Skip if not supported
-             return;
-        }
-
-        const audioObj = await puter.ai.txt2speech(textToSpeak, ttsLang);
+        // Puter AI Text-to-Speech
+        const audioObj = await puter.ai.txt2speech(textToSpeak, langCode);
         const audioUrl = audioObj.src;
         
         ttsCache[cacheKey] = audioUrl; // Save to Cache
-        
         elements.transAudio.src = audioUrl;
-        elements.transAudio.onended = () => { if(play) nextVerse(); };
-        
         if(play) elements.transAudio.play();
 
     } catch (e) {
         console.error("Puter AI TTS Error", e);
-        // Fallback: Just skip
-        if (play) nextVerse();
     } finally {
         toggleBuffering(false);
     }
@@ -895,143 +1024,101 @@ function nextVerse() {
         let cC = parseInt(elements.selects.chapter.value);
         if (cC + 1 < elements.selects.chapter.options.length) {
             elements.selects.chapter.value = cC + 1;
-            populateVerseSelect(); // Load new verses
+            populateVerseSelect();
             elements.selects.verse.value = 0;
             loadVerse(true);
-        } else {
-            console.log("Quran Completed");
         }
     }
 }
 
-function prevVerse() {
-    let cV = parseInt(elements.selects.verse.value);
-    if (cV - 1 >= 0) {
-        elements.selects.verse.value = cV - 1;
-        loadVerse(true);
-    } else {
-        // Go back chapter
-         let cC = parseInt(elements.selects.chapter.value);
-         if (cC - 1 >= 0) {
-             elements.selects.chapter.value = cC - 1;
-             populateVerseSelect();
-             // Select last verse
-             elements.selects.verse.value = elements.selects.verse.options.length - 1;
-             loadVerse(true);
-         }
-    }
-}
+function adjustFontSize() {
+    const el = elements.display.trans;
+    if (window.innerWidth <= 768) return; 
 
-function saveState() {
-    const state = {
-        chapter: parseInt(elements.selects.chapter.value),
-        verse: parseInt(elements.selects.verse.value),
-        reciter: elements.selects.reciter.value,
-        trans: elements.selects.trans.value,
-        audio_trans: elements.selects.transAudio.value
-    };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    el.style.fontSize = '3.5rem';
+    let iter = 0;
+    while (el.scrollHeight > el.clientHeight && iter < 50) {
+        let size = parseFloat(window.getComputedStyle(el).fontSize);
+        if (size <= 16) break;
+        el.style.fontSize = (size - 1) + 'px';
+        iter++;
+    }
 }
 
 function setupEventListeners() {
     elements.startBtn.addEventListener('click', () => {
-        elements.overlay.style.display = 'none';
-        refreshDashboard();
+        elements.overlay.style.opacity = 0;
+        setTimeout(() => elements.overlay.style.display = 'none', 500);
+        loadVerse(true); 
     });
 
-    elements.selects.chapter.addEventListener('change', () => {
-        populateVerseSelect();
-        saveState();
-    });
+    elements.selects.chapter.addEventListener('change', () => { populateVerseSelect(); loadVerse(true); });
+    elements.selects.verse.addEventListener('change', () => loadVerse(true));
+    elements.selects.reciter.addEventListener('change', () => { saveState(); loadVerse(true); });
     
-    elements.selects.verse.addEventListener('change', () => {
-        saveState();
-        if (elements.views.cinema.classList.contains('active')) {
-            loadVerse(true);
-        }
-    });
-    
-    elements.selects.reciter.addEventListener('change', () => {
-        saveState();
-        if (elements.views.cinema.classList.contains('active')) {
-            loadVerse(true); // Reload audio
-        }
-    });
-
     elements.selects.trans.addEventListener('change', async () => {
+        const activeTransId = elements.selects.trans.value;
+        await loadTranslationData(activeTransId); 
+        
+        const chIdx = elements.selects.chapter.value;
+        const vIdx = elements.selects.verse.value;
+        const ch = quranData[chIdx].chapterNumber;
+        const v = quranData[chIdx].verses[vIdx].verseNumber;
+        updateTranslationText(ch, v);
         saveState();
-        const tId = elements.selects.trans.value;
-        if (!translationCache[tId]) {
-            await loadTranslationData(tId);
-        }
-        if (elements.views.cinema.classList.contains('active')) {
-            // update text
-            const ch = currentChapterData.chapterNumber;
-            const v = currentChapterData.verses[elements.selects.verse.value].verseNumber;
-            elements.transText.textContent = translationCache[tId][ch][v];
-        }
     });
-    
+
     elements.selects.transAudio.addEventListener('change', () => {
+        const chIdx = elements.selects.chapter.value;
+        const vIdx = elements.selects.verse.value;
+        const ch = quranData[chIdx].chapterNumber;
+        const v = quranData[chIdx].verses[vIdx].verseNumber;
+        if (!elements.quranAudio.paused) {
+            updateTranslationAudio(ch, v, false); 
+            saveState();
+            return;
+        }
+        if (!elements.transAudio.paused) {
+            updateTranslationAudio(ch, v, true);
+            saveState();
+            return;
+        }
+        updateTranslationAudio(ch, v, false);
         saveState();
     });
 
-    // Keyboard Controls
-    document.addEventListener('keydown', (e) => {
-        if (!elements.views.cinema.classList.contains('active')) return;
-        
-        // Remote Control / Keyboard
-        switch(e.key) {
-            case 'ArrowRight':
-                nextVerse();
-                break;
-            case 'ArrowLeft':
-                prevVerse();
-                break;
-            case 'ArrowUp': // Back to dashboard
-                switchView('dashboard');
-                refreshDashboard();
-                break;
-            case 'MediaPlayPause':
-            case ' ':
-                if (elements.audio.paused) elements.audio.play();
-                else elements.audio.pause();
-                break;
-        }
-    });
-    
-    // UI Buttons
-    document.getElementById('back-btn').onclick = () => {
-        switchView('dashboard');
-        refreshDashboard();
-    };
-    
-    document.getElementById('prev-btn').onclick = prevVerse;
-    document.getElementById('next-btn').onclick = nextVerse;
-}
+    elements.quranAudio.addEventListener('ended', handleQuranEnd);
+    elements.transAudio.addEventListener('ended', nextVerse);
 
-function initSidebarNavigation() {
-    // Simple focus management for TV remote
-    const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => {
-        item.addEventListener('click', () => {
-            const view = item.dataset.view;
-            if(view === 'search') {
-                openSearch();
-            } else if(view === 'dashboard') {
-                closeSearch();
-                switchView('dashboard');
-                refreshDashboard();
-            }
-        });
-        
-        item.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') item.click();
-        });
+    ['mousemove', 'touchstart', 'click', 'keydown'].forEach(e => 
+        window.addEventListener(e, () => {
+            document.body.classList.remove('idle');
+            clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => document.body.classList.add('idle'), 4000);
+        })
+    );
+
+    window.addEventListener('resize', () => {
+        document.documentElement.style.setProperty('--vh', `${window.innerHeight}px`);
+        adjustFontSize();
     });
 }
 
-// --- SEARCH LOGIC (AI POWERED) ---
+function updateMediaSession(surah, verse, artist) {
+    if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = new MediaMetadata({
+            title: `${surah} Ayah ${verse}`,
+            artist: artist,
+            album: `Surah ${surah}`,
+            artwork: [{ src: 'https://Quran-lite.pages.dev/social-preview.jpg', sizes: '512x512', type: 'image/jpeg' }]
+        });
+        navigator.mediaSession.setActionHandler('nexttrack', nextVerse);
+    }
+}
+
+
+
+// --- 4. SEARCH & KEYBOARD LOGIC (AI POWERED) ---
 let searchDebounceTimer;
 
 function initSearchInterface() {
@@ -1049,6 +1136,7 @@ function initSearchInterface() {
 }
 
 // index.js - OTT Optimized Search Logic
+
 let searchGrid = []; // To store rows for index-based jumping
 let currentKeyRow = 0;
 let currentKeyCol = 0;
@@ -1063,95 +1151,114 @@ function renderKeyboard() {
     
     for (let i = 0; i < KEYBOARD_KEYS.length; i += keysPerRow) {
         searchGrid.push(KEYBOARD_KEYS.slice(i, i + keysPerRow));
-        
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'key-row';
-        
-        KEYBOARD_KEYS.slice(i, i + keysPerRow).forEach(k => {
-             const keyDiv = document.createElement('div');
-             keyDiv.className = 'key';
-             keyDiv.textContent = k;
-             keyDiv.tabIndex = 0; // Focusable
-             
-             keyDiv.onclick = () => handleKeyInput(k);
-             keyDiv.onkeydown = (e) => {
-                 if(e.key === 'Enter') handleKeyInput(k);
-             };
-             
-             rowDiv.appendChild(keyDiv);
-        });
-        grid.appendChild(rowDiv);
     }
+
+    searchGrid.forEach((row, rowIndex) => {
+        row.forEach((key, colIndex) => {
+            const btn = document.createElement('div');
+            btn.className = 'key';
+            btn.textContent = key;
+            btn.tabIndex = 0;
+            btn.dataset.row = rowIndex;
+            btn.dataset.col = colIndex;
+            
+            if (['SPACE', 'DEL', 'CLEAR'].includes(key)) {
+                btn.classList.add('wide');
+            }
+
+            // GPU-Accelerated Focus
+            btn.onfocus = () => {
+                currentKeyRow = rowIndex;
+                currentKeyCol = colIndex;
+            };
+
+            btn.onclick = () => handleKeyPress(key);
+            
+            // Explicit D-Pad overrides to stop "Ghost Scrolling"
+            btn.onkeydown = (e) => {
+                if (e.key === 'Enter') handleKeyPress(key);
+                // When moving RIGHT from the end of a row, jump to results
+                if (e.key === 'ArrowRight' && colIndex === row.length - 1) {
+                    elements.search.resultsGrid.querySelector('.surah-card')?.focus();
+                    e.preventDefault();
+                }
+            };
+
+            grid.appendChild(btn);
+        });
+    });
 }
 
-function handleKeyInput(k) {
-    if (k === 'DEL') {
-        searchString = searchString.slice(0, -1);
-    } else if (k === 'CLEAR') {
-        searchString = "";
-    } else if (k === 'SPACE') {
-        searchString += " ";
-    } else {
-        searchString += k;
-    }
+function handleKeyPress(key) {
+    // Add a small "haptic" scale effect for visual confirmation
+    const activeKey = document.activeElement;
+    activeKey.style.transform = 'scale(0.9)';
+    setTimeout(() => activeKey.style.transform = 'scale(1.1)', 100);
+
+    if (key === 'SPACE') searchString += ' ';
+    else if (key === 'DEL') searchString = searchString.slice(0, -1);
+    else if (key === 'CLEAR') searchString = "";
+    else searchString += key;
     
     elements.search.inputDisplay.textContent = searchString;
     
-    // Debounce Search Call
-    if(searchDebounceTimer) clearTimeout(searchDebounceTimer);
-    searchDebounceTimer = setTimeout(performAISearch, 1000);
+    // Snappy AI Search Debounce
+    clearTimeout(searchDebounceTimer);
+    if (searchString.length > 2) {
+        searchDebounceTimer = setTimeout(() => performAISearch(), 500);
+
+    } else {
+        elements.search.resultsGrid.innerHTML = '<div class="no-results">Type at least 3 characters...</div>';
+    }
 }
 
+// 2026 UPDATE: AI Thinking State
 async function performAISearch() {
-    if (searchString.length < 3) return;
-    
+    const query = searchString.trim();
     const resultsContainer = elements.search.resultsGrid;
-    resultsContainer.innerHTML = '<div class="spinner"></div>';
-    
-    try {
-        if (typeof puter === 'undefined') {
-            resultsContainer.innerHTML = 'AI Service Unavailable';
-            return;
-        }
 
-        // Puter AI Call
-        const prompt = `Identify relevant Quran Surah numbers (1-114) for the topic: "${searchString}". Return ONLY a JSON array of integers.`;
+    if(!query) return;
+
+    // 2026 UX: Show skeleton "thinking" state
+    resultsContainer.innerHTML = `
+        <div class="ai-thinking">
+            <div class="sparkle-icon">✨</div>
+            <span>Analyzing semantics for "${query}"...</span>
+        </div>
+    `;
+
+    try {
+        // Call Cloudflare Workers AI Endpoint
+        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+        if (!response.ok) throw new Error("AI Search failed");
         
-        const response = await puter.ai.chat(prompt);
-        // Expecting: "[12, 53, 1]"
-        let text = response.message.content.trim();
-        
-        // Clean markdown if any
-        if (text.startsWith('```')) text = text.replace(/```json/g, '').replace(/```/g, '');
-        
-        // Parse
-        // Result format might be text explaining it. We need to be robust.
-        // Actually, let's just ask it to strictly return numbers.
-        
-        // Hacky parsing to find numbers in array
-        const jsonMatch = text.match(/\[.*?\]/s);
-        if (!jsonMatch) throw new Error("No JSON found");
-        
-        const chapterIds = JSON.parse(jsonMatch[0]);
-        
+        // Expecting array of Chapter Numbers: e.g., [1, 2, 55]
+        const chapterIds = await response.json();
+
         resultsContainer.innerHTML = '';
-        
+
         if (!chapterIds || chapterIds.length === 0) {
             resultsContainer.innerHTML = '<div class="no-results">No relevant Surahs found.</div>';
             return;
         }
 
-        // Map AI results (Integers) to Metadata
-        chapterIds.forEach(id => {
-            const idx = parseInt(id) - 1;
-            if (!SURAH_METADATA[idx]) return;
-            const surah = SURAH_METADATA[idx];
-            
+        // Map AI results (Integers) to your Local MetaData
+        // We map Chapter Number (1-based) to Array Index (0-based)
+        const foundSurahs = chapterIds
+            .map(num => quranData.find(s => s.chapterNumber === num))
+            .filter(Boolean); // Remove nulls if AI hallucinates a number > 114
+
+        if (foundSurahs.length === 0) {
+            resultsContainer.innerHTML = '<div class="no-results">No matches found.</div>';
+            return;
+        }
+
+        foundSurahs.forEach(surah => {
             const card = document.createElement('div');
             card.className = 'surah-card';
             card.tabIndex = 0;
-            
-            // Highlight that this is an AI result
+            card.dataset.chapter = surah.chapterNumber;
+            // Visual cue that this is an AI result
             card.style.borderColor = 'rgba(0, 255, 187, 0.3)'; 
             
             card.innerHTML = `
@@ -1184,4 +1291,7 @@ function openSearch() {
 
 function closeSearch() {
     elements.search.overlay.classList.remove('active');
+    document.getElementById('door-play-btn').focus();
 }
+
+document.addEventListener('DOMContentLoaded', initializeApp);
