@@ -1,98 +1,75 @@
 /**
- * Puter AI Interceptor
- * Fixes "Validation Error" by mapping generic language codes (en) to region codes (en-US).
- * Blocks unsupported languages to prevent API errors.
+ * Puter AI Interceptor - High Quality Voice Fix
+ * Forces the use of OpenAI's TTS engine which supports native-sounding
+ * multilingual speech (Arabic, Spanish, etc.) automatically.
  */
 
 (function() {
-    // 1. Define Supported Region Codes (Strictly from your error log)
-    const SUPPORTED_MAP = {
-        'en': 'en-US', // Default English
-        'ar': 'ar-AE', // Arabic
-        'fr': 'fr-FR', // French
-        'es': 'es-ES', // Spanish
-        'de': 'de-DE', // German
-        'it': 'it-IT', // Italian
-        'ru': 'ru-RU', // Russian
-        'tr': 'tr-TR', // Turkish
-        'zh': 'cmn-CN', // Chinese (Mandarin)
-        'nl': 'nl-NL', // Dutch
-        'pl': 'pl-PL', // Polish
-        'pt': 'pt-PT', // Portuguese
-        'sv': 'sv-SE', // Swedish
-        'ja': 'ja-JP', // Japanese
-        'ko': 'ko-KR', // Korean
-        'hi': 'hi-IN', // Hindi
-        'no': 'nb-NO', // Norwegian
-        'ro': 'ro-RO', // Romanian
-        'cs': 'cs-CZ', // Czech
-        'da': 'da-DK', // Danish
-        'is': 'is-IS', // Icelandic
-        'fi': 'fi-FI', // Finnish
-        'ca': 'ca-ES', // Catalan
-        'cy': 'cy-GB'  // Welsh
+    // LANGUAGE NAME MAP (Used to give clear instructions to the AI)
+    const LANG_NAMES = {
+        'ar': 'Arabic', 'ar-AE': 'Arabic',
+        'en': 'English', 'en-US': 'English',
+        'es': 'Spanish', 'es-ES': 'Spanish',
+        'fr': 'French', 'fr-FR': 'French',
+        'de': 'German', 'de-DE': 'German',
+        'it': 'Italian', 'it-IT': 'Italian',
+        'ru': 'Russian', 'ru-RU': 'Russian',
+        'tr': 'Turkish', 'tr-TR': 'Turkish',
+        'zh': 'Chinese', 'cmn-CN': 'Chinese',
+        'ur': 'Urdu', 'id': 'Indonesian', 
+        'ms': 'Malay', 'fa': 'Persian'
+        // Add others if needed
     };
 
-    // 2. The Interceptor Function
     function injectPuterInterceptor() {
-        // Wait for Puter to load
-        if (typeof puter === 'undefined' || !puter.ai) {
-            console.log("[Puter Fix] Waiting for Puter.js...");
-            setTimeout(injectPuterInterceptor, 100);
-            return;
-        }
+        if (!window.puter || !window.puter.ai || window.puter.ai.txt2speech._isFixed) return;
 
-        // Prevent double injection
-        if (puter.ai.txt2speech._isFixed) return;
-
-        // Save the original function
         const originalTxt2Speech = puter.ai.txt2speech;
 
-        // Overwrite with our "Fixed" version
-        puter.ai.txt2speech = function(text, options) {
+        puter.ai.txt2speech = function(text, arg2, arg3) {
+            console.log(`[Puter Fix] Intercepting TTS request...`);
+
+            // 1. Determine the requested language
+            // arg2 can be a string ('en-US') or an options object
+            let requestedLangCode = 'en-US'; // Default
             
-            let requestedLang = 'en'; // Default
-            
-            // Handle various ways calls might be made: (text, 'en') or (text, {language: 'en'})
-            if (typeof options === 'string') {
-                requestedLang = options;
-            } else if (typeof options === 'object' && options.language) {
-                requestedLang = options.language;
+            if (typeof arg2 === 'string') {
+                requestedLangCode = arg2;
+            } else if (typeof arg2 === 'object' && arg2.language) {
+                requestedLangCode = arg2.language;
             }
 
-            // Clean input (handle cases like "en-US" coming in correctly, or "en" needing fix)
-            const cleanCode = requestedLang.split('-')[0].toLowerCase(); // 'en-US' -> 'en'
+            // 2. Resolve Language Name for Instructions
+            // We strip region codes (e.g. 'ar-AE' -> 'ar') to look up the name
+            const shortCode = requestedLangCode.split('-')[0].toLowerCase();
+            const langName = LANG_NAMES[requestedLangCode] || LANG_NAMES[shortCode] || shortCode;
 
-            // Check if supported
-            const mappedCode = SUPPORTED_MAP[cleanCode];
+            // 3. Construct High-Quality Options (OpenAI)
+            const newOptions = {
+                provider: 'openai',          // FORCE OpenAI for natural sounding accents
+                model: 'gpt-4o-mini-tts',    // Fast and high quality
+                voice: 'alloy',              // 'alloy' and 'echo' are excellent at multilingual
+                response_format: 'mp3',
+                // Explicitly tell the AI which language to speak to prevent "American accent" issues
+                instructions: `Read this text clearly in ${langName}. Pronounce correctly with native accent.`
+            };
 
-            if (!mappedCode) {
-                console.warn(`[Puter Fix] Blocked unsupported TTS language: ${requestedLang}`);
-                // Return a rejected promise so the app handles it gracefully (catch block)
-                return Promise.reject(new Error(`Language '${requestedLang}' is not supported by AI TTS.`));
-            }
+            console.log(`[Puter Fix] Upgraded to OpenAI (${newOptions.voice}) for Language: ${langName}`);
 
-            console.log(`[Puter Fix] Remapped: ${requestedLang} -> ${mappedCode}`);
-
-            // Update the arguments with the CORRECT code
-            // We force it into the object format { language: 'en-US' } which Puter prefers
-            const newOptions = typeof options === 'object' ? options : {};
-            newOptions.language = mappedCode;
-
-            // Call the REAL function with FIXED arguments
+            // 4. Call Original Function with New Options
+            // We ignore the original arg2/arg3 structure and force our options
             return originalTxt2Speech.call(this, text, newOptions);
         };
 
         // Mark as fixed
         puter.ai.txt2speech._isFixed = true;
-        console.log("[Puter Fix] Interceptor active. Language codes will now be corrected automatically.");
+        console.log("[Puter Fix] High-Quality Multilingual TTS Interceptor Active.");
     }
 
-    // 3. Start Injection Logic
+    // Start Injection Logic
     if (document.readyState === 'complete') {
         injectPuterInterceptor();
     } else {
         window.addEventListener('load', injectPuterInterceptor);
     }
-
 })();
