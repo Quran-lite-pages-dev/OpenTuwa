@@ -465,10 +465,20 @@ select:focus {
     background-color: #252525;
 }
 
+@media screen and (max-width: 768px) {
+    select {
+        width: 100% !important; /* Force full width on mobile */
+        font-size: 1.1rem;      
+        padding: 0.7rem 2rem 0.7rem 0.8rem;
+        border-radius: 10px;
+    }
+}
+
         @media (max-width: 768px) {
             #dashboard-view { padding-left: 0 !important; }
-            #chapter-title { position: relative; top: 0; left: 0; width: 100%; text-align: center; padding: 1.5rem 0; mix-blend-mode: normal; }
+            #chapter-title { display: none;}
             .container { padding: 0; padding-bottom: 230px; }
             #control-panel { display: grid; grid-template-columns: 1fr 1fr; }
             .ai-card-border { border-color: rgba(0, 255, 187, 0.4) !important; }
         }
+

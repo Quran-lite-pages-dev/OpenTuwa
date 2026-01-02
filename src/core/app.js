@@ -48,7 +48,7 @@ const SURAH_METADATA = [
           { "chapter": 33, "english_name": "The Combined Forces", "description": "Revealed in Medina during the Battle of the Trench, addressing social reforms, adoption, and the status of the Prophet's (Peace be upon him) wives. (73 verses)" },
           { "chapter": 34, "english_name": "Sheba", "description": "A Meccan Surah contrasting the gratitude of David (Peace be upon him) and Solomon (Peace be upon him) with the ingratitude of the people of Sheba. (54 verses)" },
           { "chapter": 35, "english_name": "The Originator", "description": "A Meccan chapter praising God as the Creator of angels and the universe, warning against the deception of worldly life. (45 verses)" },
-          { "chapter": 36, "english_name": "Ya-Sin", "description": "Known as the 'heart of the Quran', this Meccan Surah focuses on the Quran's divine source, the signs of nature, and the resurrection. (83 verses)" },
+          { "chapter": 36, "english_name": "Ya-Sin - O Man", "description": "Known as the 'heart of the Quran', this Meccan Surah focuses on the Quran's divine source, the signs of nature, and the resurrection. (83 verses)" },
           { "chapter": 37, "english_name": "Those Who Set The Ranks", "description": "A Meccan chapter describing the ranks of angels and the eventual triumph of God's messengers (Peace be upon them) over opposition. (182 verses)" },
           { "chapter": 38, "english_name": "The Letter Sad", "description": "Revealed in Mecca, discussing the patience of prophets like David (Peace be upon him) and Job (Peace be upon him) and the arrogance of Satan. (88 verses)" },
           { "chapter": 39, "english_name": "The Troops", "description": "A Meccan Surah focusing heavily on the Oneness of God (Tawhid) and the distinct outcomes for believers and disbelievers. (75 verses)" },
@@ -188,7 +188,14 @@ const RECITERS_CONFIG = {
     'abbad': { name: 'Fares Abbad', path: 'Fares_Abbad_64kbps' },
     'muaiqly': { name: 'Al Muaiqly', path: 'MaherAlMuaiqly128kbps' },
     'shuraym': { name: 'Ash Shuraym', path: 'Saood_ash-Shuraym_128kbps' },
-    'basit': { name: 'Abdul Basit', path: 'Abdul_Basit_Murattal_192kbps' }
+    'basit': { name: 'Abdul Basit', path: 'Abdul_Basit_Murattal_192kbps' },
+    'ayyoub': { name: 'Muhammad Ayyoub', path: 'Muhammad_Ayyoub_128kbps' },
+    'minshawy': { name: 'Minshawy', path: 'Minshawy_Murattal_128kbps' },
+    'jaber': { name: 'Ali Jaber', path: 'Ali_Jaber_64kbps' },
+    'ajamy': { name: 'Ahmed Ali Ajamy', path: 'ahmed_ibn_ali_al_ajamy_128kbps' },
+
+
+  
 };
 
 const TRANSLATION_AUDIO_CONFIG = {
@@ -200,7 +207,7 @@ const TRANSLATION_AUDIO_CONFIG = {
 
 // --- ELEVENLABS CONFIGURATION ---
 // PLEASE PASTE YOUR KEY BELOW
-const ELEVENLABS_API_KEY = ''; 
+const ELEVENLABS_API_KEY = '62ad7127a29d424da454b72de4fbcba10656988fac5c87eddf530418c0005f0a'; 
 const ELEVEN_MODEL_ID = 'eleven_multilingual_v2'; // Best for mixed languages
 // "Rachel" is a versatile voice. You can change this ID if you prefer a different voice.
 const DEFAULT_TTS_VOICE_ID = 'nPczCjzI2devNBz1zQrb'; 

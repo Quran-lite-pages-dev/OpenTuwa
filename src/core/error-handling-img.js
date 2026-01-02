@@ -1,12 +1,20 @@
-// Detects all current and future broken images site-wide
-document.addEventListener('error', function (event) {
-    const target = event.target;
-    if (target.tagName.toLowerCase() === 'img') {
-        // Option A: Hide completely
-        target.style.display = 'none'; 
-        
-        // Option B: Optional replacement with a 1x1 transparent pixel 
-        // to maintain layout/spacing without showing anything ugly
-        // target.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+// Inside your chapter/surah rendering loop
+chapters.forEach(surah => {
+    let finalTitle = surah.english_name;
+
+    // Apply 10% bigger font ONLY to Chapter 36's standalone "O"
+    if (surah.chapter === 36) {
+        // \bO\b matches "O" as a standalone word (not inside "Originator")
+        finalTitle = surah.english_name.replace(/\bO\b/, 
+            '<span style="font-size: 1.1em; display: inline-block;">O</span>'
+        );
     }
-}, true); // 'true' is critical to catch events in the capturing phase
+
+    // Inject into your specific card structure
+    container.innerHTML += `
+        <div class="card">
+            <div class="card-title">${finalTitle}</div>
+            <!-- other card content like description -->
+        </div>
+    `;
+});
