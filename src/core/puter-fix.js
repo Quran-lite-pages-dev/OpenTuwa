@@ -99,20 +99,29 @@
  * Paste this into your website to see why the popup is stubborn.
  */
 (function() {
-    console.log("!!! PUTER REDIRECT FORCE ACTIVE !!!");
+    // Force Puter to recognize the referrer even if the browser hides it
+    if (window.puter) {
+        window.puter.ui.useNativePopups = false;
+    }
 
-    const originalOpen = window.open;
-    window.open = function(url, target, features) {
-        // Detect Puter's stubborn verification popup
-        if (url && (url.includes('puter.com') || url.includes('puter.io')) && url.includes('request_auth=true')) {
-            console.error("REDIRECTING MAIN WINDOW TO PUTER VERIFICATION");
-            
-            // This is the key: Don't open a popup. 
-            // Take the whole app to Puter so the user can click 'Verify'.
-            window.location.href = url; 
-            return null; // Stop the popup from happening
+    // INTERCEPT THE POSTMESSAGE ERROR
+    window.addEventListener('message', function(event) {
+        // If we receive a message from Puter, manually trigger the sign-in state
+        if (event.origin.includes('puter.com') && event.data === 'signed_in') {
+            console.log("Puter Login Successful - Refreshing Session");
+            location.reload(); 
         }
+    });
 
-        return originalOpen.apply(this, arguments);
-    };
+    // AUTO-REDIRECT IF STUCK ON WHITE SCREEN
+    if (window.location.href.includes('embedded_in_popup=true')) {
+        // If we are stuck on the white screen for more than 3 seconds, 
+        // it means the postMessage failed. Force close or redirect.
+        setTimeout(() => {
+            if (document.body.innerHTML === "" || document.body.scrollHeight < 10) {
+                 console.log("Stuck detected. Redirecting back...");
+                 window.location.href = "https://Quran-lite.pages.dev";
+            }
+        }, 3000);
+    }
 })();
