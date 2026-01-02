@@ -205,12 +205,8 @@ const TRANSLATION_AUDIO_CONFIG = {
     'es': { name: 'Español', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/audio/play' }
 };
 
-// --- ELEVENLABS CONFIGURATION ---
-// PLEASE PASTE YOUR KEY BELOW
-const ELEVENLABS_API_KEY = '62ad7127a29d424da454b72de4fbcba10656988fac5c87eddf530418c0005f0a'; 
-const ELEVEN_MODEL_ID = 'eleven_multilingual_v2'; // Best for mixed languages
-// "Rachel" is a versatile voice. You can change this ID if you prefer a different voice.
-const DEFAULT_TTS_VOICE_ID = 'nPczCjzI2devNBz1zQrb'; 
+// --- PUTER AI CONFIGURATION ---
+// Ensure <script src="https://js.puter.com/v2/"></script> is in your HTML header
 
 const FTT_URL = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/FTT.XML';
 const RTL_CODES = new Set(['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ur', 'ug']);
@@ -953,7 +949,7 @@ async function updateTranslationAudio(chNum, vNum, play) {
         return;
     }
 
-    // --- 2. HANDLE AI TTS (ElevenLabs Logic) ---
+    // --- 2. HANDLE AI TTS (Updated with Puter.js) ---
     const langCode = taId.split(':')[1];
     
     let textToSpeak = "";
@@ -987,44 +983,23 @@ async function updateTranslationAudio(chNum, vNum, play) {
     }
 
     try {
-        if(!ELEVENLABS_API_KEY || ELEVENLABS_API_KEY.includes('PASTE')) {
-            console.error("ElevenLabs API Key missing");
+        if (typeof puter === 'undefined') {
+            console.error("Puter.js not found. Make sure to include the script in your HTML.");
             return;
         }
 
         toggleBuffering(true);
 
-        const response = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${DEFAULT_TTS_VOICE_ID}`, {
-            method: 'POST',
-            headers: {
-                'xi-api-key': ELEVENLABS_API_KEY,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                text: textToSpeak,
-                model_id: ELEVEN_MODEL_ID,
-                voice_settings: {
-                    stability: 0.5,
-                    similarity_boost: 0.5
-                }
-            })
-        });
-
-        if (!response.ok) {
-            const err = await response.json();
-            console.error("ElevenLabs API Error:", err);
-            throw new Error("TTS Failed");
-        }
-
-        const blob = await response.blob();
-        const audioUrl = URL.createObjectURL(blob);
+        // Puter AI Text-to-Speech
+        const audioObj = await puter.ai.txt2speech(textToSpeak, langCode);
+        const audioUrl = audioObj.src;
         
         ttsCache[cacheKey] = audioUrl; // Save to Cache
         elements.transAudio.src = audioUrl;
         if(play) elements.transAudio.play();
 
     } catch (e) {
-        console.error("TTS Stream Error", e);
+        console.error("Puter AI TTS Error", e);
     } finally {
         toggleBuffering(false);
     }
