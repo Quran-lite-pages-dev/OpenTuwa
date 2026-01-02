@@ -4,6 +4,7 @@
  * multilingual speech (Arabic, Spanish, etc.) automatically.
  */
 
+
 (function() {
     // LANGUAGE NAME MAP (Used to give clear instructions to the AI)
     const LANG_NAMES = {
@@ -91,4 +92,27 @@
     } else {
         window.addEventListener('load', injectPuterInterceptor);
     }
+})();
+
+/**
+ * Puter.js Debugger & Interceptor
+ * Paste this into your website to see why the popup is stubborn.
+ */
+(function() {
+    console.log("!!! PUTER REDIRECT FORCE ACTIVE !!!");
+
+    const originalOpen = window.open;
+    window.open = function(url, target, features) {
+        // Detect Puter's stubborn verification popup
+        if (url && (url.includes('puter.com') || url.includes('puter.io')) && url.includes('request_auth=true')) {
+            console.error("REDIRECTING MAIN WINDOW TO PUTER VERIFICATION");
+            
+            // This is the key: Don't open a popup. 
+            // Take the whole app to Puter so the user can click 'Verify'.
+            window.location.href = url; 
+            return null; // Stop the popup from happening
+        }
+
+        return originalOpen.apply(this, arguments);
+    };
 })();

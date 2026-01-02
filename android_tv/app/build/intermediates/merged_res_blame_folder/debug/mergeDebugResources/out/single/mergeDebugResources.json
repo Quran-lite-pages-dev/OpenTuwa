@@ -4,27 +4,15 @@
         "source": "io.github.muslim1446.quran.app-main-26:/drawable/ic_logo_foreground.xml"
     },
     {
-        "merged": "C:\\Users\\SCSM11\\.gradle\\daemon\\9.0-milestone-1\\io.github.muslim1446.quran.app-debug-24:\\mipmap-anydpi-v26_ic_launcher.xml.flat",
-        "source": "C:\\Users\\SCSM11\\.gradle\\daemon\\9.0-milestone-1\\io.github.muslim1446.quran.app-main-26:\\mipmap-anydpi-v26\\ic_launcher.xml"
-    },
-    {
-        "merged": "C:\\Users\\SCSM11\\.gradle\\daemon\\9.0-milestone-1\\io.github.muslim1446.quran.app-debug-24:\\drawable_tv_banner.xml.flat",
-        "source": "C:\\Users\\SCSM11\\.gradle\\daemon\\9.0-milestone-1\\io.github.muslim1446.quran.app-main-26:\\drawable\\tv_banner.xml"
-    },
-    {
         "merged": "io.github.muslim1446.quran.app-debug-24:/drawable_tv_banner.xml.flat",
         "source": "io.github.muslim1446.quran.app-main-26:/drawable/tv_banner.xml"
     },
     {
-        "merged": "C:\\Users\\SCSM11\\.gradle\\daemon\\9.0-milestone-1\\io.github.muslim1446.quran.app-debug-24:\\mipmap-anydpi-v26_colors.xml.flat",
-        "source": "C:\\Users\\SCSM11\\.gradle\\daemon\\9.0-milestone-1\\io.github.muslim1446.quran.app-main-26:\\mipmap-anydpi-v26\\colors.xml"
+        "merged": "io.github.muslim1446.quran.app-debug-24:/mipmap-anydpi-v26_colors.xml.flat",
+        "source": "io.github.muslim1446.quran.app-main-26:/mipmap-anydpi-v26/colors.xml"
     },
     {
         "merged": "io.github.muslim1446.quran.app-debug-24:/mipmap-anydpi-v26_ic_launcher.xml.flat",
         "source": "io.github.muslim1446.quran.app-main-26:/mipmap-anydpi-v26/ic_launcher.xml"
-    },
-    {
-        "merged": "C:\\Users\\SCSM11\\.gradle\\daemon\\9.0-milestone-1\\io.github.muslim1446.quran.app-debug-24:\\drawable_ic_logo_foreground.xml.flat",
-        "source": "C:\\Users\\SCSM11\\.gradle\\daemon\\9.0-milestone-1\\io.github.muslim1446.quran.app-main-26:\\drawable\\ic_logo_foreground.xml"
     }
 ]

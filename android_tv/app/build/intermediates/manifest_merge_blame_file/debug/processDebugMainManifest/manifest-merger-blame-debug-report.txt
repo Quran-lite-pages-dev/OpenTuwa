@@ -52,49 +52,50 @@
 33-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:13:9-45
 34        android:supportsRtl="true"
 34-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:14:9-35
-35        android:theme="@style/Theme.AppCompat.NoActionBar" >
-35-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:15:9-59
-36        <activity
-36-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:17:9-25:20
-37            android:name="io.github.muslim1446.quran.MainActivity"
-37-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:18:13-41
-38            android:exported="true"
-38-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:19:13-36
-39            android:screenOrientation="landscape" >
-39-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:20:13-50
-40            <intent-filter>
-40-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:21:13-24:29
-41                <action android:name="android.intent.action.MAIN" />
-41-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:22:17-69
-41-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:22:25-66
-42
-43                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-43-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:23:17-86
-43-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:23:27-83
-44            </intent-filter>
-45        </activity>
-46
-47        <provider
-47-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
-48            android:name="androidx.startup.InitializationProvider"
-48-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:25:13-67
-49            android:authorities="io.github.muslim1446.quran.androidx-startup"
-49-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:26:13-68
-50            android:exported="false" >
-50-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:27:13-37
-51            <meta-data
-51-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
-52                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-52-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
-53                android:value="androidx.startup" />
-53-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
-54            <meta-data
-54-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\a6020ece0108e66a2ae669024cbc314d\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
-55                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-55-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\a6020ece0108e66a2ae669024cbc314d\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
-56                android:value="androidx.startup" />
-56-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\a6020ece0108e66a2ae669024cbc314d\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
-57        </provider>
-58    </application>
-59
-60</manifest>
+35        android:testOnly="true"
+36        android:theme="@style/Theme.AppCompat.NoActionBar" >
+36-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:15:9-59
+37        <activity
+37-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:17:9-25:20
+38            android:name="io.github.muslim1446.quran.MainActivity"
+38-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:18:13-41
+39            android:exported="true"
+39-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:19:13-36
+40            android:screenOrientation="landscape" >
+40-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:20:13-50
+41            <intent-filter>
+41-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:21:13-24:29
+42                <action android:name="android.intent.action.MAIN" />
+42-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:22:17-69
+42-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:22:25-66
+43
+44                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+44-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:23:17-86
+44-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\android_tv\app\src\main\AndroidManifest.xml:23:27-83
+45            </intent-filter>
+46        </activity>
+47
+48        <provider
+48-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+49            android:name="androidx.startup.InitializationProvider"
+49-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:25:13-67
+50            android:authorities="io.github.muslim1446.quran.androidx-startup"
+50-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:26:13-68
+51            android:exported="false" >
+51-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:27:13-37
+52            <meta-data
+52-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+53                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+53-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
+54                android:value="androidx.startup" />
+54-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\791e90b8f32ab99478b5922f7a6930a3\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
+55            <meta-data
+55-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\a6020ece0108e66a2ae669024cbc314d\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
+56                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+56-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\a6020ece0108e66a2ae669024cbc314d\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
+57                android:value="androidx.startup" />
+57-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\9.0-milestone-1\transforms\a6020ece0108e66a2ae669024cbc314d\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
+58        </provider>
+59    </application>
+60
+61</manifest>
