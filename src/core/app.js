@@ -762,28 +762,12 @@ function populateTranslationAudioSelect() {
     // 1. Add Existing MP3 configs (Static Files: English, Indonesian, Spanish)
     Object.entries(TRANSLATION_AUDIO_CONFIG).forEach(([k, v]) => {
         const opt = document.createElement('option');
-        opt.value = k; 
+        opt.value = k;
         opt.textContent = v.name;
         elements.selects.transAudio.appendChild(opt);
     });
 
-    // 2. Add AI TTS options ONLY for languages supported by Puter Fix
-    // We strictly filter this list so unsupported languages (like Albanian) don't appear.
-    const AI_SUPPORTED_LANGS = [
-        'ar', 'fr', 'de', 'it', 'ru', 'tr', 'zh', 'ur', 'ms', 'fa'
-    ];
-
-    Object.entries(TRANSLATIONS_CONFIG).forEach(([code, config]) => {
-        // FILTER: Only add if the language code is in our supported AI list
-        if (AI_SUPPORTED_LANGS.includes(code)) {
-            const ttsValue = `tts:${code}`;
-            
-            const ttsOpt = document.createElement('option');
-            ttsOpt.value = ttsValue;
-            ttsOpt.textContent = `${config.name.split('|')[0].trim()} (AI Voice)`;
-            elements.selects.transAudio.appendChild(ttsOpt);
-        }
-    });
+    // AI TTS options have been removed.
 }
 
 function populateTranslationSelectOptions() {
@@ -989,28 +973,7 @@ async function updateTranslationAudio(chNum, vNum, play) {
         return;
     }
 
-    try {
-        if (typeof puter === 'undefined') {
-            console.error("Puter.js not found. Make sure to include the script in your HTML.");
-            return;
-        }
-
-        toggleBuffering(true);
-
-        // Puter AI Text-to-Speech
-        const audioObj = await puter.ai.txt2speech(textToSpeak, langCode);
-        const audioUrl = audioObj.src;
-        
-        ttsCache[cacheKey] = audioUrl; // Save to Cache
-        elements.transAudio.src = audioUrl;
-        if(play) elements.transAudio.play();
-
-    } catch (e) {
-        console.error("Puter AI TTS Error", e);
-    } finally {
-        toggleBuffering(false);
     }
-}
 
 function handleQuranEnd() {
     if (elements.transAudio.src && elements.transAudio.src !== window.location.href) {
