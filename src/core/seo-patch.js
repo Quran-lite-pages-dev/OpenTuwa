@@ -1,62 +1,87 @@
 /**
- * SEO & URL PATCH INTERCEPTOR
- * * This script intercepts the main 'launchPlayer' function from app.js.
- * It updates the Browser Title and URL (Deep Linking) without reloading the page.
+ * SEO & URL PATCH INTERCEPTOR (Fixed for Back Button)
+ * 1. Updates URL/Title when Surah plays.
+ * 2. Handles Browser "Back" button to close player/return to dashboard.
+ * 3. Prevents "Double Back" issue by checking current state.
  */
 
 (function() {
-    // Safety Check: Wait until app.js has loaded
+    // Safety: Wait for app.js
     if (typeof launchPlayer === 'undefined') {
-        console.warn("seo-patch.js: 'launchPlayer' not found. Make sure this script is loaded AFTER app.js");
+        console.warn("seo-patch.js: 'launchPlayer' not found. Load this AFTER app.js");
         return;
     }
 
-    // 1. Save the original function from app.js so we don't lose it
+    // 1. Intercept the Player Launch
     const originalLaunchPlayer = window.launchPlayer;
 
-    // 2. Overwrite 'launchPlayer' with our new wrapper
     window.launchPlayer = function(chapterNumber, verseNumber) {
-        
-        // --- A. Run the Original Logic (Audio, Text, etc.) ---
-        // This ensures the app still works exactly as before.
+        // A. Run original app logic
         originalLaunchPlayer(chapterNumber, verseNumber);
 
-        // --- B. Run Your New SEO Logic ---
+        // B. Update URL & Title (SEO)
         try {
-            // Access the global metadata array from app.js
             if (typeof SURAH_METADATA !== 'undefined') {
-                // Find the correct Surah object (e.g., Chapter 1)
                 const surah = SURAH_METADATA.find(s => s.chapter == chapterNumber);
-                
                 if (surah) {
-                    // 1. Update Browser Tab Title
                     document.title = `Surah ${surah.english_name} - Quran for Every Soul`;
 
-                    // 2. Update URL in address bar without reloading (SPA behavior)
-                    // This creates the link: https://site.com/?chapter=1&verse=1
-                    const newUrl = new URL(window.location);
-                    newUrl.searchParams.set('chapter', surah.chapter);
-                    
-                    if (verseNumber) {
-                        newUrl.searchParams.set('verse', verseNumber);
-                    }
+                    // --- FIX 1: Prevent Duplicate History (Double Click Issue) ---
+                    const url = new URL(window.location);
+                    const currentChapter = url.searchParams.get('chapter');
 
-                    // Push to history (User can now click 'Back' button correctly)
-                    window.history.pushState({ path: newUrl.href }, '', newUrl);
-
-                    // 3. Update Meta Description (Good for consistency)
-                    const metaDesc = document.querySelector('meta[name="description"]');
-                    if (metaDesc) {
-                        metaDesc.setAttribute("content", surah.description);
+                    // Only push a new state if we are actually changing chapters
+                    if (currentChapter != surah.chapter) {
+                        url.searchParams.set('chapter', surah.chapter);
+                        if (verseNumber) url.searchParams.set('verse', verseNumber);
+                        
+                        // Push new URL to history
+                        window.history.pushState({ type: 'player', chapter: surah.chapter }, '', url);
                     }
                 }
             }
-        } catch (err) {
-            console.error("SEO Patch Error:", err);
-            // We catch errors silently so the user's audio player never crashes
-        }
+        } catch (e) { console.error("SEO Patch Error:", e); }
     };
 
-    console.log("SEO Patch applied: URL and Title will now update automatically.");
+    // --- FIX 2: Handle Browser "Back" Button ---
+    window.addEventListener('popstate', function(event) {
+        // The user pressed Back/Forward. Check the URL.
+        const url = new URL(window.location);
+        const chapter = url.searchParams.get('chapter');
+
+        if (!chapter) {
+            // CASE: URL is back to root (Dashboard). We must close the player.
+            console.log("Back to Dashboard detected.");
+            
+            // Try to find the app's internal close function
+            if (typeof closePlayer === 'function') {
+                closePlayer(); 
+            } else if (typeof returnToDashboard === 'function') {
+                returnToDashboard();
+            } else {
+                // FALLBACK: If we can't find the function name, 
+                // force a reload to ensure the dashboard appears clean.
+                // This mimics the "Previous" behavior you liked.
+                window.location.reload();
+            }
+        } else {
+            // CASE: User went "Forward" to a chapter. Re-open player if needed.
+            // (Optional: triggers audio again if user wants deeply integrated nav)
+            if (typeof originalLaunchPlayer === 'function') {
+                originalLaunchPlayer(chapter, url.searchParams.get('verse') || 1);
+            }
+        }
+    });
+
+    // 3. Initial Load Handling (Deep Linking)
+    // If user lands on "?chapter=1", launch it automatically.
+    window.addEventListener('load', function() {
+        const url = new URL(window.location);
+        const chapter = url.searchParams.get('chapter');
+        if (chapter && typeof launchPlayer === 'function') {
+            // Small delay to ensure App is ready
+            setTimeout(() => launchPlayer(chapter, url.searchParams.get('verse') || 1), 500);
+        }
+    });
 
 })();
