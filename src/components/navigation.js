@@ -3,7 +3,8 @@
     /**
      * 1. CONFIGURATION
      */
-    const SELECTOR = 'button, a, input, select, textarea, [tabindex]:not([tabindex="-1"]), .focusable, .surah-card, .nav-item';
+    // MODIFIED: Added .custom-select-trigger and .custom-option to the selector list
+    const SELECTOR = 'button, a, input, select, textarea, [tabindex]:not([tabindex="-1"]), .focusable, .surah-card, .nav-item, .custom-select-trigger, .custom-option';
     
     // 2. VIEW CONTROLLERS
     // Added 'ARABIC_MODAL' to the known views
@@ -21,6 +22,13 @@
      * Determines which elements are currently valid candidates for focus.
      */
     function getFocusableCandidates() {
+        // PRIORITY -1: Custom Select Dropdown (Focus Trap)
+        // If a custom select is open, we must restrict navigation to its options immediately.
+        const openSelect = document.querySelector('.custom-select-wrapper.open');
+        if (openSelect) {
+            return Array.from(openSelect.querySelectorAll('.custom-option'));
+        }
+
         const arabicModal = document.getElementById(VIEWS.ARABIC_MODAL);
         const searchOverlay = document.getElementById(VIEWS.SEARCH);
         const cinemaView = document.getElementById(VIEWS.CINEMA);
