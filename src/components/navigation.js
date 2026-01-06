@@ -3,11 +3,9 @@
     /**
      * 1. CONFIGURATION
      */
-    // MODIFIED: Added .custom-select-trigger and .custom-option to the selector list
     const SELECTOR = 'button, a, input, select, textarea, [tabindex]:not([tabindex="-1"]), .focusable, .surah-card, .nav-item, .custom-select-trigger, .custom-option';
     
     // 2. VIEW CONTROLLERS
-    // Added 'ARABIC_MODAL' to the known views
     const VIEWS = {
         ARABIC_MODAL: 'arabic-modal', 
         SEARCH: 'search-overlay',
@@ -23,7 +21,6 @@
      */
     function getFocusableCandidates() {
         // PRIORITY -1: Custom Select Dropdown (Focus Trap)
-        // If a custom select is open, we must restrict navigation to its options immediately.
         const openSelect = document.querySelector('.custom-select-wrapper.open');
         if (openSelect) {
             return Array.from(openSelect.querySelectorAll('.custom-option'));
@@ -35,8 +32,7 @@
         const dashboardView = document.getElementById(VIEWS.DASHBOARD);
         const sidebar = document.getElementById(VIEWS.SIDEBAR);
 
-        // PRIORITY 0: Arabic Modal (CRITICAL)
-        // If this popup is visible, we MUST focus inside it and ignore everything else.
+        // PRIORITY 0: Arabic Modal
         if (arabicModal) {
             const style = window.getComputedStyle(arabicModal);
             if (style.display !== 'none' && style.visibility !== 'hidden') {
@@ -49,14 +45,13 @@
             return Array.from(searchOverlay.querySelectorAll(SELECTOR)).filter(isVisible);
         }
 
-        // PRIORITY 2: Cinema Mode (Player)
+        // PRIORITY 2: Cinema Mode
         if (cinemaView && cinemaView.classList.contains('active')) {
-            return Array.from(cinemaView.querySelectorAll(SELECTOR)).filter(el => {
-                return el.offsetParent !== null && !el.disabled;
-            });
+            const candidates = Array.from(cinemaView.querySelectorAll(SELECTOR));
+            return candidates.filter(isVisible);
         }
 
-        // PRIORITY 3: Dashboard & Sidebar (Standard View)
+        // PRIORITY 3: Dashboard & Sidebar
         const dashCandidates = dashboardView ? Array.from(dashboardView.querySelectorAll(SELECTOR)) : [];
         const sidebarCandidates = sidebar ? Array.from(sidebar.querySelectorAll(SELECTOR)) : [];
         
@@ -69,39 +64,38 @@
     function isVisible(el) {
         if (!el) return false;
         if (el.disabled) return false;
-        if (el.offsetParent === null) return false;
         
         const style = window.getComputedStyle(el);
-        if (style.display === 'none' || style.visibility === 'hidden') return false;
+        if (style.display === 'none' || style.visibility === 'hidden' || style.opacity === '0') return false;
 
         const rect = el.getBoundingClientRect();
         return rect.width > 0 && rect.height > 0;
     }
 
     /**
-     * Cinema Wake-Up Logic
+     * Wake Up Helper
+     * Returns true if we just woke up the screen (so we should stop other actions)
      */
-    function ensureCinemaAwake() {
-        const cinemaView = document.getElementById(VIEWS.CINEMA);
+    function attemptWakeUp() {
+        const isIdle = document.body.classList.contains('idle');
         
-        // If we are in the Arabic Modal, DO NOT wake up cinema (it might trigger clicks in background)
-        const arabicModal = document.getElementById(VIEWS.ARABIC_MODAL);
-        if (arabicModal && window.getComputedStyle(arabicModal).display !== 'none') {
-            return false; 
-        }
-
-        if (cinemaView && cinemaView.classList.contains('active')) {
-            const style = window.getComputedStyle(cinemaView);
-            if (style.opacity === '0' || cinemaView.classList.contains('idle')) {
-                document.body.dispatchEvent(new Event('mousemove', { bubbles: true }));
-                document.body.dispatchEvent(new Event('click', { bubbles: true }));
-                
-                if (!currentFocus || !cinemaView.contains(currentFocus)) {
-                    const first = cinemaView.querySelector(SELECTOR);
-                    if (first) focusElement(first);
-                }
-                return true;
+        // If a dropdown is open, we aren't "really" idle in terms of UX flow, 
+        // but if the class is there, we must remove it.
+        if (isIdle) {
+            document.body.classList.remove('idle');
+            
+            // Dispatch a fake mousemove to reset the inactivity timer in app.js
+            document.body.dispatchEvent(new Event('mousemove', { bubbles: true }));
+            
+            // Restore visual focus if lost
+            if (currentFocus && document.body.contains(currentFocus)) {
+                currentFocus.focus();
+            } else {
+                // Recover focus if totally lost
+                const all = getFocusableCandidates();
+                if (all.length > 0) focusElement(all[0]);
             }
+            return true;
         }
         return false;
     }
@@ -125,17 +119,23 @@
         if (dir === 'ArrowDown' && c2.y <= c1.y) return Infinity;
         if (dir === 'ArrowUp' && c2.y >= c1.y) return Infinity;
 
-        return dMajor + (dMinor * 3);
+        return dMajor + (dMinor * 2.5);
     }
 
     function navigate(direction) {
-        if (ensureCinemaAwake()) return;
+        // Just in case (though keydown handler catches it first)
+        if (attemptWakeUp()) return;
 
         const all = getFocusableCandidates();
 
-        // If focus is lost, or we are switching contexts (e.g., Modal just appeared), grab the first element
-        if (!currentFocus || !document.body.contains(currentFocus) || !all.includes(currentFocus)) {
+        if (!currentFocus || !document.body.contains(currentFocus)) {
             if (all.length > 0) focusElement(all[0]);
+            return;
+        }
+
+        // If trapped in an invalid state (e.g. focused on a hidden element), jump to safety
+        if (!all.includes(currentFocus) && all.length > 0) {
+            focusElement(all[0]);
             return;
         }
 
@@ -164,25 +164,44 @@
     function focusElement(el) {
         currentFocus = el;
         el.focus();
-        el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+        if (el.scrollIntoViewIfNeeded) {
+            el.scrollIntoViewIfNeeded({ behavior: 'smooth', block: 'center' });
+        } else {
+            el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
+        }
     }
 
-    // 3. KEYBOARD LISTENERS
+    // 3. KEYBOARD LISTENERS (GLOBAL)
     window.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') return; 
+        // --- 1. WAKE UP GUARD ---
+        // If the screen is idle, ANY key press should ONLY wake it up.
+        // It must NOT perform the key's default action (like opening a menu).
+        if (document.body.classList.contains('idle')) {
+            e.preventDefault();
+            e.stopImmediatePropagation(); // Kill the event here
+            attemptWakeUp();
+            return; 
+        }
 
+        // --- 2. NAVIGATION LOGIC ---
         if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
             e.stopImmediatePropagation();
             e.preventDefault();
             navigate(e.key);
         }
         
+        // --- 3. BACK/ESCAPE ---
         if (e.key === 'Escape' || e.key === 'Backspace') {
-            // Check Modal First
+            const openSelect = document.querySelector('.custom-select-wrapper.open');
+            if (openSelect) {
+                openSelect.classList.remove('open');
+                const trigger = openSelect.querySelector('.custom-select-trigger');
+                if(trigger) trigger.focus();
+                return;
+            }
+
             const arabicModal = document.getElementById(VIEWS.ARABIC_MODAL);
             if (arabicModal && window.getComputedStyle(arabicModal).display !== 'none') {
-                 // Optional: Decide what Backspace does in modal. Maybe click "No"?
-                 // For now, we do nothing to force a choice.
                  return;
             }
 
@@ -192,6 +211,9 @@
                 if (closeBtn) closeBtn.click();
             }
         }
+        
+        // 'Enter' is allowed to pass through if we are NOT idle, 
+        // so it hits the click handlers in app.js
     }, true);
 
     // 4. MOUSE/TOUCH LISTENERS
@@ -203,21 +225,23 @@
 
     // 5. OBSERVER
     const observer = new MutationObserver(() => {
-        // If a modal suddenly appeared (like Arabic Check), we need to re-evaluate focus immediately
-        // otherwise focus might be stuck underneath it.
         const all = getFocusableCandidates();
-        if (all.length > 0) {
-             // If our current focus is NOT in the valid list (e.g. it's covered by modal), move focus
-             if (currentFocus && !all.includes(currentFocus)) {
-                 focusElement(all[0]);
-             }
+        // If focus is totally lost (body), try to recover it
+        if (all.length > 0 && currentFocus && !document.body.contains(currentFocus)) {
+             focusElement(all[0]);
         }
     });
     observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
 
     // Initial Start
     window.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => navigate('ArrowDown'), 500); 
+        setTimeout(() => {
+            const dash = document.getElementById(VIEWS.DASHBOARD);
+            if (dash && dash.classList.contains('active')) {
+                const playBtn = document.getElementById('door-play-btn');
+                if(playBtn) focusElement(playBtn);
+            }
+        }, 500); 
     });
 
 })();

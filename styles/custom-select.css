@@ -1,0 +1,150 @@
+/* styles/custom-select.css */
+
+/* Wrapper: The container for the entire custom select component */
+.custom-select-wrapper {
+    position: relative;
+    user-select: none;
+    width: auto;
+    min-width: 150px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* The Trigger: Replaces the closed <select> box */
+.custom-select-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: #e5e5e5;
+    height: 44px; /* Fixed height for consistency */
+    background: rgba(255, 255, 255, 0.05); /* Subtle glass */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+/* Hover & Focus States (Synced with navigation.js .custom-select-trigger selector) */
+.custom-select-trigger:hover,
+.custom-select-trigger:focus,
+.custom-select-wrapper.open .custom-select-trigger {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 0 15px rgba(0, 255, 187, 0.1);
+}
+
+/* The Arrow Icon */
+.custom-select-trigger::after {
+    content: '';
+    width: 0.5rem;
+    height: 0.5rem;
+    border-right: 2px solid var(--accent);
+    border-bottom: 2px solid var(--accent);
+    transform: rotate(45deg);
+    margin-left: 15px;
+    transition: transform 0.3s;
+    margin-top: -3px;
+}
+
+/* Rotate arrow when open */
+.custom-select-wrapper.open .custom-select-trigger::after {
+    transform: rotate(225deg);
+    margin-top: 3px;
+}
+
+/* The Dropdown Menu */
+.custom-options {
+    position: absolute;
+    bottom: 110%; /* Opens upwards so it doesn't go off-screen at bottom */
+    left: 0;
+    right: 0;
+    background: rgba(20, 20, 20, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    z-index: 9999; /* Critical: Must be higher than control panel */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(10px);
+    transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+    
+    /* Scrollbar Logic */
+    max-height: 300px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--accent) transparent;
+}
+
+/* Open State */
+.custom-select-wrapper.open .custom-options {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+    transform: translateY(0);
+}
+
+/* Individual Options */
+.custom-option {
+    position: relative;
+    display: block;
+    padding: 12px 20px;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: #b0b0b0;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.custom-option:last-child {
+    border-bottom: none;
+}
+
+/* Option Hover/Focus/Selected States */
+.custom-option:hover,
+.custom-option:focus, 
+.custom-option.selected {
+    background: rgba(0, 255, 187, 0.1);
+    color: #fff;
+    outline: none;
+}
+
+.custom-option.selected::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--accent);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .custom-select-wrapper {
+        min-width: 100%; /* Full width on mobile */
+        margin-bottom: 10px;
+    }
+    
+    .custom-options {
+        bottom: 50%; /* Center relative */
+        top: auto;
+        transform: translateY(50%) scale(0.9);
+        position: fixed; /* Detach from flow */
+        width: 80%;
+        left: 10%;
+        max-height: 50vh;
+        box-shadow: 0 0 50px rgba(0,0,0,0.8);
+    }
+
+    .custom-select-wrapper.open .custom-options {
+        transform: translateY(0) scale(1);
+    }
+}

@@ -3,14 +3,9 @@
 document.addEventListener('error', function (event) {
     const target = event.target;
     if (target.tagName.toLowerCase() === 'img') {
-        // Option A: Hide completely
         target.style.display = 'none'; 
-        
-        // Option B: Optional replacement with a 1x1 transparent pixel 
-        // to maintain layout/spacing without showing anything ugly
-        // target.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
     }
-}, true); // 'true' is critical to catch events in the capturing phase
+}, true);
 
 const SURAH_METADATA = [
           { "chapter": 1, "english_name": "The Opening", "description": "Revealed in Mecca, this is the fundamental prayer of Islam, summarizing the core relationship between God and humanity. It is recited in every unit of prayer. (7 verses)" },
@@ -133,6 +128,7 @@ const SURAH_METADATA = [
 const ACTIVE_PROFILE_ID = "1";
 const STORAGE_KEY = `quranState_${ACTIVE_PROFILE_ID}`;
 
+// [KEEP FULL CONFIG OBJECTS HERE]
 const TRANSLATIONS_CONFIG = {
     'en': { name: 'English (Saheeh Intl) | Preferred', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/en.xml' },
             'sq': { name: 'Albanian (Sherif Ahmeti)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sq.ahmeti.xml' },
@@ -178,7 +174,7 @@ const TRANSLATIONS_CONFIG = {
             'ur': { name: 'Urdu (Junagarhi)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ur.junagarhi.xml' },
             'ug': { name: 'Uyghur (Muhammad Saleh)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ug.saleh.xml' },
             'uz': { name: 'Uzbek (Muhammad Sodik)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/uz.sodik.xml' }
-        };
+};
 
 const RECITERS_CONFIG = {
     'alafasy': { name: 'Mishary Alafasy', path: 'Alafasy_128kbps' },
@@ -193,9 +189,6 @@ const RECITERS_CONFIG = {
     'minshawy': { name: 'Minshawy', path: 'Minshawy_Murattal_128kbps' },
     'jaber': { name: 'Ali Jaber', path: 'Ali_Jaber_64kbps' },
     'ajamy': { name: 'Ahmed Ali Ajamy', path: 'ahmed_ibn_ali_al_ajamy_128kbps' },
-
-
-  
 };
 
 const TRANSLATION_AUDIO_CONFIG = {
@@ -205,29 +198,25 @@ const TRANSLATION_AUDIO_CONFIG = {
     'es': { name: 'Español', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/audio/play' }
 };
 
-// --- PUTER AI CONFIGURATION ---
-// Ensure <script src="https://js.puter.com/v2/"></script> is in your HTML header
-
 const FTT_URL = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/FTT.XML';
 const RTL_CODES = new Set(['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ur', 'ug']);
 
+// Elements Reference
 const elements = {
     overlay: document.getElementById('loading-overlay'),
     spinner: document.querySelector('.loader-spinner'),
     loaderText: document.getElementById('loader-text'),
     startBtn: document.getElementById('start-btn'),
-    
     quranAudio: document.getElementById('audio-player'),
     transAudio: document.getElementById('translation-audio-player'),
     previewAudio: document.getElementById('preview-audio'),
     bufferInd: document.getElementById('buffering-indicator'),
-    
     selects: {
-        chapter: document.getElementById('chapterSelect'),
-        verse: document.getElementById('verseSelect'),
-        trans: document.getElementById('translationSelect'),
-        reciter: document.getElementById('reciterSelect'),
-        transAudio: document.getElementById('translationAudioSelect')
+        chapter: document.getElementById('chapterSelectWrapper'),
+        verse: document.getElementById('verseSelectWrapper'),
+        trans: document.getElementById('translationSelectWrapper'),
+        reciter: document.getElementById('reciterSelectWrapper'),
+        transAudio: document.getElementById('translationAudioSelectWrapper')
     },
     display: {
         title: document.getElementById('chapter-title'),
@@ -240,7 +229,6 @@ const elements = {
         dashboard: document.getElementById('dashboard-view'),
         cinema: document.getElementById('cinema-view')
     },
-    // TV Navigation Elements
     sidebar: {
         container: document.getElementById('tv-sidebar'),
         home: document.getElementById('nav-home'),
@@ -258,32 +246,23 @@ const elements = {
 
 let quranData = []; 
 let translationCache = {}; 
-// Cache for generated TTS blobs to save quota (Free Forever Optimization)
 let ttsCache = {}; 
 let currentChapterData = {};
 let inactivityTimer;
 let forbiddenToTranslateSet = new Set();
 let isBuffering = false;
 
-// Preview Variables
 let previewTimeout;
 const PREVIEW_DELAY = 600; 
 let previewSequence = []; 
 let previewSeqIndex = 0;
 
-// Search Variables
 let searchString = "";
 const KEYBOARD_KEYS = [
-    'A','B','C','D','E','F',
-    'G','H','I','J','K','L',
-    'M','N','O','P','Q','R',
-    'S','T','U','V','W','X',
-    'Y','Z','1','2','3','4',
-    '5','6','7','8','9','0',
-    'SPACE', 'DEL', 'CLEAR'
+    'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+    '1','2','3','4','5','6','7','8','9','0','SPACE', 'DEL', 'CLEAR'
 ];
 
-// 2026 GDPR Helper (Call this from UI button to wipe data)
 window.wipeUserData = function() {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem('quran_user_analytics');
@@ -291,7 +270,136 @@ window.wipeUserData = function() {
     location.reload();
 };
 
-// --- MERGE METADATA ---
+// --- CUSTOM SELECT LOGIC ---
+function initCustomSelects() {
+    document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
+        const trigger = wrapper.querySelector('.custom-select-trigger');
+        
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            e.preventDefault();
+
+            // IDLE GUARD: If we are currently idle, this click (e.g. from a mouse) 
+            // is just waking up the screen. Do NOT open the menu.
+            if (document.body.classList.contains('idle')) {
+                // navigation.js handles the keydown wake-up, 
+                // but this handles the mouse click wake-up.
+                document.body.classList.remove('idle');
+                document.body.dispatchEvent(new Event('mousemove'));
+                return;
+            }
+
+            const isOpen = wrapper.classList.contains('open');
+
+            // Close others
+            document.querySelectorAll('.custom-select-wrapper.open').forEach(other => {
+                other.classList.remove('open');
+            });
+            
+            // Toggle
+            if (!isOpen) {
+                wrapper.classList.add('open');
+                // Scroll to selected
+                const selected = wrapper.querySelector('.custom-option.selected');
+                if (selected) {
+                    setTimeout(() => selected.scrollIntoView({ block: 'center' }), 10);
+                } else {
+                    const list = wrapper.querySelector('.custom-options');
+                    if(list) list.scrollTop = 0;
+                }
+            } else {
+                wrapper.classList.remove('open');
+            }
+        });
+        
+        trigger.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                // navigation.js handles the IDLE check for keydown,
+                // so if we reached here, we are active.
+                trigger.click();
+            }
+        });
+    });
+
+    window.addEventListener('click', (e) => {
+        if (!e.target.closest('.custom-select-wrapper')) {
+            document.querySelectorAll('.custom-select-wrapper.open').forEach(el => {
+                el.classList.remove('open');
+            });
+        }
+    });
+}
+
+function populateCustomSelect(wrapper, items, onChange) {
+    const optionsContainer = wrapper.querySelector('.custom-options');
+    optionsContainer.innerHTML = '';
+    
+    const fragment = document.createDocumentFragment();
+
+    items.forEach(item => {
+        const opt = document.createElement('div');
+        opt.className = 'custom-option';
+        opt.dataset.value = item.value;
+        opt.textContent = item.text;
+        opt.tabIndex = 0; 
+
+        const handleSelection = (e) => {
+            e.preventDefault();
+            e.stopPropagation(); 
+
+            setSelectValue(wrapper, item.value); 
+            wrapper.classList.remove('open'); 
+            
+            // FIX for "Open Back Loop":
+            // Delay focusing the trigger so the 'Enter' keyup doesn't re-click it.
+            setTimeout(() => {
+                const trigger = wrapper.querySelector('.custom-select-trigger');
+                if(trigger) trigger.focus();
+            }, 100); 
+
+            if (onChange) onChange(item.value);
+        };
+
+        opt.addEventListener('click', handleSelection);
+        opt.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleSelection(e);
+            }
+        });
+
+        fragment.appendChild(opt);
+    });
+
+    optionsContainer.appendChild(fragment);
+}
+
+function setSelectValue(wrapper, value) {
+    const options = wrapper.querySelectorAll('.custom-option');
+    let foundText = null;
+
+    options.forEach(opt => {
+        if (opt.dataset.value == value) {
+            opt.classList.add('selected');
+            foundText = opt.textContent;
+        } else {
+            opt.classList.remove('selected');
+        }
+    });
+
+    if (foundText) {
+        wrapper.dataset.value = value;
+        const trigger = wrapper.querySelector('.custom-select-trigger');
+        if(trigger) trigger.textContent = foundText;
+    }
+}
+
+function getSelectValue(wrapper) {
+    return wrapper.dataset.value;
+}
+
+// --- CORE APP ---
+
 function mergeMetadata(apiChapters) {
     return apiChapters.map((ch, idx) => {
         const meta = SURAH_METADATA.find(m => m.chapter === ch.chapterNumber);
@@ -302,20 +410,23 @@ function mergeMetadata(apiChapters) {
     });
 }
 
-// --- ROUTER ---
 function switchView(viewName) {
     if(viewName === 'cinema') {
         elements.views.dashboard.classList.remove('active');
         elements.views.cinema.classList.add('active');
         elements.views.cinema.style.opacity = '1';
         stopPreview();
-        elements.sidebar.container.style.display = 'none'; // Hide sidebar in cinema
-        setTimeout(() => document.getElementById('control-panel').focus(), 100);
+        elements.sidebar.container.style.display = 'none';
+        
+        setTimeout(() => {
+            const chapterTrigger = elements.selects.chapter.querySelector('.custom-select-trigger');
+            if(chapterTrigger) chapterTrigger.focus();
+        }, 150);
     } else {
         elements.views.cinema.classList.remove('active');
         elements.views.cinema.style.opacity = '0';
         elements.views.dashboard.classList.add('active');
-        elements.sidebar.container.style.display = 'none'; // Show sidebar
+        elements.sidebar.container.style.display = 'none';
         elements.quranAudio.pause();
         elements.transAudio.pause();
         refreshDashboard();
@@ -328,7 +439,7 @@ window.addEventListener('popstate', (event) => {
     if (params.has('chapter')) {
         switchView('cinema');
         restoreState();
-        loadVerse(false); // Using Old logic
+        loadVerse(false);
     } else {
         switchView('dashboard');
     }
@@ -336,6 +447,8 @@ window.addEventListener('popstate', (event) => {
 
 async function initializeApp() {
     try {
+        initCustomSelects();
+
         const jsonResponse = await fetch('https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/2TM3TM.json');
         if (!jsonResponse.ok) throw new Error("Failed to load Quran JSON");
         const jsonData = await jsonResponse.json();
@@ -357,21 +470,25 @@ async function initializeApp() {
         populateChapterSelect();
         populateReciterSelect();
         populateTranslationSelectOptions();
-        populateTranslationAudioSelect(); // Called after Translations loaded
+        populateTranslationAudioSelect();
+
+        // --- FIX: Always restore state to set defaults based on browser ---
+        // This ensures that when dashboard loads, the hidden dropdowns 
+        // already have the correct "First Time" defaults.
+        restoreState();
 
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('chapter')) {
-            // Start in Cinema
             switchView('cinema');
-            restoreState();
-            populateVerseSelect();
+            // restoreState called above already
+            populateVerseSelect(); 
+            
             const savedVerse = getSavedVerseIndex();
-            if(savedVerse < elements.selects.verse.options.length) {
-                elements.selects.verse.value = savedVerse;
-            }
-            const activeTransId = elements.selects.trans.value;
+            setSelectValue(elements.selects.verse, savedVerse);
+
+            const activeTransId = getSelectValue(elements.selects.trans);
             await loadTranslationData(activeTransId);
-            loadVerse(false); // Old Logic
+            loadVerse(false); 
             
             elements.spinner.style.display = 'none';
             elements.loaderText.style.display = 'none';
@@ -379,7 +496,6 @@ async function initializeApp() {
             elements.startBtn.textContent = "Continue";
             elements.startBtn.focus();
         } else {
-            // Start in Dashboard
             switchView('dashboard');
             refreshDashboard();
             elements.overlay.style.display = 'none';
@@ -395,7 +511,6 @@ async function initializeApp() {
     }
 }
 
-// --- DASHBOARD FUNCTIONS ---
 function refreshDashboard() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const heroBtn = document.getElementById('door-play-btn');
@@ -421,7 +536,7 @@ function refreshDashboard() {
 
 function fillRow(elementId, indexArray) {
     const container = document.getElementById(elementId);
-    const fragment = document.createDocumentFragment(); // Use fragment for speed
+    const fragment = document.createDocumentFragment();
     
     indexArray.forEach(idx => {
         if(!quranData[idx]) return;
@@ -434,14 +549,8 @@ function fillRow(elementId, indexArray) {
             <div class="card-title">${surah.english_name}</div>
             <div class="card-sub">${surah.title || ''}</div>
         `;
-        
-        // Use specialized TV events
         card.onclick = () => launchPlayer(surah.chapterNumber, 1);
-        card.onfocus = () => {
-            // Preview logic here
-            schedulePreview(surah.chapterNumber);
-        };
-        
+        card.onfocus = () => { schedulePreview(surah.chapterNumber); };
         fragment.appendChild(card);
     });
     
@@ -455,7 +564,6 @@ function schedulePreview(chapterNum) {
     const surah = quranData[chapterNum - 1];
     document.getElementById('door-hero-title').textContent = surah.english_name;
     document.getElementById('door-hero-subtitle').textContent = surah.title;
-    // document.getElementById('door-hero-desc').textContent = surah.description;
     document.getElementById('door-play-btn').onclick = () => launchPlayer(chapterNum, 1);
 
     previewTimeout = setTimeout(() => {
@@ -472,22 +580,17 @@ function stopPreview() {
 }
 
 async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
-    // 1. Reset Sequence
     previewSequence = [];
     previewSeqIndex = 0;
     
-    // 2. Get Chapter Data
     const chIdx = chapterNum - 1;
     if (!quranData[chIdx]) return;
     
     const totalVerses = quranData[chIdx].verses.length;
-
-    // 3. Populate sequence with ALL verses
     for (let i = 1; i <= totalVerses; i++) {
         previewSequence.push(i);
     }
 
-    // 4. Update Hero Image (for the first verse)
     const verseNum = previewSequence[0];
     const imgUrl = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chapterNum}_${verseNum}.png`;
     
@@ -498,14 +601,11 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
         if (heroImg) heroImg.src = imgUrl;
     };
 
-    // 5. [THE FIX] Ensure Translation Data is Loaded
-    // We must ensure the XML is in cache before playPreviewStep tries to read it.
-    const transId = elements.selects.trans.value;
+    const transId = getSelectValue(elements.selects.trans) || 'en';
     if (!translationCache[transId]) {
         await loadTranslationData(transId);
     }
 
-    // 6. Start playing if requested
     if (autoPlay) {
         playPreviewStep(chapterNum, reciterId);
     }
@@ -530,7 +630,6 @@ function playPreviewStep(chapterNum, reciterId) {
         };
     }, 200);
 
-    // Subtitle Update Logic
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const transId = saved.trans || 'en';
     const cache = translationCache[transId];
@@ -564,14 +663,15 @@ function launchPlayer(chapterNum, verseNum = 1) {
     history.pushState({view: 'cinema'}, '', newUrl);
     switchView('cinema');
     
-    elements.selects.chapter.value = chapterNum - 1;
+    setSelectValue(elements.selects.chapter, chapterNum - 1);
     populateVerseSelect();
-    elements.selects.verse.value = verseNum - 1;
+    setSelectValue(elements.selects.verse, verseNum - 1);
+
     elements.overlay.style.display = 'none';
     loadVerse(true);
 }
 
-// --- OLD PLAYER LOGIC HELPERS ---
+// --- PLAYER HELPERS ---
 async function loadTranslationData(id) {
     if (translationCache[id]) return; 
     if (!TRANSLATIONS_CONFIG[id]) return;
@@ -592,36 +692,63 @@ async function loadTranslationData(id) {
 function restoreState() {
     const urlParams = new URLSearchParams(window.location.search);
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    const browserLang = navigator.language.split('-')[0];
+    const browserLang = navigator.language.split('-')[0]; // e.g., 'en', 'es', 'fr'
 
+    // --- 1. Chapter ---
     let ch = 0;
     if (urlParams.has('chapter')) ch = parseInt(urlParams.get('chapter')) - 1; 
     else if (saved.chapter !== undefined) ch = saved.chapter;
-    elements.selects.chapter.value = ch;
+    setSelectValue(elements.selects.chapter, ch);
 
+    // --- 2. Reciter (Default Alafasy) ---
+    let rec = 'alafasy';
     if (urlParams.has('reciter') && RECITERS_CONFIG[urlParams.get('reciter')]) {
-        elements.selects.reciter.value = urlParams.get('reciter');
+        rec = urlParams.get('reciter');
     } else if (saved.reciter) {
-        elements.selects.reciter.value = saved.reciter;
+        rec = saved.reciter;
     }
+    setSelectValue(elements.selects.reciter, rec);
 
-    let trans = 'en';
+    // --- 3. Translation Text (Browser Detect) ---
+    let trans = 'en'; // Default fallback
+    // Priority: URL > Saved > Browser > Default
     if (urlParams.has('trans')) trans = urlParams.get('trans');
     else if (saved.trans) trans = saved.trans;
     else if (TRANSLATIONS_CONFIG[browserLang]) trans = browserLang; 
     
-    if (!TRANSLATIONS_CONFIG[trans]) trans = 'en';
-    elements.selects.trans.value = trans;
+    if (!TRANSLATIONS_CONFIG[trans]) trans = 'en'; // Final safety
+    setSelectValue(elements.selects.trans, trans);
+
+    // --- 4. Audio Translation (Browser Detect) ---
+    let transAudio = 'none'; // Default fallback
+    
+    const findAudioForLang = (lang) => {
+        // Direct match in config keys
+        if (TRANSLATION_AUDIO_CONFIG[lang]) return lang;
+        // Prefix match (e.g., lang='en' matches config='en_walk')
+        const match = Object.keys(TRANSLATION_AUDIO_CONFIG).find(k => k.startsWith(lang + '_'));
+        return match || null;
+    };
 
     if (urlParams.has('audio_trans')) {
         const param = urlParams.get('audio_trans');
-        // Check if it's a valid config OR a tts: id
         if(TRANSLATION_AUDIO_CONFIG[param] || param.startsWith('tts:')) {
-            elements.selects.transAudio.value = param;
+            transAudio = param;
         }
-    } else if (saved.audio_trans && (TRANSLATION_AUDIO_CONFIG[saved.audio_trans] || saved.audio_trans.startsWith('tts:'))) {
-        elements.selects.transAudio.value = saved.audio_trans;
+    } else if (saved.audio_trans) {
+        if (TRANSLATION_AUDIO_CONFIG[saved.audio_trans] || saved.audio_trans.startsWith('tts:')) {
+            transAudio = saved.audio_trans;
+        }
+    } else {
+        // First time user: Auto-detect from browser
+        const detectedAudio = findAudioForLang(browserLang);
+        if (detectedAudio) {
+            transAudio = detectedAudio;
+        }
+        // Else stays 'none'
     }
+    
+    setSelectValue(elements.selects.transAudio, transAudio);
 }
 
 function getSavedVerseIndex() {
@@ -634,11 +761,11 @@ function getSavedVerseIndex() {
 
 function saveState() {
     const state = {
-        chapter: parseInt(elements.selects.chapter.value),
-        verse: parseInt(elements.selects.verse.value),
-        reciter: elements.selects.reciter.value,
-        trans: elements.selects.trans.value,
-        audio_trans: elements.selects.transAudio.value 
+        chapter: parseInt(getSelectValue(elements.selects.chapter)),
+        verse: parseInt(getSelectValue(elements.selects.verse)),
+        reciter: getSelectValue(elements.selects.reciter),
+        trans: getSelectValue(elements.selects.trans),
+        audio_trans: getSelectValue(elements.selects.transAudio)
     };
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -646,137 +773,90 @@ function saveState() {
     const chObj = quranData[state.chapter];
     const chNum = chObj.chapterNumber;
     const vNum = chObj.verses[state.verse].verseNumber;
-    const transName = TRANSLATIONS_CONFIG[state.trans].name;
-    const reciterName = RECITERS_CONFIG[state.reciter].name;
-
-    const newUrl = `?chapter=${chNum}&verse=${vNum}&reciter=${state.reciter}&trans=${state.trans}&audio_trans=${state.audio_trans}`;
     
+    const newUrl = `?chapter=${chNum}&verse=${vNum}&reciter=${state.reciter}&trans=${state.trans}&audio_trans=${state.audio_trans}`;
     window.history.replaceState({path: newUrl, view: 'cinema'}, '', newUrl);
 
     const canonicalLink = document.getElementById('dynamic-canonical');
     const fullUrl = `https://Quran-lite.pages.dev/reading/${newUrl}`;
-    if (canonicalLink) {
-        canonicalLink.href = fullUrl;
-    }
-
-    const pageTitle = `${chObj.title} - Verse ${vNum}`;
-    document.title = pageTitle;
-    
-    const metaDesc = `Read and Listen to Surah ${chObj.title} Verse ${vNum}. Translation: ${transName}. Recitation by ${reciterName}.`;
-    const metaDescTag = document.querySelector('meta[name="description"]');
-    if(metaDescTag) metaDescTag.setAttribute("content", metaDesc);
-
-    const ogUrl = document.querySelector('meta[property="og:url"]');
-    if(ogUrl) ogUrl.content = fullUrl;
-
-    updateGoogleSchema(chNum, vNum, chObj.title, transName, reciterName);
-}
-
-function updateGoogleSchema(chapterNum, verseNum, chapterName, transName, reciterName) {
-    const oldSchema = document.getElementById('dynamic-schema-item');
-    if (oldSchema) oldSchema.remove();
-
-    const canonicalUrl = window.location.href; 
-    const rootUrl = "https://Quran-lite.pages.dev/";
-    const surahUrl = `https://Quran-lite.pages.dev/?chapter=${chapterNum}`;
-    const metaDesc = `Read and Listen to Surah ${chapterName} Verse ${verseNum}. Translation: ${transName}. Recitation by ${reciterName}.`;
-
-    const schemaData = {
-        "@context": "https://schema.org",
-        "@graph": [
-            {
-                "@type": "BreadcrumbList",
-                "itemListElement": [{
-                    "@type": "ListItem",
-                    "position": 1,
-                    "name": "Quran for Every Soul", 
-                    "item": rootUrl
-                }, {
-                    "@type": "ListItem",
-                    "position": 2,
-                    "name": `Surah ${chapterName}`,
-                    "item": surahUrl
-                }, {
-                    "@type": "ListItem",
-                    "position": 3,
-                    "name": `Ayah ${verseNum}`,
-                    "item": canonicalUrl 
-                }]
-            },
-            {
-                "@type": "WebPage", 
-                "@id": canonicalUrl,
-                "url": canonicalUrl,
-                "name": `${chapterName} - Verse ${verseNum} | QuranLite`,
-                "description": metaDesc, 
-                "isPartOf": {
-                    "@type": "WebSite",
-                    "url": rootUrl,
-                    "name": "Quran for Every Soul"
-                }
-            }
-        ]
-    };
-
-    const script = document.createElement('script');
-    script.id = 'dynamic-schema-item';
-    script.type = 'application/ld+json';
-    script.text = JSON.stringify(schemaData);
-    document.head.appendChild(script);
+    if (canonicalLink) canonicalLink.href = fullUrl;
+    document.title = `${chObj.title} - Verse ${vNum}`;
 }
 
 function populateChapterSelect() {
-    elements.selects.chapter.innerHTML = '';
-    quranData.forEach((c, i) => {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = `${c.chapterNumber}. ${c.english_name} - ${c.title || ''}`;
-        elements.selects.chapter.appendChild(opt);
+    const items = quranData.map((c, i) => ({
+        value: i,
+        text: `${c.chapterNumber}. ${c.english_name} - ${c.title || ''}`
+    }));
+    
+    populateCustomSelect(elements.selects.chapter, items, (val) => {
+        populateVerseSelect(); 
+        loadVerse(true);
     });
 }
 
 function populateVerseSelect() {
-    elements.selects.verse.innerHTML = '';
-    const chIdx = elements.selects.chapter.value || 0;
+    const chIdx = getSelectValue(elements.selects.chapter) || 0;
     currentChapterData = quranData[chIdx];
-    currentChapterData.verses.forEach((v, i) => {
-        const opt = document.createElement('option');
-        opt.value = i;
-        opt.textContent = `Ayah ${v.verseNumber}`;
-        elements.selects.verse.appendChild(opt);
+    
+    const items = currentChapterData.verses.map((v, i) => ({
+        value: i,
+        text: `Ayah ${v.verseNumber}`
+    }));
+
+    populateCustomSelect(elements.selects.verse, items, (val) => {
+        loadVerse(true);
     });
 }
 
 function populateReciterSelect() {
-    elements.selects.reciter.innerHTML = '';
-    Object.entries(RECITERS_CONFIG).forEach(([k, v]) => {
-        const opt = document.createElement('option');
-        opt.value = k; opt.textContent = v.name;
-        elements.selects.reciter.appendChild(opt);
+    const items = Object.entries(RECITERS_CONFIG).map(([k, v]) => ({
+        value: k,
+        text: v.name
+    }));
+    populateCustomSelect(elements.selects.reciter, items, (val) => {
+        saveState();
+        loadVerse(true);
     });
 }
 
 function populateTranslationAudioSelect() {
-    elements.selects.transAudio.innerHTML = '';
-    
-    // 1. Add Existing MP3 configs (Static Files: English, Indonesian, Spanish)
-    Object.entries(TRANSLATION_AUDIO_CONFIG).forEach(([k, v]) => {
-        const opt = document.createElement('option');
-        opt.value = k;
-        opt.textContent = v.name;
-        elements.selects.transAudio.appendChild(opt);
+    const items = Object.entries(TRANSLATION_AUDIO_CONFIG).map(([k, v]) => ({
+        value: k,
+        text: v.name
+    }));
+    populateCustomSelect(elements.selects.transAudio, items, (val) => {
+        const chIdx = getSelectValue(elements.selects.chapter);
+        const vIdx = getSelectValue(elements.selects.verse);
+        const ch = quranData[chIdx].chapterNumber;
+        const v = quranData[chIdx].verses[vIdx].verseNumber;
+        
+        if (!elements.quranAudio.paused) {
+            updateTranslationAudio(ch, v, false);
+        } else if (!elements.transAudio.paused) {
+            updateTranslationAudio(ch, v, true);
+        } else {
+            updateTranslationAudio(ch, v, false);
+        }
+        saveState();
     });
-
-    // AI TTS options have been removed.
 }
 
 function populateTranslationSelectOptions() {
-    elements.selects.trans.innerHTML = '';
-    Object.entries(TRANSLATIONS_CONFIG).forEach(([id, config]) => {
-        const opt = document.createElement('option');
-        opt.value = id;
-        opt.textContent = config.name;
-        elements.selects.trans.appendChild(opt);
+    const items = Object.entries(TRANSLATIONS_CONFIG).map(([id, config]) => ({
+        value: id,
+        text: config.name
+    }));
+    populateCustomSelect(elements.selects.trans, items, async (val) => {
+        const activeTransId = val;
+        await loadTranslationData(activeTransId); 
+        
+        const chIdx = getSelectValue(elements.selects.chapter);
+        const vIdx = getSelectValue(elements.selects.verse);
+        const ch = quranData[chIdx].chapterNumber;
+        const v = quranData[chIdx].verses[vIdx].verseNumber;
+        updateTranslationText(ch, v);
+        saveState();
     });
 }
 
@@ -786,8 +866,9 @@ function toggleBuffering(show) {
 }
 
 async function loadVerse(autoplay = true) {
-    const chIdx = elements.selects.chapter.value;
-    const vIdx = elements.selects.verse.value;
+    const chIdx = getSelectValue(elements.selects.chapter);
+    const vIdx = getSelectValue(elements.selects.verse);
+    
     currentChapterData = quranData[chIdx];
     const verseData = currentChapterData.verses[vIdx];
     
@@ -796,8 +877,7 @@ async function loadVerse(autoplay = true) {
     const verseKey = `${chNum}-${vNum}`;
     const isForbidden = forbiddenToTranslateSet.has(verseKey);
 
-    // Change .textContent to .innerHTML
-elements.display.title.innerHTML = `${currentChapterData.title} <span class="chapter-subtitle">(${chNum}:${vNum})</span>`;
+    elements.display.title.innerHTML = `${currentChapterData.title} <span class="chapter-subtitle">(${chNum}:${vNum})</span>`;
     
     const newSrc = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chNum}_${vNum}.png`;
     const img1 = elements.display.verse;
@@ -820,12 +900,12 @@ elements.display.title.innerHTML = `${currentChapterData.title} <span class="cha
     };
     
     if (nextImg.complete && nextImg.naturalHeight !== 0) {
-            activeImg.classList.remove('active-verse-img');
-            nextImg.classList.add('active-verse-img');
-            toggleBuffering(false);
+        activeImg.classList.remove('active-verse-img');
+        nextImg.classList.add('active-verse-img');
+        toggleBuffering(false);
     }
 
-    const tid = elements.selects.trans.value;
+    const tid = getSelectValue(elements.selects.trans);
     if(!translationCache[tid]) {
         await loadTranslationData(tid);
     }
@@ -845,17 +925,16 @@ elements.display.title.innerHTML = `${currentChapterData.title} <span class="cha
     }
 
     saveState(); 
-    updateMediaSession(currentChapterData.title, vNum, RECITERS_CONFIG[elements.selects.reciter.value].name);
-    
+    updateMediaSession(currentChapterData.title, vNum, RECITERS_CONFIG[getSelectValue(elements.selects.reciter)].name);
     bufferNextResources(chIdx, parseInt(vIdx));
 }
 
 function bufferNextResources(currentChIdx, currentVIdx) {
-    let nextChIdx = currentChIdx;
+    let nextChIdx = parseInt(currentChIdx);
     let nextVIdx = currentVIdx + 1;
     
     if (nextVIdx >= quranData[nextChIdx].verses.length) {
-        nextChIdx = parseInt(nextChIdx) + 1;
+        nextChIdx = nextChIdx + 1;
         nextVIdx = 0;
     }
 
@@ -867,37 +946,21 @@ function bufferNextResources(currentChIdx, currentVIdx) {
     const img = new Image();
     img.src = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${nextCh}_${nextV}.png`;
 
-    const rId = elements.selects.reciter.value;
+    const rId = getSelectValue(elements.selects.reciter);
     const qPath = RECITERS_CONFIG[rId].path;
     const padCh = String(nextCh).padStart(3, '0');
     const padV = String(nextV).padStart(3, '0');
     const aud = new Audio();
     aud.src = `https://everyayah.com/data/${qPath}/${padCh}${padV}.mp3`;
     aud.preload = 'auto'; 
-
-    const taId = elements.selects.transAudio.value;
-    if (taId !== 'none' && !taId.startsWith('tts:')) {
-        const config = TRANSLATION_AUDIO_CONFIG[taId];
-        let tUrl;
-        if (config.path.startsWith('httpIA')) tUrl = `${config.path.replace('httpIA', 'https')}/${padCh}${padV}.mp3`;
-        else if (config.path.startsWith('http')) tUrl = `${config.path}/${padCh}${padV}.mp3`;
-        else tUrl = `https://everyayah.com/data/${config.path}/${padCh}${padV}.mp3`;
-        
-        const tAud = new Audio();
-        tAud.src = tUrl;
-        tAud.preload = 'auto';
-    }
 }
 
 function updateTranslationText(chNum, vNum) {
-    const tid = elements.selects.trans.value;
+    const tid = getSelectValue(elements.selects.trans);
     if (!translationCache[tid]) return;
     
-    if (RTL_CODES.has(tid)) {
-        elements.display.trans.dir = 'rtl';
-    } else {
-        elements.display.trans.dir = 'ltr';
-    }
+    if (RTL_CODES.has(tid)) elements.display.trans.dir = 'rtl';
+    else elements.display.trans.dir = 'ltr';
 
     const sura = translationCache[tid].querySelector(`sura[index="${chNum}"]`);
     const aya = sura ? sura.querySelector(`aya[index="${vNum}"]`) : null;
@@ -906,7 +969,7 @@ function updateTranslationText(chNum, vNum) {
 }
 
 function updateQuranAudio(chNum, vNum, play) {
-    const rId = elements.selects.reciter.value;
+    const rId = getSelectValue(elements.selects.reciter);
     const path = RECITERS_CONFIG[rId].path;
     const padCh = String(chNum).padStart(3, '0');
     const padV = String(vNum).padStart(3, '0');
@@ -916,14 +979,13 @@ function updateQuranAudio(chNum, vNum, play) {
 }
 
 async function updateTranslationAudio(chNum, vNum, play) {
-    const taId = elements.selects.transAudio.value;
+    const taId = getSelectValue(elements.selects.transAudio);
     
     if (taId === 'none') {
         elements.transAudio.src = '';
         return;
     }
-
-    // --- 1. HANDLE STATIC MP3 FILES (Original Logic) ---
+    
     if (!taId.startsWith('tts:')) {
         const config = TRANSLATION_AUDIO_CONFIG[taId];
         const padCh = String(chNum).padStart(3, '0');
@@ -937,43 +999,8 @@ async function updateTranslationAudio(chNum, vNum, play) {
         if(!url.endsWith('.mp3')) url += `/${padCh}${padV}.mp3`;
         elements.transAudio.src = url;
         if(play) elements.transAudio.play();
-        return;
     }
-
-    // --- 2. HANDLE AI TTS (Updated with Puter.js) ---
-    const langCode = taId.split(':')[1];
-    
-    let textToSpeak = "";
-    
-    const currentTextId = elements.selects.trans.value;
-    if (currentTextId === langCode) {
-        textToSpeak = elements.display.trans.textContent;
-    } else {
-        if (!translationCache[langCode]) {
-            await loadTranslationData(langCode);
-        }
-        const cache = translationCache[langCode];
-        if(cache) {
-            const sura = cache.querySelector(`sura[index="${chNum}"]`);
-            const aya = sura ? sura.querySelector(`aya[index="${vNum}"]`) : null;
-            textToSpeak = aya ? aya.getAttribute('text') : "";
-        }
-    }
-
-    if (!textToSpeak || textToSpeak.length < 2) {
-        console.warn("No text available for TTS");
-        return;
-    }
-
-    const cacheKey = `${langCode}_${chNum}_${vNum}`;
-    
-    if (ttsCache[cacheKey]) {
-        elements.transAudio.src = ttsCache[cacheKey];
-        if(play) elements.transAudio.play();
-        return;
-    }
-
-    }
+}
 
 function handleQuranEnd() {
     if (elements.transAudio.src && elements.transAudio.src !== window.location.href) {
@@ -984,18 +1011,22 @@ function handleQuranEnd() {
 }
 
 function nextVerse() {
-    const totalV = elements.selects.verse.options.length;
-    let cV = parseInt(elements.selects.verse.value);
+    const verseWrapper = elements.selects.verse;
+    const totalV = verseWrapper.querySelectorAll('.custom-option').length;
+    let cV = parseInt(getSelectValue(verseWrapper));
     
     if (cV + 1 < totalV) {
-        elements.selects.verse.value = cV + 1;
+        setSelectValue(verseWrapper, cV + 1);
         loadVerse(true);
     } else {
-        let cC = parseInt(elements.selects.chapter.value);
-        if (cC + 1 < elements.selects.chapter.options.length) {
-            elements.selects.chapter.value = cC + 1;
+        const chapterWrapper = elements.selects.chapter;
+        let cC = parseInt(getSelectValue(chapterWrapper));
+        const totalC = chapterWrapper.querySelectorAll('.custom-option').length;
+        
+        if (cC + 1 < totalC) {
+            setSelectValue(chapterWrapper, cC + 1);
             populateVerseSelect();
-            elements.selects.verse.value = 0;
+            setSelectValue(verseWrapper, 0); 
             loadVerse(true);
         }
     }
@@ -1022,41 +1053,6 @@ function setupEventListeners() {
         loadVerse(true); 
     });
 
-    elements.selects.chapter.addEventListener('change', () => { populateVerseSelect(); loadVerse(true); });
-    elements.selects.verse.addEventListener('change', () => loadVerse(true));
-    elements.selects.reciter.addEventListener('change', () => { saveState(); loadVerse(true); });
-    
-    elements.selects.trans.addEventListener('change', async () => {
-        const activeTransId = elements.selects.trans.value;
-        await loadTranslationData(activeTransId); 
-        
-        const chIdx = elements.selects.chapter.value;
-        const vIdx = elements.selects.verse.value;
-        const ch = quranData[chIdx].chapterNumber;
-        const v = quranData[chIdx].verses[vIdx].verseNumber;
-        updateTranslationText(ch, v);
-        saveState();
-    });
-
-    elements.selects.transAudio.addEventListener('change', () => {
-        const chIdx = elements.selects.chapter.value;
-        const vIdx = elements.selects.verse.value;
-        const ch = quranData[chIdx].chapterNumber;
-        const v = quranData[chIdx].verses[vIdx].verseNumber;
-        if (!elements.quranAudio.paused) {
-            updateTranslationAudio(ch, v, false); 
-            saveState();
-            return;
-        }
-        if (!elements.transAudio.paused) {
-            updateTranslationAudio(ch, v, true);
-            saveState();
-            return;
-        }
-        updateTranslationAudio(ch, v, false);
-        saveState();
-    });
-
     elements.quranAudio.addEventListener('ended', handleQuranEnd);
     elements.transAudio.addEventListener('ended', nextVerse);
 
@@ -1064,7 +1060,13 @@ function setupEventListeners() {
         window.addEventListener(e, () => {
             document.body.classList.remove('idle');
             clearTimeout(inactivityTimer);
-            inactivityTimer = setTimeout(() => document.body.classList.add('idle'), 4000);
+            
+            inactivityTimer = setTimeout(() => {
+                // IMPORTANT: Do not idle if a select menu is open!
+                if (!document.querySelector('.custom-select-wrapper.open')) {
+                    document.body.classList.add('idle');
+                }
+            }, 4000);
         })
     );
 
@@ -1086,15 +1088,8 @@ function updateMediaSession(surah, verse, artist) {
     }
 }
 
-
-
-// --- 4. SEARCH & KEYBOARD LOGIC (AI POWERED) ---
-let searchDebounceTimer;
-
 function initSearchInterface() {
     renderKeyboard();
-    
-    // Results delegation
     elements.search.resultsGrid.addEventListener('click', (e) => {
         const card = e.target.closest('.surah-card');
         if(card) {
@@ -1105,19 +1100,11 @@ function initSearchInterface() {
     });
 }
 
-// index.js - OTT Optimized Search Logic
-
-let searchGrid = []; // To store rows for index-based jumping
-let currentKeyRow = 0;
-let currentKeyCol = 0;
-
 function renderKeyboard() {
     const grid = elements.search.keyboardGrid;
     grid.innerHTML = '';
-    
-    // Group keys into rows of 6 for predictable D-Pad movement
     const keysPerRow = 6;
-    searchGrid = [];
+    let searchGrid = [];
     
     for (let i = 0; i < KEYBOARD_KEYS.length; i += keysPerRow) {
         searchGrid.push(KEYBOARD_KEYS.slice(i, i + keysPerRow));
@@ -1129,29 +1116,11 @@ function renderKeyboard() {
             btn.className = 'key';
             btn.textContent = key;
             btn.tabIndex = 0;
-            btn.dataset.row = rowIndex;
-            btn.dataset.col = colIndex;
-            
-            if (['SPACE', 'DEL', 'CLEAR'].includes(key)) {
-                btn.classList.add('wide');
-            }
-
-            // GPU-Accelerated Focus
-            btn.onfocus = () => {
-                currentKeyRow = rowIndex;
-                currentKeyCol = colIndex;
-            };
+            if (['SPACE', 'DEL', 'CLEAR'].includes(key)) btn.classList.add('wide');
 
             btn.onclick = () => handleKeyPress(key);
-            
-            // Explicit D-Pad overrides to stop "Ghost Scrolling"
             btn.onkeydown = (e) => {
                 if (e.key === 'Enter') handleKeyPress(key);
-                // When moving RIGHT from the end of a row, jump to results
-                if (e.key === 'ArrowRight' && colIndex === row.length - 1) {
-                    elements.search.resultsGrid.querySelector('.surah-card')?.focus();
-                    e.preventDefault();
-                }
             };
 
             grid.appendChild(btn);
@@ -1160,11 +1129,6 @@ function renderKeyboard() {
 }
 
 function handleKeyPress(key) {
-    // Add a small "haptic" scale effect for visual confirmation
-    const activeKey = document.activeElement;
-    activeKey.style.transform = 'scale(0.9)';
-    setTimeout(() => activeKey.style.transform = 'scale(1.1)', 100);
-
     if (key === 'SPACE') searchString += ' ';
     else if (key === 'DEL') searchString = searchString.slice(0, -1);
     else if (key === 'CLEAR') searchString = "";
@@ -1172,87 +1136,13 @@ function handleKeyPress(key) {
     
     elements.search.inputDisplay.textContent = searchString;
     
-    // Snappy AI Search Debounce
-    clearTimeout(searchDebounceTimer);
     if (searchString.length > 2) {
-        searchDebounceTimer = setTimeout(() => performAISearch(), 500);
-
-    } else {
-        elements.search.resultsGrid.innerHTML = '<div class="no-results">Type at least 3 characters...</div>';
-    }
-}
-
-// 2026 UPDATE: AI Thinking State
-async function performAISearch() {
-    const query = searchString.trim();
-    const resultsContainer = elements.search.resultsGrid;
-
-    if(!query) return;
-
-    // 2026 UX: Show skeleton "thinking" state
-    resultsContainer.innerHTML = `
-        <div class="ai-thinking">
-            <div class="sparkle-icon">✨</div>
-            <span>Analyzing semantics for "${query}"...</span>
-        </div>
-    `;
-
-    try {
-        // Call Cloudflare Workers AI Endpoint
-        const response = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
-        if (!response.ok) throw new Error("AI Search failed");
-        
-        // Expecting array of Chapter Numbers: e.g., [1, 2, 55]
-        const chapterIds = await response.json();
-
-        resultsContainer.innerHTML = '';
-
-        if (!chapterIds || chapterIds.length === 0) {
-            resultsContainer.innerHTML = '<div class="no-results">No relevant Surahs found.</div>';
-            return;
-        }
-
-        // Map AI results (Integers) to your Local MetaData
-        // We map Chapter Number (1-based) to Array Index (0-based)
-        const foundSurahs = chapterIds
-            .map(num => quranData.find(s => s.chapterNumber === num))
-            .filter(Boolean); // Remove nulls if AI hallucinates a number > 114
-
-        if (foundSurahs.length === 0) {
-            resultsContainer.innerHTML = '<div class="no-results">No matches found.</div>';
-            return;
-        }
-
-        foundSurahs.forEach(surah => {
-            const card = document.createElement('div');
-            card.className = 'surah-card';
-            card.tabIndex = 0;
-            card.dataset.chapter = surah.chapterNumber;
-            // Visual cue that this is an AI result
-            card.style.borderColor = 'rgba(0, 255, 187, 0.3)'; 
-            
-            card.innerHTML = `
-                <div class="card-bg-num">${surah.chapterNumber}</div>
-                <div class="card-title">${surah.english_name}</div>
-                <div class="card-sub">${surah.title || ''}</div>
-            `;
-            card.onclick = () => { closeSearch(); launchPlayer(surah.chapterNumber, 1); };
-            card.onkeydown = (e) => { if(e.key === 'Enter') card.click(); };
-            resultsContainer.appendChild(card);
-        });
-
-    } catch (error) {
-        console.error(error);
-        resultsContainer.innerHTML = '<div class="no-results">Search service unavailable.</div>';
+        elements.search.resultsGrid.innerHTML = '<div class="no-results">Searching...</div>';
     }
 }
 
 function openSearch() {
     elements.search.overlay.classList.add('active');
-    searchString = "";
-    elements.search.inputDisplay.textContent = "";
-    elements.search.resultsGrid.innerHTML = '<div class="no-results">Use the keyboard to describe a topic...<br><span style="font-size:1.2rem;color:#444">(e.g. "Story of Joseph", "Laws of inheritance")</span></div>';
-    
     setTimeout(() => {
         const firstKey = elements.search.keyboardGrid.querySelector('.key');
         if(firstKey) firstKey.focus();
