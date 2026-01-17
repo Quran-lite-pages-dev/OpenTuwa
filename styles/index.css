@@ -138,6 +138,25 @@
             overflow: hidden !important; 
             display: flex; flex-direction: column;
         }
+/* Add anywhere in index.css, ideally near the bottom or under Global Styles */
+
+#transition-fade-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.8s cubic-bezier(0.2, 0, 0, 1); /* "The Netflix Ease" */
+}
+
+#transition-fade-layer.active {
+    opacity: 1;
+    pointer-events: all;
+}
 
         /* --- 2. DASHBOARD STYLES --- */
         #dashboard-view {
