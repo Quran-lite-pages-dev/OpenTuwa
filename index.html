@@ -61,6 +61,165 @@
     
     <script src="src/utils/analytics.js"></script>
     <script src="src/utils/github-redirect.js"></script>
+    <script> 
+        (function() {
+
+    /* -----------------------------------------------------------
+
+       Page Loader
+
+       ----------------------------------------------------------- */
+
+    
+
+    // 1. CSS: Overlay + Loading Spinner Animation
+
+    const css = `
+
+      #_universal_loader {
+
+        position: fixed;
+
+        top: 0;
+
+        left: 0;
+
+        width: 100vw;
+
+        height: 100vh;
+
+        background-color: #000000;
+
+        z-index: 2147483647;
+
+        opacity: 1;
+
+        transition: opacity 1.0s cubic-bezier(0.645, 0.045, 0.355, 1);
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        pointer-events: auto;
+
+      }
+
+      
+
+      /* The Spinner Ring */
+
+      #_loader_spinner {
+
+        width: 50px;
+
+        height: 50px;
+
+        border: 4px solid rgba(255, 255, 255, 0.3); /* Subtle white track */
+
+        border-top: 4px solid #00FFBB; /* aacent */
+
+        border-radius: 50%;
+
+        animation: _spin 1s linear infinite;
+
+      }
+
+
+
+      @keyframes _spin {
+
+        0% { transform: rotate(0deg); }
+
+        100% { transform: rotate(360deg); }
+
+      }
+
+      
+
+      /* Hide state */
+
+      #_universal_loader.loaded {
+
+        opacity: 0;
+
+        pointer-events: none;
+
+      }
+
+    `;
+
+
+
+    // 2. Inject CSS
+
+    const style = document.createElement('style');
+
+    style.appendChild(document.createTextNode(css));
+
+    document.head.appendChild(style);
+
+
+
+    // 3. Create Overlay & Spinner
+
+    const overlay = document.createElement('div');
+
+    overlay.id = '_universal_loader';
+
+    
+
+    const spinner = document.createElement('div');
+
+    spinner.id = '_loader_spinner';
+
+    
+
+    overlay.appendChild(spinner);
+
+    document.documentElement.appendChild(overlay);
+
+
+
+    // 4. Reveal Function
+
+    function revealPage() {
+
+        overlay.classList.add('loaded');
+
+        setTimeout(() => {
+
+            if (overlay.parentNode) {
+
+                overlay.parentNode.removeChild(overlay);
+
+            }
+
+        }, 1000); // Matches transition time
+
+    }
+
+
+
+    // 5. Trigger Logic (Wait for everything)
+
+    if (document.readyState === 'complete') {
+
+        revealPage();
+
+    } else {
+
+        window.addEventListener('load', revealPage);
+
+        // Safety timeout: Remove loader after 8s even if page is stuck
+
+        setTimeout(revealPage, 8000);
+
+    }
+
+})();
+    </script>
     </head>
 <body>
 
