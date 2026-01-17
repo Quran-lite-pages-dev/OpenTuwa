@@ -37,7 +37,13 @@
     "audioTrans": "音频翻译",
     "start": "开始",
     "continue": "继续",
-    "buffering": "加载中..."
+    "buffering": "加载中...",
+    "suraName": "章节名称",
+    "suraNameMeaning": "章节名称含义",
+    "noAudioTranslation": "无音频翻译"
+  },
+  "card": {
+    "subtitleLabel": "阿拉伯标题"
   },
   "quickAccess": {
     "title": "快速访问",

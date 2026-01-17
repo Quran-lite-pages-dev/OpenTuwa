@@ -37,7 +37,13 @@
     "audioTrans": "Audio Traduit",
     "start": "Démarrer",
     "continue": "Continuer",
-    "buffering": "Chargement..."
+    "buffering": "Chargement...",
+    "suraName": "Nom de la Sourate",
+    "suraNameMeaning": "Signification du nom de la Sourate",
+    "noAudioTranslation": "Pas de Traduction Audio"
+  },
+  "card": {
+    "subtitleLabel": "Titre Arabe"
   },
   "quickAccess": {
     "title": "Accès Rapide",

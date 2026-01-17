@@ -37,7 +37,13 @@
     "audioTrans": "Audio Trans",
     "start": "Comenzar",
     "continue": "Continuar",
-    "buffering": "Cargando..."
+    "buffering": "Cargando...",
+    "suraName": "Nombre de la Sura",
+    "suraNameMeaning": "Significado del nombre de la Sura",
+    "noAudioTranslation": "Sin Traducción de Audio"
+  },
+  "card": {
+    "subtitleLabel": "Título Árabe"
   },
   "quickAccess": {
     "title": "Acceso Rápido",

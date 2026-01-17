@@ -37,7 +37,13 @@
     "audioTrans": "Audio Trans",
     "start": "Start",
     "continue": "Continue",
-    "buffering": "Loading..."
+    "buffering": "Loading...",
+    "suraName": "Sura name",
+    "suraNameMeaning": "Sura name meaning",
+    "noAudioTranslation": "No Audio Translation"
+  },
+  "card": {
+    "subtitleLabel": "Arabic Title"
   },
   "quickAccess": {
     "title": "Quick Access",

@@ -37,7 +37,13 @@
     "audioTrans": "אודיו מתורגם",
     "start": "התחל",
     "continue": "המשך",
-    "buffering": "טוען..."
+    "buffering": "טוען...",
+    "suraName": "שם הסורה",
+    "suraNameMeaning": "משמעות שם הסורה",
+    "noAudioTranslation": "אין תרגום אודיו"
+  },
+  "card": {
+    "subtitleLabel": "כותרת בערבית"
   },
   "quickAccess": {
     "title": "גישה מהירה",

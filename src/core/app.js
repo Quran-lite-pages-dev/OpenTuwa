@@ -192,7 +192,7 @@ const RECITERS_CONFIG = {
 };
 
 const TRANSLATION_AUDIO_CONFIG = {
-    'none': { name: 'No Audio Translation' },
+    'none': { name: 'No Audio Translation' }, // Will be replaced with translation
     'en_walk': { name: 'English (Ibrahim Walk)', path: 'English/Sahih_Intnl_Ibrahim_Walk_192kbps' },
     'id_ministry': { name: 'Indonesian (Ministry)', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/audio/play/id' },
     'es': { name: 'Español', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/audio/play' }
@@ -538,6 +538,7 @@ function refreshDashboard() {
 function fillRow(elementId, indexArray) {
     const container = document.getElementById(elementId);
     const fragment = document.createDocumentFragment();
+    const currentLocale = window.getLocale ? window.getLocale() : 'en';
     
     indexArray.forEach(idx => {
         if(!quranData[idx]) return;
@@ -545,9 +546,19 @@ function fillRow(elementId, indexArray) {
         const card = document.createElement('div');
         card.className = 'surah-card';
         card.tabIndex = 0;
+        
+        // Use Arabic script for card-title if locale is Arabic
+        let cardTitle = surah.english_name;
+        if (currentLocale === 'ar' && window.t) {
+            const arabicName = window.t(`surahNames.${surah.english_name}`);
+            if (arabicName && arabicName !== `surahNames.${surah.english_name}`) {
+                cardTitle = arabicName;
+            }
+        }
+        
         card.innerHTML = `
             <div class="card-bg-num">${surah.chapterNumber}</div>
-            <div class="card-title">${surah.english_name}</div>
+            <div class="card-title">${cardTitle}</div>
             <div class="card-sub">${surah.title || ''}</div>
         `;
         card.onclick = () => launchPlayer(surah.chapterNumber, 1);
@@ -563,7 +574,18 @@ function schedulePreview(chapterNum) {
     if (previewTimeout) clearTimeout(previewTimeout);
     stopPreview();
     const surah = quranData[chapterNum - 1];
-    document.getElementById('door-hero-title').textContent = surah.english_name;
+    const currentLocale = window.getLocale ? window.getLocale() : 'en';
+    
+    // Use Arabic script for hero title if locale is Arabic
+    let heroTitle = surah.english_name;
+    if (currentLocale === 'ar' && window.t) {
+        const arabicName = window.t(`surahNames.${surah.english_name}`);
+        if (arabicName && arabicName !== `surahNames.${surah.english_name}`) {
+            heroTitle = arabicName;
+        }
+    }
+    
+    document.getElementById('door-hero-title').textContent = heroTitle;
     document.getElementById('door-hero-subtitle').textContent = surah.title;
     document.getElementById('door-play-btn').onclick = () => launchPlayer(chapterNum, 1);
 
@@ -785,10 +807,26 @@ function saveState() {
 }
 
 function populateChapterSelect() {
-    const items = quranData.map((c, i) => ({
-        value: i,
-        text: `${c.chapterNumber}. ${c.english_name} - ${c.title || ''}`
-    }));
+    const currentLocale = window.getLocale ? window.getLocale() : 'en';
+    const suraNameLabel = window.t ? window.t('player.suraName') : 'Sura name';
+    const suraNameMeaningLabel = window.t ? window.t('player.suraNameMeaning') : 'Sura name meaning';
+    
+    const items = quranData.map((c, i) => {
+        // Use Arabic script for title if locale is Arabic
+        let title = c.english_name;
+        if (currentLocale === 'ar' && window.t) {
+            const arabicName = window.t(`surahNames.${c.english_name}`);
+            if (arabicName && arabicName !== `surahNames.${c.english_name}`) {
+                title = arabicName;
+            }
+        }
+        
+        // Format: "1. [Sura name] - [Arabic title]"
+        return {
+            value: i,
+            text: `${c.chapterNumber}. ${title} - ${c.title || ''}`
+        };
+    });
     
     populateCustomSelect(elements.selects.chapter, items, (val) => {
         populateVerseSelect(); 
@@ -822,10 +860,20 @@ function populateReciterSelect() {
 }
 
 function populateTranslationAudioSelect() {
-    const items = Object.entries(TRANSLATION_AUDIO_CONFIG).map(([k, v]) => ({
-        value: k,
-        text: v.name
-    }));
+    // Get translated name for 'none' option
+    let noneName = 'No Audio Translation';
+    if (window.t) {
+        noneName = window.t('player.noAudioTranslation');
+    }
+    
+    const items = Object.entries(TRANSLATION_AUDIO_CONFIG).map(([k, v]) => {
+        // Use translation for 'none' option
+        const displayName = (k === 'none') ? noneName : v.name;
+        return {
+            value: k,
+            text: displayName
+        };
+    });
     populateCustomSelect(elements.selects.transAudio, items, (val) => {
         const chIdx = getSelectValue(elements.selects.chapter);
         const vIdx = getSelectValue(elements.selects.verse);
