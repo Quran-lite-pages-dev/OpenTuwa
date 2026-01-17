@@ -242,9 +242,6 @@ const elements = {
         resultsGrid: document.getElementById('search-results-grid')
     },
     subtitle: document.getElementById('hero-subtitle-overlay')
-
-// ADD THIS:
-    transitionLayer: document.getElementById('transition-fade-layer')
 };
 
 let quranData = []; 
@@ -414,42 +411,25 @@ function mergeMetadata(apiChapters) {
 }
 
 function switchView(viewName) {
-    if (viewName === 'cinema') {
-        // 1. Fade to Black
-        elements.transitionLayer.classList.add('active');
-
-        // 2. Wait for the screen to be fully black (600ms match CSS roughly)
+    if(viewName === 'cinema') {
+        elements.views.dashboard.classList.remove('active');
+        elements.views.cinema.classList.add('active');
+        elements.views.cinema.style.opacity = '1';
+        stopPreview();
+        elements.sidebar.container.style.display = 'none';
+        
         setTimeout(() => {
-            // 3. Perform the swap "in the dark"
-            elements.views.dashboard.classList.remove('active');
-            elements.views.cinema.classList.add('active');
-            elements.views.cinema.style.opacity = '1';
-            
-            stopPreview();
-            elements.sidebar.container.style.display = 'none';
-
-            // 4. Focus management
             const chapterTrigger = elements.selects.chapter.querySelector('.custom-select-trigger');
-            if (chapterTrigger) chapterTrigger.focus();
-
-            // 5. Fade out (reveal Cinema) after a brief "dramatic pause"
-            setTimeout(() => {
-                elements.transitionLayer.classList.remove('active');
-            }, 300); 
-
-        }, 600); // Wait for fade-in to complete
-
+            if(chapterTrigger) chapterTrigger.focus();
+        }, 150);
     } else {
-        // Switching back to Dashboard (keep this fast or add logic if you want fade here too)
         elements.views.cinema.classList.remove('active');
         elements.views.cinema.style.opacity = '0';
         elements.views.dashboard.classList.add('active');
         elements.sidebar.container.style.display = 'none';
-        
         elements.quranAudio.pause();
         elements.transAudio.pause();
         refreshDashboard();
-        
         document.getElementById('door-play-btn').focus();
     }
 }
