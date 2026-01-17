@@ -1,127 +1,124 @@
 // Copy of metadata from your app.js so the server knows it
 const SURAH_METADATA = [
-{ "chapter": 1, "english_name": "The Opening", "description": "Revealed in Mecca, this is the fundamental prayer of Islam, summarizing the core relationship between God and humanity. It is recited in every unit of prayer. (7 verses)" },
-          { "chapter": 2, "english_name": "The Cow", "description": "The longest Surah, revealed in Medina. It establishes Islamic laws, recounts the stories of Moses (Peace be upon him), and guides the new Muslim community. (286 verses)" },
-          { "chapter": 3, "english_name": "The Family of Imran", "description": "A Medinan chapter focusing on the Oneness of God, the family of Mary (Peace be upon her) and Jesus (Peace be upon him), and lessons from the Battle of Uhud. (200 verses)" },
-          { "chapter": 4, "english_name": "The Women", "description": "Revealed in Medina after the Battle of Uhud, addressing the rights of women, care for orphans, inheritance laws, and the protection of the vulnerable within society. (176 verses)" },
-          { "chapter": 5, "english_name": "The Table Spread", "description": "One of the last revealed Surahs, finalizing dietary laws and discussing the miracle of the table requested by the disciples of Jesus (Peace be upon him) and the fulfillment of covenants. (120 verses)" },
-          { "chapter": 6, "english_name": "The Cattle", "description": "A late Meccan Surah emphasizing pure monotheism, rejecting superstition, and detailing the nature of God's infinite power over creation. (165 verses)" },
-          { "chapter": 7, "english_name": "The Heights", "description": "A Meccan chapter detailing the history of prophets from Adam (Peace be upon him) to Moses (Peace be upon him), warning against arrogance and describing the Day of Judgment. (206 verses)" },
-          { "chapter": 8, "english_name": "The Spoils of War", "description": "Revealed after the Battle of Badr, clarifying the ethics of warfare, the distribution of spoils, and the importance of placing full trust in God. (75 verses)" },
-          { "chapter": 9, "english_name": "The Repentance", "description": "A Medinan text issued before the Tabuk expedition, addressing treaty violations by polytheists and the issue of hypocrisy; it is the only Surah that does not begin with 'Bismillah'. (129 verses)" },
-          { "chapter": 10, "english_name": "Jonah", "description": "A Meccan Surah emphasizing God's Oneness and citing the story of the people of Jonah (Peace be upon him), who were saved by their timely repentance. (109 verses)" },
-          { "chapter": 11, "english_name": "Hud", "description": "Revealed during a difficult period in Mecca, recounting stories of previous prophets like Noah (Peace be upon him) and Hud (Peace be upon him) to comfort the Prophet Muhammad (Peace be upon him). (123 verses)" },
-          { "chapter": 12, "english_name": "Joseph", "description": "A unique Meccan Surah devoted entirely to the story of Joseph (Peace be upon him), illustrating patience, divine destiny, and family reconciliation. (111 verses)" },
-          { "chapter": 13, "english_name": "The Thunder", "description": "Revealed in Medina, utilizing natural phenomena like thunder to argue for the existence of God and the absolute truth of the resurrection. (43 verses)" },
-          { "chapter": 14, "english_name": "Abraham", "description": "A Meccan chapter highlighting the prayer of Abraham (Peace be upon him) for the sanctuary of Mecca and contrasting the gratitude of believers with the ingratitude of disbelievers. (52 verses)" },
-          { "chapter": 15, "english_name": "The Rocky Tract", "description": "A Meccan Surah reassuring the Prophet (Peace be upon him) against mockery and detailing the story of Satan's refusal to bow to Adam (Peace be upon him). (99 verses)" },
-          { "chapter": 16, "english_name": "The Bee", "description": "A Meccan chapter calling attention to God's blessings in nature, specifically the bee, and warning against associating partners with God. (128 verses)" },
-          { "chapter": 17, "english_name": "The Night Journey", "description": "Commemorates the Prophet Muhammad's (Peace be upon him) miraculous night journey from Mecca to Jerusalem and ascension to the heavens, establishing the five daily prayers. (111 verses)" },
-          { "chapter": 18, "english_name": "The Cave", "description": "A Meccan Surah telling the story of the Sleepers of the Cave and Moses (Peace be upon him), focusing on maintaining faith during times of trial. (110 verses)" },
-          { "chapter": 19, "english_name": "Mary", "description": "A Meccan chapter detailing the miraculous births of Jesus (Peace be upon him) and John (Peace be upon him), emphasizing God's mercy and refuting the concept of God having a son. (98 verses)" },
-          { "chapter": 20, "english_name": "Ta-Ha", "description": "Revealed in Mecca, this Surah details the story of Moses (Peace be upon him) confronting Pharaoh and offers comfort to the Prophet Muhammad (Peace be upon him). (135 verses)" },
-          { "chapter": 21, "english_name": "The Prophets", "description": "A Meccan text referencing many prophets (Peace be upon them) to show the continuity of the divine message and the inevitability of Judgment Day. (112 verses)" },
-          { "chapter": 22, "english_name": "The Pilgrimage", "description": "A Medinan Surah establishing the rituals of the Hajj pilgrimage and giving permission to believers to defend themselves against oppression. (78 verses)" },
-          { "chapter": 23, "english_name": "The Believers", "description": "Revealed in Mecca, outlining the moral qualities of true believers and the miraculous stages of human embryonic development. (118 verses)" },
-          { "chapter": 24, "english_name": "The Light", "description": "A Medinan chapter focusing on social ethics, laws against slander (specifically regarding Aisha, may Allah be pleased with her), and the famous 'Verse of Light'. (64 verses)" },
-          { "chapter": 25, "english_name": "The Criterion", "description": "A Meccan Surah distinguishing right from wrong, answering objections raised against the Quran, and describing the virtues of the 'Servants of the Most Merciful'. (77 verses)" },
-          { "chapter": 26, "english_name": "The Poets", "description": "A Meccan chapter recounting the struggles of past prophets (Peace be upon them) and criticizing poets who mislead people with falsehoods. (227 verses)" },
-          { "chapter": 27, "english_name": "The Ant", "description": "Revealed in Mecca, featuring the story of Solomon (Peace be upon him), the Queen of Sheba, and the ant, emphasizing knowledge and gratitude. (93 verses)" },
-          { "chapter": 28, "english_name": "The Narratives", "description": "A Meccan Surah detailing the life of Moses (Peace be upon him) before prophethood and the arrogance of Korah (Qarun) regarding wealth. (88 verses)" },
-          { "chapter": 29, "english_name": "The Spider", "description": "A Meccan chapter using the metaphor of a spider's web to describe the fragility of false beliefs and the necessity of testing one's faith. (69 verses)" },
-          { "chapter": 30, "english_name": "The Romans", "description": "Revealed in Mecca, predicting the Byzantine (Roman) victory over the Persians as a sign of God's control over historical events. (60 verses)" },
-          { "chapter": 31, "english_name": "Luqman", "description": "A Meccan Surah containing the wisdom and advice of the sage Luqman to his son regarding faith, gratitude, and behavior. (34 verses)" },
-          { "chapter": 32, "english_name": "The Prostration", "description": "A Meccan chapter emphasizing the creation of man, the revelation of the Book, and the absolute certainty of the Day of Judgment. (30 verses)" },
-          { "chapter": 33, "english_name": "The Combined Forces", "description": "Revealed in Medina during the Battle of the Trench, addressing social reforms, adoption, and the status of the Prophet's (Peace be upon him) wives. (73 verses)" },
-          { "chapter": 34, "english_name": "Sheba", "description": "A Meccan Surah contrasting the gratitude of David (Peace be upon him) and Solomon (Peace be upon him) with the ingratitude of the people of Sheba. (54 verses)" },
-          { "chapter": 35, "english_name": "The Originator", "description": "A Meccan chapter praising God as the Creator of angels and the universe, warning against the deception of worldly life. (45 verses)" },
-          { "chapter": 36, "english_name": "Ya-Sin - O Man", "description": "Known as the 'heart of the Quran', this Meccan Surah focuses on the Quran's divine source, the signs of nature, and the resurrection. (83 verses)" },
-          { "chapter": 37, "english_name": "Those Who Set The Ranks", "description": "A Meccan chapter describing the ranks of angels and the eventual triumph of God's messengers (Peace be upon them) over opposition. (182 verses)" },
-          { "chapter": 38, "english_name": "The Letter Sad", "description": "Revealed in Mecca, discussing the patience of prophets like David (Peace be upon him) and Job (Peace be upon him) and the arrogance of Satan. (88 verses)" },
-          { "chapter": 39, "english_name": "The Troops", "description": "A Meccan Surah focusing heavily on the Oneness of God (Tawhid) and the distinct outcomes for believers and disbelievers. (75 verses)" },
-          { "chapter": 40, "english_name": "The Forgiver", "description": "A Meccan chapter telling the story of a believing man in Pharaoh's court and emphasizing God's forgiveness and power. (85 verses)" },
-          { "chapter": 41, "english_name": "Explained in Detail", "description": "A Meccan Surah describing the Quran's clarity and the testimony of man's own faculties (skin and ears) against him on Judgment Day. (54 verses)" },
-          { "chapter": 42, "english_name": "The Consultation", "description": "A Meccan chapter emphasizing 'Shura' (consultation) among believers and the unity of the message given to all prophets (Peace be upon them). (53 verses)" },
-          { "chapter": 43, "english_name": "The Ornaments of Gold", "description": "A Meccan Surah criticizing the obsession with worldly wealth and correcting false attributions of daughters/offspring to God. (89 verses)" },
-          { "chapter": 44, "english_name": "The Smoke", "description": "A Meccan chapter warning of a coming punishment (smoke) and recounting the failure of Pharaoh to heed Moses (Peace be upon him). (59 verses)" },
-          { "chapter": 45, "english_name": "The Crouching", "description": "A Meccan Surah describing the humility of all nations kneeling before God on Judgment Day and the proofs of God in nature. (37 verses)" },
-          { "chapter": 46, "english_name": "The Wind-Curved Sandhills", "description": "A Meccan chapter mentioning the Jinn listening to the Quran and advising kindness and dutifulness to parents. (35 verses)" },
-          { "chapter": 47, "english_name": "Muhammad (Peace be upon him)", "description": "A Medinan Surah named after the Prophet (Peace be upon him), focused on the believers' struggle for the cause of truth and the nullification of disbelievers' deeds. (38 verses)" },
-          { "chapter": 48, "english_name": "The Victory", "description": "Revealed after the Treaty of Hudaybiyyah, declaring it a clear victory and promising the future peaceful conquest of Mecca. (29 verses)" },
-          { "chapter": 49, "english_name": "The Rooms", "description": "A Medinan chapter teaching manners, respect for the Prophet (Peace be upon him), and the brotherhood of all believers regardless of race. (18 verses)" },
-          { "chapter": 50, "english_name": "The Letter Qaf", "description": "A Meccan Surah emphasizing the resurrection and how every human deed is recorded by guardian angels. (45 verses)" },
-          { "chapter": 51, "english_name": "The Winnowing Winds", "description": "A Meccan chapter discussing the purpose of creating humans and Jinn—solely to worship God. (60 verses)" },
-          { "chapter": 52, "english_name": "The Mount", "description": "A Meccan Surah swearing by Mount Sinai, describing the bliss of Paradise for the righteous and the fate of deniers. (49 verses)" },
-          { "chapter": 53, "english_name": "The Star", "description": "A Meccan chapter confirming the divine source of the Prophet's (Peace be upon him) vision during his ascension and refuting idol worship. (62 verses)" },
-          { "chapter": 54, "english_name": "The Moon", "description": "A Meccan Surah referencing the splitting of the moon as a sign and recounting the punishments of past nations who rejected their prophets. (55 verses)" },
-          { "chapter": 55, "english_name": "The Beneficent", "description": "A Meccan chapter known as the 'Bride of the Quran,' repeatedly asking 'Which of the favors of your Lord will you deny?' (78 verses)" },
-          { "chapter": 56, "english_name": "The Inevitable", "description": "A Meccan Surah categorizing people into three groups in the afterlife: the foremost, the companions of the right, and the companions of the left. (96 verses)" },
-          { "chapter": 57, "english_name": "The Iron", "description": "A Medinan chapter encouraging charity, described as a 'goodly loan' to God, and mentioning iron as a tool given for humanity's benefit. (29 verses)" },
-          { "chapter": 58, "english_name": "The Pleading Woman", "description": "A Medinan Surah addressing marital issues and God's omniscience, hearing every conversation, including secret counsels. (22 verses)" },
-          { "chapter": 59, "english_name": "The Exile", "description": "Revealed in Medina concerning the consequences for the Banu Nadir tribe who broke their treaty, and the distribution of wealth. (24 verses)" },
-          { "chapter": 60, "english_name": "She That Is To Be Examined", "description": "A Medinan chapter regarding the treatment of women refugees and establishing that kindness is due to non-believers who do not fight against Muslims. (13 verses)" },
-          { "chapter": 61, "english_name": "The Ranks", "description": "A Medinan Surah urging believers to align their actions with their words and predicting the coming of a messenger named Ahmad (Muhammad, Peace be upon him). (14 verses)" },
-          { "chapter": 62, "english_name": "The Congregation", "description": "A Medinan chapter establishing the importance of the Friday congregational prayer (Jumu'ah) over worldly commerce. (11 verses)" },
-          { "chapter": 63, "english_name": "The Hypocrites", "description": "A Medinan Surah exposing the deceit of the hypocrites who internally opposed the Prophet (Peace be upon him) while pretending to believe. (11 verses)" },
-          { "chapter": 64, "english_name": "The Mutual Disillusion", "description": "A Medinan chapter describing Judgment Day as a day of mutual gain and loss, emphasizing reliance on God alone. (18 verses)" },
-          { "chapter": 65, "english_name": "The Divorce", "description": "A Medinan Surah outlining the specific laws, waiting periods (Iddah), and maintenance rights regarding divorce. (12 verses)" },
-          { "chapter": 66, "english_name": "The Prohibition", "description": "A Medinan chapter addressing a domestic incident in the Prophet's (Peace be upon him) household and holding up the righteous wives of Noah (Peace be upon him) and Lot (Peace be upon him) as examples. (12 verses)" },
-          { "chapter": 67, "english_name": "The Sovereignty", "description": "A Meccan Surah affirming God's dominion over life and death. (30 verses)" },
-          { "chapter": 68, "english_name": "The Pen", "description": "A Meccan chapter defending the Prophet's (Peace be upon him) sanity and character against accusers, and telling the parable of the owners of the garden. (52 verses)" },
-          { "chapter": 69, "english_name": "The Reality", "description": "A Meccan Surah describing the inevitable destruction of past nations and the terrifying events of the Day of Judgment. (52 verses)" },
-          { "chapter": 70, "english_name": "The Ascending Stairways", "description": "A Meccan chapter focusing on the patience required of the Prophet (Peace be upon him) and the eventual punishment of the disbelievers. (44 verses)" },
-          { "chapter": 71, "english_name": "Noah", "description": "A Meccan Surah dedicated to Noah's (Peace be upon him) tireless but largely rejected preaching to his people before the flood. (28 verses)" },
-          { "chapter": 72, "english_name": "The Jinn", "description": "A Meccan chapter recounting how a group of Jinn listened to the Quran and accepted Islam, acknowledging God's oneness. (28 verses)" },
-          { "chapter": 73, "english_name": "The Enshrouded One", "description": "A Meccan Surah instructing the Prophet (Peace be upon him) to pray during the night and to bear patiently with those who deny the truth. (20 verses)" },
-          { "chapter": 74, "english_name": "The Cloaked One", "description": "One of the earliest Meccan revelations, commanding the Prophet (Peace be upon him) to arise, warn the people, and purify himself. (56 verses)" },
-          { "chapter": 75, "english_name": "The Resurrection", "description": "A Meccan chapter emphasizing the certainty of the resurrection and the Prophet's (Peace be upon him) eagerness to memorize the revelation. (40 verses)" },
-          { "chapter": 76, "english_name": "Man", "description": "A Medinan Surah describing the rewards of the righteous in Paradise, particularly those who feed the poor, orphans, and captives. (31 verses)" },
-          { "chapter": 77, "english_name": "The Emissaries", "description": "A Meccan chapter swearing by the winds, emphasizing the inevitability of the Day of Decision and warning deniers. (50 verses)" },
-          { "chapter": 78, "english_name": "The Tidings", "description": "A Meccan Surah questioning those who deny the afterlife and vividly describing the day when the trumpet is blown. (40 verses)" },
-          { "chapter": 79, "english_name": "Those Who Drag Forth", "description": "A Meccan chapter describing the angels who take souls at death and the story of Moses (Peace be upon him) calling Pharaoh to account. (46 verses)" },
-          { "chapter": 80, "english_name": "He Frowned", "description": "A Meccan Surah correcting the Prophet (Peace be upon him) for prioritizing a wealthy leader over a blind man seeking knowledge. (42 verses)" },
-          { "chapter": 81, "english_name": "The Overthrowing", "description": "A Meccan chapter depicting the cosmic upheavals at the end of the world, such as the sun being darkened. (29 verses)" },
-          { "chapter": 82, "english_name": "The Cleaving", "description": "A Meccan Surah warning humanity about their delusion regarding God and describing the recording of deeds by angels. (19 verses)" },
-          { "chapter": 83, "english_name": "The Defrauding", "description": "A Meccan chapter condemning those who cheat in business weights and measures, warning of the record of the wicked. (36 verses)" },
-          { "chapter": 84, "english_name": "The Sundering", "description": "A Meccan Surah describing the sky splitting open and humanity laboring toward their Lord to receive their records. (25 verses)" },
-          { "chapter": 85, "english_name": "The Mansions of the Stars", "description": "A Meccan chapter recounting the story of the People of the Ditch who were persecuted for their faith. (22 verses)" },
-          { "chapter": 86, "english_name": "The Morning Star", "description": "A Meccan Surah discussing the creation of man and the distinctness of the Quran's message. (17 verses)" },
-          { "chapter": 87, "english_name": "The Most High", "description": "A Meccan chapter emphasizing the purification of the soul and reminding that the Hereafter is better and more enduring. (19 verses)" },
-          { "chapter": 88, "english_name": "The Overwhelming", "description": "A Meccan Surah contrasting the terrified state of the damned with the peaceful state of the believers in Paradise. (26 verses)" },
-          { "chapter": 89, "english_name": "The Dawn", "description": "A Meccan chapter warning against the greed for wealth and mentioning the punishment of ancient tribes like Ad and Thamud. (30 verses)" },
-          { "chapter": 90, "english_name": "The City", "description": "A Meccan Surah defining the 'steep path' of righteousness as freeing slaves and feeding the hungry. (20 verses)" },
-          { "chapter": 91, "english_name": "The Sun", "description": "A Meccan chapter linking the purification of the soul to success and corruption to failure, citing the Thamud. (15 verses)" },
-          { "chapter": 92, "english_name": "The Night", "description": "A Meccan Surah contrasting those who give in charity with those who are miserly, warning of the consequences. (21 verses)" },
-          { "chapter": 93, "english_name": "The Morning Hours", "description": "Revealed in Mecca to comfort the Prophet (Peace be upon him) after a pause in revelation, promising that his future will be better than his past. (11 verses)" },
-          { "chapter": 94, "english_name": "The Relief", "description": "A Meccan chapter reassuring the Prophet (Peace be upon him) that with every hardship comes ease and that his burden has been lifted. (8 verses)" },
-          { "chapter": 95, "english_name": "The Fig", "description": "A Meccan Surah stating that man was created in the best stature but will fall to the lowest depth unless he believes and does good works. (8 verses)" },
-          { "chapter": 96, "english_name": "The Clot", "description": "The first revelation received by the Prophet (Peace be upon him) in Mecca, commanding him to read in the name of his Lord. (19 verses)" },
-          { "chapter": 97, "english_name": "The Power", "description": "A Meccan chapter describing the Night of Decree (Laylat al-Qadr), which is better than a thousand months. (5 verses)" },
-          { "chapter": 98, "english_name": "The Clear Proof", "description": "A Medinan Surah distinguishing true believers from disbelievers among the People of the Book and polytheists. (8 verses)" },
-          { "chapter": 99, "english_name": "The Earthquake", "description": "A Medinan chapter vividly describing the earth shaking on Judgment Day and yielding up its burdens and secrets. (8 verses)" },
-          { "chapter": 100, "english_name": "The Courser", "description": "A Meccan Surah using the imagery of charging warhorses to describe the ungrateful nature of mankind. (11 verses)" },
-          { "chapter": 101, "english_name": "The Calamity", "description": "A Meccan chapter depicting the Day of Judgment where people will be like scattered moths and mountains like wool. (11 verses)" },
-          { "chapter": 102, "english_name": "The Rivalry in World Increase", "description": "A Meccan Surah warning that the obsession with accumulating more wealth and status distracts people until they reach the grave. (8 verses)" },
-          { "chapter": 103, "english_name": "The Declining Day", "description": "A Meccan chapter summarizing that all mankind is in loss except those who believe, do good, and advise one another to truth and patience. (3 verses)" },
-          { "chapter": 104, "english_name": "The Traducer", "description": "A Meccan Surah condemning the backbiter and the one who hoards wealth, warning of the crushing fire. (9 verses)" },
-          { "chapter": 105, "english_name": "The Elephant", "description": "A Meccan chapter recalling the destruction of Abraha's army of elephants who attempted to destroy the Kaaba. (5 verses)" },
-          { "chapter": 106, "english_name": "Quraysh", "description": "A Meccan Surah reminding the Quraysh tribe of God's protection and provision during their trading journeys. (4 verses)" },
-          { "chapter": 107, "english_name": "The Small Kindnesses", "description": "A Meccan chapter condemning those who deny the judgment by mistreating orphans and performing prayers only to be seen. (7 verses)" },
-          { "chapter": 108, "english_name": "The Abundance", "description": "The shortest Surah, revealed in Mecca, promising the Prophet (Peace be upon him) an abundance of good and the cutting off of his enemies. (3 verses)" },
-          { "chapter": 109, "english_name": "The Disbelievers", "description": "A Meccan Surah declaring the absolute distinction between the worship of Muslims and the worship of polytheists. (6 verses)" },
-          { "chapter": 110, "english_name": "The Divine Support", "description": "A Medinan chapter, one of the last revealed, predicting the mass entry of people into Islam and the Prophet's (Peace be upon him) passing. (3 verses)" },
-          { "chapter": 111, "english_name": "The Palm Fiber", "description": "A Meccan Surah condemning Abu Lahab, an uncle and enemy of the Prophet (Peace be upon him), and his wife to the Fire. (5 verses)" },
-          { "chapter": 112, "english_name": "The Sincerity", "description": "A Meccan chapter that is the essence of monotheism, declaring God is One, Eternal, with no offspring or equal. (4 verses)" },
-          { "chapter": 113, "english_name": "The Daybreak", "description": "A Meccan Surah seeking refuge in the Lord of the dawn from the evil of created things and envy. (5 verses)" },
-          { "chapter": 114, "english_name": "Mankind", "description": "A Meccan chapter seeking refuge in the Lord of mankind from the whispers of devils and men. (6 verses)" }
-        ];
+  { "chapter": 1, "english_name": "The Opening", "description": "Revealed in Mecca, this is the fundamental prayer of Islam, summarizing the core relationship between God and humanity. It is recited in every unit of prayer. (7 verses)" },
+  { "chapter": 2, "english_name": "The Cow", "description": "The longest Surah, revealed in Medina. It establishes Islamic laws, recounts the stories of Moses (Peace be upon him), and guides the new Muslim community. (286 verses)" },
+  { "chapter": 3, "english_name": "The Family of Imran", "description": "A Medinan chapter focusing on the Oneness of God, the family of Mary (Peace be upon her) and Jesus (Peace be upon him), and lessons from the Battle of Uhud. (200 verses)" },
+  { "chapter": 4, "english_name": "The Women", "description": "Revealed in Medina after the Battle of Uhud, addressing the rights of women, care for orphans, inheritance laws, and the protection of the vulnerable within society. (176 verses)" },
+  { "chapter": 5, "english_name": "The Table Spread", "description": "One of the last revealed Surahs, finalizing dietary laws and discussing the miracle of the table requested by the disciples of Jesus (Peace be upon him) and the fulfillment of covenants. (120 verses)" },
+  { "chapter": 6, "english_name": "The Cattle", "description": "A late Meccan Surah emphasizing pure monotheism, rejecting superstition, and detailing the nature of God's infinite power over creation. (165 verses)" },
+  { "chapter": 7, "english_name": "The Heights", "description": "A Meccan chapter detailing the history of prophets from Adam (Peace be upon him) to Moses (Peace be upon him), warning against arrogance and describing the Day of Judgment. (206 verses)" },
+  { "chapter": 8, "english_name": "The Spoils of War", "description": "Revealed after the Battle of Badr, clarifying the ethics of warfare, the distribution of spoils, and the importance of placing full trust in God. (75 verses)" },
+  { "chapter": 9, "english_name": "The Repentance", "description": "A Medinan text issued before the Tabuk expedition, addressing treaty violations by polytheists and the issue of hypocrisy; it is the only Surah that does not begin with 'Bismillah'. (129 verses)" },
+  { "chapter": 10, "english_name": "Jonah", "description": "A Meccan Surah emphasizing God's Oneness and citing the story of the people of Jonah (Peace be upon him), who were saved by their timely repentance. (109 verses)" },
+  { "chapter": 11, "english_name": "Hud", "description": "Revealed during a difficult period in Mecca, recounting stories of previous prophets like Noah (Peace be upon him) and Hud (Peace be upon him) to comfort the Prophet Muhammad (Peace be upon him). (123 verses)" },
+  { "chapter": 12, "english_name": "Joseph", "description": "A unique Meccan Surah devoted entirely to the story of Joseph (Peace be upon him), illustrating patience, divine destiny, and family reconciliation. (111 verses)" },
+  { "chapter": 13, "english_name": "The Thunder", "description": "Revealed in Medina, utilizing natural phenomena like thunder to argue for the existence of God and the absolute truth of the resurrection. (43 verses)" },
+  { "chapter": 14, "english_name": "Abraham", "description": "A Meccan chapter highlighting the prayer of Abraham (Peace be upon him) for the sanctuary of Mecca and contrasting the gratitude of believers with the ingratitude of disbelievers. (52 verses)" },
+  { "chapter": 15, "english_name": "The Rocky Tract", "description": "A Meccan Surah reassuring the Prophet (Peace be upon him) against mockery and detailing the story of Satan's refusal to bow to Adam (Peace be upon him). (99 verses)" },
+  { "chapter": 16, "english_name": "The Bee", "description": "A Meccan chapter calling attention to God's blessings in nature, specifically the bee, and warning against associating partners with God. (128 verses)" },
+  { "chapter": 17, "english_name": "The Night Journey", "description": "Commemorates the Prophet Muhammad's (Peace be upon him) miraculous night journey from Mecca to Jerusalem and ascension to the heavens, establishing the five daily prayers. (111 verses)" },
+  { "chapter": 18, "english_name": "The Cave", "description": "A Meccan Surah telling the story of the Sleepers of the Cave and Moses (Peace be upon him), focusing on maintaining faith during times of trial. (110 verses)" },
+  { "chapter": 19, "english_name": "Mary", "description": "A Meccan chapter detailing the miraculous births of Jesus (Peace be upon him) and John (Peace be upon him), emphasizing God's mercy and refuting the concept of God having a son. (98 verses)" },
+  { "chapter": 20, "english_name": "Ta-Ha", "description": "Revealed in Mecca, this Surah details the story of Moses (Peace be upon him) confronting Pharaoh and offers comfort to the Prophet Muhammad (Peace be upon him). (135 verses)" },
+  { "chapter": 21, "english_name": "The Prophets", "description": "A Meccan text referencing many prophets (Peace be upon them) to show the continuity of the divine message and the inevitability of Judgment Day. (112 verses)" },
+  { "chapter": 22, "english_name": "The Pilgrimage", "description": "A Medinan Surah establishing the rituals of the Hajj pilgrimage and giving permission to believers to defend themselves against oppression. (78 verses)" },
+  { "chapter": 23, "english_name": "The Believers", "description": "Revealed in Mecca, outlining the moral qualities of true believers and the miraculous stages of human embryonic development. (118 verses)" },
+  { "chapter": 24, "english_name": "The Light", "description": "A Medinan chapter focusing on social ethics, laws against slander (specifically regarding Aisha, may Allah be pleased with her), and the famous 'Verse of Light'. (64 verses)" },
+  { "chapter": 25, "english_name": "The Criterion", "description": "A Meccan Surah distinguishing right from wrong, answering objections raised against the Quran, and describing the virtues of the 'Servants of the Most Merciful'. (77 verses)" },
+  { "chapter": 26, "english_name": "The Poets", "description": "A Meccan chapter recounting the struggles of past prophets (Peace be upon them) and criticizing poets who mislead people with falsehoods. (227 verses)" },
+  { "chapter": 27, "english_name": "The Ant", "description": "Revealed in Mecca, featuring the story of Solomon (Peace be upon him), the Queen of Sheba, and the ant, emphasizing knowledge and gratitude. (93 verses)" },
+  { "chapter": 28, "english_name": "The Narratives", "description": "A Meccan Surah detailing the life of Moses (Peace be upon him) before prophethood and the arrogance of Korah (Qarun) regarding wealth. (88 verses)" },
+  { "chapter": 29, "english_name": "The Spider", "description": "A Meccan chapter using the metaphor of a spider's web to describe the fragility of false beliefs and the necessity of testing one's faith. (69 verses)" },
+  { "chapter": 30, "english_name": "The Romans", "description": "Revealed in Mecca, predicting the Byzantine (Roman) victory over the Persians as a sign of God's control over historical events. (60 verses)" },
+  { "chapter": 31, "english_name": "Luqman", "description": "A Meccan Surah containing the wisdom and advice of the sage Luqman to his son regarding faith, gratitude, and behavior. (34 verses)" },
+  { "chapter": 32, "english_name": "The Prostration", "description": "A Meccan chapter emphasizing the creation of man, the revelation of the Book, and the absolute certainty of the Day of Judgment. (30 verses)" },
+  { "chapter": 33, "english_name": "The Combined Forces", "description": "Revealed in Medina during the Battle of the Trench, addressing social reforms, adoption, and the status of the Prophet's (Peace be upon him) wives. (73 verses)" },
+  { "chapter": 34, "english_name": "Sheba", "description": "A Meccan Surah contrasting the gratitude of David (Peace be upon him) and Solomon (Peace be upon him) with the ingratitude of the people of Sheba. (54 verses)" },
+  { "chapter": 35, "english_name": "The Originator", "description": "A Meccan chapter praising God as the Creator of angels and the universe, warning against the deception of worldly life. (45 verses)" },
+  { "chapter": 36, "english_name": "Ya-Sin - O Man", "description": "Known as the 'heart of the Quran', this Meccan Surah focuses on the Quran's divine source, the signs of nature, and the resurrection. (83 verses)" },
+  { "chapter": 37, "english_name": "Those Who Set The Ranks", "description": "A Meccan chapter describing the ranks of angels and the eventual triumph of God's messengers (Peace be upon them) over opposition. (182 verses)" },
+  { "chapter": 38, "english_name": "The Letter Sad", "description": "Revealed in Mecca, discussing the patience of prophets like David (Peace be upon him) and Job (Peace be upon him) and the arrogance of Satan. (88 verses)" },
+  { "chapter": 39, "english_name": "The Troops", "description": "A Meccan Surah focusing heavily on the Oneness of God (Tawhid) and the distinct outcomes for believers and disbelievers. (75 verses)" },
+  { "chapter": 40, "english_name": "The Forgiver", "description": "A Meccan chapter telling the story of a believing man in Pharaoh's court and emphasizing God's forgiveness and power. (85 verses)" },
+  { "chapter": 41, "english_name": "Explained in Detail", "description": "A Meccan Surah describing the Quran's clarity and the testimony of man's own faculties (skin and ears) against him on Judgment Day. (54 verses)" },
+  { "chapter": 42, "english_name": "The Consultation", "description": "A Meccan chapter emphasizing 'Shura' (consultation) among believers and the unity of the message given to all prophets (Peace be upon them). (53 verses)" },
+  { "chapter": 43, "english_name": "The Ornaments of Gold", "description": "A Meccan Surah criticizing the obsession with worldly wealth and correcting false attributions of daughters/offspring to God. (89 verses)" },
+  { "chapter": 44, "english_name": "The Smoke", "description": "A Meccan chapter warning of a coming punishment (smoke) and recounting the failure of Pharaoh to heed Moses (Peace be upon him). (59 verses)" },
+  { "chapter": 45, "english_name": "The Crouching", "description": "A Meccan Surah describing the humility of all nations kneeling before God on Judgment Day and the proofs of God in nature. (37 verses)" },
+  { "chapter": 46, "english_name": "The Wind-Curved Sandhills", "description": "A Meccan chapter mentioning the Jinn listening to the Quran and advising kindness and dutifulness to parents. (35 verses)" },
+  { "chapter": 47, "english_name": "Muhammad (Peace be upon him)", "description": "A Medinan Surah named after the Prophet (Peace be upon him), focused on the believers' struggle for the cause of truth and the nullification of disbelievers' deeds. (38 verses)" },
+  { "chapter": 48, "english_name": "The Victory", "description": "Revealed after the Treaty of Hudaybiyyah, declaring it a clear victory and promising the future peaceful conquest of Mecca. (29 verses)" },
+  { "chapter": 49, "english_name": "The Rooms", "description": "A Medinan chapter teaching manners, respect for the Prophet (Peace be upon him), and the brotherhood of all believers regardless of race. (18 verses)" },
+  { "chapter": 50, "english_name": "The Letter Qaf", "description": "A Meccan Surah emphasizing the resurrection and how every human deed is recorded by guardian angels. (45 verses)" },
+  { "chapter": 51, "english_name": "The Winnowing Winds", "description": "A Meccan chapter discussing the purpose of creating humans and Jinn—solely to worship God. (60 verses)" },
+  { "chapter": 52, "english_name": "The Mount", "description": "A Meccan Surah swearing by Mount Sinai, describing the bliss of Paradise for the righteous and the fate of deniers. (49 verses)" },
+  { "chapter": 53, "english_name": "The Star", "description": "A Meccan chapter confirming the divine source of the Prophet's (Peace be upon him) vision during his ascension and refuting idol worship. (62 verses)" },
+  { "chapter": 54, "english_name": "The Moon", "description": "A Meccan Surah referencing the splitting of the moon as a sign and recounting the punishments of past nations who rejected their prophets. (55 verses)" },
+  { "chapter": 55, "english_name": "The Beneficent", "description": "A Meccan chapter known as the 'Bride of the Quran,' repeatedly asking 'Which of the favors of your Lord will you deny?' (78 verses)" },
+  { "chapter": 56, "english_name": "The Inevitable", "description": "A Meccan Surah categorizing people into three groups in the afterlife: the foremost, the companions of the right, and the companions of the left. (96 verses)" },
+  { "chapter": 57, "english_name": "The Iron", "description": "A Medinan chapter encouraging charity, described as a 'goodly loan' to God, and mentioning iron as a tool given for humanity's benefit. (29 verses)" },
+  { "chapter": 58, "english_name": "The Pleading Woman", "description": "A Medinan Surah addressing marital issues and God's omniscience, hearing every conversation, including secret counsels. (22 verses)" },
+  { "chapter": 59, "english_name": "The Exile", "description": "Revealed in Medina concerning the consequences for the Banu Nadir tribe who broke their treaty, and the distribution of wealth. (24 verses)" },
+  { "chapter": 60, "english_name": "She That Is To Be Examined", "description": "A Medinan chapter regarding the treatment of women refugees and establishing that kindness is due to non-believers who do not fight against Muslims. (13 verses)" },
+  { "chapter": 61, "english_name": "The Ranks", "description": "A Medinan Surah urging believers to align their actions with their words and predicting the coming of a messenger named Ahmad (Muhammad, Peace be upon him). (14 verses)" },
+  { "chapter": 62, "english_name": "The Congregation", "description": "A Medinan chapter establishing the importance of the Friday congregational prayer (Jumu'ah) over worldly commerce. (11 verses)" },
+  { "chapter": 63, "english_name": "The Hypocrites", "description": "A Medinan Surah exposing the deceit of the hypocrites who internally opposed the Prophet (Peace be upon him) while pretending to believe. (11 verses)" },
+  { "chapter": 64, "english_name": "The Mutual Disillusion", "description": "A Medinan chapter describing Judgment Day as a day of mutual gain and loss, emphasizing reliance on God alone. (18 verses)" },
+  { "chapter": 65, "english_name": "The Divorce", "description": "A Medinan Surah outlining the specific laws, waiting periods (Iddah), and maintenance rights regarding divorce. (12 verses)" },
+  { "chapter": 66, "english_name": "The Prohibition", "description": "A Medinan chapter addressing a domestic incident in the Prophet's (Peace be upon him) household and holding up the righteous wives of Noah (Peace be upon him) and Lot (Peace be upon him) as examples. (12 verses)" },
+  { "chapter": 67, "english_name": "The Sovereignty", "description": "A Meccan Surah affirming God's dominion over life and death. (30 verses)" },
+  { "chapter": 68, "english_name": "The Pen", "description": "A Meccan chapter defending the Prophet's (Peace be upon him) sanity and character against accusers, and telling the parable of the owners of the garden. (52 verses)" },
+  { "chapter": 69, "english_name": "The Reality", "description": "A Meccan Surah describing the inevitable destruction of past nations and the terrifying events of the Day of Judgment. (52 verses)" },
+  { "chapter": 70, "english_name": "The Ascending Stairways", "description": "A Meccan chapter focusing on the patience required of the Prophet (Peace be upon him) and the eventual punishment of the disbelievers. (44 verses)" },
+  { "chapter": 71, "english_name": "Noah", "description": "A Meccan Surah dedicated to Noah's (Peace be upon him) tireless but largely rejected preaching to his people before the flood. (28 verses)" },
+  { "chapter": 72, "english_name": "The Jinn", "description": "A Meccan chapter recounting how a group of Jinn listened to the Quran and accepted Islam, acknowledging God's oneness. (28 verses)" },
+  { "chapter": 73, "english_name": "The Enshrouded One", "description": "A Meccan Surah instructing the Prophet (Peace be upon him) to pray during the night and to bear patiently with those who deny the truth. (20 verses)" },
+  { "chapter": 74, "english_name": "The Cloaked One", "description": "One of the earliest Meccan revelations, commanding the Prophet (Peace be upon him) to arise, warn the people, and purify himself. (56 verses)" },
+  { "chapter": 75, "english_name": "The Resurrection", "description": "A Meccan chapter emphasizing the certainty of the resurrection and the Prophet's (Peace be upon him) eagerness to memorize the revelation. (40 verses)" },
+  { "chapter": 76, "english_name": "Man", "description": "A Medinan Surah describing the rewards of the righteous in Paradise, particularly those who feed the poor, orphans, and captives. (31 verses)" },
+  { "chapter": 77, "english_name": "The Emissaries", "description": "A Meccan chapter swearing by the winds, emphasizing the inevitability of the Day of Decision and warning deniers. (50 verses)" },
+  { "chapter": 78, "english_name": "The Tidings", "description": "A Meccan Surah questioning those who deny the afterlife and vividly describing the day when the trumpet is blown. (40 verses)" },
+  { "chapter": 79, "english_name": "Those Who Drag Forth", "description": "A Meccan chapter describing the angels who take souls at death and the story of Moses (Peace be upon him) calling Pharaoh to account. (46 verses)" },
+  { "chapter": 80, "english_name": "He Frowned", "description": "A Meccan Surah correcting the Prophet (Peace be upon him) for prioritizing a wealthy leader over a blind man seeking knowledge. (42 verses)" },
+  { "chapter": 81, "english_name": "The Overthrowing", "description": "A Meccan chapter depicting the cosmic upheavals at the end of the world, such as the sun being darkened. (29 verses)" },
+  { "chapter": 82, "english_name": "The Cleaving", "description": "A Meccan Surah warning humanity about their delusion regarding God and describing the recording of deeds by angels. (19 verses)" },
+  { "chapter": 83, "english_name": "The Defrauding", "description": "A Meccan chapter condemning those who cheat in business weights and measures, warning of the record of the wicked. (36 verses)" },
+  { "chapter": 84, "english_name": "The Sundering", "description": "A Meccan Surah describing the sky splitting open and humanity laboring toward their Lord to receive their records. (25 verses)" },
+  { "chapter": 85, "english_name": "The Mansions of the Stars", "description": "A Meccan chapter recounting the story of the People of the Ditch who were persecuted for their faith. (22 verses)" },
+  { "chapter": 86, "english_name": "The Morning Star", "description": "A Meccan Surah discussing the creation of man and the distinctness of the Quran's message. (17 verses)" },
+  { "chapter": 87, "english_name": "The Most High", "description": "A Meccan chapter emphasizing the purification of the soul and reminding that the Hereafter is better and more enduring. (19 verses)" },
+  { "chapter": 88, "english_name": "The Overwhelming", "description": "A Meccan Surah contrasting the terrified state of the damned with the peaceful state of the believers in Paradise. (26 verses)" },
+  { "chapter": 89, "english_name": "The Dawn", "description": "A Meccan chapter warning against the greed for wealth and mentioning the punishment of ancient tribes like Ad and Thamud. (30 verses)" },
+  { "chapter": 90, "english_name": "The City", "description": "A Meccan Surah defining the 'steep path' of righteousness as freeing slaves and feeding the hungry. (20 verses)" },
+  { "chapter": 91, "english_name": "The Sun", "description": "A Meccan chapter linking the purification of the soul to success and corruption to failure, citing the Thamud. (15 verses)" },
+  { "chapter": 92, "english_name": "The Night", "description": "A Meccan Surah contrasting those who give in charity with those who are miserly, warning of the consequences. (21 verses)" },
+  { "chapter": 93, "english_name": "The Morning Hours", "description": "Revealed in Mecca to comfort the Prophet (Peace be upon him) after a pause in revelation, promising that his future will be better than his past. (11 verses)" },
+  { "chapter": 94, "english_name": "The Relief", "description": "A Meccan chapter reassuring the Prophet (Peace be upon him) that with every hardship comes ease and that his burden has been lifted. (8 verses)" },
+  { "chapter": 95, "english_name": "The Fig", "description": "A Meccan Surah stating that man was created in the best stature but will fall to the lowest depth unless he believes and does good works. (8 verses)" },
+  { "chapter": 96, "english_name": "The Clot", "description": "The first revelation received by the Prophet (Peace be upon him) in Mecca, commanding him to read in the name of his Lord. (19 verses)" },
+  { "chapter": 97, "english_name": "The Power", "description": "A Meccan chapter describing the Night of Decree (Laylat al-Qadr), which is better than a thousand months. (5 verses)" },
+  { "chapter": 98, "english_name": "The Clear Proof", "description": "A Medinan Surah distinguishing true believers from disbelievers among the People of the Book and polytheists. (8 verses)" },
+  { "chapter": 99, "english_name": "The Earthquake", "description": "A Medinan chapter vividly describing the earth shaking on Judgment Day and yielding up its burdens and secrets. (8 verses)" },
+  { "chapter": 100, "english_name": "The Courser", "description": "A Meccan Surah using the imagery of charging warhorses to describe the ungrateful nature of mankind. (11 verses)" },
+  { "chapter": 101, "english_name": "The Calamity", "description": "A Meccan chapter depicting the Day of Judgment where people will be like scattered moths and mountains like wool. (11 verses)" },
+  { "chapter": 102, "english_name": "The Rivalry in World Increase", "description": "A Meccan Surah warning that the obsession with accumulating more wealth and status distracts people until they reach the grave. (8 verses)" },
+  { "chapter": 103, "english_name": "The Declining Day", "description": "A Meccan chapter summarizing that all mankind is in loss except those who believe, do good, and advise one another to truth and patience. (3 verses)" },
+  { "chapter": 104, "english_name": "The Traducer", "description": "A Meccan Surah condemning the backbiter and the one who hoards wealth, warning of the crushing fire. (9 verses)" },
+  { "chapter": 105, "english_name": "The Elephant", "description": "A Meccan chapter recalling the destruction of Abraha's army of elephants who attempted to destroy the Kaaba. (5 verses)" },
+  { "chapter": 106, "english_name": "Quraysh", "description": "A Meccan Surah reminding the Quraysh tribe of God's protection and provision during their trading journeys. (4 verses)" },
+  { "chapter": 107, "english_name": "The Small Kindnesses", "description": "A Meccan chapter condemning those who deny the judgment by mistreating orphans and performing prayers only to be seen. (7 verses)" },
+  { "chapter": 108, "english_name": "The Abundance", "description": "The shortest Surah, revealed in Mecca, promising the Prophet (Peace be upon him) an abundance of good and the cutting off of his enemies. (3 verses)" },
+  { "chapter": 109, "english_name": "The Disbelievers", "description": "A Meccan Surah declaring the absolute distinction between the worship of Muslims and the worship of polytheists. (6 verses)" },
+  { "chapter": 110, "english_name": "The Divine Support", "description": "A Medinan chapter, one of the last revealed, predicting the mass entry of people into Islam and the Prophet's (Peace be upon him) passing. (3 verses)" },
+  { "chapter": 111, "english_name": "The Palm Fiber", "description": "A Meccan Surah condemning Abu Lahab, an uncle and enemy of the Prophet (Peace be upon him), and his wife to the Fire. (5 verses)" },
+  { "chapter": 112, "english_name": "The Sincerity", "description": "A Meccan chapter that is the essence of monotheism, declaring God is One, Eternal, with no offspring or equal. (4 verses)" },
+  { "chapter": 113, "english_name": "The Daybreak", "description": "A Meccan Surah seeking refuge in the Lord of the dawn from the evil of created things and envy. (5 verses)" },
+  { "chapter": 114, "english_name": "Mankind", "description": "A Meccan chapter seeking refuge in the Lord of mankind from the whispers of devils and men. (6 verses)" }
+];
 
-
-// Helper to find Surah (You should paste the full const SURAH_METADATA from app.js here)
+// Helper to find Surah
 function getSurah(number) {
-    // Ideally, import the list or paste the full array here. 
-    // This is a placeholder for the logic:
-    return SURAH_METADATA.find(s => s.chapter == number);
+  return SURAH_METADATA.find(s => s.chapter == number);
 }
 
 const SUPPORTED_LOCALES = ['en', 'ar', 'es', 'fr', 'he', 'zh'];
@@ -131,60 +128,60 @@ export async function onRequest(context) {
   const url = new URL(context.request.url);
   const path = url.pathname;
   const pathSegments = path.split('/').filter(Boolean);
-  
-  // Handle language routing
-  let locale = DEFAULT_LOCALE;
+
+  // 1. Handle Language Routing
+  // If a path starts with /ar/, /es/, etc., we strip it so the server finds the real file
+  // (e.g., /ar/style.css -> /style.css)
   let actualPath = path;
-  
-  // Check if first segment is a locale
+  let isLocalizedPath = false;
+
   if (pathSegments.length > 0 && SUPPORTED_LOCALES.includes(pathSegments[0])) {
-    locale = pathSegments[0];
     // Remove locale from path for internal routing
     pathSegments.shift();
-    actualPath = '/' + pathSegments.join('/') || '/';
+    actualPath = '/' + pathSegments.join('/') || '/'; // Defaults to '/' if empty
+    isLocalizedPath = true;
   }
-  
-  // If root path without locale and no query params, check for browser language redirect
-  if (path === '/' && !url.searchParams.has('chapter') && !url.searchParams.has('redirected')) {
-    const acceptLanguage = context.request.headers.get('accept-language') || '';
-    const browserLang = acceptLanguage.split(',')[0].split('-')[0].toLowerCase();
-    
-    if (SUPPORTED_LOCALES.includes(browserLang) && browserLang !== DEFAULT_LOCALE) {
-      // Redirect to browser language
-      const newUrl = new URL(url);
-      newUrl.pathname = `/${browserLang}/`;
-      newUrl.searchParams.set('redirected', '1');
-      return Response.redirect(newUrl.toString(), 302);
-    }
+
+  // NOTE: The "Redirect to browser language" block has been removed here.
+  // This ensures the site always loads the root URL first, avoiding broken redirects.
+
+  // 2. Prepare the fetch for the static asset or HTML
+  let response;
+
+  if (isLocalizedPath) {
+    // This is the FIX for the "css-less/broken" issue:
+    // We must update the request object with the 'actualPath' so Cloudflare fetches 
+    // the correct file (e.g. style.css) instead of the non-existent localized one (e.g. ar/style.css)
+    const newUrl = new URL(url);
+    newUrl.pathname = actualPath;
+    // Pass the modified request to next()
+    response = await context.next(new Request(newUrl, context.request));
+  } else {
+    // Standard request for root paths
+    response = await context.next();
   }
-  
+
+  // 3. Handle SEO/Metadata Injection (Only if a specific chapter is requested)
   const chapter = url.searchParams.get('chapter');
   
-  // If no chapter is requested, just return the static site as normal
+  // If no chapter is requested, or if the response wasn't HTML (e.g. it was an image/css), just return it
   if (!chapter) {
-    return context.next();
+    return response;
   }
 
-  // 1. Get the Surah Data
-  // In a real implementation, ensure SURAH_METADATA is fully populated in this file
   const surahId = parseInt(chapter);
-  // We need the full list here. Since I cannot paste 114 lines, 
-  // ensure you copy the 'const SURAH_METADATA' block from your app.js to the top of this file.
-  const surah = getSurah(surahId); 
+  const surah = getSurah(surahId);
 
   if (!surah) {
-    return context.next();
+    return response;
   }
 
-  // 2. Prepare SEO strings
+  // Prepare SEO strings
   const title = `Surah ${surah.english_name} (Chapter ${surah.chapter}) - Quran for Every Soul`;
   const description = surah.description || `Read and listen to Surah ${surah.english_name} online.`;
   const canonicalUrl = `https://Quran-lite.pages.dev/?chapter=${surah.chapter}`;
 
-  // 3. Fetch the original HTML (the static index.html)
-  const response = await context.next();
-
-  // 4. Use HTMLRewriter to inject metadata dynamically
+  // Use HTMLRewriter to inject metadata dynamically
   return new HTMLRewriter()
     .on('title', {
       element(element) {

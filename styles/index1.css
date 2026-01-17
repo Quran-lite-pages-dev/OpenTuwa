@@ -183,6 +183,7 @@ body {
 }
 
 .hero-preview-layer {
+    display: none;
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 1; opacity: 0; transition: opacity 0.8s ease; pointer-events: none;
 }
