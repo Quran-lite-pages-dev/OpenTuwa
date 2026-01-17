@@ -538,8 +538,8 @@ function refreshDashboard() {
 function fillRow(elementId, indexArray) {
     const container = document.getElementById(elementId);
     const fragment = document.createDocumentFragment();
-    const currentLocale = window.getLocale ? window.getLocale() : 'en';
     
+    // We removed the "currentLocale" check so it applies to ALL languages
     indexArray.forEach(idx => {
         if(!quranData[idx]) return;
         const surah = quranData[idx];
@@ -547,14 +547,18 @@ function fillRow(elementId, indexArray) {
         card.className = 'surah-card';
         card.tabIndex = 0;
         
-        // Use Arabic script for card-title if locale is Arabic
+        // --- START FIX: Universal Translation Logic ---
         let cardTitle = surah.english_name;
-        if (currentLocale === 'ar' && window.t) {
-            const arabicName = window.t(`surahNames.${surah.english_name}`);
-            if (arabicName && arabicName !== `surahNames.${surah.english_name}`) {
-                cardTitle = arabicName;
+        if (window.t) {
+            // Try to find the translation in the active JSON file
+            const translatedName = window.t(`surahNames.${surah.english_name}`);
+            
+            // If we found a translation (and it's not just the key returned back)
+            if (translatedName && translatedName !== `surahNames.${surah.english_name}`) {
+                cardTitle = translatedName;
             }
         }
+        // --- END FIX ---
         
         card.innerHTML = `
             <div class="card-bg-num">${surah.chapterNumber}</div>
@@ -574,16 +578,16 @@ function schedulePreview(chapterNum) {
     if (previewTimeout) clearTimeout(previewTimeout);
     stopPreview();
     const surah = quranData[chapterNum - 1];
-    const currentLocale = window.getLocale ? window.getLocale() : 'en';
     
-    // Use Arabic script for hero title if locale is Arabic
+    // --- START FIX: Universal Translation Logic ---
     let heroTitle = surah.english_name;
-    if (currentLocale === 'ar' && window.t) {
-        const arabicName = window.t(`surahNames.${surah.english_name}`);
-        if (arabicName && arabicName !== `surahNames.${surah.english_name}`) {
-            heroTitle = arabicName;
+    if (window.t) {
+        const translatedName = window.t(`surahNames.${surah.english_name}`);
+        if (translatedName && translatedName !== `surahNames.${surah.english_name}`) {
+            heroTitle = translatedName;
         }
     }
+    // --- END FIX ---
     
     document.getElementById('door-hero-title').textContent = heroTitle;
     document.getElementById('door-hero-subtitle').textContent = surah.title;
@@ -807,21 +811,21 @@ function saveState() {
 }
 
 function populateChapterSelect() {
-    const currentLocale = window.getLocale ? window.getLocale() : 'en';
+    // We removed the "currentLocale" check here too
     const suraNameLabel = window.t ? window.t('player.suraName') : 'Sura name';
-    const suraNameMeaningLabel = window.t ? window.t('player.suraNameMeaning') : 'Sura name meaning';
     
     const items = quranData.map((c, i) => {
-        // Use Arabic script for title if locale is Arabic
+        // --- START FIX: Universal Translation Logic ---
         let title = c.english_name;
-        if (currentLocale === 'ar' && window.t) {
-            const arabicName = window.t(`surahNames.${c.english_name}`);
-            if (arabicName && arabicName !== `surahNames.${c.english_name}`) {
-                title = arabicName;
+        if (window.t) {
+            const translatedName = window.t(`surahNames.${c.english_name}`);
+            if (translatedName && translatedName !== `surahNames.${c.english_name}`) {
+                title = translatedName;
             }
         }
+        // --- END FIX ---
         
-        // Format: "1. [Sura name] - [Arabic title]"
+        // Format: "1. [Translated Name] - [Arabic/Subtitle]"
         return {
             value: i,
             text: `${c.chapterNumber}. ${title} - ${c.title || ''}`
