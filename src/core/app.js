@@ -539,7 +539,8 @@ function fillRow(elementId, indexArray) {
     const container = document.getElementById(elementId);
     const fragment = document.createDocumentFragment();
     
-    // We removed the "currentLocale" check so it applies to ALL languages
+    // We removed the line that defined 'currentLocale' because we don't limit it anymore
+    
     indexArray.forEach(idx => {
         if(!quranData[idx]) return;
         const surah = quranData[idx];
@@ -547,14 +548,19 @@ function fillRow(elementId, indexArray) {
         card.className = 'surah-card';
         card.tabIndex = 0;
         
-        // --- START FIX: Universal Translation Logic ---
+        // --- START FIX ---
+        // 1. Start with the English name as default
         let cardTitle = surah.english_name;
+        
+        // 2. If the translation system (window.t) is loaded, try to translate
         if (window.t) {
-            // Try to find the translation in the active JSON file
-            const translatedName = window.t(`surahNames.${surah.english_name}`);
+            // This creates the key like "surahNames.The Opening"
+            const translatedKey = 'surahNames.' + surah.english_name;
+            const translatedName = window.t(translatedKey);
             
-            // If we found a translation (and it's not just the key returned back)
-            if (translatedName && translatedName !== `surahNames.${surah.english_name}`) {
+            // 3. If a translation was found (and it's not just the key string returned back)
+            // This will now work for ES, FR, ZH, etc.
+            if (translatedName && translatedName !== translatedKey) {
                 cardTitle = translatedName;
             }
         }
@@ -811,21 +817,25 @@ function saveState() {
 }
 
 function populateChapterSelect() {
-    // We removed the "currentLocale" check here too
+    // We removed the "currentLocale" check here
     const suraNameLabel = window.t ? window.t('player.suraName') : 'Sura name';
     
     const items = quranData.map((c, i) => {
-        // --- START FIX: Universal Translation Logic ---
+        // --- START FIX ---
         let title = c.english_name;
+        
         if (window.t) {
-            const translatedName = window.t(`surahNames.${c.english_name}`);
-            if (translatedName && translatedName !== `surahNames.${c.english_name}`) {
+            const translatedKey = 'surahNames.' + c.english_name;
+            const translatedName = window.t(translatedKey);
+            
+            // If translation exists in ANY language, use it
+            if (translatedName && translatedName !== translatedKey) {
                 title = translatedName;
             }
         }
         // --- END FIX ---
         
-        // Format: "1. [Translated Name] - [Arabic/Subtitle]"
+        // This will now show "1. La Apertura" instead of "1. The Opening"
         return {
             value: i,
             text: `${c.chapterNumber}. ${title} - ${c.title || ''}`
