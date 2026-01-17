@@ -1,144 +1,145 @@
 /* Copyright (c) Haykal M. Zaidi 2024-2026. All rights reserved. PROPRIETARY AND CONFIDENTIAL. */
-/* index1.css - AUDITED & FIXED */
+/* index1.css - FIXED: Removed scroll container scaling to prevent artifacts */
 
 /* --- 0. TV STYLE OVERRIDES & SCROLLBAR BAN --- */
-        * {
-            scrollbar-width: none !important;
-            -ms-overflow-style: none !important;
-        }
+* {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
 
-        *::-webkit-scrollbar { 
-            display: none !important; 
-            width: 0 !important; 
-            height: 0 !important; 
-            background: transparent !important; 
-        }
-        
-        html, body { 
-            overflow: hidden !important; 
-            height: 100vh;
-        }
-        
-        /* Dashboard for Sidebar - NOW FORCED TO FULL WIDTH */
-        #dashboard-view { 
-            padding-left: 0 !important; 
-            transition: padding-left 0.3s; 
-        }
+*::-webkit-scrollbar { 
+    display: none !important; 
+    width: 0 !important; 
+    height: 0 !important; 
+    background: transparent !important; 
+}
 
-        /* Preview Subtitles */
-        #hero-subtitle-overlay {
-            position: fixed !important; bottom: 120px; right: 5%; max-width: 600px;
-            color: #fff; font-size: 1.4rem; font-weight: 500;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.9);
-            z-index: 3000 !important; opacity: 0; transition: opacity 0.3s;
-            background: rgba(0,0,0,0.2); padding: 1.5rem 2rem; border-radius: 4px;
-            backdrop-filter: blur(20px) saturate(180%);
-            pointer-events: none;
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-        }
-        #hero-subtitle-overlay.active { opacity: 1; }
+html, body { 
+    overflow: hidden !important; 
+    height: 100vh;
+    width: 100vw; /* Ensure strict width */
+    margin: 0;
+}
 
-        /* Search Overlay - FULL WIDTH */
-        #search-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #141414; z-index: 2500; 
-            padding-left: 0 !important; 
-            display: none; grid-template-columns: 350px 1fr;
-        }
-        #search-overlay.active { display: grid; }
-        
-        .keyboard-section {
-            background: #000; padding: 4rem 2rem; display: flex; flex-direction: column;
-            border-right: 1px solid #333;
-        }
-        #search-input-display {
-            background: #333; color: #fff; padding: 1rem; font-size: 2rem;
-            border: 1px solid #fff; margin-bottom: 2rem; min-height: 50px; display: flex; align-items: center;
-        }
-        .keyboard-grid {
-            display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
-        }
-        .key {
-            aspect-ratio: 1; background: #333; color: #fff; font-size: 1.4rem;
-            display: flex; justify-content: center; align-items: center;
-            cursor: pointer; border: 2px solid transparent; transition: transform 0.1s;
-        }
-        .key:focus, .key:hover { border-color: #fff; background: #555; transform: scale(1.1); z-index: 2; outline: none; }
-        .key.wide { grid-column: span 2; aspect-ratio: auto; height: 50px; }
-        
-        /* Search Performance Patch */
-        .results-section {
-            padding: 4rem;
-            overflow: hidden !important;
-        }
+/* Dashboard for Sidebar - NOW FORCED TO FULL WIDTH */
+#dashboard-view { 
+    padding-left: 0 !important; 
+    transition: padding-left 0.3s; 
+}
 
-        .results-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-            gap: 2rem;
-            transform: translateY(0);
-            transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1);
-            will-change: transform;
-            padding-bottom: 300px;
-        }
+/* Preview Subtitles */
+#hero-subtitle-overlay {
+    position: fixed !important; bottom: 120px; right: 5%; max-width: 600px;
+    color: #fff; font-size: 1.4rem; font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+    z-index: 3000 !important; opacity: 0; transition: opacity 0.3s;
+    background: rgba(0,0,0,0.2); padding: 1.5rem 2rem; border-radius: 4px;
+    backdrop-filter: blur(20px) saturate(180%);
+    pointer-events: none;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+}
+#hero-subtitle-overlay.active { opacity: 1; }
 
-        .no-results {
-            font-size: 2.2rem;
-            color: rgba(255,255,255,0.3);
-            text-align: center;
-            margin-top: 20%;
-        }
+/* Search Overlay - FULL WIDTH */
+#search-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #141414; z-index: 2500; 
+    padding-left: 0 !important; 
+    display: none; grid-template-columns: 350px 1fr;
+}
+#search-overlay.active { display: grid; }
 
-        /* 2026 AI Thinking Animation */
-        @keyframes pulse-gradient {
-            0% { color: #888; }
-            50% { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
-            100% { color: #888; }
-        }
-        .ai-thinking {
-            grid-column: 1 / -1;
-            display: flex; gap: 10px; align-items: center; justify-content: center;
-            padding: 2rem;
-            font-size: 1.4rem;
-            animation: pulse-gradient 1.5s infinite;
-        }
+.keyboard-section {
+    background: #000; padding: 4rem 2rem; display: flex; flex-direction: column;
+    border-right: 1px solid #333;
+}
+#search-input-display {
+    background: #333; color: #fff; padding: 1rem; font-size: 2rem;
+    border: 1px solid #fff; margin-bottom: 2rem; min-height: 50px; display: flex; align-items: center;
+}
+.keyboard-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+}
+.key {
+    aspect-ratio: 1; background: #333; color: #fff; font-size: 1.4rem;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; border: 2px solid transparent; transition: transform 0.1s;
+}
+.key:focus, .key:hover { border-color: #fff; background: #555; transform: scale(1.1); z-index: 2; outline: none; }
+.key.wide { grid-column: span 2; aspect-ratio: auto; height: 50px; }
 
-        /* --- 1. GLOBAL & TV RESET --- */
-        :root { 
-            --vh: 100vh; 
-            --accent: #00FFBB; 
-            --accent-glow: rgba(0, 255, 187, 0.3); 
-            --bg: #030303; 
-            --text: #f0f0f0; 
-            --radius-sm: 8px; 
-            --radius-md: 16px; 
-            --radius-lg: 24px; 
-            --transition-smooth: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-            
-            /* 2026 Cinematic Glass Vars */
-            --glass-surface: rgba(20, 20, 20, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.1); 
-            --glass-highlight: rgba(255, 255, 255, 0.08);
-            --surface: rgba(255, 255, 255, 0.05); /* Fallback */
-        }
+/* Search Performance Patch */
+.results-section {
+    padding: 4rem;
+    overflow: hidden !important;
+}
 
-        html { box-sizing: border-box; font-size: 62.5%; }
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    transform: translateY(0);
+    transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+    will-change: transform;
+    padding-bottom: 300px;
+}
 
-        *, *::before, *::after { box-sizing: inherit; margin: 0; padding: 0; }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
-            background-image: radial-gradient(circle at 50% 10%, #1a1a1a 0%, #000 70%);
-            color: var(--text);
-            line-height: 1.6;
-            font-size: 1.6rem;
-            height: 100vh; 
-            overflow: hidden !important; 
-            display: flex; flex-direction: column;
-        }
-/* Add anywhere in index.css, ideally near the bottom or under Global Styles */
+.no-results {
+    font-size: 2.2rem;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    margin-top: 20%;
+}
+
+/* 2026 AI Thinking Animation */
+@keyframes pulse-gradient {
+    0% { color: #888; }
+    50% { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+    100% { color: #888; }
+}
+.ai-thinking {
+    grid-column: 1 / -1;
+    display: flex; gap: 10px; align-items: center; justify-content: center;
+    padding: 2rem;
+    font-size: 1.4rem;
+    animation: pulse-gradient 1.5s infinite;
+}
+
+/* --- 1. GLOBAL & TV RESET --- */
+:root { 
+    --vh: 100vh; 
+    --accent: #00FFBB; 
+    --accent-glow: rgba(0, 255, 187, 0.3); 
+    --bg: #030303; 
+    --text: #f0f0f0; 
+    --radius-sm: 8px; 
+    --radius-md: 16px; 
+    --radius-lg: 24px; 
+    --transition-smooth: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    
+    /* 2026 Cinematic Glass Vars */
+    --glass-surface: rgba(20, 20, 20, 0.6);
+    --glass-border: rgba(255, 255, 255, 0.1); 
+    --glass-highlight: rgba(255, 255, 255, 0.08);
+    --surface: rgba(255, 255, 255, 0.05); /* Fallback */
+}
+
+html { box-sizing: border-box; font-size: 62.5%; }
+
+*, *::before, *::after { box-sizing: inherit; margin: 0; padding: 0; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg);
+    background-image: radial-gradient(circle at 50% 10%, #1a1a1a 0%, #000 70%);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 1.6rem;
+    height: 100vh; 
+    overflow: hidden !important; 
+    display: flex; flex-direction: column;
+}
 
 #transition-fade-layer {
     position: fixed;
@@ -150,7 +151,7 @@
     z-index: 9999;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.8s cubic-bezier(0.2, 0, 0, 1); /* "The Netflix Ease" */
+    transition: opacity 0.8s cubic-bezier(0.2, 0, 0, 1);
 }
 
 #transition-fade-layer.active {
@@ -158,319 +159,282 @@
     pointer-events: all;
 }
 
-        /* --- 2. DASHBOARD STYLES --- */
-        #dashboard-view {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 2000;
-            background: #050505;
-            overflow-y: auto !important;
-            overflow-x: hidden !important;
-            display: none;
-            padding-left: 0 !important; 
-        }
-        #dashboard-view::-webkit-scrollbar { display: none !important; }
-        #dashboard-view { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+/* --- 2. DASHBOARD STYLES --- */
+#dashboard-view {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 2000;
+    background: #050505;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    display: none;
+    padding-left: 0 !important; 
+}
+#dashboard-view::-webkit-scrollbar { display: none !important; }
 
-        #dashboard-view.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+#dashboard-view.active { display: block; animation: fadeIn 0.5s ease; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .hero-banner {
-            height: 75vh; width: 100%; position: relative;
-            display: flex; flex-direction: column; justify-content: center;
-            padding: 0 5%;
-            overflow: hidden;
-            background: #000; 
-        }
-
-        .hero-preview-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 1; opacity: 0; transition: opacity 0.8s ease; pointer-events: none;
-        }
-        .hero-preview-layer.active { opacity: 1; }
-        
-        .preview-img {
-            width: 100%; height: 100%; 
-            object-fit: contain; object-position: center right;
-            filter: invert(1) drop-shadow(0 0 20px rgba(255,255,255,0.2));
-            transform: scale(0.9); opacity: 0.6; transition: opacity 0.5s ease;
-        }
-/* 1. Prevents "ghost" borders and icons from showing while loading or if broken */
-img:not([src]), 
-img[src=""], 
-img[src="#"] {
-    visibility: hidden !important;
+.hero-banner {
+    height: 75vh; width: 100%; position: relative;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 0 5%;
+    overflow: hidden;
+    background: #000; 
 }
 
-/* 2. Forces broken images to hide their built-in browser "ugliness" */
-img {
-    /* Hides the default broken image icon in most browsers */
-    color: transparent;
-    text-indent: -10000px;
+.hero-preview-layer {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 1; opacity: 0; transition: opacity 0.8s ease; pointer-events: none;
+}
+.hero-preview-layer.active { opacity: 1; }
+
+.preview-img {
+    width: 100%; height: 100%; 
+    object-fit: contain; object-position: center right;
+    filter: invert(1) drop-shadow(0 0 20px rgba(255,255,255,0.2));
+    transform: scale(0.9); opacity: 0.6; transition: opacity 0.5s ease;
 }
 
-/* 3. Ensures that if JS fails, the layout doesn't collapse into a mess */
-img:-moz-broken {
-    display: none !important;
+img:not([src]), img[src=""], img[src="#"] { visibility: hidden !important; }
+img { color: transparent; text-indent: -10000px; }
+img:-moz-broken { display: none !important; }
+
+.hero-shadow-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 2;
+    background: linear-gradient(
+        to right, 
+        #000 0%, 
+        rgba(0,0,0,0.9) 20%, 
+        rgba(0,0,0,0.4) 60%, 
+        transparent 100%
+    );
+}
+.hero-shadow-overlay::after {
+    content: '';
+    position: absolute; bottom: 0; left: 0; width: 100%; height: 30%;
+    background: linear-gradient(to top, #000 10%, transparent 100%);
 }
 
+.hero-content { max-width: 650px; z-index: 5; position: relative; margin-top: 5vh; }
 
-        /* [AUDIT FIX]: Clean Gradient */
-        .hero-shadow-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 2;
-            background: linear-gradient(
-                to right, 
-                #000 0%, 
-                rgba(0,0,0,0.9) 20%, 
-                rgba(0,0,0,0.4) 60%, 
-                transparent 100%
-            );
-        }
-        /* Add bottom fade */
-        .hero-shadow-overlay::after {
-            content: '';
-            position: absolute; bottom: 0; left: 0; width: 100%; height: 30%;
-            background: linear-gradient(to top, #000 10%, transparent 100%);
-        }
+.hero-super { 
+    display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;
+    font-weight: 700; color: #aaa; letter-spacing: 1px;
+    text-transform: uppercase; font-size: 1.1rem; align-items: baseline;
+}
+.hero-super span.text-content { position: relative; top: -2px; }
 
-        .hero-content { max-width: 650px; z-index: 5; position: relative; margin-top: 5vh; }
-        
-        .hero-super { 
-            display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;
-            font-weight: 700; color: #aaa; letter-spacing: 1px;
-            text-transform: uppercase; font-size: 1.1rem; align-items: baseline;
-        }
-        .hero-super span.text-content {
-            position: relative;
-            top: -2px; 
-        }
+.hero-super span.badge, .hero-super span.badges { 
+    background: transparent; 
+    color: var(--accent); 
+    padding: 2px 8px; 
+    border: 1px solid rgba(255,255,255,0.2); 
+    border-radius: 4px; 
+    font-size: 1rem; 
+    font-weight: 600;
+    letter-spacing: 1px;
+    box-shadow: none; 
+    opacity: 0.8;
+    transform: none;
+}
 
-        /* [AUDIT FIX]: Tech Spec Badges (No Glow) */
-        .hero-super span.badge, 
-        .hero-super span.badges { 
-            background: transparent; 
-            color: var(--accent); 
-            padding: 2px 8px; 
-            border: 1px solid rgba(255,255,255,0.2); 
-            border-radius: 4px; 
-            font-size: 1rem; 
-            font-weight: 600;
-            letter-spacing: 1px;
-            box-shadow: none; 
-            opacity: 0.8;
-            transform: none;
-        }
+.hero-title-text { 
+    font-size: clamp(3rem, 5vw, 6rem); font-weight: 900; line-height: 1; 
+    margin-bottom: 0.5rem; text-shadow: 0 4px 30px rgba(0,0,0,1); color: #fff; opacity: 0.7;
+}
 
-        .hero-title-text { 
-            font-size: clamp(3rem, 5vw, 6rem); font-weight: 900; line-height: 1; 
-            margin-bottom: 0.5rem; text-shadow: 0 4px 30px rgba(0,0,0,1); color: #fff; opacity: 0.7;
-        }
-        .hero-subtitle {
-            font-family: 'Amiri'; font-size: 2.2rem; color: var(--accent);
-            margin-bottom: 1.5rem; font-weight: 400; text-shadow: 0 2px 10px rgba(0,0,0,0.8); padding-left: 1%; opacity: 0.5;
-        }
-        .hero-desc { 
-            display: none;
-            color: #ccc; font-size: 1.5rem; margin-bottom: 2.5rem; line-height: 1.5;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8); max-width: 600px;
-            display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
-        }
-        
-        .dash-btn {
-            background: var(--glass-surface); color: white; border: none; 
-            backdrop-filter: blur(24px) saturate(180%);
-            -webkit-backdrop-filter: blur(24px) saturate(180%);
-            font-size: 1.125rem;       
-            font-weight: 600;          
-            border: 1px solid rgba(255,255,255,0.1); 
-            border-radius: 99px;       
-            padding: 14px 32px;         
-            letter-spacing: -0.02em;   
-            transition: var(--transition-smooth);
-            cursor: pointer;
-            display: inline-flex; align-items: center; gap: 10px;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
-            will-change: transform, opacity;
-        }
-        .dash-btn:focus, .dash-btn:hover { 
-            transform: translateY(-4px) scale(1.03); 
-            background: rgba(255,255,255,0.1);
-            border-color: var(--accent);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
-            outline: none; 
-        }
+.hero-subtitle {
+    font-family: 'Amiri'; font-size: 2.2rem; color: var(--accent);
+    margin-bottom: 1.5rem; font-weight: 400; text-shadow: 0 2px 10px rgba(0,0,0,0.8); padding-left: 1%; opacity: 0.5;
+}
+.hero-desc { 
+    display: none;
+    color: #ccc; font-size: 1.5rem; margin-bottom: 2.5rem; line-height: 1.5;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8); max-width: 600px;
+    display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
 
-        .row-section { 
-            padding: 0 0 2rem 0; 
-            position: relative; z-index: 5; margin-top: -8vh; background: linear-gradient(to bottom, transparent, #050505 20%); 
-        }
-        
-        .row-section:has(.surah-card:hover),
-        .row-section:has(.surah-card:focus),
-        .row-section:focus-within {
-            z-index: 100;
-        }
+.dash-btn {
+    background: var(--glass-surface); color: white; border: none; 
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    font-size: 1.125rem;       
+    font-weight: 600;          
+    border: 1px solid rgba(255,255,255,0.1); 
+    border-radius: 99px;       
+    padding: 14px 32px;         
+    letter-spacing: -0.02em;   
+    transition: var(--transition-smooth);
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 10px;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+    will-change: transform, opacity;
+}
+.dash-btn:focus, .dash-btn:hover { 
+    transform: translateY(-4px) scale(1.03); 
+    background: rgba(255,255,255,0.1);
+    border-color: var(--accent);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
+    outline: none; 
+}
 
-        /* [AUDIT FIX]: Section Title (Not a Button) */
-        .row-header {
-            width: fit-content;
-            display: flex; 
-            align-items: center;
-            margin-left: 5%; 
-            margin-bottom: 1.5rem;
-            padding: 0;
-            background: transparent;
-            border: none;
-            border-radius: 0;
-            box-shadow: none;
-            font-size: 2rem;
-            font-weight: 500; 
-            color: #fff;
-            letter-spacing: -0.01em;
-            text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+.row-section { 
+    padding: 0 0 2rem 0; 
+    position: relative; z-index: 5; margin-top: -8vh; background: linear-gradient(to bottom, transparent, #050505 20%); 
+}
 
-        }
+.row-section:has(.surah-card:hover),
+.row-section:has(.surah-card:focus),
+.row-section:focus-within {
+    z-index: 100;
+}
 
-        .card-scroller { 
-            display: flex; gap: 1rem; overflow-x: auto; 
-            padding: 4rem 5%; 
-            scroll-behavior: smooth; 
-            content-visibility: auto; 
-            contain-intrinsic-size: 1px 280px; 
-            transform-origin: left center;
-            transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
-        }
+.row-header {
+    width: fit-content;
+    display: flex; align-items: center;
+    margin-left: 5%; margin-bottom: 1.5rem;
+    padding: 0; background: transparent; border: none; border-radius: 0; box-shadow: none;
+    font-size: 2rem; font-weight: 500; color: #fff;
+    letter-spacing: -0.01em; text-shadow: 0 4px 12px rgba(0,0,0,0.8);
+}
 
-        .card-scroller:has(.surah-card:hover),
-        .card-scroller:has(.surah-card:focus),
-        .card-scroller:focus-within {
-            transform: scale(1.08); 
-        }
-        
-        /* [AUDIT FIX]: Clean Glass Cards */
-        .surah-card {
-            flex: 0 0 280px; 
-            aspect-ratio: 16 / 9;
-            height: auto;
-            background: rgba(20, 20, 20, 0.7); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: var(--radius-md);
-            cursor: pointer; 
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            overflow: hidden;
-            display: flex; flex-direction: column; justify-content: flex-end; padding: 2rem;
-            will-change: transform, opacity;
-        }
-        
-        .surah-card:focus, .surah-card:hover { 
-            transform: scale(1.05); 
-            z-index: 10;
-            background: rgba(30, 30, 30, 0.9);
-            border-color: var(--accent);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 0 1px var(--accent); 
-        }
-        
-        .card-bg-num { position: absolute; top: -15px; right: 5px; font-size: 7rem; font-weight: 900; color: rgba(255,255,255,0.05); line-height: 1; }
-        .card-title { font-size: 1.6rem; font-weight: 700; color: #fff; z-index: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .card-sub { font-size: 1.1rem; color: #aaa; z-index: 2; margin-top: 0.2rem; }
+/* FIXED SCROLLER: Removed scaling on the container itself */
+.card-scroller { 
+    display: flex; 
+    gap: 1rem; 
+    overflow-x: auto; 
+    padding: 4rem 5%; 
+    scroll-behavior: smooth; 
+    content-visibility: auto; 
+    contain-intrinsic-size: 1px 280px; 
+    
+    /* Prevent horizontal scroll chaining to body */
+    overscroll-behavior-x: contain; 
+    
+    /* Removed: transform: scale(...) to fix flickering/artifacts */
+    transform-origin: left center;
+    transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
+}
 
-        /* --- 3. CINEMA VIEW STYLES --- */
-        #cinema-view {
-            width: 100%; height: 100%; position: absolute; top: 0; left: 0;
-            display: flex; flex-direction: column;
-            transition: opacity 0.5s;
-            opacity: 0; pointer-events: none;
-        }
-        #cinema-view.active { opacity: 1; pointer-events: all; z-index: 1000; }
+/* Clean Glass Cards */
+.surah-card {
+    flex: 0 0 280px; 
+    aspect-ratio: 16 / 9;
+    height: auto;
+    background: rgba(20, 20, 20, 0.7); 
+    backdrop-filter: blur(20px); 
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: var(--radius-md);
+    cursor: pointer; 
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    overflow: hidden;
+    display: flex; flex-direction: column; justify-content: flex-end; padding: 2rem;
+    will-change: transform, opacity;
+}
 
-        #loading-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: #000; z-index: 9999;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            transition: opacity 0.5s ease; padding: 2rem;
-        }
-        .loader-spinner {
-            width: 50px; height: 50px; border: 2px solid rgba(255,255,255,0.1); border-radius: 50%;
-            border-top-color: var(--accent); animation: spin 0.8s ease-in-out infinite; margin-bottom: 2rem;
-        }
-        .start-btn {
-            display: none; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--accent);
-            color: var(--accent); padding: 15px 50px; font-size: 1.6rem; border-radius: 50px; cursor: pointer;
-            transition: all 0.3s ease; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
-        }
-        .start-btn:focus, .start-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 30px rgba(0, 255, 187, 0.5); outline: 2px solid #fff; }
+/* Pro Active State - Individual Card Scaling */
+.surah-card:focus, .surah-card:hover { 
+    transform: scale(1.05); 
+    z-index: 10;
+    background: rgba(30, 30, 30, 0.9);
+    border-color: var(--accent);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 0 1px var(--accent); 
+}
 
-        .container {
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            width: 100%; height: 100%; padding: 2rem; padding-bottom: 12rem; position: relative;
-        }
-        #content-display {
-            text-align: center; width: 100%; max-width: 1200px; margin: 0 auto;
-            flex-grow: 1; display: flex; flex-direction: column; justify-content: center; position: relative;
-        }
-        #chapter-title {
-            position: fixed; top: 2rem; left: 2rem; 
-            font-size: clamp(1.4rem, 2.5vw, 2.4rem); font-weight: 600; color: #666;
-            z-index: 100; mix-blend-mode: difference;
-            transition: transform 0.5s ease, opacity 0.5s ease;
-        }
+.card-bg-num { position: absolute; top: -15px; right: 5px; font-size: 7rem; font-weight: 900; color: rgba(255,255,255,0.05); line-height: 1; }
+.card-title { font-size: 1.6rem; font-weight: 700; color: #fff; z-index: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-sub { font-size: 1.1rem; color: #aaa; z-index: 2; margin-top: 0.2rem; }
 
-        body.idle #chapter-title { transform: translateX(100%); opacity: 0; pointer-events: none; }
-        
-        /* VERSE IMAGES - REMOVED & HIDDEN */
-        #verse-container, #verse-text, #verse-text-next, .active-verse-img { 
-            display: none !important; 
-        }
+/* --- 3. CINEMA VIEW STYLES --- */
+#cinema-view {
+    width: 100%; height: 100%; position: absolute; top: 0; left: 0;
+    display: flex; flex-direction: column;
+    transition: opacity 0.5s;
+    opacity: 0; pointer-events: none;
+}
+#cinema-view.active { opacity: 1; pointer-events: all; z-index: 1000; }
 
-        /* TRANSLATION TEXT - FULLY CENTERED */
-        #translation-text {
-            font-family: 'Inter', sans-serif; font-weight: 300; color: #e0e0e0;
-            line-height: 1.7; 
-            
-            /* Center Alignment Fixes */
-            width: 100%;
-            margin: 0 auto;
-            max-height: 80vh; 
-            
-            overflow-y: auto; white-space: pre-wrap; text-align: center;
-            padding: 0 2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); transition: opacity 0.3s;
-        }
+#loading-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #000; z-index: 9999;
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    transition: opacity 0.5s ease; padding: 2rem;
+}
+.loader-spinner {
+    width: 50px; height: 50px; border: 2px solid rgba(255,255,255,0.1); border-radius: 50%;
+    border-top-color: var(--accent); animation: spin 0.8s ease-in-out infinite; margin-bottom: 2rem;
+}
+.start-btn {
+    display: none; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--accent);
+    color: var(--accent); padding: 15px 50px; font-size: 1.6rem; border-radius: 50px; cursor: pointer;
+    transition: all 0.3s ease; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
+}
+.start-btn:focus, .start-btn:hover { background: var(--accent); color: #000; box-shadow: 0 0 30px rgba(0, 255, 187, 0.5); outline: 2px solid #fff; }
 
-        #control-panel {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            display: flex; justify-content: center; align-items: center;
-            flex-wrap: wrap; gap: 1rem; padding: 2rem;
-            background: linear-gradient(to top, #000 20%, transparent);
-            transition: transform 0.4s ease, opacity 0.4s ease; z-index: 100;
-        }
-        body.idle #control-panel { transform: translateY(100%); opacity: 0; pointer-events: none; }
+.container {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    width: 100%; height: 100%; padding: 2rem; padding-bottom: 12rem; position: relative;
+}
+#content-display {
+    text-align: center; width: 100%; max-width: 1200px; margin: 0 auto;
+    flex-grow: 1; display: flex; flex-direction: column; justify-content: center; position: relative;
+}
+#chapter-title {
+    position: fixed; top: 2rem; left: 2rem; 
+    font-size: clamp(1.4rem, 2.5vw, 2.4rem); font-weight: 600; color: #666;
+    z-index: 100; mix-blend-mode: difference;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+}
 
-        /* In index.css */
+body.idle #chapter-title { transform: translateX(100%); opacity: 0; pointer-events: none; }
+
+#verse-container, #verse-text, #verse-text-next, .active-verse-img { 
+    display: none !important; 
+}
+
+#translation-text {
+    font-family: 'Inter', sans-serif; font-weight: 300; color: #e0e0e0;
+    line-height: 1.7; 
+    width: 100%;
+    margin: 0 auto;
+    max-height: 80vh; 
+    overflow-y: auto; white-space: pre-wrap; text-align: center;
+    padding: 0 2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); transition: opacity 0.3s;
+}
+
+#control-panel {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    display: flex; justify-content: center; align-items: center;
+    flex-wrap: wrap; gap: 1rem; padding: 2rem;
+    background: linear-gradient(to top, #000 20%, transparent);
+    transition: transform 0.4s ease, opacity 0.4s ease; z-index: 100;
+}
+body.idle #control-panel { transform: translateY(100%); opacity: 0; pointer-events: none; }
+
 select {
     font-family: 'Inter', sans-serif;
     font-size: 1.3rem; 
     padding: 0.8rem 2.5rem 0.8rem 1rem;
-    background-color: #1a1a1a; /* Match the modal card background */
+    background-color: #1a1a1a; 
     color: #e5e5e5;
-    border: 1px solid rgba(255,255,255,0.15); /* Match the modal border */
-    border-radius: 12px; /* <--- CHANGED from 99px to 12px */
+    border: 1px solid rgba(255,255,255,0.15); 
+    border-radius: 12px;
     cursor: pointer;
     appearance: none;
-    /* ... keep your SVG icon ... */
 }
 
 select:focus {
     outline: none;
-    border-color: #fff; /* Industrial Focus State */
+    border-color: #fff;
     background-color: #252525;
 }
 
-        @media (max-width: 768px) {
-            #dashboard-view { padding-left: 0 !important; }
-            #chapter-title { position: relative; top: 0; left: 0; width: 100%; text-align: center; padding: 1.5rem 0; mix-blend-mode: normal; }
-            .container { padding: 0; padding-bottom: 230px; }
-            #control-panel { display: grid; grid-template-columns: 1fr 1fr; }
-            .ai-card-border { border-color: rgba(0, 255, 187, 0.4) !important; }
-        }
+@media (max-width: 768px) {
+    #dashboard-view { padding-left: 0 !important; }
+    #chapter-title { position: relative; top: 0; left: 0; width: 100%; text-align: center; padding: 1.5rem 0; mix-blend-mode: normal; }
+    .container { padding: 0; padding-bottom: 230px; }
+    #control-panel { display: grid; grid-template-columns: 1fr 1fr; }
+    .ai-card-border { border-color: rgba(0, 255, 187, 0.4) !important; }
+}
