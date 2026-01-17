@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "title": "Quran for Every Soul - Audio Coran en ligne, Lecteur de Sourates et Traductions",
+    "description": "Lisez et écoutez le Noble Coran en ligne. Fonctionnalités: audio MP3 synchronisé, récitation verset par verset (Sourate) et traductions.",
+    "siteName": "Quran for Every Soul",
+    "ogTitle": "Quran for Every Soul - Le Lecteur du Coran Sans Distraction",
+    "ogDescription": "Écoutez le Noble Coran verset par verset avec texte et traductions synchronisés."
+  },
+  "nav": {
+    "home": "Accueil",
+    "search": "Recherche",
+    "profile": "Profil"
+  },
+  "hero": {
+    "super": "Le Livre Clair | Le Coran",
+    "title": "LE CORAN",
+    "subtitle": "El Corán",
+    "resume": "Reprendre",
+    "audioHd": "AUDIO HD"
+  },
+  "dashboard": {
+    "continueListening": "Continuer à Écouter",
+    "topResults": "Meilleurs Résultats",
+    "useKeyboard": "Utilisez le clavier pour décrire un sujet...",
+    "searching": "Recherche en cours..."
+  },
+  "search": {
+    "voiceSearch": "Recherche Vocale"
+  },
+  "player": {
+    "title": "Quran for Every Soul",
+    "selectSurah": "Sélectionnez une Sourate...",
+    "selectSurahButton": "Sélectionner une Sourate",
+    "ayah": "Verset",
+    "reciter": "Récitateur",
+    "translation": "Traduction",
+    "audioTrans": "Audio Traduit",
+    "start": "Démarrer",
+    "continue": "Continuer",
+    "buffering": "Chargement..."
+  },
+  "quickAccess": {
+    "title": "Accès Rapide",
+    "footerDescription": "Quran for Every Soul: Lecteur Sans Distraction. Récitation de Mishary Alafasy."
+  },
+  "arabicModal": {
+    "question": "Savez-vous lire l'arabe ?",
+    "subtitle": "Ou vous verrez simplement la traduction uniquement.",
+    "yes": "Oui",
+    "no": "Non"
+  },
+  "errors": {
+    "loadError": "Erreur lors du chargement du contenu. Veuillez vérifier la connexion.",
+    "translationUnavailable": "Traduction non disponible",
+    "userDataWiped": "Données utilisateur supprimées."
+  },
+  "loading": {
+    "selectSurah": "Sélectionnez une Sourate..."
+  }
+}

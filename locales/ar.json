@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "title": "Quran for Every Soul - صوت القرآن الكريم، مشغل السور والترجمات",
+    "description": "اقرأ واستمع إلى القرآن الكريم عبر الإنترنت. يتضمن صوت MP3 متزامن، تلاوة آية بآية (سورة)، والترجمات.",
+    "siteName": "Quran for Every Soul",
+    "ogTitle": "Quran for Every Soul - مشغل القرآن الكريم بدون إلهاء",
+    "ogDescription": "استمع إلى القرآن الكريم آية بآية مع النص والترجمات المتزامنة."
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "search": "بحث",
+    "profile": "الملف الشخصي"
+  },
+  "hero": {
+    "super": "الكتاب الواضح | القرآن",
+    "title": "القرآن الكريم",
+    "subtitle": "El Corán",
+    "resume": "استئناف",
+    "audioHd": "صوت عالي الجودة"
+  },
+  "dashboard": {
+    "continueListening": "متابعة الاستماع",
+    "topResults": "أفضل النتائج",
+    "useKeyboard": "استخدم لوحة المفاتيح لوصف الموضوع...",
+    "searching": "جارٍ البحث..."
+  },
+  "search": {
+    "voiceSearch": "البحث الصوتي"
+  },
+  "player": {
+    "title": "Quran for Every Soul",
+    "selectSurah": "اختر سورة...",
+    "selectSurahButton": "اختر سورة",
+    "ayah": "آية",
+    "reciter": "القارئ",
+    "translation": "الترجمة",
+    "audioTrans": "الصوت المترجم",
+    "start": "ابدأ",
+    "continue": "متابعة",
+    "buffering": "جارٍ التحميل..."
+  },
+  "quickAccess": {
+    "title": "الوصول السريع",
+    "footerDescription": "Quran for Every Soul: مشغل بدون إلهاء. التلاوة لمشاري العفاسي."
+  },
+  "arabicModal": {
+    "question": "هل تعرف كيف تقرأ العربية؟",
+    "subtitle": "أم أنك سترى الترجمة فقط.",
+    "yes": "نعم",
+    "no": "لا"
+  },
+  "errors": {
+    "loadError": "خطأ في تحميل المحتوى. يرجى التحقق من الاتصال.",
+    "translationUnavailable": "الترجمة غير متاحة",
+    "userDataWiped": "تم حذف بيانات المستخدم."
+  },
+  "loading": {
+    "selectSurah": "اختر سورة..."
+  }
+}

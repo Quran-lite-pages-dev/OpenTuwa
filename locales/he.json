@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "title": "Quran for Every Soul - אודיו קוראן מקוון, נגן סורה ותרגומים",
+    "description": "קרא והאזן לקוראן הנאצל באינטרנט. כולל אודיו MP3 מסונכרן, קריאה פסוק אחר פסוק (סורה) ותרגומים.",
+    "siteName": "Quran for Every Soul",
+    "ogTitle": "Quran for Every Soul - נגן הקוראן ללא הסחות דעת",
+    "ogDescription": "האזן לקוראן הנאצל פסוק אחר פסוק עם טקסט ותרגומים מסונכרנים."
+  },
+  "nav": {
+    "home": "בית",
+    "search": "חיפוש",
+    "profile": "פרופיל"
+  },
+  "hero": {
+    "super": "הספר הבהיר | הקוראן",
+    "title": "הקוראן",
+    "subtitle": "El Corán",
+    "resume": "המשך",
+    "audioHd": "אודיו באיכות HD"
+  },
+  "dashboard": {
+    "continueListening": "המשך להאזין",
+    "topResults": "תוצאות מובילות",
+    "useKeyboard": "השתמש במקלדת כדי לתאר נושא...",
+    "searching": "מחפש..."
+  },
+  "search": {
+    "voiceSearch": "חיפוש קולי"
+  },
+  "player": {
+    "title": "Quran for Every Soul",
+    "selectSurah": "בחר סורה...",
+    "selectSurahButton": "בחר סורה",
+    "ayah": "איה",
+    "reciter": "קורא",
+    "translation": "תרגום",
+    "audioTrans": "אודיו מתורגם",
+    "start": "התחל",
+    "continue": "המשך",
+    "buffering": "טוען..."
+  },
+  "quickAccess": {
+    "title": "גישה מהירה",
+    "footerDescription": "Quran for Every Soul: נגן ללא הסחות דעת. קריאה של Mishary Alafasy."
+  },
+  "arabicModal": {
+    "question": "האם אתה יודע לקרוא ערבית?",
+    "subtitle": "או שפשוט תראה רק את התרגום.",
+    "yes": "כן",
+    "no": "לא"
+  },
+  "errors": {
+    "loadError": "שגיאה בטעינת התוכן. אנא בדוק את החיבור.",
+    "translationUnavailable": "תרגום לא זמין",
+    "userDataWiped": "נתוני המשתמש נמחקו."
+  },
+  "loading": {
+    "selectSurah": "בחר סורה..."
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "title": "Quran for Every Soul - Audio del Corán en línea, Reproductor de Suras y Traducciones",
+    "description": "Lee y escucha el Noble Corán en línea. Características: audio MP3 sincronizado, recitación verso por verso (Sura) y traducciones.",
+    "siteName": "Quran for Every Soul",
+    "ogTitle": "Quran for Every Soul - El Reproductor del Corán Sin Distracciones",
+    "ogDescription": "Escucha el Noble Corán verso por verso con texto y traducciones sincronizadas."
+  },
+  "nav": {
+    "home": "Inicio",
+    "search": "Buscar",
+    "profile": "Perfil"
+  },
+  "hero": {
+    "super": "El Libro Claro | El Corán",
+    "title": "EL CORÁN",
+    "subtitle": "El Corán",
+    "resume": "Reanudar",
+    "audioHd": "AUDIO HD"
+  },
+  "dashboard": {
+    "continueListening": "Continuar Escuchando",
+    "topResults": "Mejores Resultados",
+    "useKeyboard": "Usa el teclado para describir un tema...",
+    "searching": "Buscando..."
+  },
+  "search": {
+    "voiceSearch": "Búsqueda por Voz"
+  },
+  "player": {
+    "title": "Quran for Every Soul",
+    "selectSurah": "Selecciona una Sura...",
+    "selectSurahButton": "Seleccionar Sura",
+    "ayah": "Aleya",
+    "reciter": "Recitador",
+    "translation": "Traducción",
+    "audioTrans": "Audio Trans",
+    "start": "Comenzar",
+    "continue": "Continuar",
+    "buffering": "Cargando..."
+  },
+  "quickAccess": {
+    "title": "Acceso Rápido",
+    "footerDescription": "Quran for Every Soul: Reproductor Sin Distracciones. Recitación de Mishary Alafasy."
+  },
+  "arabicModal": {
+    "question": "¿Sabes leer árabe?",
+    "subtitle": "O simplemente verás solo la traducción.",
+    "yes": "Sí",
+    "no": "No"
+  },
+  "errors": {
+    "loadError": "Error al cargar el contenido. Por favor, verifica la conexión.",
+    "translationUnavailable": "Traducción no disponible",
+    "userDataWiped": "Datos del usuario eliminados."
+  },
+  "loading": {
+    "selectSurah": "Selecciona una Sura..."
+  }
+}

@@ -124,8 +124,40 @@ function getSurah(number) {
     return SURAH_METADATA.find(s => s.chapter == number);
 }
 
+const SUPPORTED_LOCALES = ['en', 'ar', 'es', 'fr', 'he', 'zh'];
+const DEFAULT_LOCALE = 'en';
+
 export async function onRequest(context) {
   const url = new URL(context.request.url);
+  const path = url.pathname;
+  const pathSegments = path.split('/').filter(Boolean);
+  
+  // Handle language routing
+  let locale = DEFAULT_LOCALE;
+  let actualPath = path;
+  
+  // Check if first segment is a locale
+  if (pathSegments.length > 0 && SUPPORTED_LOCALES.includes(pathSegments[0])) {
+    locale = pathSegments[0];
+    // Remove locale from path for internal routing
+    pathSegments.shift();
+    actualPath = '/' + pathSegments.join('/') || '/';
+  }
+  
+  // If root path without locale and no query params, check for browser language redirect
+  if (path === '/' && !url.searchParams.has('chapter') && !url.searchParams.has('redirected')) {
+    const acceptLanguage = context.request.headers.get('accept-language') || '';
+    const browserLang = acceptLanguage.split(',')[0].split('-')[0].toLowerCase();
+    
+    if (SUPPORTED_LOCALES.includes(browserLang) && browserLang !== DEFAULT_LOCALE) {
+      // Redirect to browser language
+      const newUrl = new URL(url);
+      newUrl.pathname = `/${browserLang}/`;
+      newUrl.searchParams.set('redirected', '1');
+      return Response.redirect(newUrl.toString(), 302);
+    }
+  }
+  
   const chapter = url.searchParams.get('chapter');
   
   // If no chapter is requested, just return the static site as normal

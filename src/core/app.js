@@ -266,7 +266,8 @@ const KEYBOARD_KEYS = [
 window.wipeUserData = function() {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem('quran_user_analytics');
-    alert('User data wiped.');
+    const msg = window.t ? window.t('errors.userDataWiped') : 'User data wiped.';
+    alert(msg);
     location.reload();
 };
 
@@ -493,7 +494,7 @@ async function initializeApp() {
             elements.spinner.style.display = 'none';
             elements.loaderText.style.display = 'none';
             elements.startBtn.style.display = 'block';
-            elements.startBtn.textContent = "Continue";
+            elements.startBtn.textContent = window.t ? window.t('player.continue') : "Continue";
             elements.startBtn.focus();
         } else {
             switchView('dashboard');
@@ -507,7 +508,7 @@ async function initializeApp() {
 
     } catch (error) {
         console.error("Critical Init Error:", error);
-        elements.loaderText.textContent = "Error loading content. Please check connection.";
+        elements.loaderText.textContent = window.t ? window.t('errors.loadError') : "Error loading content. Please check connection.";
     }
 }
 
@@ -964,7 +965,8 @@ function updateTranslationText(chNum, vNum) {
 
     const sura = translationCache[tid].querySelector(`sura[index="${chNum}"]`);
     const aya = sura ? sura.querySelector(`aya[index="${vNum}"]`) : null;
-    elements.display.trans.textContent = aya ? aya.getAttribute('text') : "Translation unavailable";
+    const unavailableText = window.t ? window.t('errors.translationUnavailable') : "Translation unavailable";
+    elements.display.trans.textContent = aya ? aya.getAttribute('text') : unavailableText;
     adjustFontSize();
 }
 
@@ -1137,7 +1139,8 @@ function handleKeyPress(key) {
     elements.search.inputDisplay.textContent = searchString;
     
     if (searchString.length > 2) {
-        elements.search.resultsGrid.innerHTML = '<div class="no-results">Searching...</div>';
+        const searchingText = window.t ? window.t('dashboard.searching') : "Searching...";
+        elements.search.resultsGrid.innerHTML = `<div class="no-results">${searchingText}</div>`;
     }
 }
 

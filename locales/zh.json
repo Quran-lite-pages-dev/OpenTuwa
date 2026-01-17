@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "title": "Quran for Every Soul - 在线古兰经音频、章节播放器和翻译",
+    "description": "在线阅读和聆听尊贵的古兰经。功能包括同步MP3音频、逐节诵读（苏拉）和翻译。",
+    "siteName": "Quran for Every Soul",
+    "ogTitle": "Quran for Every Soul - 无干扰的古兰经播放器",
+    "ogDescription": "逐节聆听尊贵的古兰经，带同步文本和翻译。"
+  },
+  "nav": {
+    "home": "首页",
+    "search": "搜索",
+    "profile": "个人资料"
+  },
+  "hero": {
+    "super": "明确的经典 | 古兰经",
+    "title": "古兰经",
+    "subtitle": "El Corán",
+    "resume": "继续",
+    "audioHd": "高清音频"
+  },
+  "dashboard": {
+    "continueListening": "继续聆听",
+    "topResults": "热门结果",
+    "useKeyboard": "使用键盘描述主题...",
+    "searching": "搜索中..."
+  },
+  "search": {
+    "voiceSearch": "语音搜索"
+  },
+  "player": {
+    "title": "Quran for Every Soul",
+    "selectSurah": "选择章节...",
+    "selectSurahButton": "选择章节",
+    "ayah": "节",
+    "reciter": "诵读者",
+    "translation": "翻译",
+    "audioTrans": "音频翻译",
+    "start": "开始",
+    "continue": "继续",
+    "buffering": "加载中..."
+  },
+  "quickAccess": {
+    "title": "快速访问",
+    "footerDescription": "Quran for Every Soul: 无干扰播放器。Mishary Alafasy 的诵读。"
+  },
+  "arabicModal": {
+    "question": "您会读阿拉伯文吗？",
+    "subtitle": "或者您只能看到翻译。",
+    "yes": "是",
+    "no": "否"
+  },
+  "errors": {
+    "loadError": "加载内容时出错。请检查连接。",
+    "translationUnavailable": "翻译不可用",
+    "userDataWiped": "用户数据已清除。"
+  },
+  "loading": {
+    "selectSurah": "选择章节..."
+  }
+}

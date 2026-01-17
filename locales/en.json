@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "title": "Quran for Every Soul - Online Quran Audio, Surah Player & Translations",
+    "description": "Read and listen to the Noble Quran online. Features synchronized MP3 audio, verse-by-verse recitation (Surah), and translations.",
+    "siteName": "Quran for Every Soul",
+    "ogTitle": "Quran for Every Soul - The Distraction-Free Quran Player",
+    "ogDescription": "Listen to the Noble Quran verse by verse with synchronized text and translations."
+  },
+  "nav": {
+    "home": "Home",
+    "search": "Search",
+    "profile": "Profile"
+  },
+  "hero": {
+    "super": "The Clear Book | The Quran",
+    "title": "THE QURAN",
+    "subtitle": "El Corán",
+    "resume": "Resume",
+    "audioHd": "AUDIO HD"
+  },
+  "dashboard": {
+    "continueListening": "Continue Listening",
+    "topResults": "Top Results",
+    "useKeyboard": "Use the keyboard to describe a topic...",
+    "searching": "Searching..."
+  },
+  "search": {
+    "voiceSearch": "Voice Search"
+  },
+  "player": {
+    "title": "Quran for Every Soul",
+    "selectSurah": "Select a Surah...",
+    "selectSurahButton": "Select Surah",
+    "ayah": "Ayah",
+    "reciter": "Reciter",
+    "translation": "Translation",
+    "audioTrans": "Audio Trans",
+    "start": "Start",
+    "continue": "Continue",
+    "buffering": "Loading..."
+  },
+  "quickAccess": {
+    "title": "Quick Access",
+    "footerDescription": "Quran for Every Soul: Distraction-Free Player. Recitation by Mishary Alafasy."
+  },
+  "arabicModal": {
+    "question": "Do you know how to read Arabic?",
+    "subtitle": "Or you'll simply see only the translation.",
+    "yes": "Yes",
+    "no": "No"
+  },
+  "errors": {
+    "loadError": "Error loading content. Please check connection.",
+    "translationUnavailable": "Translation unavailable",
+    "userDataWiped": "User data wiped."
+  },
+  "loading": {
+    "selectSurah": "Select a Surah..."
+  }
+}
