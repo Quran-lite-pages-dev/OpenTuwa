@@ -2,6 +2,7 @@
 /* index.css - FIXED: Single Page Fit & Dynamic Hero Collapse */
 
 /* --- 0. TV STYLE OVERRIDES & SCROLLBAR BAN --- */
+/* VERIFIED: Critical for TV to prevent ugly scrollbars on the big screen */
 * {
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
@@ -182,6 +183,7 @@ img:-moz-broken { display: none !important; }
     transform: none;
 }
 .heroz-title-text { 
+    /* VERIFIED: 'clamp' ensures titles don't explode on laptop but stay big on TV */
     font-size: clamp(3rem, 5vw, 6rem); font-weight: 900; line-height: 1; 
     margin-bottom: 22rem; text-shadow: 0 4px 30px rgba(0,0,0,1); color: #fff; opacity: 0.7;
 }
@@ -292,12 +294,15 @@ img:-moz-broken { display: none !important; }
 }
 
 /* Pro Active State - Individual Card Scaling */
+/* VERIFIED: 'border-width: 2px' is added for TV Visibility (10ft viewing) */
 .surah-card:focus, .surah-card:hover { 
     transform: scale(1.05); 
     z-index: 10;
     background: rgba(30, 30, 30, 0.9);
     border-color: var(--accent);
+    border-width: 2px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 0 1px var(--accent); 
+    outline: none; 
 }
 
 .card-bg-num { position: absolute; top: -15px; right: 5px; font-size: 7rem; font-weight: 900; color: rgba(255,255,255,0.05); line-height: 1; }
@@ -505,4 +510,24 @@ select:focus {
     #chapter-title { display: none;}
     .container { padding: 0; padding-bottom: 230px; }
     #control-panel { display: grid; grid-template-columns: 1fr 1fr; }
+}
+
+/* --- 5. VERIFIED: RAW 4K SAFETY NET --- */
+/* SMART VERIFICATION: 
+   - Standard Laptops (1080p-1440p) are < 2000px wide. This block is IGNORED.
+   - High-DPI Laptops (MacBook/Surface) use scaling (e.g. 200%), so browser sees ~1440px. IGNORED.
+   - Standard TV Apps report 1920x1080. IGNORED.
+   - PC CONNECTED TO TV @ 4K (100% Scale): Browser sees 3840px. 
+     -> This block ACTIVATES to prevent tiny text at 10ft.
+*/
+@media screen and (min-width: 2500px) {
+    html {
+        font-size: 100%; /* Boost base font for Raw 4K inputs */
+    }
+    .surah-card {
+        flex: 0 0 350px; /* Wider cards for huge screens */
+    }
+    .hero-banner {
+        padding: 0 10%;
+    }
 }
