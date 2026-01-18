@@ -645,12 +645,18 @@ function schedulePreview(chapterNum) {
     }
     // --- END FIX ---
     
-// document.getElementById('splash-footer').textContent = heroTitle; // Removed: This wipes the H1 element
     const doorz = document.getElementById('doorz-hero-title');
-    if(doorz) doorz.textContent = heroTitle;
+    if(doorz) {
+        // [IMPORTANT FIX] Remove data-i18n so the translation loader doesn't overwrite this later
+        doorz.removeAttribute('data-i18n'); 
+        doorz.textContent = heroTitle;
+    }
     
-    document.getElementById('door-hero-title').textContent = heroTitle;
-    document.getElementById('door-hero-title').textContent = heroTitle;
+    const doorHero = document.getElementById('door-hero-title');
+    if (doorHero) {
+        doorHero.textContent = heroTitle;
+    }
+
     document.getElementById('door-hero-subtitle').textContent = surah.title;
     document.getElementById('door-play-btn').onclick = () => launchPlayer(chapterNum, 1);
 
@@ -658,7 +664,6 @@ function schedulePreview(chapterNum) {
         updateHeroPreview(chapterNum, 1, 'alafasy', true); 
     }, PREVIEW_DELAY);
 }
-
 function stopPreview() {
     elements.previewAudio.pause();
     elements.previewAudio.onended = null;
@@ -1014,6 +1019,9 @@ async function loadVerse(autoplay = true) {
     // --- FIX START: Update Splash Screen Title to Real-Time Surah Name ---
     const splashTitle = document.getElementById('doorz-hero-title');
     if (splashTitle) {
+        // [IMPORTANT FIX] Remove data-i18n so it doesn't revert to default
+        splashTitle.removeAttribute('data-i18n');
+
         // 1. Get default English name
         let displayTitle = currentChapterData.english_name;
         
@@ -1021,6 +1029,7 @@ async function loadVerse(autoplay = true) {
         if (window.t) {
             const translatedKey = 'surahNames.' + displayTitle;
             const translatedName = window.t(translatedKey);
+            
             // Only use translation if it returns a value different from the key
             if (translatedName && translatedName !== translatedKey) {
                 displayTitle = translatedName;
@@ -1033,7 +1042,7 @@ async function loadVerse(autoplay = true) {
     // --- FIX END ---
 
     const verseData = currentChapterData.verses[vIdx];
-    
+   
     const chNum = currentChapterData.chapterNumber;
 
     const vNum = verseData.verseNumber;
