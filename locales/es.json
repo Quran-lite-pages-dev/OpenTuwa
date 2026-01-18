@@ -40,7 +40,7 @@
     "buffering": "Cargando...",
     "suraName": "Nombre de la Sura",
     "suraNameMeaning": "Significado del nombre de la Sura",
-    "noAudioTranslation": "Sin Traducción de Audio"
+    "player.noAudioTranslation": "Sin Traducción de Audio"
   },
   "card": {
     "subtitleLabel": "Título Árabe"

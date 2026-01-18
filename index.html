@@ -54,7 +54,7 @@
     }
     </script>
     
-    <link id="main-css" rel="stylesheet" href="styles/index.css" fetchpriority="high">
+    <link id="main-css" rel="stylesheet" href="styles/index1.css" fetchpriority="high">
     <link id="custom-select-css" rel="stylesheet" href="styles/custom-select.css" fetchpriority="high"> <link rel="stylesheet" href="styles/arabic-modal.css">
     <link rel="stylesheet" href="styles/user-select.css">
     <link rel="stylesheet" href="styles/inline-styles.css">
@@ -62,165 +62,160 @@
     <script src="src/utils/i18n-loader.js"></script>
     <script src="src/utils/analytics.js"></script>
     <script src="src/utils/github-redirect.js"></script>
-    <script> 
-        (function() {
-
-    /* -----------------------------------------------------------
-
-       Page Loader
-
-       ----------------------------------------------------------- */
-
-    
-
-    // 1. CSS: Overlay + Loading Spinner Animation
-
+<script> 
+(function() {
     const css = `
-
       #_universal_loader {
-
         position: fixed;
-
-        top: 0;
-
-        left: 0;
-
-        width: 100vw;
-
-        height: 100vh;
-
-        background-color: #000000;
-
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background-color: #000;
         z-index: 2147483647;
-
         opacity: 1;
-
-        transition: opacity 1.0s cubic-bezier(0.645, 0.045, 0.355, 1);
-
+        /* Background fades out slightly slower so we see the light show */
+        transition: opacity 0.8s ease-out 0.2s; 
         display: flex;
-
         align-items: center;
-
         justify-content: center;
-
-        pointer-events: auto;
-
+        overflow: hidden;
       }
-
       
-
-      /* The Spinner Ring */
-
-      #_loader_spinner {
-
-        width: 50px;
-
-        height: 50px;
-
-        border: 4px solid rgba(255, 255, 255, 0.3); /* Subtle white track */
-
-        border-top: 4px solid #00FFBB; /* aacent */
-
-        border-radius: 50%;
-
-        animation: _spin 1s linear infinite;
-
+      .wave-container {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+        height: 200px;
+        transform-origin: center center;
+        /* The Zoom Transition:
+           We use a cubic-bezier that starts slow and snaps fast (The "Punch")
+        */
+        transition: 
+            transform 1.0s cubic-bezier(0.7, 0, 0.3, 1), 
+            filter 1.0s ease-in, 
+            opacity 1.0s ease-in;
+        will-change: transform, filter, opacity;
       }
 
-
-
-      @keyframes _spin {
-
-        0% { transform: rotate(0deg); }
-
-        100% { transform: rotate(360deg); }
-
+      /* --- THE BOMBASTIC EXIT STATE --- */
+      #_universal_loader.loaded .wave-container {
+        transform: scale(35); /* Infinite Zoom */
+        /* COMBINATION OF EFFECTS:
+           1. Blur: Simulates extreme speed
+           2. Brightness 600%: The "Flash" (Light Source)
+           3. Drop-shadow: Adds the glowing aura
+        */
+        filter: blur(8px) brightness(200%) drop-shadow(0 0 40px #fff);
+        opacity: 0;
       }
 
-      
+      /* --- WARP SPEED ACCELERATION --- */
+      /* When loaded, we override the animation duration to be incredibly fast (0.2s) */
+      #_universal_loader.loaded .wave1 { animation: wave_loop 0.2s linear infinite !important; }
+      #_universal_loader.loaded .wave2 { animation: wave_loop 0.2s linear infinite reverse !important; }
+      #_universal_loader.loaded .wave3 { animation: wave_loop 0.2s linear infinite !important; }
+      #_universal_loader.loaded .wave4 { animation: wave_loop 0.2s linear infinite !important; }
 
-      /* Hide state */
+      .wave-svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 200%;
+        height: 100%;
+        fill: none;
+        stroke-width: 4;
+        stroke-linecap: round;
+        overflow: visible;
+      }
+
+      /* Normal Speed Settings */
+      .wave1 { 
+          stroke: #00FFBB; 
+          opacity: 0.4; 
+          animation: wave_loop 4s linear infinite;
+          filter: blur(2px) drop-shadow(0 0 12px #00FFBB);
+      }
+      .wave2 { 
+          stroke: #00FFBB; 
+          opacity: 0.6; 
+          animation: wave_loop 2.5s linear infinite reverse; 
+          filter: blur(1px) drop-shadow(0 0 12px #00FFBB);
+      }
+      .wave3 { 
+          stroke: #00FFBB; 
+          opacity: 0.9; 
+          animation: wave_loop 3.2s linear infinite; 
+          filter: drop-shadow(0 0 15px #00FFBB);
+      }
+      .wave4 { 
+          stroke: #00FFBB; 
+          opacity: 0.9; 
+          animation: wave_loop 3.2s linear infinite; 
+          filter: drop-shadow(0 0 15px #00FFBB);
+      }
+
+      @keyframes wave_loop {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+      }
 
       #_universal_loader.loaded {
-
         opacity: 0;
-
         pointer-events: none;
-
       }
-
     `;
 
-
-
-    // 2. Inject CSS
-
     const style = document.createElement('style');
-
     style.appendChild(document.createTextNode(css));
-
     document.head.appendChild(style);
 
-
-
-    // 3. Create Overlay & Spinner
-
     const overlay = document.createElement('div');
-
     overlay.id = '_universal_loader';
-
     
+    const container = document.createElement('div');
+    container.className = 'wave-container';
 
-    const spinner = document.createElement('div');
+    const wavePath = "M0,100 C150,180 350,20 500,100 C650,180 850,20 1000,100 C1150,180 1350,20 1500,100 C1650,180 1850,20 2000,100";
 
-    spinner.id = '_loader_spinner';
+    const createWave = (cls) => {
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        svg.setAttribute("viewBox", "0 0 1000 200");
+        svg.setAttribute("preserveAspectRatio", "none");
+        svg.setAttribute("class", `wave-svg ${cls}`);
+        
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", wavePath);
+        svg.appendChild(path);
+        return svg;
+    };
 
+    container.appendChild(createWave('wave1'));
+    container.appendChild(createWave('wave2'));
+    container.appendChild(createWave('wave3'));
+    container.appendChild(createWave('wave4'));
     
-
-    overlay.appendChild(spinner);
-
+    overlay.appendChild(container);
     document.documentElement.appendChild(overlay);
 
-
-
-    // 4. Reveal Function
-
     function revealPage() {
-
         overlay.classList.add('loaded');
-
+        // Wait for the 1.0s zoom/flash to finish before removing from DOM
         setTimeout(() => {
-
-            if (overlay.parentNode) {
-
-                overlay.parentNode.removeChild(overlay);
-
-            }
-
-        }, 1000); // Matches transition time
-
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        }, 1200); 
     }
 
-
-
-    // 5. Trigger Logic (Wait for everything)
-
     if (document.readyState === 'complete') {
-
         revealPage();
-
     } else {
-
         window.addEventListener('load', revealPage);
-
-        // Safety timeout: Remove loader after 8s even if page is stuck
-
+        // Fallback: Force reveal after 8 seconds if page is stuck loading
         setTimeout(revealPage, 8000);
-
     }
 
 })();
-    </script>
+</script>
+
+
+
     </head>
 <body>
 
@@ -269,21 +264,12 @@
             <div id="hero-subtitle-overlay"></div>
 
             <div class="hero-content">
-                <div class="hero-super">
-                    <span data-i18n="hero.super">The Clear Book | The Quran</span>
-                    <span class="badge"></span>
-                    <span class="badges">
-                        <svg width="14" height="14" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Spatial-audio SVG Icon</title><path fill="currentColor" d="M22.442 9.64q-1.657 0-3.176-.639q-1.52-.64-2.68-1.8t-1.798-2.678t-.64-3.177h1.02q0 1.464.544 2.787q.545 1.324 1.583 2.362t2.36 1.585t2.787.547zm0-4.513q-.755 0-1.447-.289t-1.224-.82q-.533-.533-.821-1.225q-.288-.691-.288-1.447h1.013q0 .548.212 1.062t.592.902q.388.387.902.592t1.061.206zM10.096 12q-1.237 0-2.119-.881T7.097 9t.88-2.119T10.097 6t2.118.881T13.096 9t-.881 2.119t-2.119.881m-7 7.23v-1.645q0-.69.348-1.195q.348-.503.983-.802q1.217-.592 2.702-.975t2.967-.382t2.967.382t2.702.975q.635.299.983.802t.348 1.195v1.646z"/></svg>
-                        <span data-i18n="hero.audioHd">AUDIO HD</span>
-                    </span>
-                </div>
-                <h1 class="hero-title-text" id="door-hero-title" data-i18n="hero.title">THE QURAN</h1>
-                <div class="hero-subtitle" id="door-hero-subtitle" data-i18n="hero.subtitle">El Corán</div>
-                <button id="door-play-btn" class="dash-btn" tabindex="10">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+                <h1 class="hero-title-text" id="door-hero-title" data-i18n="hero.title"></h1>
+                <div class="hero-subtitle" id="door-hero-subtitle" data-i18n="hero.subtitle"></div>
+                    
                         <path d="M18.25 12L7.75 5.75V18.25L18.25 12Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    <span data-i18n="hero.resume">Resume</span>
                 </button>
             </div>
         </div>
@@ -293,20 +279,6 @@
             <div class="card-scroller" id="continue-row"></div>
         </div>
 
-        <div class="row-section row-section-hidden" id="ai-section">
-            <div class="row-header"></div>
-            <div class="card-scroller" id="ai-row"></div>
-        </div>
-
-        <div class="row-section">
-            <div class="row-header"></div>
-            <div class="card-scroller" id="trending-row"></div>
-        </div>
-
-        <div class="row-section">
-            <div class="row-header"></div>
-            <div class="card-scroller" id="short-row"></div>
-        </div>
 
         <div class="row-section row-section-padding-bottom">
             <div class="row-header"></div>
@@ -323,16 +295,7 @@
                 <div class="loader-text" id="loader-text"></div>
                 <button id="start-btn" class="start-btn" data-i18n="player.start">Start</button>
             </div>
-            <nav id="splash-footer">
-                <h2 data-i18n="quickAccess.title">Quick Access</h2>
-                <a href="?chapter=1&trans=en">Al-Fatihah</a>
-                <a href="?chapter=18&trans=en">Al-Kahf</a>
-                <a href="?chapter=36&trans=en">Ya-Sin</a>
-                <a href="?chapter=67&trans=en">Al-Mulk</a>
-                <a href="?chapter=55&trans=en">Ar-Rahman</a>
-                <a href="?chapter=2&verse=255&trans=en">Ayatul Kursi</a>
-                <div class="splash-footer-description" data-i18n="quickAccess.footerDescription">Quran for Every Soul: Distraction-Free Player. Recitation by Mishary Alafasy.</div>
-            </nav>
+
         </div>
 
         <div class="container">

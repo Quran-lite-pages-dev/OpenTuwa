@@ -1,5 +1,5 @@
 /* Copyright (c) Haykal M. Zaidi 2024-2026. All rights reserved. PROPRIETARY AND CONFIDENTIAL. */
-/* index.css - FIXED: Removed scroll container scaling to prevent artifacts */
+/* index.css - FIXED: Single Page Fit & Dynamic Hero Collapse */
 
 /* --- 0. TV STYLE OVERRIDES & SCROLLBAR BAN --- */
 * {
@@ -20,91 +20,6 @@ html, body {
     width: 100vw; /* Ensure strict width */
     margin: 0;
     background-color: #000;
-}
-
-/* Dashboard for Sidebar */
-#dashboard-view { 
-    padding-left: 0 !important; 
-    transition: padding-left 0.3s; 
-}
-
-/* Preview Subtitles */
-#hero-subtitle-overlay {
-    position: fixed !important; bottom: 120px; right: 5%; max-width: 600px;
-    color: #fff; font-size: 1.4rem; font-weight: 500;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.9);
-    z-index: 3000 !important; opacity: 0; transition: opacity 0.3s;
-    background: rgba(0,0,0,0.2); padding: 1.5rem 2rem; border-radius: 4px;
-    backdrop-filter: blur(20px) saturate(180%);
-    pointer-events: none;
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
-}
-#hero-subtitle-overlay.active { opacity: 1; }
-
-/* Search Overlay */
-#search-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #141414; z-index: 2500; 
-    padding-left: 0 !important; 
-    display: none; grid-template-columns: 350px 1fr;
-}
-#search-overlay.active { display: grid; }
-
-.keyboard-section {
-    background: #000; padding: 4rem 2rem; display: flex; flex-direction: column;
-    border-right: 1px solid #333;
-}
-#search-input-display {
-    background: #333; color: #fff; padding: 1rem; font-size: 2rem;
-    border: 1px solid #fff; margin-bottom: 2rem; min-height: 50px; display: flex; align-items: center;
-}
-.keyboard-grid {
-    display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
-}
-.key {
-    aspect-ratio: 1; background: #333; color: #fff; font-size: 1.4rem;
-    display: flex; justify-content: center; align-items: center;
-    cursor: pointer; border: 2px solid transparent; transition: transform 0.1s;
-}
-.key:focus, .key:hover { border-color: #fff; background: #555; transform: scale(1.1); z-index: 2; outline: none; }
-.key.wide { grid-column: span 2; aspect-ratio: auto; height: 50px; }
-
-/* Search Performance Patch */
-.results-section {
-    padding: 4rem;
-    overflow: hidden !important;
-}
-
-.results-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 2rem;
-    transform: translateY(0);
-    transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1); 
-    will-change: transform;
-    padding-bottom: 300px;
-}
-
-.no-results {
-    font-size: 2.2rem;
-    color: rgba(255,255,255,0.3);
-    text-align: center;
-    margin-top: 20%;
-}
-
-/* 2026 AI Thinking Animation */
-@keyframes pulse-gradient {
-    0% { color: #888; }
-    50% { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
-    100% { color: #888; }
-}
-.ai-thinking {
-    grid-column: 1 / -1;
-    display: flex; gap: 10px; align-items: center; justify-content: center;
-    padding: 2rem;
-    font-size: 1.4rem;
-    animation: pulse-gradient 1.5s infinite;
 }
 
 /* --- 1. GLOBAL & TV RESET --- */
@@ -160,27 +75,53 @@ body {
     pointer-events: all;
 }
 
-/* --- 2. DASHBOARD STYLES --- */
+/* --- 2. DASHBOARD STYLES (SINGLE FISH MODS) --- */
 #dashboard-view {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 2000;
     background: #050505;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-    display: none;
     padding-left: 0 !important;
+    
+    /* SINGLE FISH LOGIC */
+    overflow: hidden !important; 
+    display: none; 
+    flex-direction: column;
+    justify-content: flex-start; /* Default: Top alignment */
+    transition: justify-content 0.6s cubic-bezier(0.2, 0, 0, 1);
 }
 #dashboard-view::-webkit-scrollbar { display: none !important; }
 
-#dashboard-view.active { display: block; animation: fadeIn 0.5s ease; }
+#dashboard-view.active { display: flex; animation: fadeIn 0.5s ease; }
+
+/* THE MAGIC: If Title is Empty, Center Content Vertically */
+#dashboard-view:has(#door-hero-title:empty) {
+    justify-content: center;
+}
+
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .hero-banner {
-    height: 75vh; width: 100%; position: relative;
+    /* Adjusted Height for "Single Fish" (55vh fits perfectly without scrolling) */
+    height: 55vh; 
+    width: 100%; position: relative;
     display: flex; flex-direction: column; justify-content: center;
     padding: 0 5%;
     overflow: hidden;
     background: #000; 
+    
+    /* Smooth Layout Transition */
+    transition: height 0.7s cubic-bezier(0.2, 0, 0, 1), opacity 0.5s ease, padding 0.5s ease;
+    flex-shrink: 0;
+    opacity: 1;
+}
+
+/* COLLAPSED STATE: If Title is Empty */
+#dashboard-view:has(#door-hero-title:empty) .hero-banner {
+    height: 0vh !important;
+    min-height: 0 !important;
+    padding: 0 5% !important;
+    opacity: 0;
+    pointer-events: none;
 }
 
 .hero-preview-layer {
@@ -283,7 +224,19 @@ img:-moz-broken { display: none !important; }
 
 .row-section { 
     padding: 0 0 2rem 0; 
-    position: relative; z-index: 5; margin-top: -8vh; background: linear-gradient(to bottom, transparent, #050505 20%); 
+    position: relative; z-index: 5; 
+    background: linear-gradient(to bottom, transparent, #050505 20%); 
+    transition: margin-top 0.7s cubic-bezier(0.2, 0, 0, 1); /* Animate the slide */
+}
+
+/* OVERLAP MODE: Only when Hero exists (Title NOT empty) */
+#dashboard-view:not(:has(#door-hero-title:empty)) .row-section {
+    margin-top: -12vh; /* Overlap the hero slightly */
+}
+
+/* CENTER MODE: No overlap when hero is gone */
+#dashboard-view:has(#door-hero-title:empty) .row-section {
+    margin-top: 0;
 }
 
 .row-section:has(.surah-card:hover),
@@ -348,7 +301,87 @@ img:-moz-broken { display: none !important; }
 .card-title { font-size: 1.6rem; font-weight: 700; color: #fff; z-index: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-sub { font-size: 1.1rem; color: #aaa; z-index: 2; margin-top: 0.2rem; }
 
-/* --- 3. CINEMA VIEW STYLES --- */
+/* --- 3. EXTRAS & OVERLAYS --- */
+/* Preview Subtitles */
+#hero-subtitle-overlay {
+    position: fixed !important; bottom: 120px; right: 5%; max-width: 600px;
+    color: #fff; font-size: 1.4rem; font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+    z-index: 3000 !important; opacity: 0; transition: opacity 0.3s;
+    background: rgba(0,0,0,0.2); padding: 1.5rem 2rem; border-radius: 4px;
+    backdrop-filter: blur(20px) saturate(180%);
+    pointer-events: none;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+}
+#hero-subtitle-overlay.active { opacity: 1; }
+
+/* Search Overlay */
+#search-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #141414; z-index: 2500; 
+    padding-left: 0 !important; 
+    display: none; grid-template-columns: 350px 1fr;
+}
+#search-overlay.active { display: grid; }
+
+.keyboard-section {
+    background: #000; padding: 4rem 2rem; display: flex; flex-direction: column;
+    border-right: 1px solid #333;
+}
+#search-input-display {
+    background: #333; color: #fff; padding: 1rem; font-size: 2rem;
+    border: 1px solid #fff; margin-bottom: 2rem; min-height: 50px; display: flex; align-items: center;
+}
+.keyboard-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+}
+.key {
+    aspect-ratio: 1; background: #333; color: #fff; font-size: 1.4rem;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; border: 2px solid transparent; transition: transform 0.1s;
+}
+.key:focus, .key:hover { border-color: #fff; background: #555; transform: scale(1.1); z-index: 2; outline: none; }
+.key.wide { grid-column: span 2; aspect-ratio: auto; height: 50px; }
+
+/* Search Performance Patch */
+.results-section {
+    padding: 4rem;
+    overflow: hidden !important;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    transform: translateY(0);
+    transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1); 
+    will-change: transform;
+    padding-bottom: 300px;
+}
+
+.no-results {
+    font-size: 2.2rem;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    margin-top: 20%;
+}
+
+/* 2026 AI Thinking Animation */
+@keyframes pulse-gradient {
+    0% { color: #888; }
+    50% { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+    100% { color: #888; }
+}
+.ai-thinking {
+    grid-column: 1 / -1;
+    display: flex; gap: 10px; align-items: center; justify-content: center;
+    padding: 2rem;
+    font-size: 1.4rem;
+    animation: pulse-gradient 1.5s infinite;
+}
+
+/* --- 4. CINEMA VIEW STYLES --- */
 #cinema-view {
     width: 100%; height: 100%; position: absolute; top: 0; left: 0;
     display: flex; flex-direction: column;

@@ -40,7 +40,7 @@
     "buffering": "טוען...",
     "suraName": "שם הסורה",
     "suraNameMeaning": "משמעות שם הסורה",
-    "noAudioTranslation": "אין תרגום אודיו"
+    "player.noAudioTranslation": "אין תרגום אודיו"
   },
   "card": {
     "subtitleLabel": "כותרת בערבית"

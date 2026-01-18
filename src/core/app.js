@@ -516,12 +516,17 @@ function refreshDashboard() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const heroBtn = document.getElementById('door-play-btn');
 
+    // 1. Define the indices exactly as you had them
     const allIndices = Array.from({length: 114}, (_, i) => i);
     const shortRowIndices = allIndices.slice(77, 114);
-    
-    fillRow('trending-row', [36, 67, 18, 55, 1, 112, 113, 114].map(id => id-1));
-    fillRow('short-row', shortRowIndices);
-    fillRow('all-row', Array.from({length: 114}, (_, i) => i));
+    const trendingIndices = [36, 67, 18, 55, 1, 112, 113, 114].map(id => id - 1);
+
+    // 2. Combine them into one single list (in the order you want them to appear)
+    // This creates one long list: Trending items first, then Short items, then All items.
+    const combinedIndices = [...trendingIndices, ...shortRowIndices, ...allIndices];
+
+    // 3. Fill ONLY one row (Make sure your HTML has a div with id='all-row')
+    fillRow('all-row', combinedIndices);
 
     if(saved.chapter !== undefined && quranData[saved.chapter]) {
         const chNum = quranData[saved.chapter].chapterNumber;
@@ -578,6 +583,64 @@ function fillRow(elementId, indexArray) {
     
     container.innerHTML = '';
     container.appendChild(fragment);
+
+    // --- INFINITE LOOP & DRIFT FOCUS FIX ---
+    // We attach the navigation handler AFTER filling the row
+    initInfiniteRowNavigation(container);
+}
+
+// --- NEW FUNCTION: Handles Loop and "Drifting" Focus ---
+function initInfiniteRowNavigation(container) {
+    // Remove old listeners if any (to prevent duplicates)
+    if (container.dataset.navAttached) return;
+    container.dataset.navAttached = "true";
+
+    container.addEventListener('keydown', (e) => {
+        if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+
+        const cards = Array.from(container.querySelectorAll('.surah-card'));
+        if (cards.length === 0) return;
+
+        const current = document.activeElement;
+        const currentIndex = cards.indexOf(current);
+        
+        // If focus isn't in this container, ignore
+        if (currentIndex === -1) return;
+
+        e.preventDefault(); // Stop default browser scrolling (which lags)
+
+        let nextIndex;
+
+        // Calculate Next Index with Infinite Looping
+        if (e.key === 'ArrowRight') {
+            nextIndex = currentIndex + 1;
+            if (nextIndex >= cards.length) nextIndex = 0; // Loop to Start
+        } else if (e.key === 'ArrowLeft') {
+            nextIndex = currentIndex - 1;
+            if (nextIndex < 0) nextIndex = cards.length - 1; // Loop to End
+        }
+
+        const nextCard = cards[nextIndex];
+        
+        if (nextCard) {
+            // 1. Force Focus Immediately
+            nextCard.focus({ preventScroll: true }); 
+
+            // 2. Handle Camera Movement
+            // If the user is holding the key (repeat is true), we use 'auto' (instant)
+            // If it's a single press, we use 'smooth' (unless CSS handles it)
+            // But to fix the "drift focus" issue specifically, 'auto' is safest for alignment.
+            const scrollBehavior = e.repeat ? 'auto' : 'smooth';
+            
+            // We force the container to center the focused element. 
+            // This ensures that even during fast drifting, the active element is centered.
+            nextCard.scrollIntoView({
+                behavior: scrollBehavior,
+                inline: 'center',
+                block: 'nearest'
+            });
+        }
+    });
 }
 
 function schedulePreview(chapterNum) {

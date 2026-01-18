@@ -21,8 +21,8 @@
          */
         window.launchPlayer = function(chapterNumber, verseNumber) {
             const modalElement = document.getElementById('arabic-modal');
-            const yesButtonElement = document.getElementById('btn-arabic-yes');
-            const noButtonElement = document.getElementById('btn-arabic-no');
+            const yesButtonElement = document.getElementById('btn-arabic-no');
+            const noButtonElement = document.getElementById('btn-arabic-yes');
             const mainCssLinkElement = document.getElementById('main-css');
 
             if (!modalElement || !yesButtonElement || !noButtonElement) {
@@ -35,7 +35,7 @@
             yesButtonElement.onclick = function() {
                 modalElement.style.display = 'none';
                 if (mainCssLinkElement) {
-                    mainCssLinkElement.href = 'styles/index.css';
+                    mainCssLinkElement.href = 'styles/index1.css';
                 }
                 originalLaunchPlayerFunction(chapterNumber, verseNumber);
             };
@@ -43,7 +43,7 @@
             noButtonElement.onclick = function() {
                 modalElement.style.display = 'none';
                 if (mainCssLinkElement) {
-                    mainCssLinkElement.href = 'styles/index1.css';
+                    mainCssLinkElement.href = 'styles/index.css';
                 }
                 originalLaunchPlayerFunction(chapterNumber, verseNumber);
             };

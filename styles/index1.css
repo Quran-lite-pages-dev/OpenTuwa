@@ -1,5 +1,5 @@
 /* Copyright (c) Haykal M. Zaidi 2024-2026. All rights reserved. PROPRIETARY AND CONFIDENTIAL. */
-/* index1.css - FIXED: Removed scroll container scaling to prevent artifacts */
+/* index1.css - FIXED: Single Page Fit & Dynamic Hero Collapse */
 
 /* --- 0. TV STYLE OVERRIDES & SCROLLBAR BAN --- */
 * {
@@ -21,89 +21,22 @@ html, body {
     margin: 0;
 }
 
-/* Dashboard for Sidebar - NOW FORCED TO FULL WIDTH */
-#dashboard-view { 
-    padding-left: 0 !important; 
-    transition: padding-left 0.3s; 
-}
-
-/* Preview Subtitles */
-#hero-subtitle-overlay {
-    position: fixed !important; bottom: 120px; right: 5%; max-width: 600px;
-    color: #fff; font-size: 1.4rem; font-weight: 500;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.9);
-    z-index: 3000 !important; opacity: 0; transition: opacity 0.3s;
-    background: rgba(0,0,0,0.2); padding: 1.5rem 2rem; border-radius: 4px;
-    backdrop-filter: blur(20px) saturate(180%);
+#transition-fade-layer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    z-index: 9999;
+    opacity: 0;
     pointer-events: none;
-    border: 1px solid var(--glass-border);
-    border-radius: var(--radius-lg);
-}
-#hero-subtitle-overlay.active { opacity: 1; }
-
-/* Search Overlay - FULL WIDTH */
-#search-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #141414; z-index: 2500; 
-    padding-left: 0 !important; 
-    display: none; grid-template-columns: 350px 1fr;
-}
-#search-overlay.active { display: grid; }
-
-.keyboard-section {
-    background: #000; padding: 4rem 2rem; display: flex; flex-direction: column;
-    border-right: 1px solid #333;
-}
-#search-input-display {
-    background: #333; color: #fff; padding: 1rem; font-size: 2rem;
-    border: 1px solid #fff; margin-bottom: 2rem; min-height: 50px; display: flex; align-items: center;
-}
-.keyboard-grid {
-    display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
-}
-.key {
-    aspect-ratio: 1; background: #333; color: #fff; font-size: 1.4rem;
-    display: flex; justify-content: center; align-items: center;
-    cursor: pointer; border: 2px solid transparent; transition: transform 0.1s;
-}
-.key:focus, .key:hover { border-color: #fff; background: #555; transform: scale(1.1); z-index: 2; outline: none; }
-.key.wide { grid-column: span 2; aspect-ratio: auto; height: 50px; }
-
-/* Search Performance Patch */
-.results-section {
-    padding: 4rem;
-    overflow: hidden !important;
+    transition: opacity 0.8s cubic-bezier(0.2, 0, 0, 1);
 }
 
-.results-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 2rem;
-    transform: translateY(0);
-    transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1);
-    will-change: transform;
-    padding-bottom: 300px;
-}
-
-.no-results {
-    font-size: 2.2rem;
-    color: rgba(255,255,255,0.3);
-    text-align: center;
-    margin-top: 20%;
-}
-
-/* 2026 AI Thinking Animation */
-@keyframes pulse-gradient {
-    0% { color: #888; }
-    50% { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
-    100% { color: #888; }
-}
-.ai-thinking {
-    grid-column: 1 / -1;
-    display: flex; gap: 10px; align-items: center; justify-content: center;
-    padding: 2rem;
-    font-size: 1.4rem;
-    animation: pulse-gradient 1.5s infinite;
+#transition-fade-layer.active {
+    opacity: 1;
+    pointer-events: all;
 }
 
 /* --- 1. GLOBAL & TV RESET --- */
@@ -141,45 +74,53 @@ body {
     display: flex; flex-direction: column;
 }
 
-#transition-fade-layer {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: #000;
-    z-index: 9999;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.8s cubic-bezier(0.2, 0, 0, 1);
-}
-
-#transition-fade-layer.active {
-    opacity: 1;
-    pointer-events: all;
-}
-
 /* --- 2. DASHBOARD STYLES --- */
 #dashboard-view {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 2000;
     background: #050505;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
+    overflow: hidden !important; /* Force Single Page */
     display: none;
     padding-left: 0 !important; 
+    
+    /* FLEX LAYOUT FOR CENTERING */
+    flex-direction: column;
+    justify-content: flex-start; /* Default: Top alignment */
+    transition: justify-content 0.6s cubic-bezier(0.2, 0, 0, 1);
 }
 #dashboard-view::-webkit-scrollbar { display: none !important; }
 
-#dashboard-view.active { display: block; animation: fadeIn 0.5s ease; }
+#dashboard-view.active { display: flex; animation: fadeIn 0.5s ease; }
+
+/* THE MAGIC: If Title is Empty, Center Content Vertically */
+#dashboard-view:has(#door-hero-title:empty) {
+    justify-content: center;
+}
+
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 .hero-banner {
-    height: 75vh; width: 100%; position: relative;
+    /* Adjusted Height for "Single Fish" (55vh instead of 75vh) */
+    height: 55vh; 
+    width: 100%; position: relative;
     display: flex; flex-direction: column; justify-content: center;
     padding: 0 5%;
     overflow: hidden;
-    background: #000; 
+    background: #000;
+    
+    /* Smooth Layout Transition */
+    transition: height 0.7s cubic-bezier(0.2, 0, 0, 1), opacity 0.5s ease, padding 0.5s ease;
+    flex-shrink: 0;
+    opacity: 1;
+}
+
+/* COLLAPSED STATE: If Title is Empty */
+#dashboard-view:has(#door-hero-title:empty) .hero-banner {
+    height: 0vh !important;
+    min-height: 0 !important;
+    padding: 0 5% !important; /* Keep horizontal padding, kill vertical */
+    opacity: 0;
+    pointer-events: none;
 }
 
 .hero-preview-layer {
@@ -246,6 +187,7 @@ img:-moz-broken { display: none !important; }
 }
 
 .hero-subtitle {
+    display: none;
     font-family: 'Amiri'; font-size: 2.2rem; color: var(--accent);
     margin-bottom: 1.5rem; font-weight: 400; text-shadow: 0 2px 10px rgba(0,0,0,0.8); padding-left: 1%; opacity: 0.5;
 }
@@ -256,33 +198,21 @@ img:-moz-broken { display: none !important; }
     display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
 }
 
-.dash-btn {
-    background: var(--glass-surface); color: white; border: none; 
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    font-size: 1.125rem;       
-    font-weight: 600;          
-    border: 1px solid rgba(255,255,255,0.1); 
-    border-radius: 99px;       
-    padding: 14px 32px;         
-    letter-spacing: -0.02em;   
-    transition: var(--transition-smooth);
-    cursor: pointer;
-    display: inline-flex; align-items: center; gap: 10px;
-    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
-    will-change: transform, opacity;
-}
-.dash-btn:focus, .dash-btn:hover { 
-    transform: translateY(-4px) scale(1.03); 
-    background: rgba(255,255,255,0.1);
-    border-color: var(--accent);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
-    outline: none; 
-}
-
 .row-section { 
     padding: 0 0 2rem 0; 
-    position: relative; z-index: 5; margin-top: -8vh; background: linear-gradient(to bottom, transparent, #050505 20%); 
+    position: relative; z-index: 5; 
+    background: linear-gradient(to bottom, transparent, #050505 20%); 
+    transition: margin-top 0.7s cubic-bezier(0.2, 0, 0, 1); /* Animate the slide */
+}
+
+/* OVERLAP MODE: Only when Hero exists (Title NOT empty) */
+#dashboard-view:not(:has(#door-hero-title:empty)) .row-section {
+    margin-top: -12vh; /* Overlap the hero slightly */
+}
+
+/* CENTER MODE: No overlap when hero is gone */
+#dashboard-view:has(#door-hero-title:empty) .row-section {
+    margin-top: 0;
 }
 
 .row-section:has(.surah-card:hover),
@@ -300,7 +230,7 @@ img:-moz-broken { display: none !important; }
     letter-spacing: -0.01em; text-shadow: 0 4px 12px rgba(0,0,0,0.8);
 }
 
-/* FIXED SCROLLER: Removed scaling on the container itself */
+/* FIXED SCROLLER: Single Page Optimization */
 .card-scroller { 
     display: flex; 
     gap: 1rem; 
@@ -309,11 +239,7 @@ img:-moz-broken { display: none !important; }
     scroll-behavior: smooth; 
     content-visibility: auto; 
     contain-intrinsic-size: 1px 280px; 
-    
-    /* Prevent horizontal scroll chaining to body */
     overscroll-behavior-x: contain; 
-    
-    /* Removed: transform: scale(...) to fix flickering/artifacts */
     transform-origin: left center;
     transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
 }
@@ -335,7 +261,6 @@ img:-moz-broken { display: none !important; }
     will-change: transform, opacity;
 }
 
-/* Pro Active State - Individual Card Scaling */
 .surah-card:focus, .surah-card:hover { 
     transform: scale(1.05); 
     z-index: 10;
@@ -346,9 +271,72 @@ img:-moz-broken { display: none !important; }
 
 .card-bg-num { position: absolute; top: -15px; right: 5px; font-size: 7rem; font-weight: 900; color: rgba(255,255,255,0.05); line-height: 1; }
 .card-title { font-size: 1.6rem; font-weight: 700; color: #fff; z-index: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card-sub { font-size: 1.1rem; color: #aaa; z-index: 2; margin-top: 0.2rem; }
+.card-sub { display: none; font-size: 1.1rem; color: #aaa; z-index: 2; margin-top: 0.2rem; }
 
-/* --- 3. CINEMA VIEW STYLES --- */
+/* --- 3. SEARCH OVERLAY & EXTRAS (Full Width Fixes) --- */
+#search-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: #141414; z-index: 2500; 
+    padding-left: 0 !important; 
+    display: none; grid-template-columns: 350px 1fr;
+}
+#search-overlay.active { display: grid; }
+
+.keyboard-section {
+    background: #000; padding: 4rem 2rem; display: flex; flex-direction: column;
+    border-right: 1px solid #333;
+}
+#search-input-display {
+    background: #333; color: #fff; padding: 1rem; font-size: 2rem;
+    border: 1px solid #fff; margin-bottom: 2rem; min-height: 50px; display: flex; align-items: center;
+}
+.keyboard-grid {
+    display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+}
+.key {
+    aspect-ratio: 1; background: #333; color: #fff; font-size: 1.4rem;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer; border: 2px solid transparent; transition: transform 0.1s;
+}
+.key:focus, .key:hover { border-color: #fff; background: #555; transform: scale(1.1); z-index: 2; outline: none; }
+.key.wide { grid-column: span 2; aspect-ratio: auto; height: 50px; }
+
+.results-section {
+    padding: 4rem;
+    overflow: hidden !important;
+}
+
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem;
+    transform: translateY(0);
+    transition: transform 0.4s cubic-bezier(0.2, 0, 0.2, 1);
+    will-change: transform;
+    padding-bottom: 300px;
+}
+
+.no-results {
+    font-size: 2.2rem;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+    margin-top: 20%;
+}
+
+@keyframes pulse-gradient {
+    0% { color: #888; }
+    50% { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
+    100% { color: #888; }
+}
+.ai-thinking {
+    grid-column: 1 / -1;
+    display: flex; gap: 10px; align-items: center; justify-content: center;
+    padding: 2rem;
+    font-size: 1.4rem;
+    animation: pulse-gradient 1.5s infinite;
+}
+
+/* --- 4. CINEMA VIEW STYLES --- */
 #cinema-view {
     width: 100%; height: 100%; position: absolute; top: 0; left: 0;
     display: flex; flex-direction: column;
@@ -431,6 +419,20 @@ select:focus {
     border-color: #fff;
     background-color: #252525;
 }
+
+/* Preview Subtitles */
+#hero-subtitle-overlay {
+    position: fixed !important; bottom: 120px; right: 5%; max-width: 600px;
+    color: #fff; font-size: 1.4rem; font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.9);
+    z-index: 3000 !important; opacity: 0; transition: opacity 0.3s;
+    background: rgba(0,0,0,0.2); padding: 1.5rem 2rem; border-radius: 4px;
+    backdrop-filter: blur(20px) saturate(180%);
+    pointer-events: none;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+}
+#hero-subtitle-overlay.active { opacity: 1; }
 
 @media (max-width: 768px) {
     #dashboard-view { padding-left: 0 !important; }

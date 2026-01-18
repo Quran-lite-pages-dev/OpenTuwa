@@ -40,7 +40,7 @@
     "buffering": "جارٍ التحميل...",
     "suraName": "اسم السورة",
     "suraNameMeaning": "معنى اسم السورة",
-    "noAudioTranslation": "لا يوجد ترجمة صوتية"
+    "player.noAudioTranslation": "لا يوجد ترجمة صوتية"
   },
   "card": {
     "subtitleLabel": "العنوان العربي"

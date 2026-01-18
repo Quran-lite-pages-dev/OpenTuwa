@@ -12,9 +12,9 @@
     "profile": "Profile"
   },
   "hero": {
-    "super": "The Clear Book | The Quran",
-    "title": "THE QURAN",
-    "subtitle": "El Corán",
+    "super": "",
+    "title": "",
+    "subtitle": "",
     "resume": "Resume",
     "audioHd": "AUDIO HD"
   },
@@ -40,7 +40,7 @@
     "buffering": "Loading...",
     "suraName": "Sura name",
     "suraNameMeaning": "Sura name meaning",
-    "noAudioTranslation": "No Audio Translation"
+    "player.noAudioTranslation": "No Audio Translation"
   },
   "card": {
     "subtitleLabel": "Arabic Title"
