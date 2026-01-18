@@ -213,6 +213,56 @@
 
 })();
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      // --- CONFIGURATION ---
+      const storageKey = 'saved_h1_data'; 
+      const targetH2Id = 'doors-hero-title'; 
+
+      // --- HELPER: SAVE AND UPDATE ---
+      function syncH1toH2() {
+          // 1. Find the current H1 (fresh search every time)
+          const currentH1 = document.querySelector('h1');
+          const targetH2 = document.getElementById(targetH2Id);
+          
+          // 2. If we have an H1, save its data
+          if (currentH1) {
+              const newText = currentH1.innerText.trim();
+              
+              // Only update if it's actually different to avoid infinite loops
+              if (newText && newText !== localStorage.getItem(storageKey)) {
+                  localStorage.setItem(storageKey, newText);
+                  if (targetH2) targetH2.innerText = newText;
+              }
+          }
+      }
+
+      // --- STEP 1: RESTORE IMMEDIATELY ---
+      // Check memory instantly so H2 is not empty on load
+      const savedData = localStorage.getItem(storageKey);
+      const targetH2 = document.getElementById(targetH2Id);
+      if (savedData && targetH2) {
+          targetH2.innerText = savedData;
+      }
+
+      // --- STEP 2: WATCH THE WHOLE BODY ---
+      // We observe 'document.body' so we catch the H1 even if it gets deleted/swapped.
+      const observer = new MutationObserver(function(mutations) {
+          // Whenever ANYTHING changes in the body, check if we need to sync H1
+          syncH1toH2();
+      });
+
+      // Start watching everything (Text changes, new elements, etc.)
+      observer.observe(document.body, { 
+          childList: true, 
+          subtree: true, 
+          characterData: true 
+      });
+      
+      // Run once at start to catch dynamic H1s that load fast
+      syncH1toH2();
+  });
+</script>
 
 
 
@@ -292,7 +342,7 @@
         <div id="loading-overlay">
             <nav id="splash-footer">
 
-                <h1 class="hero-title-text" id="door-hero-title" data-i18n="hero.title"></h1>
+                <h2 class="heroz-title-text" id="doors-hero-title"></h2>
             </nav>
             <div class="loader-content">
                 <div class="loader-spinner"></div>
