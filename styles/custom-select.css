@@ -1,21 +1,23 @@
 /* styles/custom-select.css */
 
-/* Wrapper: The container for the entire custom select component */
+/* 1. The "Mom" (Wrapper): Fixed to 200px always */
 .custom-select-wrapper {
     position: relative;
     user-select: none;
-    width: auto;
-    min-width: 120px; /* Reduced min-width slightly for tighter fit */
+    width: 200px; /* Fixed width for the button itself */
     font-family: 'Inter', sans-serif;
 }
 
-/* The Trigger: Replaces the closed <select> box */
+/* The Trigger: The "Mom" Box */
 .custom-select-trigger {
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: center; /* Centered text since arrow is gone */
-    padding: 0 15px; /* Balanced padding */
+    
+    /* IMPORTANT: Changed from 'center' to 'flex-start' so long text doesn't disappear to the left */
+    justify-content: flex-start; 
+    
+    padding: 0 15px;
     font-size: 1.3rem;
     font-weight: 500;
     color: #e5e5e5;
@@ -25,7 +27,23 @@
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.3s ease;
+    
+    /* Box Width Settings */
+    width: 100%; 
+}
+
+/* NEW: This handles the text magic (Center if short, Left if long) */
+.custom-select-trigger span {
+    /* "margin: auto" centers the span if it has space */
+    margin: 0 auto; 
+    
+    /* If text is long, max-width stops it from growing */
+    max-width: 100%;
+    
+    /* Standard cut-off rules */
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Hover & Focus States */
@@ -37,15 +55,19 @@
     outline: none;
     box-shadow: 0 0 15px rgba(0, 255, 187, 0.1);
 }
-
-/* REMOVED: Arrow Icon (::after) blocks deleted here */
-
-/* The Dropdown Menu */
+/* 2. The Options (Dropdown): Bigger size (300px) */
 .custom-options {
     position: absolute;
     bottom: 110%; 
-    left: 0;
-    right: 0;
+    
+    /* WIDTH SETTINGS */
+    width: 370px; /* Wider than the wrapper */
+    
+    /* CENTERING SETTINGS */
+    left: 50%; /* Move to middle */
+    margin-left: -150px; /* Pull back by half of width (300/2) to center perfectly */
+    /* Alternatively, you can use transform: translateX(-50%) below, but margin is safer with animations */
+
     background: rgba(20, 20, 20, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -55,8 +77,11 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transform: translateY(10px);
+    
+    /* Animation start state */
+    transform: translateY(10px); 
     transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+    
     max-height: 300px;
     overflow-y: auto;
     scrollbar-width: thin;
@@ -68,7 +93,7 @@
     opacity: 1;
     visibility: visible;
     pointer-events: all;
-    transform: translateY(0);
+    transform: translateY(0); /* Resets the Y movement */
 }
 
 /* Individual Options */
@@ -82,7 +107,10 @@
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    text-align: center; /* Center options text too */
+    text-align: center;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .custom-option:last-child {
@@ -97,7 +125,6 @@
     outline: none;
 }
 
-/* Selected Indicator Line */
 .custom-option.selected::before {
     content: '';
     position: absolute;
@@ -108,19 +135,22 @@
     background: var(--accent);
 }
 
+/* Mobile Adjustments */
 @media (max-width: 768px) {
     .custom-select-wrapper {
-        min-width: 100%; 
-        margin-bottom: 10px;
+        width: 100%; /* Full width on mobile */
     }
     
     .custom-options {
+        /* Reset desktop centering for mobile */
+        width: 80%;
+        left: 10%;
+        margin-left: 0; 
+        
         bottom: 50%; 
         top: auto;
         transform: translateY(50%) scale(0.9);
         position: fixed; 
-        width: 80%;
-        left: 10%;
         max-height: 50vh;
         box-shadow: 0 0 50px rgba(0,0,0,0.8);
     }

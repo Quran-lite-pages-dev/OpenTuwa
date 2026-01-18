@@ -488,6 +488,11 @@ select {
     border-radius: 12px;
     cursor: pointer;
     appearance: none;
+    
+    /* Increase width by 20% */
+    width: 120%; 
+    /* Optional: max-width ensures it doesn't break containers on medium screens */
+    max-width: 100%; 
 }
 
 select:focus {
@@ -498,12 +503,14 @@ select:focus {
 
 @media screen and (max-width: 768px) {
     select {
+        /* Keeps it full width on mobile devices */
         width: 100% !important;
         font-size: 1.1rem;      
         padding: 0.7rem 2rem 0.7rem 0.8rem;
         border-radius: 10px;
     }
 }
+
 
 @media (max-width: 768px) {
     #dashboard-view { padding-left: 0 !important; }
