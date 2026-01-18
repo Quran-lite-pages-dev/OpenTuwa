@@ -1016,33 +1016,31 @@ async function loadVerse(autoplay = true) {
     
     currentChapterData = quranData[chIdx];
 
-    // --- FIX START: Update Splash Screen Title to Real-Time Surah Name ---
+    // --- FIX START: FORCE UPDATE SPLASH TITLE ---
     const splashTitle = document.getElementById('doorz-hero-title');
     if (splashTitle) {
-        // [IMPORTANT FIX] Remove data-i18n so it doesn't revert to default
-        splashTitle.removeAttribute('data-i18n');
-
-        // 1. Get default English name
+        // 1. Start with the default English name from metadata
         let displayTitle = currentChapterData.english_name;
         
-        // 2. Try to translate it if window.t exists (i18n)
+        // 2. If translation system is ready, try to find the translated name
         if (window.t) {
+            // Check for key format: "surahNames.The Opening"
             const translatedKey = 'surahNames.' + displayTitle;
             const translatedName = window.t(translatedKey);
             
-            // Only use translation if it returns a value different from the key
+            // Only use the result if it's not just returning the key itself
             if (translatedName && translatedName !== translatedKey) {
                 displayTitle = translatedName;
             }
         }
         
-        // 3. Set the text
+        // 3. Force the text content
         splashTitle.textContent = displayTitle;
     }
     // --- FIX END ---
 
     const verseData = currentChapterData.verses[vIdx];
-   
+
     const chNum = currentChapterData.chapterNumber;
 
     const vNum = verseData.verseNumber;
