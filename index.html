@@ -78,7 +78,7 @@
         justify-content: center;
         overflow: hidden;
       }
-      
+       
       .wave-container {
         position: relative;
         width: 100%;
@@ -203,17 +203,30 @@
         }, 1200); 
     }
 
-    if (document.readyState === 'complete') {
-        revealPage();
-    } else {
-        window.addEventListener('load', revealPage);
-        // Fallback: Force reveal after 8 seconds if page is stuck loading
-        setTimeout(revealPage, 8000);
+    // --- NEW LOGIC START ---
+    // Wrapper to handle URL check
+    function checkAndReveal() {
+        // Check if URL contains '?' (e.g. yyy.com/? or yyy.com?param=1)
+        if (window.location.href.indexOf('?') > -1) {
+            // Add extra 3 seconds throttle
+            setTimeout(revealPage, 2000);
+        } else {
+            // No '?', reveal normally
+            revealPage();
+        }
     }
 
+    if (document.readyState === 'complete') {
+        checkAndReveal();
+    } else {
+        window.addEventListener('load', checkAndReveal);
+        // Fallback: Force reveal after 8 seconds (passing through check)
+        setTimeout(checkAndReveal, 8000);
+    }
+    // --- NEW LOGIC END ---
+
 })();
-</script>
-<script>
+</script><script>
   document.addEventListener("DOMContentLoaded", function() {
       // --- CONFIGURATION ---
       const storageKey = 'saved_h1_data'; 
