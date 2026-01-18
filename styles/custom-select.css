@@ -5,7 +5,7 @@
     position: relative;
     user-select: none;
     width: auto;
-    min-width: 150px;
+    min-width: 120px; /* Reduced min-width slightly for tighter fit */
     font-family: 'Inter', sans-serif;
 }
 
@@ -14,13 +14,13 @@
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 20px;
+    justify-content: center; /* Centered text since arrow is gone */
+    padding: 0 15px; /* Balanced padding */
     font-size: 1.3rem;
     font-weight: 500;
     color: #e5e5e5;
-    height: 44px; /* Fixed height for consistency */
-    background: rgba(255, 255, 255, 0.05); /* Subtle glass */
+    height: 44px; 
+    background: rgba(255, 255, 255, 0.05); 
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 12px;
     cursor: pointer;
@@ -28,7 +28,7 @@
     white-space: nowrap;
 }
 
-/* Hover & Focus States (Synced with navigation.js .custom-select-trigger selector) */
+/* Hover & Focus States */
 .custom-select-trigger:hover,
 .custom-select-trigger:focus,
 .custom-select-wrapper.open .custom-select-trigger {
@@ -38,29 +38,12 @@
     box-shadow: 0 0 15px rgba(0, 255, 187, 0.1);
 }
 
-/* The Arrow Icon */
-.custom-select-trigger::after {
-    content: '';
-    width: 0.5rem;
-    height: 0.5rem;
-    border-right: 2px solid var(--accent);
-    border-bottom: 2px solid var(--accent);
-    transform: rotate(45deg);
-    margin-left: 15px;
-    transition: transform 0.3s;
-    margin-top: -3px;
-}
-
-/* Rotate arrow when open */
-.custom-select-wrapper.open .custom-select-trigger::after {
-    transform: rotate(225deg);
-    margin-top: 3px;
-}
+/* REMOVED: Arrow Icon (::after) blocks deleted here */
 
 /* The Dropdown Menu */
 .custom-options {
     position: absolute;
-    bottom: 110%; /* Opens upwards so it doesn't go off-screen at bottom */
+    bottom: 110%; 
     left: 0;
     right: 0;
     background: rgba(20, 20, 20, 0.95);
@@ -68,14 +51,12 @@
     -webkit-backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
-    z-index: 9999; /* Critical: Must be higher than control panel */
+    z-index: 9999; 
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
     transform: translateY(10px);
     transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
-    
-    /* Scrollbar Logic */
     max-height: 300px;
     overflow-y: auto;
     scrollbar-width: thin;
@@ -101,13 +82,13 @@
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center; /* Center options text too */
 }
 
 .custom-option:last-child {
     border-bottom: none;
 }
 
-/* Option Hover/Focus/Selected States */
 .custom-option:hover,
 .custom-option:focus, 
 .custom-option.selected {
@@ -116,6 +97,7 @@
     outline: none;
 }
 
+/* Selected Indicator Line */
 .custom-option.selected::before {
     content: '';
     position: absolute;
@@ -126,18 +108,17 @@
     background: var(--accent);
 }
 
-/* Mobile Responsiveness */
 @media (max-width: 768px) {
     .custom-select-wrapper {
-        min-width: 100%; /* Full width on mobile */
+        min-width: 100%; 
         margin-bottom: 10px;
     }
     
     .custom-options {
-        bottom: 50%; /* Center relative */
+        bottom: 50%; 
         top: auto;
         transform: translateY(50%) scale(0.9);
-        position: fixed; /* Detach from flow */
+        position: fixed; 
         width: 80%;
         left: 10%;
         max-height: 50vh;
