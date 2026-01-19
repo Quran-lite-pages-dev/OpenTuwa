@@ -184,16 +184,19 @@ img:-moz-broken { display: none !important; }
 }
 .heroz-title-text { 
     /* VERIFIED: 'clamp' ensures titles don't explode on laptop but stay big on TV */
-    font-size: clamp(3rem, 5vw, 6rem); font-weight: 900; line-height: 1; 
+    font-size: clamp(10rem, 5vw, 20rem); font-weight: 910; line-height: 1; 
     margin-bottom: 22rem; text-shadow: 0 4px 30px rgba(0,0,0,1); color: #fff; opacity: 0.7;
 }
 /* Target mobile devices (typically below 768px) */
 @media (max-width: 768px) {
     .heroz-title-text {
-        text-align: left;       /* Moves text alignment to the left */
-        margin-left: -82%;       /* Starts the element at 50% of the screen width */
-        width: 50%;             /* Ensures text wraps within the remaining 50% */
-        transform: none;        /* Ensures no centering transforms are interfering */
+font-size: clamp(4rem, 5vw, 8rem);
+text-align: left;    /* Keeps text aligned to the left of its box */
+margin-left: 0;      /* Removes the negative offset that caused the overflow */
+width: 100%;         /* Allows text to use the full width, or set a specific % */
+transform: none;
+
+
     }
 }
 

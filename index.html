@@ -68,7 +68,7 @@
       #_universal_loader {
         position: fixed;
         top: 0; left: 0; width: 100vw; height: 100vh;
-        background-color: #000;
+        background-color: #fff;
         z-index: 2147483647;
         opacity: 1;
         /* Background fades out slightly slower so we see the light show */
@@ -83,7 +83,7 @@
         position: relative;
         width: 100%;
         max-width: 600px;
-        height: 200px;
+        height: 9000000000000000000000000000000px;
         transform-origin: center center;
         /* The Zoom Transition:
            We use a cubic-bezier that starts slow and snaps fast (The "Punch")
@@ -103,16 +103,15 @@
            2. Brightness 600%: The "Flash" (Light Source)
            3. Drop-shadow: Adds the glowing aura
         */
-        filter: blur(8px) brightness(200%) drop-shadow(0 0 40px #fff);
-        opacity: 0;
+        filter: blur(8px) brightness(90000%) drop-shadow(0 4px 30px rgba(0,0,0,1));
+        opacity: 0.8;
+        color: #fff;
       }
 
       /* --- WARP SPEED ACCELERATION --- */
       /* When loaded, we override the animation duration to be incredibly fast (0.2s) */
       #_universal_loader.loaded .wave1 { animation: wave_loop 0.2s linear infinite !important; }
-      #_universal_loader.loaded .wave2 { animation: wave_loop 0.2s linear infinite reverse !important; }
-      #_universal_loader.loaded .wave3 { animation: wave_loop 0.2s linear infinite !important; }
-      #_universal_loader.loaded .wave4 { animation: wave_loop 0.2s linear infinite !important; }
+
 
       .wave-svg {
         position: absolute;
@@ -128,29 +127,12 @@
 
       /* Normal Speed Settings */
       .wave1 { 
-          stroke: #00FFBB; 
-          opacity: 0.4; 
+          stroke: #fff; 
+          opacity: 0.7; 
           animation: wave_loop 4s linear infinite;
-          filter: blur(2px) drop-shadow(0 0 12px #00FFBB);
+          filter: blur(2px) drop-shadow(0 4px 30px rgba(0,0,0,1));
       }
-      .wave2 { 
-          stroke: #00FFBB; 
-          opacity: 0.6; 
-          animation: wave_loop 2.5s linear infinite reverse; 
-          filter: blur(1px) drop-shadow(0 0 12px #00FFBB);
-      }
-      .wave3 { 
-          stroke: #00FFBB; 
-          opacity: 0.9; 
-          animation: wave_loop 3.2s linear infinite; 
-          filter: drop-shadow(0 0 15px #00FFBB);
-      }
-      .wave4 { 
-          stroke: #00FFBB; 
-          opacity: 0.9; 
-          animation: wave_loop 3.2s linear infinite; 
-          filter: drop-shadow(0 0 15px #00FFBB);
-      }
+
 
       @keyframes wave_loop {
         0% { transform: translateX(0); }
@@ -188,9 +170,7 @@
     };
 
     container.appendChild(createWave('wave1'));
-    container.appendChild(createWave('wave2'));
-    container.appendChild(createWave('wave3'));
-    container.appendChild(createWave('wave4'));
+
     
     overlay.appendChild(container);
     document.documentElement.appendChild(overlay);
@@ -209,7 +189,7 @@
         // Check if URL contains '?' (e.g. yyy.com/? or yyy.com?param=1)
         if (window.location.href.indexOf('?') > -1) {
             // Add extra 3 seconds throttle
-            setTimeout(revealPage, 2000);
+            setTimeout(revealPage, 1000);
         } else {
             // No '?', reveal normally
             revealPage();
