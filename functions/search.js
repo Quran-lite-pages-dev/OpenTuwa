@@ -9,7 +9,16 @@ export async function onRequestPost(context) {
         throw new Error("FATAL: 'AI' binding is missing in Cloudflare Dashboard!");
     }
 
-    const { query } = await request.json();
+    // In search.js
+// Change: const { query } = await request.json();
+// To this (safer parsing):
+let query;
+try {
+    const body = await request.json();
+    query = body.query;
+} catch (e) {
+    return new Response("Invalid JSON", { status: 400 });
+}
 
     // 2. Debug Log (Visible in Cloudflare Logs)
     console.log("Received Query:", query);
