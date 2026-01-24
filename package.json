@@ -1,0 +1,8 @@
+{
+  "name": "quran-lite-ai",
+  "version": "1.0.0",
+  "description": "AI Search Dependencies",
+  "dependencies": {
+    "@cloudflare/ai": "^1.0.55"
+  }
+}
