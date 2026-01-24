@@ -42,7 +42,7 @@ html, body {
 /* --- 1. GLOBAL & TV RESET --- */
 :root { 
     --vh: 100vh; 
-    --accent: #00FFBB; 
+    --accent: #F5F5F7; 
     --accent-glow: rgba(0, 255, 187, 0.3); 
     --bg: #030303; 
     --text: #f0f0f0; 
@@ -72,6 +72,108 @@ body {
     height: 100vh; 
     overflow: hidden !important; 
     display: flex; flex-direction: column;
+}
+
+/* --- ISLAND SEARCH BOX --- */
+#island-search-wrapper {
+    position: fixed;
+    top: 30px; /* Floating at bottom like a dock/island */
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    pointer-events: none; /* Let clicks pass through around the box */
+    z-index: 5000;
+    padding: 0 20px;
+}
+
+.island-search-box {
+    pointer-events: auto;
+    background: rgba(10, 10, 10, 0.6); /* Deep glass base */
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid var(--glass-border, rgba(255,255,255,0.1));
+    border-radius: 50px; /* Full pill shape */
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    transition: all 0.4s cubic-bezier(0.2, 0, 0, 1);
+    width: 220px; /* Start small */
+    transform: translateY(0);
+}
+
+/* Hover/Focus Expansion Animation */
+.island-search-box:focus-within,
+.island-search-box:hover {
+    width: 320px; /* Expand on interaction */
+    background: rgba(20, 20, 20, 0.85);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px);
+}
+
+.search-icon-wrapper {
+    color: rgba(255,255,255,0.5);
+    display: flex;
+    align-items: center;
+    padding-left: 8px;
+}
+
+#island-input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.4rem;
+    width: 100%;
+    outline: none;
+    font-weight: 500;
+}
+
+#island-input::placeholder {
+    color: rgba(255,255,255,0.3);
+    font-weight: 400;
+}
+
+/* The Enter/Action Trigger Button */
+.enter-trigger {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.enter-trigger:hover {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+.enter-trigger:hover .key-hint {
+    color: #000;
+}
+
+.key-hint {
+    color: rgba(255,255,255,0.6);
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* Shake Animation for "Not Found" */
+@keyframes shake-island {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+.island-shake {
+    animation: shake-island 0.3s ease-in-out;
+    border-color: rgba(255, 50, 50, 0.5);
 }
 
 /* --- 2. DASHBOARD STYLES --- */
@@ -198,7 +300,7 @@ transform: none;
     }
 }
 .hero-title-text { 
-    font-size: clamp(3rem, 5vw, 6rem); font-weight: 900; line-height: 1; 
+    font-size: clamp(7rem, 5vw, 14rem); font-weight: 900; line-height: 1; 
     margin-bottom: 0.5rem; text-shadow: 0 4px 30px rgba(0,0,0,1); color: #fff; opacity: 0.7;
 }
 
@@ -379,6 +481,7 @@ transform: none;
     position: relative; 
     left: 50%;
     width: 120%; /* Desktop width */
+height: 140%; /* Desktop width */
     transform: translate(-50%, -250%); 
     display: inline-flex; 
     align-items: center; 
@@ -431,56 +534,101 @@ transform: none;
     }
 }
 .container {
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    width: 100%; height: 100%; padding: 2rem; padding-bottom: 12rem; position: relative;
+  /* 1. VISIBILITY FIX: */
+  /* I removed 'opacity: 0.2'. That command fades the CHILDREN (text) too. 
+     The transparency is now handled solely by the background rgba below. */
+  background: rgba(255, 255, 255, 0.05); /* Lowered alpha to 0.05 for subtle look */
+  
+  backdrop-filter: blur(-130px);          
+  -webkit-backdrop-filter: blur(-130px); 
+  border-radius: 12px;                  
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+  
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  width: 100%; height: 100%; padding: 2rem; padding-bottom: 12rem; 
+  
+  /* 2. POSITION FIX: */
+  position: relative; 
+  z-index: 1; /* Brings it to normal layer so content is seen */
+  
+  /* 3. INTERACTION FIX: */
+  /* This ensures the background itself doesn't "bother" clicks. 
+     Mouse clicks will pass through the empty parts of the container. */
+  pointer-events: none; 
 }
+
 #content-display {
     text-align: center; width: 100%; max-width: 1200px; margin: 0 auto;
     flex-grow: 1; display: flex; flex-direction: column; justify-content: center; position: relative;
+    
+    /* 4. RESTORE CLICKS: */
+    /* Since the parent is pointer-events: none, we must re-enable clicks 
+       for the actual content so you can select text or click buttons. */
+    pointer-events: auto; 
 }
+
+/* --- The rest of your CSS remains unchanged below --- */
+
 #chapter-title {
     position: fixed; top: 2rem; left: 2rem; 
-    font-size: clamp(1.4rem, 2.5vw, 2.4rem); font-weight: 600; color: #666;
+    color: #F5F5F7;
+    font-weight: 600; 
+    text-shadow: 
+        0px 2px 10px rgba(0, 0, 0, 0.2), 
+        0px 10px 20px rgba(0, 0, 0, 0.1);
+    -webkit-font-smoothing: antialiased;
     z-index: 100; mix-blend-mode: difference;
     transition: transform 0.5s ease, opacity 0.5s ease;
+    /* Ensure title is clickable */
+    pointer-events: auto; 
 }
 
 body.idle #chapter-title { transform: translateX(100%); opacity: 0; pointer-events: none; }
 
-#verse-container, #verse-text, #verse-text-next, .active-verse-img { 
-    display: none !important; 
-}
+
+
+
 
 #translation-text {
-    font-family: 'Inter', sans-serif; font-weight: 300; color: #e0e0e0;
-    line-height: 1.7; 
-    width: 100%;
-    margin: 0 auto;
-    max-height: 80vh; 
+    font-family: 'Inter', sans-serif;  
+    line-height: 1.7; flex-grow: 0; flex-shrink: 1; max-height: 30%;
     overflow-y: auto; white-space: pre-wrap; text-align: center;
-    padding: 0 2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); transition: opacity 0.3s;
+    padding: 0 2rem; 
+    transition: opacity 0.3s;
+    color: #F5F5F7;
+    font-weight: 600; 
+    text-shadow: 
+        0px 2px 10px rgba(0, 0, 0, 0.2), 
+        0px 10px 20px rgba(0, 0, 0, 0.1);
+    -webkit-font-smoothing: antialiased;
 }
 
 #control-panel {
     position: fixed; bottom: 0; left: 0; right: 0;
     display: flex; justify-content: center; align-items: center;
-    flex-wrap: wrap; gap: 0.5rem; /* Tighter gap */
+    flex-wrap: wrap; gap: 0.5rem; 
     padding: 2rem;
     background: linear-gradient(to top, #000 20%, transparent);
-    transition: transform 0.4s ease, opacity 0.4s ease; z-index: 100;
+    transition: transform 0.4s ease, opacity 0.4s ease; 
+    z-index: 100;
+    /* Ensure controls are clickable */
+    pointer-events: auto; 
 }
+
 body.idle #control-panel { transform: translateY(100%); opacity: 0; pointer-events: none; }
 
 select {
     font-family: 'Inter', sans-serif;
     font-size: 1.3rem; 
     padding: 0.8rem 2.5rem 0.8rem 1rem;
-    background-color: #1a1a1a; 
+    background-color: #1a1a1a;
     color: #e5e5e5;
-    border: 1px solid rgba(255,255,255,0.15); 
+    border: 1px solid rgba(255,255,255,0.15);
     border-radius: 12px;
     cursor: pointer;
     appearance: none;
+    width: 120%; 
+    max-width: 100%; 
 }
 
 select:focus {
@@ -488,6 +636,28 @@ select:focus {
     border-color: #fff;
     background-color: #252525;
 }
+
+@media screen and (max-width: 768px) {
+    select {
+        width: 100% !important;
+        font-size: 1.1rem;      
+        padding: 0.7rem 2rem 0.7rem 0.8rem;
+        border-radius: 10px;
+    }
+}
+
+@media (max-width: 768px) {
+    #dashboard-view { padding-left: 0 !important; }
+    #chapter-title { display: none;}
+    .container { padding: 0; padding-bottom: 230px; }
+    #control-panel { display: grid; grid-template-columns: 1fr 1fr; }
+}
+
+#verse-container, #verse-text, #verse-text-next, .active-verse-img { 
+    display: none !important; 
+}
+
+
 
 /* Preview Subtitles */
 #hero-subtitle-overlay {

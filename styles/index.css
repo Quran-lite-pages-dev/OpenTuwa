@@ -26,7 +26,7 @@ html, body {
 /* --- 1. GLOBAL & TV RESET --- */
 :root { 
     --vh: 100vh; 
-    --accent: #00FFBB; 
+    --accent: #F5F5F7; 
     --accent-glow: rgba(0, 255, 187, 0.3); 
     --bg: #030303; 
     --text: #f0f0f0; 
@@ -58,6 +58,108 @@ body {
     display: flex; flex-direction: column;
 }
 
+/* --- ISLAND SEARCH BOX --- */
+#island-search-wrapper {
+    position: fixed;
+    top: 40px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    pointer-events: none; /* Clicks pass through the empty space */
+    z-index: 9999;
+}
+
+.island-search-box {
+    pointer-events: auto; /* Re-enable clicks for the box */
+    background: rgba(15, 15, 15, 0.6);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 50px;
+    padding: 6px 8px 6px 14px; /* Balanced padding */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+    width: 240px;
+    transform: translateY(0);
+}
+
+/* Interaction States */
+.island-search-box:focus-within,
+.island-search-box:hover {
+    width: 340px; /* Expand smoothly */
+    background: rgba(25, 25, 25, 0.85);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-5px);
+}
+
+.search-icon-wrapper {
+    color: rgba(255,255,255,0.6);
+    display: flex;
+    align-items: center;
+}
+
+#island-input {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-family: inherit;
+    font-size: 1.1rem;
+    width: 100%;
+    outline: none;
+    font-weight: 500;
+}
+
+#island-input::placeholder {
+    color: rgba(255,255,255,0.3);
+    font-size: 0.95rem;
+}
+
+/* Trigger Button */
+.enter-trigger {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 50%;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.enter-trigger:hover, .enter-trigger:focus {
+    background: rgba(255, 255, 255, 1);
+    outline: none;
+}
+
+.enter-trigger:hover .key-hint, .enter-trigger:focus .key-hint {
+    color: #000;
+}
+
+.key-hint {
+    color: rgba(255,255,255,0.7);
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 0;
+    margin-top: -2px;
+}
+
+/* Shake Animation for No Results */
+@keyframes island-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+}
+.island-error {
+    animation: island-shake 0.3s ease-in-out;
+    border-color: rgba(255, 80, 80, 0.5);
+}
 #transition-fade-layer {
     position: fixed;
     top: 0;
@@ -89,6 +191,7 @@ body {
     flex-direction: column;
     justify-content: flex-start; /* Default: Top alignment */
     transition: justify-content 0.6s cubic-bezier(0.2, 0, 0, 1);
+
 }
 #dashboard-view::-webkit-scrollbar { display: none !important; }
 
@@ -201,7 +304,7 @@ transform: none;
 }
 
 .hero-title-text { 
-    font-size: clamp(3rem, 5vw, 6rem); 
+    font-size: clamp(7rem, 5vw, 14rem); 
     font-weight: 900; 
     line-height: 1; 
     margin-bottom: 0.5rem; 
@@ -210,8 +313,10 @@ transform: none;
     opacity: 0.7;
 }
 .hero-subtitle {
-    font-family: 'Amiri'; font-size: 2.2rem; color: var(--accent);
-    margin-bottom: 1.5rem; font-weight: 400; text-shadow: 0 2px 10px rgba(0,0,0,0.8); padding-left: 1%; opacity: 0.5;
+    display: none;
+    font-size: clamp(1.2rem, 5vw, 2.4rem);  color: var(--accent);
+font-weight: 900;
+    margin-bottom: 1.5rem; font-weight: 400; text-shadow: 0 4px 30px rgba(0,0,0,1);  padding-left: 1%; opacity: 0.5;
 }
 .hero-desc { 
     display: none;
@@ -289,9 +394,8 @@ transform: none;
     /* Prevent horizontal scroll chaining to body */
     overscroll-behavior-x: contain; 
     
-    /* Removed: transform: scale(...) to fix flickering/artifacts */
-    transform-origin: left center;
-    transition: transform 0.4s cubic-bezier(0.2, 0, 0, 1);
+
+
 }
 
 .surah-card {
@@ -323,8 +427,8 @@ transform: none;
 }
 
 .card-bg-num { position: absolute; top: -15px; right: 5px; font-size: 7rem; font-weight: 900; color: rgba(255,255,255,0.05); line-height: 1; }
-.card-title { font-size: 1.6rem; font-weight: 700; color: #fff; z-index: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card-sub { font-size: 1.1rem; color: #aaa; z-index: 2; margin-top: 0.2rem; }
+.card-title { font-size: 1.9rem; font-weight: 700; color: #fff; z-index: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-sub { display: none; font-size: 1.1rem; color: #aaa; z-index: 2; margin-top: 0.2rem; }
 
 /* --- 3. EXTRAS & OVERLAYS --- */
 /* Preview Subtitles */
@@ -430,6 +534,7 @@ transform: none;
     position: relative; 
     left: 50%;
     width: 120%; /* Desktop width */
+    height: 140%; /* Desktop width */
     transform: translate(-50%, -250%); 
     display: inline-flex; 
     align-items: center; 
@@ -459,6 +564,7 @@ transform: none;
 
 .start-btn:focus, .start-btn:hover { 
     transform: translate(-50%, -300%) scale(1.03); 
+
     background: rgba(255,255,255,0.15);
     border-color: var(--accent);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); 
@@ -485,18 +591,53 @@ transform: none;
 
 
 .container {
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    width: 100%; height: 100%; padding: 2rem; padding-bottom: 12rem; position: relative;
+  /* 1. VISIBILITY FIX: */
+  /* I removed 'opacity: 0.2'. That command fades the CHILDREN (text) too. 
+     The transparency is now handled solely by the background rgba below. */
+  background: rgba(255, 255, 255, 0.05); /* Lowered alpha to 0.05 for subtle look */
+  
+  backdrop-filter: blur(-180px);          
+  -webkit-backdrop-filter: blur(-180px); 
+  border-radius: 12px;                  
+  border: 1px solid rgba(255, 255, 255, 0.1); 
+  
+  display: flex; flex-direction: column; justify-content: center; align-items: center;
+  width: 100%; height: 100%; padding: 2rem; padding-bottom: 12rem; 
+  
+  /* 2. POSITION FIX: */
+  position: relative; 
+  z-index: 1; /* Brings it to normal layer so content is seen */
+  
+  /* 3. INTERACTION FIX: */
+  /* This ensures the background itself doesn't "bother" clicks. 
+     Mouse clicks will pass through the empty parts of the container. */
+  pointer-events: none; 
 }
+
 #content-display {
     text-align: center; width: 100%; max-width: 1200px; margin: 0 auto;
     flex-grow: 1; display: flex; flex-direction: column; justify-content: center; position: relative;
+    
+    /* 4. RESTORE CLICKS: */
+    /* Since the parent is pointer-events: none, we must re-enable clicks 
+       for the actual content so you can select text or click buttons. */
+    pointer-events: auto; 
 }
+
+/* --- The rest of your CSS remains unchanged below --- */
+
 #chapter-title {
     position: fixed; top: 2rem; left: 2rem; 
-    font-size: clamp(1.4rem, 2.5vw, 2.4rem); font-weight: 600; color: #666;
+    color: #F5F5F7;
+    font-weight: 600; 
+    text-shadow: 
+        0px 2px 10px rgba(0, 0, 0, 0.2), 
+        0px 10px 20px rgba(0, 0, 0, 0.1);
+    -webkit-font-smoothing: antialiased;
     z-index: 100; mix-blend-mode: difference;
     transition: transform 0.5s ease, opacity 0.5s ease;
+    /* Ensure title is clickable */
+    pointer-events: auto; 
 }
 
 body.idle #chapter-title { transform: translateX(100%); opacity: 0; pointer-events: none; }
@@ -504,29 +645,48 @@ body.idle #chapter-title { transform: translateX(100%); opacity: 0; pointer-even
 #verse-container {
     position: relative; width: 100%; height: 50vh; margin-bottom: 3rem; display: flex; justify-content: center; align-items: center;
 }
+
 #verse-text, #verse-text-next { 
     filter: invert(1) drop-shadow(0 0 10px rgba(255,255,255,0.1)); 
     width: 100%; height: 100%; object-fit: contain;
     position: absolute; top: 0; left: 0; opacity: 0;
     transition: opacity 0.5s ease-in-out; will-change: opacity;
+    color: #F5F5F7;
+    font-weight: 600; 
+    text-shadow: 
+        0px 2px 10px rgba(0, 0, 0, 0.2), 
+        0px 10px 20px rgba(0, 0, 0, 0.1);
+    -webkit-font-smoothing: antialiased;
 }
+
 .active-verse-img { opacity: 1 !important; z-index: 2; }
 
 #translation-text {
-    font-family: 'Inter', sans-serif; font-weight: 300; color: #e0e0e0;
+    font-family: 'Inter', sans-serif;  
     line-height: 1.7; flex-grow: 0; flex-shrink: 1; max-height: 30%;
     overflow-y: auto; white-space: pre-wrap; text-align: center;
-    padding: 0 2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5); transition: opacity 0.3s;
+    padding: 0 2rem; 
+    transition: opacity 0.3s;
+    color: #F5F5F7;
+    font-weight: 600; 
+    text-shadow: 
+        0px 2px 10px rgba(0, 0, 0, 0.2), 
+        0px 10px 20px rgba(0, 0, 0, 0.1);
+    -webkit-font-smoothing: antialiased;
 }
 
 #control-panel {
     position: fixed; bottom: 0; left: 0; right: 0;
     display: flex; justify-content: center; align-items: center;
-    flex-wrap: wrap; gap: 0.5rem; /* Tighter gap */
+    flex-wrap: wrap; gap: 0.5rem; 
     padding: 2rem;
     background: linear-gradient(to top, #000 20%, transparent);
-    transition: transform 0.4s ease, opacity 0.4s ease; z-index: 100;
+    transition: transform 0.4s ease, opacity 0.4s ease; 
+    z-index: 100;
+    /* Ensure controls are clickable */
+    pointer-events: auto; 
 }
+
 body.idle #control-panel { transform: translateY(100%); opacity: 0; pointer-events: none; }
 
 select {
@@ -539,10 +699,7 @@ select {
     border-radius: 12px;
     cursor: pointer;
     appearance: none;
-    
-    /* Increase width by 20% */
     width: 120%; 
-    /* Optional: max-width ensures it doesn't break containers on medium screens */
     max-width: 100%; 
 }
 
@@ -554,14 +711,12 @@ select:focus {
 
 @media screen and (max-width: 768px) {
     select {
-        /* Keeps it full width on mobile devices */
         width: 100% !important;
         font-size: 1.1rem;      
         padding: 0.7rem 2rem 0.7rem 0.8rem;
         border-radius: 10px;
     }
 }
-
 
 @media (max-width: 768px) {
     #dashboard-view { padding-left: 0 !important; }

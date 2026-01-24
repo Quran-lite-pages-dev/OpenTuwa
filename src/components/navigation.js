@@ -9,6 +9,7 @@
     const VIEWS = {
         ARABIC_MODAL: 'arabic-modal', 
         SEARCH: 'search-overlay',
+        ISLAND_SEARCH: 'island-search-wrapper',
         CINEMA: 'cinema-view',
         DASHBOARD: 'dashboard-view',
         SIDEBAR: 'tv-sidebar'
@@ -51,11 +52,15 @@
             return candidates.filter(isVisible);
         }
 
-        // PRIORITY 3: Dashboard & Sidebar
-        const dashCandidates = dashboardView ? Array.from(dashboardView.querySelectorAll(SELECTOR)) : [];
-        const sidebarCandidates = sidebar ? Array.from(sidebar.querySelectorAll(SELECTOR)) : [];
-        
-        return [...sidebarCandidates, ...dashCandidates].filter(isVisible);
+// PRIORITY 3: Island Search, Dashboard & Sidebar
+    const islandSearch = document.getElementById(VIEWS.ISLAND_SEARCH);
+    const islandCandidates = islandSearch ? Array.from(islandSearch.querySelectorAll(SELECTOR)) : [];
+    
+    const dashCandidates = dashboardView ? Array.from(dashboardView.querySelectorAll(SELECTOR)) : [];
+    const sidebarCandidates = sidebar ? Array.from(sidebar.querySelectorAll(SELECTOR)) : [];
+    
+    // Include islandCandidates in the return array
+    return [...islandCandidates, ...sidebarCandidates, ...dashCandidates].filter(isVisible);
     }
 
     /**
@@ -129,14 +134,19 @@
         const all = getFocusableCandidates();
 
         if (!currentFocus || !document.body.contains(currentFocus)) {
-            if (all.length > 0) focusElement(all[0]);
+            // Default to Search Box if it exists, otherwise dashboard
+            const islandInput = document.getElementById('island-input');
+            if (islandInput && isVisible(islandInput)) {
+                focusElement(islandInput);
+            } else if (all.length > 0) {
+                focusElement(all[0]);
+            }
             return;
         }
+        // ---------------------------------------
 
         // If trapped in an invalid state (e.g. focused on a hidden element), jump to safety
         if (!all.includes(currentFocus) && all.length > 0) {
-            focusElement(all[0]);
-            return;
         }
 
         const r1 = currentFocus.getBoundingClientRect();
@@ -188,6 +198,17 @@
             e.stopImmediatePropagation();
             e.preventDefault();
             navigate(e.key);
+        }
+// --- 2.5 SEARCH EXECUTION ---
+        if (e.key === 'Enter') {
+            const islandInput = document.getElementById('island-input');
+            if (document.activeElement === islandInput) {
+                const trigger = document.querySelector('.enter-trigger');
+                if (trigger) {
+                    trigger.click(); // Manually trigger the search
+                    return;
+                }
+            }
         }
         
         // --- 3. BACK/ESCAPE ---

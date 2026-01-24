@@ -1326,3 +1326,61 @@ function closeSearch() {
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);
+
+document.addEventListener('DOMContentLoaded', () => {
+    const islandInput = document.getElementById('island-input');
+    const islandTrigger = document.getElementById('island-trigger');
+    const islandBox = document.querySelector('.island-search-box');
+
+    // State for cycling through multiple results
+    let currentMatches = [];
+    let currentMatchIndex = 0;
+
+    // --- CORE SEARCH LOGIC ---
+async function performGhostSearch(isCycleMode = false) {
+    const query = islandInput.value.trim();
+    if (query.length < 3) return; // Wait for meaningful input
+
+    try {
+        // Call your Cloudflare Worker AI
+        const response = await fetch('"/src/core/workers/search-worker.js"', {
+            method: 'POST',
+            body: JSON.stringify({ query: query })
+        });
+        const data = await response.json();
+
+        if (data.chapter) {
+            const targetCard = document.querySelector(`.surah-card[data-chapter="${data.chapter}"]`);
+            if (targetCard) {
+                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                highlightCard(targetCard); // Your existing visual feedback logic
+            }
+        }
+    } catch (err) {
+        console.error("AI Search failed, falling back to fuzzy", err);
+        // Fallback to your original traditional fuzz JS here
+    }
+}
+
+    // --- EVENT LISTENERS ---
+
+    // 1. Typing: Instant Search (Ghost Scroll)
+    islandInput.addEventListener('input', (e) => {
+        performGhostSearch(false);
+    });
+
+    // 2. Enter Key in Input: Cycle to next result
+    islandInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Stop form submission
+            performGhostSearch(true); // True = Cycle next
+        }
+        // NOTE: Arrow keys are handled by the navigation.js patch!
+    });
+
+    // 3. Trigger Button Click
+    islandTrigger.addEventListener('click', (e) => {
+        e.preventDefault();
+        performGhostSearch(true);
+    });
+});
