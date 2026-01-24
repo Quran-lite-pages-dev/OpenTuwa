@@ -1,22 +1,57 @@
+import { Ai } from '@cloudflare/ai';
+
 export default {
   async fetch(request, env) {
+    // Handle CORS (so your website can talk to this worker)
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "POST",
+          "Access-Control-Allow-Headers": "Content-Type",
+        },
+      });
+    }
+
+    if (request.method !== 'POST') return new Response('Method not allowed', { status: 405 });
+
     const { query } = await request.json();
+    const ai = new Ai(env.AI);
 
-    // 1. Convert user query (e.g., "verse about patience") into a vector (embedding)
-    const userVector = await env.AI.run('@cf/baai/bge-small-en-v1.5', {
-      text: [query]
-    });
+    // We use Llama 3 because it is smart enough to understand "stories about ants" or "Moses"
+    // and map them to the correct Chapter number (1-114).
+    const systemPrompt = `
+      You are a Quran search engine backend. 
+      Your ONLY job is to identify which Surah (Chapter 1-114) the user is looking for based on their input.
+      The input might be a name (English, Arabic, Spanish, etc.), a topic, or a question.
+      
+      Examples:
+      Input: "The Cow" -> Output: 2
+      Input: "story of joseph" -> Output: 12
+      Input: "sura yasin" -> Output: 36
+      Input: "patience" -> Output: 103 (or closest match)
+      Input: "La Vaca" -> Output: 2
+      
+      Respond with ONLY the number (integer) of the most relevant chapter. 
+      If you are unsure, respond with "null".
+    `;
 
-    // 2. Search your database (Vectorize or D1) for the closest match
-    // For a simple version, we can compare the query against a list of Surah descriptions
-    // If you have many verses, use Cloudflare Vectorize.
-    
-    // Simple logic: return AI-refined keywords to the frontend
-    const aiResponse = await env.AI.run('@cf/meta/llama-3-8b-instruct', {
-      prompt: `Identify the Quranic Surah or Chapter number for: "${query}". 
-               Return ONLY the chapter number as a single integer.`
-    });
+    try {
+      const response = await ai.run('@cf/meta/llama-3-8b-instruct', {
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: query }
+        ]
+      });
 
-    return new Response(JSON.stringify({ chapter: aiResponse.response.trim() }));
+      return new Response(JSON.stringify({ chapter: response.response.trim() }), {
+        headers: { 
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*" 
+        }
+      });
+    } catch (e) {
+      return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+    }
   }
-}
+};

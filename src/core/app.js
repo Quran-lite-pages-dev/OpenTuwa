@@ -1,4 +1,5 @@
 // Copyright (c) Haykal M. Zaidi 2024-2026. All rights reserved. PROPRIETARY AND CONFIDENTIAL.
+
 document.addEventListener('error', function (event) {
     const target = event.target;
     if (target.tagName.toLowerCase() === 'img') {
@@ -122,6 +123,7 @@ const SURAH_METADATA = [
     { "chapter": 113, "english_name": "The Daybreak", "description": "A Meccan Surah seeking refuge in the Lord of the dawn from the evil of created things and envy. (5 verses)" },
     { "chapter": 114, "english_name": "Mankind", "description": "A Meccan chapter seeking refuge in the Lord of mankind from the whispers of devils and men. (6 verses)" }
 ];
+
 
 // --- 2. MULTI-PROFILE & LOGIC ---
 const ACTIVE_PROFILE_ID = "1";
@@ -1326,61 +1328,3 @@ function closeSearch() {
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);
-
-document.addEventListener('DOMContentLoaded', () => {
-    const islandInput = document.getElementById('island-input');
-    const islandTrigger = document.getElementById('island-trigger');
-    const islandBox = document.querySelector('.island-search-box');
-
-    // State for cycling through multiple results
-    let currentMatches = [];
-    let currentMatchIndex = 0;
-
-    // --- CORE SEARCH LOGIC ---
-async function performGhostSearch(isCycleMode = false) {
-    const query = islandInput.value.trim();
-    if (query.length < 3) return; // Wait for meaningful input
-
-    try {
-        // Call your Cloudflare Worker AI
-        const response = await fetch('/src/core/workers/search-worker.js', {
-            method: 'POST',
-            body: JSON.stringify({ query: query })
-        });
-        const data = await response.json();
-
-        if (data.chapter) {
-            const targetCard = document.querySelector(`.surah-card[data-chapter="${data.chapter}"]`);
-            if (targetCard) {
-                targetCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                highlightCard(targetCard); // Your existing visual feedback logic
-            }
-        }
-    } catch (err) {
-        console.error("AI Search failed, falling back to fuzzy", err);
-        // Fallback to your original traditional fuzz JS here
-    }
-}
-
-    // --- EVENT LISTENERS ---
-
-    // 1. Typing: Instant Search (Ghost Scroll)
-    islandInput.addEventListener('input', (e) => {
-        performGhostSearch(false);
-    });
-
-    // 2. Enter Key in Input: Cycle to next result
-    islandInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault(); // Stop form submission
-            performGhostSearch(true); // True = Cycle next
-        }
-        // NOTE: Arrow keys are handled by the navigation.js patch!
-    });
-
-    // 3. Trigger Button Click
-    islandTrigger.addEventListener('click', (e) => {
-        e.preventDefault();
-        performGhostSearch(true);
-    });
-});
