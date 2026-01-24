@@ -12,7 +12,7 @@
 .ai-recommendation-badge {
     font-size: 0.8rem;
     background: var(--accent);
-    color: #F5F5F7; /* UPDATED: Apple White */
+    color: #F5F5F7; /* UPDATED:  White */
     opacity: 0.7;
     padding: 2px 6px;
     border-radius: 4px;
@@ -30,8 +30,8 @@
     color: #333;
 }
 
-/* --- INJECTED: APPLE TV DYNAMIC STYLES --- */
-.apple-text {
+/* --- INJECTED: TV DYNAMIC STYLES --- */
+.text {
     color: #F5F5F7;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-weight: 600;

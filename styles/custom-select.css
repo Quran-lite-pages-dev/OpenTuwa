@@ -19,7 +19,7 @@
     
     padding: 0 15px;
     font-size: 1.3rem;
-    font-weight: 500;
+    font-weight: 600;
     color: #e5e5e5;
     height: 44px; 
     background: rgba(255, 255, 255, 0.05); 
@@ -53,7 +53,7 @@
     background: rgba(255, 255, 255, 0.1);
     border-color: var(--accent);
     outline: none;
-    box-shadow: 0 0 15px rgba(0, 255, 187, 0.1);
+    box-shadow: 0 0 15px rgba(209, 209, 214, 0.1);
 }
 /* 2. The Options (Dropdown): Bigger size (300px) */
 .custom-options {
@@ -102,7 +102,7 @@
     display: block;
     padding: 12px 20px;
     font-size: 1.3rem;
-    font-weight: 400;
+    font-weight: 600;
     color: #b0b0b0;
     cursor: pointer;
     transition: background 0.2s, color 0.2s;
@@ -120,7 +120,7 @@
 .custom-option:hover,
 .custom-option:focus, 
 .custom-option.selected {
-    background: rgba(0, 255, 187, 0.1);
+    background: rgba(209, 209, 214, 0.1);
     color: #fff;
     outline: none;
 }

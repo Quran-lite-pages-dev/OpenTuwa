@@ -11,34 +11,37 @@
 
     // --- DYNAMIC STYLES FOR BUTTON EXPANSION ---
     // We inject this to handle the "See more results" text layout
+    // --- DYNAMIC STYLES FOR BUTTON EXPANSION ---
     const style = document.createElement('style');
     style.innerHTML = `
         .enter-trigger {
-            transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy expansion */
             overflow: hidden;
             white-space: nowrap;
         }
+        
+        /* The button expands independently now */
         .enter-trigger.expanded-btn {
             width: auto !important;
-            aspect-ratio: auto !important;
-            padding: 0 16px !important;
-            border-radius: 20px !important;
-            background: rgba(255, 255, 255, 0.2) !important;
+            padding: 0 20px !important; /* More padding for text */
+            border-radius: 50px !important; /* Pill shape */
+            background: rgba(255, 255, 255, 0.1) !important;
+            border-color: rgba(255, 255, 255, 0.3) !important;
         }
+
         .enter-trigger.expanded-btn .key-hint {
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 1.3rem;
+            font-weight: 500;
             color: #fff;
         }
-        /* Ensure the box grows to fit the new button size if needed */
-        .island-search-box.has-results {
-            width: auto !important;
-            min-width: 340px;
-            padding-right: 8px;
-        }
+
+        /* REMOVED: .island-search-box.has-results { width: auto ... }
+           Reason: The box no longer needs to grow to fit the button. 
+           The wrapper (flex) will automatically adjust the centering 
+           as the button grows next to it.
+        */
     `;
     document.head.appendChild(style);
-
     // --- STATE ---
     let searchTimeout = null;
     let cachedQuery = "";      
@@ -86,7 +89,7 @@
             if (query !== cachedQuery) {
                 resetButtonState(triggerBtn, triggerHint, islandBox);
                 
-                if (islandBox) islandBox.style.borderColor = 'rgba(0, 255, 187, 0.3)';
+                if (islandBox) islandBox.style.borderColor = 'rgba(209, 209, 214, 0.3)';
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => {
                     executeSearch(query, islandBox, triggerBtn, triggerHint);
@@ -178,7 +181,7 @@
         
         // Flash Blue
         if(islandBox) {
-            islandBox.style.borderColor = '#00bbff'; 
+            islandBox.style.borderColor = '#f5f5f7 '; 
             setTimeout(() => islandBox.style.borderColor = '', 300);
         }
         highlightChapter(cachedResults[resultIndex]);
@@ -280,7 +283,7 @@
             targetCard.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
             targetCard.style.transform = 'scale(1.1)';
             targetCard.style.filter = 'brightness(1.4)';
-            targetCard.style.boxShadow = '0 0 25px rgba(0, 255, 187, 0.6)';
+            targetCard.style.boxShadow = '0 0 25px rgba(209, 209, 214, 0.6)';
             targetCard.style.zIndex = '10'; 
 
             setTimeout(() => {
@@ -288,7 +291,7 @@
                 targetCard.style.filter = 'none';
                 targetCard.style.boxShadow = 'none';
                 targetCard.style.zIndex = 'auto';
-            }, 2500);
+            }, 99500);
         }
     }
 
