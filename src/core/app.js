@@ -1343,7 +1343,7 @@ async function performGhostSearch(isCycleMode = false) {
 
     try {
         // Call your Cloudflare Worker AI
-        const response = await fetch('"/src/core/workers/search-worker.js"', {
+        const response = await fetch('/src/core/workers/search-worker.js', {
             method: 'POST',
             body: JSON.stringify({ query: query })
         });
