@@ -29,7 +29,7 @@ export async function onRequestPost(context) {
       Return ONLY the integer number. If you are unsure or it's gibberish, return "null".
     `;
 
-    const response = await ai.run('@cf/meta/llama-3-8b-instruct', {
+    const response = await ai.run('@cf/google/gemma-2b-it-lora', {
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: query }
