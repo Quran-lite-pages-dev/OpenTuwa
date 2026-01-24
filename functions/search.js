@@ -4,31 +4,26 @@ export async function onRequestPost(context) {
   const { request, env } = context;
 
   try {
-    // 1. Check if AI Binding exists
-    if (!env.AI) {
-        throw new Error("FATAL: 'AI' binding is missing in Cloudflare Dashboard!");
+    if (!env.AI) throw new Error("FATAL: 'AI' binding missing.");
+
+    // 1. Safe Parse Input
+    let query;
+    try {
+      const body = await request.json();
+      query = body.query;
+    } catch (e) {
+      return new Response("Invalid JSON", { status: 400 });
     }
 
-    // In search.js
-// Change: const { query } = await request.json();
-// To this (safer parsing):
-let query;
-try {
-    const body = await request.json();
-    query = body.query;
-} catch (e) {
-    return new Response("Invalid JSON", { status: 400 });
-}
-
-    // 2. Debug Log (Visible in Cloudflare Logs)
-    console.log("Received Query:", query);
-
+    // 2. AI Prompt - Asks for Multiple Results
     const ai = new Ai(env.AI);
-    
     const systemPrompt = `
-      You are a helper. Return ONLY the chapter number (1-114) for the user's input.
-      Input: "The Cow" -> Output: 2
-      If unsure, return "null".
+      You are a Quran search engine.
+      Task: Return a JSON Array of chapter numbers (1-114) that match the user's topic.
+      - If specific (e.g., "Joseph"), return one: [12]
+      - If broad (e.g., "Prophets"), return all relevant: [21, 12, 11, 10, ... ]
+      - Order by relevance.
+      - STRICTLY return ONLY the JSON array. No text.
     `;
 
     const response = await ai.run('@cf/meta/llama-3-8b-instruct', {
@@ -38,21 +33,33 @@ try {
       ]
     });
 
-    // 3. Check what AI actually returned
-    console.log("AI Raw Response:", response);
+    // 3. Clean & Parse AI Output
+    let raw = response.response.trim();
+    // Remove markdown code blocks if present (e.g. ```json ... ```)
+    raw = raw.replace(/```json/g, '').replace(/```/g, '').trim();
+
+    let chapters = [];
+    try {
+      chapters = JSON.parse(raw);
+      // Ensure it's actually an array of numbers
+      if (!Array.isArray(chapters)) chapters = [parseInt(raw)];
+    } catch (e) {
+      // Fallback: try to find any numbers in the string
+      const match = raw.match(/\d+/g);
+      if (match) chapters = match.map(n => parseInt(n));
+    }
+
+    // Filter valid Quran chapters (1-114)
+    chapters = chapters.map(n => parseInt(n)).filter(n => !isNaN(n) && n >= 1 && n <= 114);
 
     return new Response(JSON.stringify({ 
-        chapter: response.response.trim(),
+        chapters: chapters, // Return the list
         debug_status: "success" 
     }), {
       headers: { "Content-Type": "application/json" }
     });
 
   } catch (e) {
-    // Return the error to the browser so you can see it in Network Tab
-    return new Response(JSON.stringify({ 
-        error: e.message, 
-        stack: e.stack 
-    }), { status: 500 });
+    return new Response(JSON.stringify({ error: e.message }), { status: 500 });
   }
 }
