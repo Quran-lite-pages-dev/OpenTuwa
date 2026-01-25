@@ -1,19 +1,14 @@
 {
   "name": "quran-lite-ai",
   "version": "1.0.0",
-  "description": "AI Search Dependencies",
+  "description": "AI Search Dependencies and Obfuscation",
+  "scripts": {
+    "obfuscate": "javascript-obfuscator ./_site --output ./_site --compact true --self-defending true --disable-console-output true --debug-protection true"
+  },
   "dependencies": {
     "@cloudflare/ai": "^1.2.2",
     "base64-js": "^1.5.1",
     "mustache": "^4.2.0"
-  }
-}
-{
-  "name": "jekyll-obfuscator",
-  "version": "1.0.0",
-  "description": "Obfuscate JS after Jekyll build",
-  "scripts": {
-    "obfuscate": "javascript-obfuscator ./_site --output ./_site --compact true --self-defending true --disable-console-output true --debug-protection true"
   },
   "devDependencies": {
     "javascript-obfuscator": "^4.0.0"
