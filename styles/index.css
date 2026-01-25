@@ -56,16 +56,90 @@ body {
     overflow: hidden !important; 
     display: flex; flex-direction: column;
 }
+/* --- APP BRANDING (Standard Alignment + Flat Top Axis) --- */
+.app-brand {
+    position: fixed;
+    top: 40px; 
+    
+    /* LTR = Right, RTL = Left */
+    inset-inline-end: 5%; 
+    
+    z-index: 9000;
+    display: flex;
+    align-items: center; 
+    flex-direction: row; 
+    gap: 0.2px; /* Reduced from 14px to 1px to pull the img 98% closer to the text */
+    
+    text-decoration: none;
+    height: 42px; 
+    
+    transform-origin: center left;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* RTL Flip */
+html[dir="rtl"] .app-brand {
+    transform-origin: center right;
+}
+
+.app-brand:hover {
+    opacity: 0.8;
+    transform: scale(1.02);
+}
+
+/* BRAND ICON */
+.brand-icon img {
+    width: 108px; 
+    height: 58px;
+    display: block;
+    object-fit: contain;
+    transform: translate(18%, 14%);
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+}
+
+/* BRAND TEXT - THE FLAT TOP FIX */
+.brand-text {
+    font-family: 'Inter', sans-serif;
+    font-weight: 900; 
+    font-size: 26.8px; 
+    
+    text-transform: uppercase; 
+    letter-spacing: -2.5px; 
+    
+    color: #fff; 
+    opacity: 19;
+    
+    line-height: 1; 
+    margin-top: 2px; 
+    
+    text-shadow: 0 4px 30px rgba(255, 255, 255,0.2);
+    white-space: nowrap;
+}
+
+/* MOBILE RESPONSIVENESS */
+@media screen and (max-width: 1024px) {
+    .brand-text {
+        display: none; 
+    }
+    
+    .app-brand {
+        inset-inline-end: 20px; 
+        top: 25px;
+    }
+}
 
 /* --- ISLAND SEARCH BOX --- */
 #island-search-wrapper {
     position: fixed;
-    top: 40px;
+    bottom: 40px;
     left: 0;
     width: 100%;
 display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start; /* Standard left alignment */
+    justify-content: flex-start;
+    
+    /* This creates the 'safe' visual gap from the edge */
+    padding-left: 5%; 
     gap: 12px; /* Creates the space between the Input Island and the Button Satellite */
     pointer-events: none;
     pointer-events: none; /* Clicks pass through the empty space */

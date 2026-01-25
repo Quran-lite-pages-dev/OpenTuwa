@@ -7,7 +7,7 @@
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <title>Tuwa | The Sacred Valley</title>
+    <title>Tuwa</title>
     <meta name="application-name" content="Tuwa">
     <meta name="apple-mobile-web-app-title" content="Tuwa">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -43,6 +43,24 @@
       }
     }
     </script>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    // Check for "chapter" in the URL (handles ?chapter= and ?chapter)
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.has('chapter')) {
+        const brandElements = document.querySelectorAll('.app-brand');
+        
+        brandElements.forEach(el => {
+            // Using !important to override the 'display: flex' in your CSS
+            el.style.setProperty('display', 'none', 'important');
+        });
+        
+        // Optional: Console log to verify it triggered
+        console.log('Chapter detected: .app-brand hidden.');
+    }
+});
+</script>
     
     <link rel="canonical" id="dynamic-canonical" href="https://Quran-lite.pages.dev">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -263,6 +281,12 @@
 
     </head>
 <body>
+<a href="/" class="app-brand" aria-label="Tuwa Home">
+    <div class="brand-icon">
+        <img src="assets/ui/logo.png" alt="Tuwa Logo">
+    </div>
+    <span class="brand-text">Tuwa</span>
+</a>
 
     <script src="src/utils/resolution.js"></script>
     <script src="src/components/recommendations.js"></script>
@@ -367,7 +391,7 @@
             <audio id="audio-player" crossorigin="anonymous"></audio>
             <audio id="translation-audio-player" crossorigin="anonymous"></audio>
 
-            <h1 id="chapter-title" data-i18n="player.title">Quran for Every Soul</h1>
+            <h1 id="chapter-title" data-i18n="player.title">Tuwa</h1>
             
             <div id="content-display">
                 <div id="verse-container">

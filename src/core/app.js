@@ -903,7 +903,7 @@ function saveState() {
     const canonicalLink = document.getElementById('dynamic-canonical');
     const fullUrl = `https://Quran-lite.pages.dev/reading/${newUrl}`;
     if (canonicalLink) canonicalLink.href = fullUrl;
-    document.title = `${chObj.title} - Verse ${vNum}`;
+    document.title = `${chObj.title} - Verse ${vNum} | Tuwa`;
 }
 
 function populateChapterSelect() {
