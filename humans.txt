@@ -1,0 +1,16 @@
+/* TEAM */
+  Founder & Lead: Haykal M. Zaidi
+  Role: Full Stack Engineer
+  Location: Johor, Malaysia
+  Contact: tuwa.media@gmail.com (or your email)
+
+/* SITE */
+  Application: Tuwa - The Sacred Valley
+  Version: 1.0.0 (Stable)
+  Language: English / Arabic
+  Tech: HTML5, CSS3, Vanilla JS, Cloudflare AI
+
+/* LEGAL */
+  Owner: Tuwa Media (Haykal M. Zaidi)
+  License: MIT + Trademark Lock
+  Status: Official Source
