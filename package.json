@@ -8,3 +8,14 @@
     "mustache": "^4.2.0"
   }
 }
+{
+  "name": "jekyll-obfuscator",
+  "version": "1.0.0",
+  "description": "Obfuscate JS after Jekyll build",
+  "scripts": {
+    "obfuscate": "javascript-obfuscator ./_site --output ./_site --compact true --self-defending true --disable-console-output true --debug-protection true"
+  },
+  "devDependencies": {
+    "javascript-obfuscator": "^4.0.0"
+  }
+}
