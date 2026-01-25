@@ -1,6 +1,13 @@
-// File: src/core/ai-override.js
+/**
+ * TUWA - The Sacred Valley
+ * Copyright (c) 2024-2026 Haykal M. Zaidi (d/b/a Tuwa Media).
+ * * PROPRIETARY IDENTITY:
+ * The name "Tuwa" and "Sacred Valley" are trademarks of Tuwa Media.
+ * This code is licensed under MIT + Trademark Lock.
+ */
+
 // Purpose: Handles AI Search, Audio/Visual Sync, and Dynamic "See More" Button
-// Update: Changes Arrow to "See more results" on success; resets on typing.
+
 
 (function() {
     console.log("AI Search Injector: Initializing...");

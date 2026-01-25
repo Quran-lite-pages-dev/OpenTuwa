@@ -1,7 +1,7 @@
-/* Copyright (c) Haykal M. Zaidi 2024-2026. All rights reserved. PROPRIETARY AND CONFIDENTIAL. */
-/* index1.css - FIXED: Single Page Fit & Dynamic Hero Collapse */
-
-/* --- 0. TV STYLE OVERRIDES & SCROLLBAR BAN --- */
+/* * TUWA - The Sacred Valley
+ * Copyright (c) 2024-2026 Tuwa Media (Haykal M. Zaidi).
+ * All Rights Reserved. 
+ */
 * {
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
