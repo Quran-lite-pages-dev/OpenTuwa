@@ -106,8 +106,8 @@ html[dir="rtl"] .app-brand {
 
 /* BRAND ICON */
 .brand-icon img {
-    width: 98px; 
-    height: 108px;
+    width: 108px; 
+    height: 58px;
     display: block;
     object-fit: contain;
     transform: translate(18%, 14%);
