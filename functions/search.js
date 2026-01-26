@@ -26,7 +26,7 @@ export async function onRequestPost(context) {
       - STRICTLY return ONLY the JSON array. No text.
     `;
 
-    const response = await ai.run('@cf/meta/llama-3-8b-instruct', {
+    const response = await ai.run('@cf/google/gemma-3-12b-it', {
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: query }

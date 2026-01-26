@@ -64,7 +64,7 @@ const SURAH_METADATA = [
     { "chapter": 48, "english_name": "The Victory", "description": "Revealed after the Treaty of Hudaybiyyah, declaring it a clear victory and promising the future peaceful conquest of Mecca. (29 verses)" },
     { "chapter": 49, "english_name": "The Rooms", "description": "A Medinan chapter teaching manners, respect for the Prophet (Peace be upon him), and the brotherhood of all believers regardless of race. (18 verses)" },
     { "chapter": 50, "english_name": "The Letter Qaf", "description": "A Meccan Surah emphasizing the resurrection and how every human deed is recorded by guardian angels. (45 verses)" },
-    { "chapter": 51, "english_name": "The Winnowing Winds", "description": "A Meccan chapter discussing the purpose of creating humans and Jinn—solely to worship God. (60 verses)" },
+    { "chapter": 51, "english_name": "The Winnowing Winds", "description": "A Meccan chapter discussing the purpose of creating humans and Jinnâ€”solely to worship God. (60 verses)" },
     { "chapter": 52, "english_name": "The Mount", "description": "A Meccan Surah swearing by Mount Sinai, describing the bliss of Paradise for the righteous and the fate of deniers. (49 verses)" },
     { "chapter": 53, "english_name": "The Star", "description": "A Meccan chapter confirming the divine source of the Prophet's (Peace be upon him) vision during his ascension and refuting idol worship. (62 verses)" },
     { "chapter": 54, "english_name": "The Moon", "description": "A Meccan Surah referencing the splitting of the moon as a sign and recounting the punishments of past nations who rejected their prophets. (55 verses)" },
@@ -137,50 +137,50 @@ const STORAGE_KEY = `quranState_${ACTIVE_PROFILE_ID}`;
 
 // [KEEP FULL CONFIG OBJECTS HERE]
 const TRANSLATIONS_CONFIG = {
-    'en': { name: 'English (Saheeh Intl) | Preferred', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/en.xml' },
-            'sq': { name: 'Albanian (Sherif Ahmeti)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sq.ahmeti.xml' },
-            'ber': { name: 'Amazigh (At Mansour)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ber.mensur.xml' },
-            'am': { name: 'Amharic (Sadiq & Sani)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/am.sadiq.xml' },
-            'ar': { name: 'Arabic Tafsir (Al-Muyassar)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ar.muyassar.xml' },
-            'az': { name: 'Azerbaijani (Musayev)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/az.musayev.xml' },
-            'bn': { name: 'Bengali (Muhiuddin Khan)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bn.bengali.xml' },
-            'bs': { name: 'Bosnian (Besim Korkut)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bs.korkut.xml' },
-            'bg': { name: 'Bulgarian (Theophanov)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bg.theophanov.xml' },
-            'zh': { name: 'Chinese (Ma Jian)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/zh.jian.xml' },
-            'cs': { name: 'Czech (Hrbek)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/cs.hrbek.xml' },
-            'dv': { name: 'Divehi (Maldives)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/dv.divehi.xml' },
-            'nl': { name: 'Dutch (Siregar)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/nl.siregar.xml' },
-            'fr': { name: 'French (Hamidullah)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fr.hamidullah.xml' },
-            'de': { name: 'German (Bubenheim)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/de.bubenheim.xml' },
-            'ha': { name: 'Hausa (Gumi)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ha.gumi.xml' },
-            'he': { name: 'Hebrew (Darussalam Assn. Quran ENC)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/he.xml' },
-            'hi': { name: 'Hindi (Suhel Khan)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/hi.hindi.xml' },
-            'id': { name: 'Indonesian (Kemenag)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/id.indonesian.xml' },
-            'it': { name: 'Italian (Piccardo)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/it.piccardo.xml' },
-            'ja': { name: 'Japanese (Standard)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ja.japanese.xml' },
-            'ko': { name: 'Korean (Standard)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ko.korean.xml' },
-            'ku': { name: 'Kurdish (Burhan)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ku.asan.xml' },
-            'ms': { name: 'Malay (Basmeih)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ms.basmeih.xml' },
-            'ml': { name: 'Malayalam (Abdul Hameed)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ml.abdulhameed.xml' },
-            'no': { name: 'Norwegian (Berg)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/no.berg.xml' },
-            'ps': { name: 'Pashto (Abdulwali Khan)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ps.abdulwali.xml' },
-            'fa': { name: 'Persian (Mostafa)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fa.khorramdel.xml' },
-            'pl': { name: 'Polish (Bielawskiego)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/pl.bielawskiego.xml' },
-            'pt': { name: 'Portuguese (El-Hayek)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/pt.elhayek.xml' },
-            'ro': { name: 'Romanian (Grigore)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ro.grigore.xml' },
-            'ru': { name: 'Russian (Kuliev)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ru.kuliev.xml' },
-            'sd': { name: 'Sindhi (Amroti)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sd.amroti.xml' },
-            'so': { name: 'Somali (Abduh)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/so.abduh.xml' },
-            'es': { name: 'Spanish (Isa García)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/es.garcia.xml' },
-            'sw': { name: 'Swahili (Al-Barwani)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sw.barwani.xml' },
-            'sv': { name: 'Swedish (Bernström)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sv.bernstrom.xml' },
-            'ta': { name: 'Tamil (Jan Turst)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ta.tamil.xml' },
-            'tt': { name: 'Tatar (Nugman)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/tt.nugman.xml' },
-            'th': { name: 'Thai (King Fahad)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/th.thai.xml' },
-            'tr': { name: 'Turkish (Diyanet)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/tr.diyanet.xml' },
-            'ur': { name: 'Urdu (Junagarhi)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ur.junagarhi.xml' },
-            'ug': { name: 'Uyghur (Muhammad Saleh)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ug.saleh.xml' },
-            'uz': { name: 'Uzbek (Muhammad Sodik)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/uz.sodik.xml' }
+    'en': { name: 'English', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/en.xml' },
+            'sq': { name: 'Albanian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sq.ahmeti.xml' },
+            'ber': { name: 'Amazigh', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ber.mensur.xml' },
+            'am': { name: 'Amharic', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/am.sadiq.xml' },
+            'ar': { name: 'Arabic Tafsir', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ar.muyassar.xml' },
+            'az': { name: 'Azerbaijani', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/az.musayev.xml' },
+            'bn': { name: 'Bengali', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bn.bengali.xml' },
+            'bs': { name: 'Bosnian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bs.korkut.xml' },
+            'bg': { name: 'Bulgarian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bg.theophanov.xml' },
+            'zh': { name: 'Chinese', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/zh.jian.xml' },
+            'cs': { name: 'Czech ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/cs.hrbek.xml' },
+            'dv': { name: 'Divehi', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/dv.divehi.xml' },
+            'nl': { name: 'Dutch ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/nl.siregar.xml' },
+            'fr': { name: 'French ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fr.hamidullah.xml' },
+            'de': { name: 'German ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/de.bubenheim.xml' },
+            'ha': { name: 'Hausa', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ha.gumi.xml' },
+            'he': { name: 'Hebrew (Quran ENC)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/he.xml' },
+            'hi': { name: 'Hindi', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/hi.hindi.xml' },
+            'id': { name: 'Indonesian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/id.indonesian.xml' },
+            'it': { name: 'Italian ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/it.piccardo.xml' },
+            'ja': { name: 'Japanese', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ja.japanese.xml' },
+            'ko': { name: 'Korean', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ko.korean.xml' },
+            'ku': { name: 'Kurdish', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ku.asan.xml' },
+            'ms': { name: 'Malay', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ms.basmeih.xml' },
+            'ml': { name: 'Malayalam', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ml.abdulhameed.xml' },
+            'no': { name: 'Norwegian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/no.berg.xml' },
+            'ps': { name: 'Pashto', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ps.abdulwali.xml' },
+            'fa': { name: 'Persian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fa.khorramdel.xml' },
+            'pl': { name: 'Polish ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/pl.bielawskiego.xml' },
+            'pt': { name: 'Portuguese', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/pt.elhayek.xml' },
+            'ro': { name: 'Romanian ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ro.grigore.xml' },
+            'ru': { name: 'Russian ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ru.kuliev.xml' },
+            'sd': { name: 'Sindhi ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sd.amroti.xml' },
+            'so': { name: 'Somali ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/so.abduh.xml' },
+            'es': { name: 'Spanish', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/es.garcia.xml' },
+            'sw': { name: 'Swahili', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sw.barwani.xml' },
+            'sv': { name: 'Swedish', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sv.bernstrom.xml' },
+            'ta': { name: 'Tamil ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ta.tamil.xml' },
+            'tt': { name: 'Tatar ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/tt.nugman.xml' },
+            'th': { name: 'Thai', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/th.thai.xml' },
+            'tr': { name: 'Turkish', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/tr.diyanet.xml' },
+            'ur': { name: 'Urdu ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ur.junagarhi.xml' },
+            'ug': { name: 'Uyghur', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ug.saleh.xml' },
+            'uz': { name: 'Uzbek ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/uz.sodik.xml' }
 };
 
 const RECITERS_CONFIG = {
@@ -200,9 +200,9 @@ const RECITERS_CONFIG = {
 
 const TRANSLATION_AUDIO_CONFIG = {
     'none': { name: 'No Audio Translation' }, // Will be replaced with translation
-    'en_walk': { name: 'English (Ibrahim Walk)', path: 'English/Sahih_Intnl_Ibrahim_Walk_192kbps' },
-    'id_ministry': { name: 'Indonesian (Ministry)', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/audio/play/id' },
-    'es': { name: 'Español', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/audio/play' }
+    'en_walk': { name: 'English', path: 'English/Sahih_Intnl_Ibrahim_Walk_192kbps' },
+    'id_ministry': { name: 'Indonesian', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/audio/play/id' },
+    'es': { name: 'Spanish', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/audio/play' }
 };
 
 const FTT_URL = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/FTT.XML';
@@ -903,7 +903,19 @@ function saveState() {
     const canonicalLink = document.getElementById('dynamic-canonical');
     const fullUrl = `https://Quran-lite.pages.dev/reading/${newUrl}`;
     if (canonicalLink) canonicalLink.href = fullUrl;
-    document.title = `${chObj.title} - Verse ${vNum} | Tuwa`;
+    const observer = new MutationObserver((mutations, obs) => {
+    const h1 = document.querySelector('h1');
+    if (h1) {
+        const recordedH1 = h1.innerText;
+        document.title = `${chObj.title} - ${recordedH1} | Tuwa`;
+        obs.disconnect(); // Stop looking once we have recorded the value
+    }
+});
+
+observer.observe(document.body, {
+    childList: true,
+    subtree: true
+});
 }
 
 function populateChapterSelect() {
@@ -1254,15 +1266,28 @@ function setupEventListeners() {
     });
 }
 
+let currentSurahTitle = ""; // Variable to store the last updated Surah
+
 function updateMediaSession(surah, verse, artist) {
     if ('mediaSession' in navigator) {
+        // Pre-check: Only proceed if the Surah has actually changed
+        if (surah === currentSurahTitle) {
+            return; 
+        }
+
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: `${surah} Ayah ${verse}`,
+            title: `${surah}`,
             artist: artist,
-            album: `Surah ${surah}`,
+            album: `The Clear Book`,
             artwork: [{ src: 'https://Quran-lite.pages.dev/social-preview.jpg', sizes: '512x512', type: 'image/jpeg' }]
         });
-        navigator.mediaSession.setActionHandler('nexttrack', nextVerse);
+
+        navigator.mediaSession.setActionHandler('nexttrack', () => {
+            // Your next track logic here
+        });
+
+        // Update the gatekeeper variable
+        currentSurahTitle = surah;
     }
 }
 
