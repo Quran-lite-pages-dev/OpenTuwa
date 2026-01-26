@@ -91,7 +91,7 @@ html[dir="rtl"] .app-brand {
 .brand-icon img {
     width: 108px; 
     height: 58px;
-    opacity: 0.5;
+    opacity: 0;
     display: block;
     object-fit: contain;
     transform: translate(18%, 14%);
@@ -792,7 +792,6 @@ font-weight: 900;
 /* --- The rest of your CSS remains unchanged below --- */
 
 #chapter-title {
-font-family: 'Inter', sans-serif;
     position: fixed; top: 2rem; left: 2rem; 
     color: #F5F5F7;
     font-weight: 600; 
@@ -828,7 +827,7 @@ body.idle #chapter-title { transform: translateX(100%); opacity: 0; pointer-even
 .active-verse-img { opacity: 1 !important; z-index: 2; }
 
 #translation-text {
-    font-family: 'Inter', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     line-height: 1.7; flex-grow: 0; flex-shrink: 1; max-height: 30%;
     overflow-y: auto; white-space: pre-wrap; text-align: center;
     padding: 0 2rem; 
