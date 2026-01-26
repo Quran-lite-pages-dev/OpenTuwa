@@ -1334,3 +1334,58 @@ function closeSearch() {
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);
+
+/* --- GLOBAL VERTICAL TO HORIZONTAL SCROLL MAPPING --- */
+document.addEventListener("DOMContentLoaded", () => {
+
+    // --- NEW LOGIC START ---
+    // Check if the URL contains the keyword "chapter"
+    // If found, stop the script immediately so normal vertical scrolling persists.
+    if (window.location.href.includes("chapter")) {
+        return; 
+    }
+    // --- NEW LOGIC END ---
+
+    // We still target the row to MOVE it
+    const row = document.getElementById("all-row");
+    
+    if (row) {
+        // 1. Map Mouse Wheel (Anywhere on screen -> Horizontal Scroll on Row)
+        window.addEventListener("wheel", (e) => {
+            // If vertical scroll (deltaY) is dominant
+            if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                // Prevent default behavior (though body is hidden, this is safer)
+                e.preventDefault();
+                // Apply the scroll to the ROW
+                row.scrollLeft += e.deltaY;
+            }
+        }, { passive: false });
+
+        // 2. Map Touchscreen Swipes (Anywhere on screen -> Horizontal Scroll on Row)
+        let touchStartY = 0;
+        let touchStartX = 0;
+
+        window.addEventListener("touchstart", (e) => {
+            touchStartY = e.touches[0].clientY;
+            touchStartX = e.touches[0].clientX;
+        }, { passive: false });
+
+        window.addEventListener("touchmove", (e) => {
+            const touchCurrentY = e.touches[0].clientY;
+            const touchCurrentX = e.touches[0].clientX;
+            
+            const deltaY = touchStartY - touchCurrentY;
+            const deltaX = touchStartX - touchCurrentX;
+
+            // If the swipe is primarily vertical (Up/Down)
+            if (Math.abs(deltaY) > Math.abs(deltaX)) {
+                e.preventDefault(); 
+                // Move the ROW horizontally based on the vertical swipe distance
+                row.scrollLeft += deltaY; 
+                
+                touchStartY = touchCurrentY;
+                touchStartX = touchCurrentX;
+            }
+        }, { passive: false });
+    }
+});
