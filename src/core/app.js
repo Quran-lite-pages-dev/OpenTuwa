@@ -980,7 +980,7 @@ function saveState() {
         const h1 = document.querySelector('h1');
         if (h1) {
             const recordedH1 = h1.innerText;
-            document.title = `${chObj.title} - ${recordedH1} | Tuwa`;
+            document.title = `${currentChapterData.english_name} | Tuwa`;
             obs.disconnect(); 
         }
     });
