@@ -254,6 +254,14 @@ animation-delay: 1s;
     border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-5px);
 }
+/* Use a comma to separate the two distinct conditions .island-search-box:focus-within + .enter-trigger */
+.island-search-box:hover + .enter-trigger {
+    opacity: 0;
+    filter: blur(6px);
+    transform: scale(0.9);
+    pointer-events: none;
+    transition: opacity 0.4s ease-out, filter 0.4s ease-out, transform 0.4s ease-out;
+}
 
 .search-icon-wrapper {
     color: rgba(255,255,255,0.6);
@@ -929,4 +937,57 @@ select:focus {
     .hero-banner {
         padding: 0 10%;
     }
+}
+
+/* --- 6. RUG PROTECTION ARMOR (ANTI-GLITCH OVERLAYS) --- */
+/* * This section adds invisible 'hit-boxes' around interactive elements 
+ * to prevent them from flickering (glitch loops) when the mouse 
+ * is on the edge during a transform/move animation.
+ */
+
+/* 1. Start Button Armor */
+.start-btn::before {
+    content: '';
+    position: absolute;
+    top: -50px; bottom: -50px; left: -50px; right: -50px; /* Generous safety margin */
+    z-index: -1;
+    border-radius: inherit;
+    background: transparent;
+}
+
+/* 2. Island Search Armor */
+/* We use ::after here on the idle state to expand the hit area */
+.island-search-box:not(.ai-thinking)::after {
+    content: '';
+    position: absolute;
+    inset: -30px; /* Catches rapid mouse exits */
+    z-index: -1;
+    border-radius: 60px;
+    background: transparent;
+}
+
+/* 3. Dashboard Button Armor */
+.dash-btn {
+    position: relative; /* Ensure pseudo aligns to button */
+}
+.dash-btn::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    z-index: -1;
+    border-radius: inherit;
+    background: transparent;
+}
+
+/* 4. Surah Card Armor */
+.surah-card {
+    position: relative; /* Ensure pseudo aligns to card */
+}
+.surah-card::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    z-index: -1;
+    border-radius: inherit;
+    background: transparent;
 }
