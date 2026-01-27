@@ -1,7 +1,7 @@
 {
-  "name": "Tuwa",
+  "name": "Tuwa - Web Player: Sight for everyone",
   "short_name": "Tuwa",
-  "description": "Enter the Sacred Valley. A cinema-grade Quran experience.",
+  "description": "Listen to premium content with distraction-free viewing. A brand of Tuwa Media.",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#000000",
@@ -10,18 +10,18 @@
   "categories": ["education", "books", "lifestyle"],
   "icons": [
     {
-      "src": "assets/icon-192.png",
-      "sizes": "192x192",
+      "src": "https://Quran-lite.pages.dev/assets/ui/web.png",
+      "sizes": "1080x1080",
       "type": "image/png"
     },
     {
-      "src": "assets/icon-512.png",
+      "src": "https://Quran-lite.pages.dev/assets/ui/web_512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ],
   "developer": {
     "name": "Tuwa Media",
-    "url": "https://tuwa.guide"
+    "url": "https://Quran-lite.pages.dev"
   }
 }
