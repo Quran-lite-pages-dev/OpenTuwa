@@ -1,8 +1,10 @@
 {
-  "name": "quran-lite-ai",
-  "version": "1.0.0",
-  "description": "AI Search Dependencies and Obfuscation",
+  "name": "tuwa-web-player",
+  "version": "2.0.0",
+  "description": "Premium distraction-free audio streaming player.",
   "scripts": {
+    "dev": "wrangler pages dev _site",
+    "deploy": "wrangler pages deploy _site --project-name=tuwa-player",
     "obfuscate": "javascript-obfuscator ./_site --output ./_site --compact true --self-defending true --disable-console-output true --debug-protection true"
   },
   "dependencies": {
@@ -11,6 +13,7 @@
     "mustache": "^4.2.0"
   },
   "devDependencies": {
-    "javascript-obfuscator": "^4.0.0"
+    "javascript-obfuscator": "^4.0.0",
+    "wrangler": "^3.0.0"
   }
 }

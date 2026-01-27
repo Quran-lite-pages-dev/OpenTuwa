@@ -5,7 +5,7 @@
   Contact: tuwa.media@gmail.com (or your email)
 
 /* SITE */
-  Application: Tuwa - The Sacred Valley
+  Application: Tuwa - Web player: Sight for everyone
   Version: 1.0.0 (Stable)
   Language: English / Arabic
   Tech: HTML5, CSS3, Vanilla JS, Cloudflare AI
