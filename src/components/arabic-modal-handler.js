@@ -7,13 +7,33 @@
 (function() {
     'use strict';
 
+    // ==========================================
+    // DEVELOPER CONFIGURATION
+    // 0 = Bypass Mode: Force index1.css, no modal, direct launch.
+    // 1 = Standard Mode: Check preference, show modal if needed.
+    const DEVELOPER_MODE = 0; 
+    // ==========================================
+
     const STORAGE_KEY = 'quran_arabic_pref';
+    const mainCssLinkElement = document.getElementById('main-css');
+
+    // --- LOGIC FOR BYPASS (MODE 0) ---
+    if (DEVELOPER_MODE === 0) {
+        // Force the default specific CSS
+        if (mainCssLinkElement) {
+            mainCssLinkElement.href = 'styles/index1.css';
+        }
+        // We return early here. This prevents the event listener 
+        // from overwriting 'launchPlayer', allowing the app to 
+        // proceed directly to the next step without the modal.
+        return;
+    }
+
+    // --- LOGIC FOR STANDARD (MODE 1) ---
 
     // Helper to apply CSS based on preference
     function applyCssPreference(pref) {
-        const mainCssLinkElement = document.getElementById('main-css');
         if (mainCssLinkElement) {
-            // Logic based on your original file:
             // 'no' (cannot read) -> uses index1.css
             // 'yes' (can read) -> uses index.css
             if (pref === 'no') {
@@ -59,7 +79,6 @@
             const yesButtonElement = document.getElementById('btn-arabic-no'); 
             // noButtonElement was linked to 'btn-arabic-yes' in your code
             const noButtonElement = document.getElementById('btn-arabic-yes'); 
-            const mainCssLinkElement = document.getElementById('main-css');
 
             if (!modalElement || !yesButtonElement || !noButtonElement) {
                 originalLaunchPlayerFunction(chapterNumber, verseNumber);
@@ -72,9 +91,7 @@
             yesButtonElement.onclick = function() {
                 localStorage.setItem(STORAGE_KEY, 'no'); // Save preference
                 modalElement.style.display = 'none';
-                if (mainCssLinkElement) {
-                    mainCssLinkElement.href = 'styles/index1.css';
-                }
+                applyCssPreference('no');
                 originalLaunchPlayerFunction(chapterNumber, verseNumber);
             };
 
@@ -82,9 +99,7 @@
             noButtonElement.onclick = function() {
                 localStorage.setItem(STORAGE_KEY, 'yes'); // Save preference
                 modalElement.style.display = 'none';
-                if (mainCssLinkElement) {
-                    mainCssLinkElement.href = 'styles/index.css';
-                }
+                applyCssPreference('yes');
                 originalLaunchPlayerFunction(chapterNumber, verseNumber);
             };
         };
