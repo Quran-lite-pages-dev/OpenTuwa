@@ -22,8 +22,6 @@ export async function onRequestPost(context) {
       Task: Return a JSON Array of chapter numbers (1-114) that match the user's topic.
       - If specific (e.g., "Joseph"), return one: [12]
       - If broad (e.g., "Prophets"), return all relevant: [21, 12, 11, 10, ... ]
-      - If specific but a typo (e.g., "bakra", "bagara", "albakra"), return one: [2]
-      - If broad (e.g., "Give me any random chapters today", "I am non Muslim and I want to learn about Jesus", "Prohibition of alcohol and gambling", "I have lot of problems, I really sad"), return all relevant: [21, 12, 11, 10, ... ]
       - Order by relevance.
       - STRICTLY return ONLY the JSON array. No text.
     `;
