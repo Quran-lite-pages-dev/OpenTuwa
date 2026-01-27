@@ -159,3 +159,9 @@
         transform: translateY(0) scale(1);
     }
 }
+/* --- MODE 0: HIDING LOGIC --- */
+/* Matches the exact IDs in your HTML: chapterSelectWrapper & reciterSelectWrapper */
+body.simple-mode #chapterSelectWrapper,
+body.simple-mode #reciterSelectWrapper {
+    display: none !important;
+}

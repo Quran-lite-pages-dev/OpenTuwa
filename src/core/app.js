@@ -153,7 +153,7 @@ const TRANSLATIONS_CONFIG = {
             'fr': { name: 'French ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fr.hamidullah.xml' },
             'de': { name: 'German ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/de.bubenheim.xml' },
             'ha': { name: 'Hausa', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ha.gumi.xml' },
-            'he': { name: 'Hebrew (Quran ENC)', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/he.xml' },
+            'he': { name: 'Hebrew ENC', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/he.xml' },
             'hi': { name: 'Hindi', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/hi.hindi.xml' },
             'id': { name: 'Indonesian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/id.indonesian.xml' },
             'it': { name: 'Italian ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/it.piccardo.xml' },
@@ -278,8 +278,18 @@ window.wipeUserData = function() {
     location.reload();
 };
 
-// --- CUSTOM SELECT LOGIC ---
-function initCustomSelects() {
+// mode: 1 = Show All (Default), 0 = Hide Chapter and Reciter
+function initCustomSelects(mode = 0) {
+
+    // --- VISIBILITY TOGGLE ---
+    // We toggle a class on the body. The CSS at the bottom of custom-select.css handles the hiding.
+    if (mode === 0) {
+        document.body.classList.add('simple-mode');
+    } else {
+        document.body.classList.remove('simple-mode');
+    }
+    // -------------------------
+
     document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
         const trigger = wrapper.querySelector('.custom-select-trigger');
         
@@ -287,11 +297,8 @@ function initCustomSelects() {
             e.stopPropagation(); 
             e.preventDefault();
 
-            // IDLE GUARD: If we are currently idle, this click (e.g. from a mouse) 
-            // is just waking up the screen. Do NOT open the menu.
+            // IDLE GUARD
             if (document.body.classList.contains('idle')) {
-                // navigation.js handles the keydown wake-up, 
-                // but this handles the mouse click wake-up.
                 document.body.classList.remove('idle');
                 document.body.dispatchEvent(new Event('mousemove'));
                 return;
@@ -304,10 +311,9 @@ function initCustomSelects() {
                 other.classList.remove('open');
             });
             
-            // Toggle
+            // Toggle current
             if (!isOpen) {
                 wrapper.classList.add('open');
-                // Scroll to selected
                 const selected = wrapper.querySelector('.custom-option.selected');
                 if (selected) {
                     setTimeout(() => selected.scrollIntoView({ block: 'center' }), 10);
@@ -323,8 +329,6 @@ function initCustomSelects() {
         trigger.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                // navigation.js handles the IDLE check for keydown,
-                // so if we reached here, we are active.
                 trigger.click();
             }
         });
@@ -408,6 +412,46 @@ function getSelectValue(wrapper) {
 
 // --- CORE APP ---
 
+/**
+ * STREAM ID LOGIC
+ * Compresses parameters into a single Base64 URL-safe string.
+ * Format: Chapter|Verse|Reciter|Translation|AudioTranslation
+ */
+function encodeStream(ch, v, rec, trans, aud) {
+    try {
+        const raw = `${ch}|${v}|${rec}|${trans}|${aud}`;
+        // Encode to Base64 and make it URL safe (replace +, /, =)
+        return btoa(raw).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    } catch (e) {
+        console.error("Encoding failed", e);
+        return null;
+    }
+}
+
+function decodeStream(token) {
+    try {
+        // Revert URL safety
+        let base64 = token.replace(/-/g, '+').replace(/_/g, '/');
+        // Pad with '=' if needed
+        while (base64.length % 4) base64 += '=';
+        const raw = atob(base64);
+        const parts = raw.split('|');
+        
+        if (parts.length < 5) return null;
+
+        return {
+            chapter: parseInt(parts[0]),
+            verse: parseInt(parts[1]),
+            reciter: parts[2],
+            trans: parts[3],
+            audio_trans: parts[4]
+        };
+    } catch (e) {
+        console.error("Decoding failed", e);
+        return null;
+    }
+}
+
 function mergeMetadata(apiChapters) {
     return apiChapters.map((ch, idx) => {
         const meta = SURAH_METADATA.find(m => m.chapter === ch.chapterNumber);
@@ -444,7 +488,7 @@ function switchView(viewName) {
 
 window.addEventListener('popstate', (event) => {
     const params = new URLSearchParams(window.location.search);
-    if (params.has('chapter')) {
+    if (params.has('chapter') || params.has('stream')) {
         switchView('cinema');
         restoreState();
         loadVerse(false);
@@ -486,7 +530,7 @@ async function initializeApp() {
         restoreState();
 
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('chapter')) {
+        if (urlParams.has('chapter') || urlParams.has('stream')) {
             switchView('cinema');
             // restoreState called above already
             populateVerseSelect(); 
@@ -759,23 +803,22 @@ function playPreviewStep(chapterNum, reciterId) {
     elements.previewAudio.play().catch(e => console.log("Autoplay blocked"));
 }
 
-// --- FIXED: FORCE RELOAD TO FIX AUDIO BUG ---
 function launchPlayer(chapterNum, verseNum = 1) {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    const browserLang = navigator.language.split('-')[0]; // e.g., 'en'
+    const browserLang = navigator.language.split('-')[0];
 
-    // 1. Determine Settings (Mirroring restoreState logic)
+    // 1. Determine Settings
     let currentReciter = getSelectValue(elements.selects.reciter) || saved.reciter || 'alafasy';
     
     let currentTrans = getSelectValue(elements.selects.trans) || saved.trans || browserLang;
     if (!TRANSLATIONS_CONFIG[currentTrans]) currentTrans = 'en';
 
     let currentAudioTrans = getSelectValue(elements.selects.transAudio);
+    
     if (!currentAudioTrans || currentAudioTrans === 'none') {
         if (saved.audio_trans && saved.audio_trans !== 'none') {
             currentAudioTrans = saved.audio_trans;
         } else {
-            // Auto-detect based on browser language
             const findAudioForLang = (lang) => {
                 if (TRANSLATION_AUDIO_CONFIG[lang]) return lang;
                 const match = Object.keys(TRANSLATION_AUDIO_CONFIG).find(k => k.startsWith(lang + '_'));
@@ -786,11 +829,11 @@ function launchPlayer(chapterNum, verseNum = 1) {
         }
     }
 
-    // 2. Construct Full URL
-    const newUrl = `?chapter=${chapterNum}&verse=${verseNum}&reciter=${currentReciter}&trans=${currentTrans}&audio_trans=${currentAudioTrans}`;
+    // 2. GENERATE STREAM URL
+    const streamToken = encodeStream(chapterNum, verseNum, currentReciter, currentTrans, currentAudioTrans);
     
-    // 3. FORCE PAGE RELOAD
-    // This is the key fix. It mimics the "direct url load" behavior which works perfectly.
+    // 3. FORCE PAGE RELOAD WITH STREAM PARAM
+    const newUrl = `?stream=${streamToken}`;
     window.location.assign(newUrl);
 }
 
@@ -815,45 +858,65 @@ async function loadTranslationData(id) {
 function restoreState() {
     const urlParams = new URLSearchParams(window.location.search);
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    const browserLang = navigator.language.split('-')[0]; // e.g., 'en', 'es', 'fr'
+    const browserLang = navigator.language.split('-')[0];
+
+    // --- DECODE STREAM IF PRESENT ---
+    let streamData = null;
+    if (urlParams.has('stream')) {
+        streamData = decodeStream(urlParams.get('stream'));
+    }
 
     // --- 1. Chapter ---
     let ch = 0;
-    if (urlParams.has('chapter')) ch = parseInt(urlParams.get('chapter')) - 1; 
-    else if (saved.chapter !== undefined) ch = saved.chapter;
+    if (streamData) {
+        ch = streamData.chapter - 1; // Stream has 1-based, app uses 0-based index
+    } else if (urlParams.has('chapter')) {
+        ch = parseInt(urlParams.get('chapter')) - 1; 
+    } else if (saved.chapter !== undefined) {
+        ch = saved.chapter;
+    }
+    // Safety check
+    if (isNaN(ch) || ch < 0) ch = 0;
     setSelectValue(elements.selects.chapter, ch);
 
-    // --- 2. Reciter (Default Alafasy) ---
+    // --- 2. Reciter ---
     let rec = 'alafasy';
-    if (urlParams.has('reciter') && RECITERS_CONFIG[urlParams.get('reciter')]) {
+    if (streamData && RECITERS_CONFIG[streamData.reciter]) {
+        rec = streamData.reciter;
+    } else if (urlParams.has('reciter') && RECITERS_CONFIG[urlParams.get('reciter')]) {
         rec = urlParams.get('reciter');
     } else if (saved.reciter) {
         rec = saved.reciter;
     }
     setSelectValue(elements.selects.reciter, rec);
 
-    // --- 3. Translation Text (Browser Detect) ---
-    let trans = 'en'; // Default fallback
-    // Priority: URL > Saved > Browser > Default
-    if (urlParams.has('trans')) trans = urlParams.get('trans');
-    else if (saved.trans) trans = saved.trans;
-    else if (TRANSLATIONS_CONFIG[browserLang]) trans = browserLang; 
-    
-    if (!TRANSLATIONS_CONFIG[trans]) trans = 'en'; // Final safety
+    // --- 3. Translation Text ---
+    let trans = 'en';
+    if (streamData) {
+        trans = streamData.trans;
+    } else if (urlParams.has('trans')) {
+        trans = urlParams.get('trans');
+    } else if (saved.trans) {
+        trans = saved.trans;
+    } else if (TRANSLATIONS_CONFIG[browserLang]) {
+        trans = browserLang; 
+    }
+    if (!TRANSLATIONS_CONFIG[trans]) trans = 'en';
     setSelectValue(elements.selects.trans, trans);
 
-    // --- 4. Audio Translation (Browser Detect) ---
-    let transAudio = 'none'; // Default fallback
+    // --- 4. Audio Translation ---
+    let transAudio = 'none';
     
+    // Helper to auto-detect
     const findAudioForLang = (lang) => {
-        // Direct match in config keys
         if (TRANSLATION_AUDIO_CONFIG[lang]) return lang;
-        // Prefix match (e.g., lang='en' matches config='en_walk')
         const match = Object.keys(TRANSLATION_AUDIO_CONFIG).find(k => k.startsWith(lang + '_'));
         return match || null;
     };
 
-    if (urlParams.has('audio_trans')) {
+    if (streamData) {
+        transAudio = streamData.audio_trans;
+    } else if (urlParams.has('audio_trans')) {
         const param = urlParams.get('audio_trans');
         if(TRANSLATION_AUDIO_CONFIG[param] || param.startsWith('tts:')) {
             transAudio = param;
@@ -863,12 +926,8 @@ function restoreState() {
             transAudio = saved.audio_trans;
         }
     } else {
-        // First time user: Auto-detect from browser
         const detectedAudio = findAudioForLang(browserLang);
-        if (detectedAudio) {
-            transAudio = detectedAudio;
-        }
-        // Else stays 'none'
+        if (detectedAudio) transAudio = detectedAudio;
     }
     
     setSelectValue(elements.selects.transAudio, transAudio);
@@ -876,6 +935,14 @@ function restoreState() {
 
 function getSavedVerseIndex() {
     const urlParams = new URLSearchParams(window.location.search);
+    
+    // Check Stream First
+    if (urlParams.has('stream')) {
+        const data = decodeStream(urlParams.get('stream'));
+        if (data) return data.verse - 1; // Return 0-based index
+    }
+
+    // Legacy / Fallback
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     if (urlParams.has('verse')) return parseInt(urlParams.get('verse')) - 1;
     if (saved.verse !== undefined) return saved.verse;
@@ -897,25 +964,31 @@ function saveState() {
     const chNum = chObj.chapterNumber;
     const vNum = chObj.verses[state.verse].verseNumber;
     
-    const newUrl = `?chapter=${chNum}&verse=${vNum}&reciter=${state.reciter}&trans=${state.trans}&audio_trans=${state.audio_trans}`;
+    // Generate Stream Token
+    const streamToken = encodeStream(chNum, vNum, state.reciter, state.trans, state.audio_trans);
+    const newUrl = `?stream=${streamToken}`;
+
+    // Update URL bar without reloading
     window.history.replaceState({path: newUrl, view: 'cinema'}, '', newUrl);
 
+    // Update Canonical
     const canonicalLink = document.getElementById('dynamic-canonical');
     const fullUrl = `https://Quran-lite.pages.dev/reading/${newUrl}`;
     if (canonicalLink) canonicalLink.href = fullUrl;
-    const observer = new MutationObserver((mutations, obs) => {
-    const h1 = document.querySelector('h1');
-    if (h1) {
-        const recordedH1 = h1.innerText;
-        document.title = `${chObj.title} - ${recordedH1} | Tuwa`;
-        obs.disconnect(); // Stop looking once we have recorded the value
-    }
-});
 
-observer.observe(document.body, {
-    childList: true,
-    subtree: true
-});
+    const observer = new MutationObserver((mutations, obs) => {
+        const h1 = document.querySelector('h1');
+        if (h1) {
+            const recordedH1 = h1.innerText;
+            document.title = `${recordedH1} | Tuwa`;
+            obs.disconnect(); 
+        }
+    });
+
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
 }
 
 function populateChapterSelect() {
@@ -956,7 +1029,7 @@ function populateVerseSelect() {
     
     const items = currentChapterData.verses.map((v, i) => ({
         value: i,
-        text: `Ayah ${v.verseNumber}`
+        text: `${v.verseNumber}`
     }));
 
     populateCustomSelect(elements.selects.verse, items, (val) => {
@@ -1364,9 +1437,8 @@ document.addEventListener('DOMContentLoaded', initializeApp);
 document.addEventListener("DOMContentLoaded", () => {
 
     // --- NEW LOGIC START ---
-    // Check if the URL contains the keyword "chapter"
-    // If found, stop the script immediately so normal vertical scrolling persists.
-    if (window.location.href.includes("chapter")) {
+    // Check if the URL contains "chapter" OR "stream" to disable scroll mapping in player mode
+    if (window.location.href.includes("chapter") || window.location.href.includes("stream")) {
         return; 
     }
     // --- NEW LOGIC END ---
@@ -1414,3 +1486,42 @@ document.addEventListener("DOMContentLoaded", () => {
         }, { passive: false });
     }
 });
+(function() {
+    const targetId = 'island-search-wrapper';
+    const keywords = ['stream', 'chapter'];
+
+    const hideElement = () => {
+        const url = window.location.href.toLowerCase();
+        const shouldHide = keywords.some(key => url.includes(key));
+        const el = document.getElementById(targetId);
+
+        if (el) {
+            if (shouldHide) {
+                // !important flag via style.setProperty to override most CSS
+                el.style.setProperty('display', 'none', 'important');
+                el.style.setProperty('visibility', 'hidden', 'important');
+                el.style.setProperty('opacity', '0', 'important');
+                el.style.setProperty('pointer-events', 'none', 'important');
+            } else {
+                // Optional: Restore if keywords are no longer present
+                el.style.removeProperty('display');
+            }
+        }
+    };
+
+    // 1. Run immediately on script injection
+    hideElement();
+
+    // 2. Watch for DOM changes (in case other JS re-adds or shows the element)
+    const observer = new MutationObserver(() => hideElement());
+    observer.observe(document.body, { 
+        childList: true, 
+        subtree: true, 
+        attributes: true, 
+        attributeFilter: ['style', 'class'] 
+    });
+
+    // 3. Watch for URL changes (for Single Page Apps like React/Vue)
+    window.addEventListener('popstate', hideElement);
+    window.addEventListener('hashchange', hideElement);
+})();

@@ -820,6 +820,7 @@ font-weight: 900;
 /* --- The rest of your CSS remains unchanged below --- */
 
 #chapter-title {
+display: none;
 font-family: 'Inter', sans-serif;
     position: fixed; top: 2rem; left: 2rem; 
     color: #F5F5F7;
@@ -915,7 +916,7 @@ select:focus {
 @media (max-width: 768px) {
     #dashboard-view { padding-left: 0 !important; }
     #chapter-title { display: none;}
-    .container { padding: 0; padding-bottom: 230px; }
+    .container { padding: 0; padding-bottom: 100px; }
     #control-panel { display: grid; grid-template-columns: 1fr 1fr; }
 }
 
