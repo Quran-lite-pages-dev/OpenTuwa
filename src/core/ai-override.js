@@ -14,7 +14,7 @@
 
     const WORKER_URL = '/search'; 
     const SFX_BUBBLES = 'assets/sound/bubbles-popping-sfx-425024.mp3';
-    const SFX_SUCCESS = 'assets/sound/successfinish-ui-sound-effect-467873.mp3';
+    const SFX_SUCCESS = '';
 
     // --- DYNAMIC STYLES FOR BUTTON EXPANSION ---
     // We inject this to handle the "See more results" text layout
@@ -72,7 +72,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         // 1. HIDE ON READING MODE
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('chapter')) {
+        if (urlParams.has('stream')) {
             const islandWrapper = document.getElementById('island-search-wrapper');
             if (islandWrapper) {
                 islandWrapper.style.display = 'none'; 

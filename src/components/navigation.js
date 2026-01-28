@@ -52,15 +52,18 @@
             return candidates.filter(isVisible);
         }
 
-// PRIORITY 3: Island Search, Dashboard & Sidebar
-    const islandSearch = document.getElementById(VIEWS.ISLAND_SEARCH);
-    const islandCandidates = islandSearch ? Array.from(islandSearch.querySelectorAll(SELECTOR)) : [];
-    
-    const dashCandidates = dashboardView ? Array.from(dashboardView.querySelectorAll(SELECTOR)) : [];
-    const sidebarCandidates = sidebar ? Array.from(sidebar.querySelectorAll(SELECTOR)) : [];
-    
-    // Include islandCandidates in the return array
-    return [...islandCandidates, ...sidebarCandidates, ...dashCandidates].filter(isVisible);
+        // PRIORITY 3: Island Search, Dashboard, Sidebar & Trojan
+        const islandSearch = document.getElementById(VIEWS.ISLAND_SEARCH);
+        const trojanContent = document.querySelector('.trojan-content'); // Added Trojan container
+
+        const islandCandidates = islandSearch ? Array.from(islandSearch.querySelectorAll(SELECTOR)) : [];
+        const trojanCandidates = trojanContent ? Array.from(trojanContent.querySelectorAll(SELECTOR)) : []; // Added Trojan candidates
+        
+        const dashCandidates = dashboardView ? Array.from(dashboardView.querySelectorAll(SELECTOR)) : [];
+        const sidebarCandidates = sidebar ? Array.from(sidebar.querySelectorAll(SELECTOR)) : [];
+        
+        // Include islandCandidates and trojanCandidates in the return array
+        return [...islandCandidates, ...sidebarCandidates, ...dashCandidates, ...trojanCandidates].filter(isVisible);
     }
 
     /**

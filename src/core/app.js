@@ -1502,3 +1502,6 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('popstate', hideElement);
     window.addEventListener('hashchange', hideElement);
 })();
+
+
+

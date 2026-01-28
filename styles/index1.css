@@ -145,6 +145,80 @@ html[dir="rtl"] .app-brand {
         top: 25px;
     }
 }
+/* --- APP BRANDING (Standard Alignment + Flat Top Axis) --- */
+.appx-brand {
+ position: fixed;
+    top: 40px; 
+    
+    /* LTR = Right, RTL = Left */
+    inset-inline-end: 5%; 
+    
+    z-index: 9000;
+    display: flex;
+    align-items: center; 
+    flex-direction: row; 
+    gap: 0.2px; /* Reduced from 14px to 1px to pull the img 98% closer to the text */
+    
+    text-decoration: none;
+    height: 42px; 
+    
+    transform-origin: center left;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.2, 0, 0, 1) scale(1.6);
+}
+
+/* RTL Flip */
+html[dir="rtl"] .appx-brand {
+    transform-origin: center right;
+}
+
+.appx-brand:hover {
+    opacity: 0.8;
+    transform: scale(1.02);
+}
+
+/* BRAND ICON */
+.brand-icon img {
+    width: 108px; 
+    height: 58px;
+    opacity: 0.5;
+    display: block;
+    object-fit: contain;
+    transform: translate(18%, 14%);
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+}
+
+/* BRAND TEXT - THE FLAT TOP FIX */
+.brand-text {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-weight: 900; 
+    font-size: 29.8px; 
+    
+
+    letter-spacing: -2.5px; 
+    
+    color: #fff; 
+    opacity: 19;
+    
+    line-height: 1; 
+    margin-top: 2px; 
+    
+    text-shadow: 0 4px 30px #1a1d29;
+    white-space: nowrap;
+}
+
+/* MOBILE RESPONSIVENESS */
+@media screen and (max-width: 1024px) {
+    .brand-text {
+        display: none; 
+    }
+    
+    .appx-brand {
+        inset-inline-end: 20px; 
+        top: 25px;
+    }
+}
+
+
 
 
 /* --- ISLAND SEARCH BOX --- */
@@ -684,41 +758,16 @@ transform: none;
     border-top-color: var(--accent); animation: spin 0.8s ease-in-out infinite; margin-bottom: 2rem;
 }
 .start-btn {
-    /* 1. Layout & Sizing */
-    position: relative; 
-    left: 50%;
-    transform: translate(-50%, -250%); 
-    display: inline-flex; 
-    align-items: center; 
-    justify-content: center;
-    
-    /* Use min-width instead of 120% to avoid parent container overflow issues */
-    min-width: 200px; 
-    padding: 14px 32px; 
-    
-    /* 2. Visuals: Glassmorphism (2026 Standards) */
-    background: rgba(255, 255, 255, 0.1); /* Subtle transparency */
-    backdrop-filter: blur(12px);          /* Core glass effect */
-    -webkit-backdrop-filter: blur(12px);   /* Safari support */
-    
-    /* Corrected: Use low alpha (0.1 to 0.3) for realistic depth */
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); 
-    
-    border: 1px solid rgba(255, 255, 255, 0.2); 
-    border-radius: 99px;       
-    color: #ffffff; /* Ensure high contrast for accessibility */
-    
-    /* 3. Typography */
-    font-size: 1.4rem;       
-    font-weight: 600;          
-    letter-spacing: -0.02em;   
-    
-    /* 4. Animation Settings */
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 16px 48px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 4px;
     cursor: pointer;
-    /* Use will-change sparingly; usually only if performance lags on low-end devices */
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
-                background 0.3s, 
-                box-shadow 0.3s;
+    transition: transform 0.2s, background 0.2s;
+    letter-spacing: -0.01em;
 }
 
 .start-btn:focus, .start-btn:hover { 
@@ -749,6 +798,7 @@ box-sizing: border-box;
     }
 
     .start-btn:focus, .start-btn:hover { 
+background: #e6e6e6; transform: scale(1.02);
         /* Match the X-axis centering for mobile hover states */
        
     }
@@ -974,4 +1024,238 @@ select:focus {
     z-index: -1;
     border-radius: inherit;
     background: transparent;
+}
+/* --- TROJAN HORSE / LANDING PAGE ENHANCEMENT --- */
+/* --- 0. CRITICAL LOCKDOWN (DRM STYLE) --- */
+/* While this class is on body, ONLY the trojan is visible. 
+   Everything else is physically removed from layout calculation. */
+body.trojan-lockdown > *:not(#trojan-landing):not(script):not(style) {
+    display: none !important; 
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Freeze the scrollbar entirely */
+body.trojan-lockdown {
+    overflow: hidden !important;
+    height: 100vh !important;
+    position: relative !important;
+}
+#trojan-landing {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #121212; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 1;
+    transition: opacity 0.8s ease;
+    touch-action: none; 
+    z-index: 2147483647 !important; /* Max integer value in CSS */
+    transform: translate3d(0,0,0); /* Force GPU layer */
+    backface-visibility: hidden;
+    perspective: 1000px;
+    will-change: opacity, transform;
+}
+
+#trojan-landing.trojan-hidden {
+    pointer-events: none;
+    opacity: 0;
+}
+
+/* Brand Replica */
+.trojan-brand-replica {
+display: none;
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    pointer-events: none;
+    transition: opacity 0.5s ease; /* Allow fading out */
+}
+
+.trojan-brand-replica img { height: 40px; width: auto; display: none; }
+.trojan-brand-replica span {
+    display: none; color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 1.2rem; letter-spacing: -0.02em;
+}
+
+/* Main Content Wrapper */
+.trojan-content {
+    text-align: center;
+    max-width: 800px;
+    padding: 2rem;
+    z-index: 2;
+    transition: opacity 0.5s ease, transform 0.5s ease; /* For smooth exit */
+}
+
+/* State: When processing starts, hide the hero content */
+.trojan-content.content-hidden {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+}
+
+.trojan-title {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(180deg, #FFFFFF 0%, #A0A0A0 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.trojan-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.25rem;
+    color: #a1a1a6;
+    margin-bottom: 3rem;
+    font-weight: 400;
+}
+
+.trojan-btn {
+    background: #fff;
+    color: #000;
+    border: none;
+    padding: 16px 48px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    letter-spacing: -0.01em;
+}
+
+.trojan-btn:hover { background: #e6e6e6; transform: scale(1.02); }
+
+/* --- NEW: PROCESSING STATUS LAYER --- */
+.trojan-processing {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s ease 0.3s; /* Delay slightly so it appears after content fades */
+}
+
+.trojan-processing.active {
+    opacity: 1;
+}
+
+/* Minimalist Loader */
+.trojan-loader {
+    opacity: 0.8;
+    width: 45px;
+    height: 45px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: trojanSpin 0.8s linear infinite;
+}
+
+.trojan-status-text {
+display: flex;
+    font-family: 'Inter', sans-serif;
+    font-size: 1.95rem;
+    color: #888;
+    letter-spacing: 0.02em;
+    font-weight: 590;
+    min-width: 200px;
+    text-align: center;
+    animation: textPulse 2s ease-in-out infinite;
+}
+
+@keyframes trojanSpin { to { transform: rotate(360deg); } }
+@keyframes textPulse { 0%, 100% { opacity: 0.9; } 50% { opacity: 1; } }
+
+/* Industrial Footer - PHANTOM MODE */
+.trojan-footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 2rem 5%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #4a4a4a;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.75rem;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease;
+}
+
+.trojan-footer.footer-reveal { transform: translateY(0); opacity: 1; }
+.trojan-legal-links { display: flex; gap: 2rem; margin-bottom: 1rem; flex-wrap: wrap; justify-content: center; }
+.trojan-legal-links span { cursor: pointer; transition: color 0.2s; }
+.trojan-legal-links span:hover { color: #888; }
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .trojan-title { font-size: 2.2rem; }
+    .trojan-brand-replica { top: 1.5rem; left: 1.5rem; }
+    .trojan-footer { padding-bottom: 6rem; /* Space for mobile nav bars */ }
+}
+
+@keyframes trojanFadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+/* The Price Hook (Above Button) */
+.trojan-price-tag {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Forces horizontal centering */
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #ffffff;
+    gap: 0.25rem; /* Tight spacing looks more premium */
+}
+
+.trojan-price-tag .price-big {
+    font-size: 2rem; /* Larger for impact */
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.03em; /* Tight tracking = expensive look */
+}
+
+.trojan-price-tag .price-term {
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em; /* Wide tracking for small caps */
+    color: rgba(255, 255, 255, 0.5); /* Muted color for hierarchy */
+}
+
+.trojan-legal-disclaimer {
+    display: block;
+    margin: 1.5rem auto 0 auto;
+    font-size: 0.7rem;            /* Smaller, like real fine print */
+    color: rgba(255, 255, 255, 0.45); 
+    max-width: 450px;
+    line-height: 1.4;             /* Tighter lines look more "contractual" */
+    text-align: center;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Standard corporate font */
+    font-weight: 400;
+    letter-spacing: 0.02em;       /* Slight spacing for readability */
 }
