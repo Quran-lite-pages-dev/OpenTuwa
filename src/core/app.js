@@ -1,5 +1,5 @@
 /**
- * TUWA - OpenTuwa
+ * TUWA - The Sacred Valley
  * Copyright (c) 2024-2026 Haykal M. Zaidi (d/b/a Tuwa Media).
  * * PROPRIETARY IDENTITY:
  * The name "Tuwa" and "Sacred Valley" are trademarks of Tuwa Media.
@@ -1502,6 +1502,5 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('popstate', hideElement);
     window.addEventListener('hashchange', hideElement);
 })();
-
 
 
