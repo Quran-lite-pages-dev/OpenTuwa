@@ -1349,9 +1349,9 @@ function updateMediaSession(surah, verse, artist) {
         }
 
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: `${surah}`,
-            artist: artist,
-            album: `The Clear Book`,
+            title: `${currentChapterData.english_name}`,
+            artist: `The Sight | Original Series`,
+            album: `Tuwa Audio`,
             artwork: [{ src: 'https://Quran-lite.pages.dev/social-preview.jpg', sizes: '512x512', type: 'image/jpeg' }]
         });
 
