@@ -1,4 +1,4 @@
-/* * TUWA - The Sacred Valley
+/* * TUWA - OpenTuwa
  * Copyright (c) 2024-2026 Tuwa Media (Haykal M. Zaidi).
  * All Rights Reserved. 
  */
@@ -74,78 +74,6 @@ body {
     display: flex; flex-direction: column;
 }
 /* --- APP BRANDING (Standard Alignment + Flat Top Axis) --- */
-.app-brand {
-    position: fixed;
-    top: 40px; 
-    
-    /* LTR = Right, RTL = Left */
-    inset-inline-end: 5%; 
-    
-    z-index: 9000;
-    display: flex;
-    align-items: center; 
-    flex-direction: row; 
-    gap: 0.2px; /* Reduced from 14px to 1px to pull the img 98% closer to the text */
-    
-    text-decoration: none;
-    height: 42px; 
-    
-    transform-origin: center left;
-    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.2, 0, 0, 1);
-}
-
-/* RTL Flip */
-html[dir="rtl"] .app-brand {
-    transform-origin: center right;
-}
-
-.app-brand:hover {
-    opacity: 0.8;
-    transform: scale(1.02);
-}
-
-/* BRAND ICON */
-.brand-icon img {
-    width: 108px; 
-    height: 58px;
-    opacity: 0.5;
-    display: block;
-    object-fit: contain;
-    transform: translate(18%, 14%);
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
-}
-
-/* BRAND TEXT - THE FLAT TOP FIX */
-.brand-text {
-    font-family: "Plus Jakarta Sans", sans-serif;
-    font-weight: 900; 
-    font-size: 29.8px; 
-    
-
-    letter-spacing: -2.5px; 
-    
-    color: #fff; 
-    opacity: 19;
-    
-    line-height: 1; 
-    margin-top: 2px; 
-    
-    text-shadow: 0 4px 30px #1a1d29;
-    white-space: nowrap;
-}
-
-/* MOBILE RESPONSIVENESS */
-@media screen and (max-width: 1024px) {
-    .brand-text {
-        display: none; 
-    }
-    
-    .app-brand {
-        inset-inline-end: 20px; 
-        top: 25px;
-    }
-}
-/* --- APP BRANDING (Standard Alignment + Flat Top Axis) --- */
 .appx-brand {
  position: fixed;
     top: 40px; 
@@ -218,7 +146,78 @@ html[dir="rtl"] .appx-brand {
     }
 }
 
+/* --- APP BRANDING (Standard Alignment + Flat Top Axis) --- */
+.app-brand {
+    position: fixed;
+    top: 40px; 
+    
+    /* LTR = Right, RTL = Left */
+    inset-inline-end: 5%; 
+    
+    z-index: 9000;
+    display: flex;
+    align-items: center; 
+    flex-direction: row; 
+    gap: 0.2px; /* Reduced from 14px to 1px to pull the img 98% closer to the text */
+    
+    text-decoration: none;
+    height: 42px; 
+    
+    transform-origin: center left;
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
 
+/* RTL Flip */
+html[dir="rtl"] .app-brand {
+    transform-origin: center right;
+}
+
+.app-brand:hover {
+    opacity: 0.8;
+    transform: scale(1.02);
+}
+
+/* BRAND ICON */
+.brand-icon img {
+    width: 108px; 
+    height: 58px;
+    opacity: 0.5;
+    display: block;
+    object-fit: contain;
+    transform: translate(18%, 14%);
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
+}
+
+/* BRAND TEXT - THE FLAT TOP FIX */
+.brand-text {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-weight: 900; 
+    font-size: 29.8px; 
+    
+
+    letter-spacing: -2.5px; 
+    
+    color: #fff; 
+    opacity: 19;
+    
+    line-height: 1; 
+    margin-top: 2px; 
+    
+    text-shadow: 0 4px 30px #1a1d29;
+    white-space: nowrap;
+}
+
+/* MOBILE RESPONSIVENESS */
+@media screen and (max-width: 1024px) {
+    .brand-text {
+        display: none; 
+    }
+    
+    .app-brand {
+        inset-inline-end: 20px; 
+        top: 25px;
+    }
+}
 
 
 /* --- ISLAND SEARCH BOX --- */
@@ -758,16 +757,41 @@ transform: none;
     border-top-color: var(--accent); animation: spin 0.8s ease-in-out infinite; margin-bottom: 2rem;
 }
 .start-btn {
-    background: #fff;
-    color: #000;
-    border: none;
-    padding: 16px 48px;
-    font-size: 1.1rem;
-    font-weight: 700;
-    border-radius: 4px;
+    /* 1. Layout & Sizing */
+    position: relative; 
+    left: 50%;
+    transform: translate(-50%, -250%); 
+    display: inline-flex; 
+    align-items: center; 
+    justify-content: center;
+    
+    /* Use min-width instead of 120% to avoid parent container overflow issues */
+    min-width: 200px; 
+    padding: 14px 32px; 
+    
+    /* 2. Visuals: Glassmorphism (2026 Standards) */
+    background: rgba(255, 255, 255, 0.1); /* Subtle transparency */
+    backdrop-filter: blur(12px);          /* Core glass effect */
+    -webkit-backdrop-filter: blur(12px);   /* Safari support */
+    
+    /* Corrected: Use low alpha (0.1 to 0.3) for realistic depth */
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); 
+    
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    border-radius: 99px;       
+    color: #ffffff; /* Ensure high contrast for accessibility */
+    
+    /* 3. Typography */
+    font-size: 1.4rem;       
+    font-weight: 600;          
+    letter-spacing: -0.02em;   
+    
+    /* 4. Animation Settings */
     cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
-    letter-spacing: -0.01em;
+    /* Use will-change sparingly; usually only if performance lags on low-end devices */
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), 
+                background 0.3s, 
+                box-shadow 0.3s;
 }
 
 .start-btn:focus, .start-btn:hover { 
@@ -798,7 +822,6 @@ box-sizing: border-box;
     }
 
     .start-btn:focus, .start-btn:hover { 
-background: #e6e6e6; transform: scale(1.02);
         /* Match the X-axis centering for mobile hover states */
        
     }
@@ -1025,11 +1048,12 @@ select:focus {
     border-radius: inherit;
     background: transparent;
 }
-/* --- TROJAN HORSE / LANDING PAGE ENHANCEMENT --- */
+}
+/* --- premium HORSE / LANDING PAGE ENHANCEMENT --- */
 /* --- 0. CRITICAL LOCKDOWN (DRM STYLE) --- */
-/* While this class is on body, ONLY the trojan is visible. 
+/* While this class is on body, ONLY the premium is visible. 
    Everything else is physically removed from layout calculation. */
-body.trojan-lockdown > *:not(#trojan-landing):not(script):not(style) {
+body.premium-lockdown > *:not(#premium-landing):not(script):not(style) {
     display: none !important; 
     visibility: hidden !important;
     opacity: 0 !important;
@@ -1037,12 +1061,12 @@ body.trojan-lockdown > *:not(#trojan-landing):not(script):not(style) {
 }
 
 /* Freeze the scrollbar entirely */
-body.trojan-lockdown {
+body.premium-lockdown {
     overflow: hidden !important;
     height: 100vh !important;
     position: relative !important;
 }
-#trojan-landing {
+#premium-landing {
     position: fixed;
     top: 0;
     left: 0;
@@ -1063,13 +1087,13 @@ body.trojan-lockdown {
     will-change: opacity, transform;
 }
 
-#trojan-landing.trojan-hidden {
+#premium-landing.premium-hidden {
     pointer-events: none;
     opacity: 0;
 }
 
 /* Brand Replica */
-.trojan-brand-replica {
+.premium-brand-replica {
 display: none;
     position: absolute;
     top: 2rem;
@@ -1081,13 +1105,13 @@ display: none;
     transition: opacity 0.5s ease; /* Allow fading out */
 }
 
-.trojan-brand-replica img { height: 40px; width: auto; display: none; }
-.trojan-brand-replica span {
+.premium-brand-replica img { height: 40px; width: auto; display: none; }
+.premium-brand-replica span {
     display: none; color: #fff; font-family: 'Inter', sans-serif; font-weight: 600; font-size: 1.2rem; letter-spacing: -0.02em;
 }
 
 /* Main Content Wrapper */
-.trojan-content {
+.premium-content {
     text-align: center;
     max-width: 800px;
     padding: 2rem;
@@ -1096,13 +1120,13 @@ display: none;
 }
 
 /* State: When processing starts, hide the hero content */
-.trojan-content.content-hidden {
+.premium-content.content-hidden {
     opacity: 0;
     transform: scale(0.95);
     pointer-events: none;
 }
 
-.trojan-title {
+.premium-title {
     font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
     font-size: 3.5rem;
     font-weight: 800;
@@ -1114,7 +1138,7 @@ display: none;
     -webkit-text-fill-color: transparent;
 }
 
-.trojan-subtitle {
+.premium-subtitle {
     font-family: 'Inter', sans-serif;
     font-size: 1.25rem;
     color: #a1a1a6;
@@ -1122,7 +1146,7 @@ display: none;
     font-weight: 400;
 }
 
-.trojan-btn {
+.premium-btn {
     background: #fff;
     color: #000;
     border: none;
@@ -1135,10 +1159,10 @@ display: none;
     letter-spacing: -0.01em;
 }
 
-.trojan-btn:hover { background: #e6e6e6; transform: scale(1.02); }
+.premium-btn:hover { background: #e6e6e6; transform: scale(1.02); }
 
 /* --- NEW: PROCESSING STATUS LAYER --- */
-.trojan-processing {
+.premium-processing {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -1152,22 +1176,22 @@ display: none;
     transition: opacity 0.5s ease 0.3s; /* Delay slightly so it appears after content fades */
 }
 
-.trojan-processing.active {
+.premium-processing.active {
     opacity: 1;
 }
 
 /* Minimalist Loader */
-.trojan-loader {
+.premium-loader {
     opacity: 0.8;
     width: 45px;
     height: 45px;
     border: 3px solid rgba(255, 255, 255, 0.1);
     border-top-color: #fff;
     border-radius: 50%;
-    animation: trojanSpin 0.8s linear infinite;
+    animation: premiumSpin 0.8s linear infinite;
 }
 
-.trojan-status-text {
+.premium-status-text {
 display: flex;
     font-family: 'Inter', sans-serif;
     font-size: 1.95rem;
@@ -1179,11 +1203,11 @@ display: flex;
     animation: textPulse 2s ease-in-out infinite;
 }
 
-@keyframes trojanSpin { to { transform: rotate(360deg); } }
+@keyframes premiumSpin { to { transform: rotate(360deg); } }
 @keyframes textPulse { 0%, 100% { opacity: 0.9; } 50% { opacity: 1; } }
 
 /* Industrial Footer - PHANTOM MODE */
-.trojan-footer {
+.premium-footer {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -1205,23 +1229,23 @@ display: flex;
     transition: transform 0.8s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.5s ease;
 }
 
-.trojan-footer.footer-reveal { transform: translateY(0); opacity: 1; }
-.trojan-legal-links { display: flex; gap: 2rem; margin-bottom: 1rem; flex-wrap: wrap; justify-content: center; }
-.trojan-legal-links span { cursor: pointer; transition: color 0.2s; }
-.trojan-legal-links span:hover { color: #888; }
+.premium-footer.footer-reveal { transform: translateY(0); opacity: 1; }
+.premium-legal-links { display: flex; gap: 2rem; margin-bottom: 1rem; flex-wrap: wrap; justify-content: center; }
+.premium-legal-links span { cursor: pointer; transition: color 0.2s; }
+.premium-legal-links span:hover { color: #888; }
 /* Mobile Adjustments */
 @media (max-width: 768px) {
-    .trojan-title { font-size: 2.2rem; }
-    .trojan-brand-replica { top: 1.5rem; left: 1.5rem; }
-    .trojan-footer { padding-bottom: 6rem; /* Space for mobile nav bars */ }
+    .premium-title { font-size: 2.2rem; }
+    .premium-brand-replica { top: 1.5rem; left: 1.5rem; }
+    .premium-footer { padding-bottom: 6rem; /* Space for mobile nav bars */ }
 }
 
-@keyframes trojanFadeUp {
+@keyframes premiumFadeUp {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
 /* The Price Hook (Above Button) */
-.trojan-price-tag {
+.premium-price-tag {
     display: flex;
     flex-direction: column;
     align-items: center; /* Forces horizontal centering */
@@ -1232,14 +1256,14 @@ display: flex;
     gap: 0.25rem; /* Tight spacing looks more premium */
 }
 
-.trojan-price-tag .price-big {
+.premium-price-tag .price-big {
     font-size: 2rem; /* Larger for impact */
     font-weight: 700;
     line-height: 1;
     letter-spacing: -0.03em; /* Tight tracking = expensive look */
 }
 
-.trojan-price-tag .price-term {
+.premium-price-tag .price-term {
     font-size: 0.85rem;
     font-weight: 500;
     text-transform: uppercase;
@@ -1247,7 +1271,7 @@ display: flex;
     color: rgba(255, 255, 255, 0.5); /* Muted color for hierarchy */
 }
 
-.trojan-legal-disclaimer {
+.premium-legal-disclaimer {
     display: block;
     margin: 1.5rem auto 0 auto;
     font-size: 0.7rem;            /* Smaller, like real fine print */

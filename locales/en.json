@@ -60,7 +60,10 @@
     "translationUnavailable": "Translation unavailable",
     "userDataWiped": "User data wiped."
   },
-  "loading": {
+"loading": {
     "selectSurah": "Select a Surah..."
+  },             
+  "premium": {
+    "titlerw": "Listen to premium content with distraction-free viewing."
   }
 }

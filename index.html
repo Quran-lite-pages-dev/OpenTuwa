@@ -470,42 +470,41 @@ window.addEventListener('DOMContentLoaded', () => {
     <script src="src/ui/artifact.js"></script>
     <script src="src/ui/all-text-fade.js"></script>
     <div id="transition-fade-layer"></div>
-<div id="trojan-landing" style="display: none;"> 
-    <div class="trojan-brand-replica">
+<div id="premium-landing" style="display: none;"> 
+    <div class="premium-brand-replica">
         <img src="assets/ui/logo.png" alt="Tuwa Logo">
         <span>Tuwa</span>
     </div>
 
-    <div class="trojan-content">
+    <div class="premium-content">
         <a href="/" class="appx-brand" aria-label="Tuwa Home">
             <div class="brand-icon">
                 <img src="assets/ui/logo.png" alt="Tuwa Logo">
             </div>
             <span class="brand-text">Tuwa</span>
         </a>
-        
-        <h1 class="trojan-title">Listen to premium content with distraction-free viewing.</h1>
-        <p class="trojan-subtitle">Premium streaming provider — Join 700 million listeners</p>
+        <h1 class="premium-title" data-i18n="premium.titlerw">Listen to premium content with distraction-free viewing.</h1>
+        <p class="premium-subtitle">Premium streaming provider — <b>Join 1.5 billion listeners</b></p>
 
-        <div class="trojan-price-tag">
+        <div class="premium-price-tag">
             <span class="price-big">USD 0.00</span>
-            <span class="price-term">/ First 60 Months</span>
+            <span class="price-term">/ First 60 Months. No credit card</span>
         </div>
 
-        <button id="trojan-start-btn" class="trojan-btn">Start watching for free</button>
+        <button id="premium-start-btn" class="premium-btn">Start watching for free</button>
 
-        <p class="trojan-legal-disclaimer">
+        <p class="premium-legal-disclaimer">
             *Promotional pricing of USD 0.00/mo valid for the initial 60-month term. Plan automatically continues at the standard zero-cost rate thereafter. No commitment; cancel anytime. No payment method required.
         </p>
     </div>
 
-    <div class="trojan-processing">
-        <div class="trojan-loader"></div>
-        <div class="trojan-status-text" id="trojan-status">Confirming availability</div>
+    <div class="premium-processing">
+        <div class="premium-loader"></div>
+        <div class="premium-status-text" id="premium-status">Confirming availability</div>
     </div>
 
-    <div class="trojan-footer">
-        <div class="trojan-legal-links">
+    <div class="premium-footer">
+        <div class="premium-legal-links">
             <span>Privacy Policy</span>
             <span>Terms of Use</span>
             <span>Cookie Preferences</span>
@@ -519,12 +518,12 @@ window.addEventListener('DOMContentLoaded', () => {
 <script>
 (function() {
     // --- 0. IMMEDIATE VISUAL CONTROL ---
-    const TROJAN_KEY = 'tuwa_user_onboarded';
+    const premium_KEY = 'tuwa_user_onboarded';
     const CURRENCY_KEY = 'tuwa_user_currency';
-    const isReturningUser = localStorage.getItem(TROJAN_KEY);
+    const isReturningUser = localStorage.getItem(premium_KEY);
     
     // Immediate DOM Elements
-    const trojanLayer = document.getElementById('trojan-landing');
+    const premiumLayer = document.getElementById('premium-landing');
     const islandSearch = document.getElementById('island-search-wrapper');
 
     const toggleIsland = (hide) => {
@@ -544,10 +543,10 @@ window.addEventListener('DOMContentLoaded', () => {
     };
 
     if (!isReturningUser) {
-        if (trojanLayer) trojanLayer.style.display = 'flex';
+        if (premiumLayer) premiumLayer.style.display = 'flex';
         toggleIsland(true);
     } else {
-        if (trojanLayer) trojanLayer.remove();
+        if (premiumLayer) premiumLayer.remove();
         toggleIsland(false);
         return; 
     }
@@ -768,7 +767,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }
 
         // Update Legal Text
-        const legalText = document.querySelector('.trojan-legal-disclaimer');
+        const legalText = document.querySelector('.premium-legal-disclaimer');
         if (legalText) {
             const regex = /\b([A-Z]{3})\b/g; 
             legalText.innerHTML = legalText.innerHTML.replace(regex, (match) => {
@@ -807,11 +806,11 @@ window.addEventListener('DOMContentLoaded', () => {
         });
 
     // --- 6. INTERACTION ---
-    const startBtn = document.getElementById('trojan-start-btn');
-    const footer = document.querySelector('.trojan-footer');
-    const trojanContent = document.querySelector('.trojan-content');
-    const trojanProcessing = document.querySelector('.trojan-processing');
-    const statusText = document.getElementById('trojan-status');
+    const startBtn = document.getElementById('premium-start-btn');
+    const footer = document.querySelector('.premium-footer');
+    const premiumContent = document.querySelector('.premium-content');
+    const premiumProcessing = document.querySelector('.premium-processing');
+    const statusText = document.getElementById('premium-status');
 
     if (startBtn) {
         let touchStartY = 0;
@@ -835,7 +834,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     startBtn.addEventListener('click', function() {
         // 1. Set the flag
-        localStorage.setItem(TROJAN_KEY, 'true');
+        localStorage.setItem(premium_KEY, 'true');
         
         // 2. Disconnect the Anti-Tamper Watchdog (So we can actually modify DOM now)
         // (You need to move 'antiTamper' variable scope so it's accessible here, 
@@ -843,16 +842,16 @@ window.addEventListener('DOMContentLoaded', () => {
         // antiTamper.disconnect(); 
 
         // 3. UI Animations
-        if (trojanContent) trojanContent.classList.add('content-hidden');
+        if (premiumContent) premiumContent.classList.add('content-hidden');
         if (footer) footer.classList.remove('footer-reveal'); 
-        if (trojanProcessing) trojanProcessing.classList.add('active');
+        if (premiumProcessing) premiumProcessing.classList.add('active');
 
         // ... Your delay steps array ...
 // 1. Define the simulation steps to make it look real
         const steps = [
-            { msg: "Verifying geolocation...", delay: 1000 },
-            { msg: "Allocating server...", delay: 2200 },
-            { msg: "Finalizing setup...", delay: 3500 }
+            { msg: "Processing subscription", delay: 1000 },
+            { msg: "Personalizing experience", delay: 	2000 },
+            { msg: "Creating a content library", delay: 3000 }
         ];
 
         // 2. Define the total wait time (must be longer than the last step)
@@ -867,9 +866,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
         // 4. THE HANDOVER (Crucial Fix)
         setTimeout(() => {
-            // First: Fade out the Trojan visual
-            if (trojanLayer) {
-                trojanLayer.classList.add('trojan-hidden');
+            // First: Fade out the premium visual
+            if (premiumLayer) {
+                premiumLayer.classList.add('premium-hidden');
             }
 
             // Second: WAIT for the visual fade to finish (800ms)
@@ -877,12 +876,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 // NOW we lift the Iron Curtain.
                 // The dashboard was `display: none` this whole time.
                 // Now it pops into existence.
-                document.body.classList.remove('trojan-lockdown');
+                document.body.classList.remove('premium-lockdown');
 // 2. Snap to Element
 targetCard.scrollIntoView({ behavior: 'auto', block: 'center' });
                 
-                // Remove the Trojan DOM element entirely
-                if (trojanLayer) trojanLayer.remove();
+                // Remove the premium DOM element entirely
+                if (premiumLayer) premiumLayer.remove();
                 
                 // Allow interaction again
                 toggleIsland(false); 
@@ -900,16 +899,16 @@ targetCard.scrollIntoView({ behavior: 'auto', block: 'center' });
 
 (function() {
     // --- 0. IMMEDIATE LOCKDOWN ---
-    const TROJAN_KEY = 'tuwa_user_onboarded';
-    const isReturningUser = localStorage.getItem(TROJAN_KEY);
+    const premium_KEY = 'tuwa_user_onboarded';
+    const isReturningUser = localStorage.getItem(premium_KEY);
     const body = document.body;
     
     // If not onboarded, IMMEDIATELY apply the lockdown class
     if (!isReturningUser) {
-        body.classList.add('trojan-lockdown');
+        body.classList.add('premium-lockdown');
     } else {
         // If returning, remove the HTML entirely to free up memory
-        const landing = document.getElementById('trojan-landing');
+        const landing = document.getElementById('premium-landing');
         if (landing) landing.remove();
         return; // Exit script, let dashboard load
     }
@@ -917,7 +916,7 @@ targetCard.scrollIntoView({ behavior: 'auto', block: 'center' });
     // --- 1. ANTI-TAMPER MECHANISM (The "DRM") ---
     // If someone tries to delete the overlay or remove the class via Console/Inspect
     const antiTamper = new MutationObserver((mutations) => {
-        const landing = document.getElementById('trojan-landing');
+        const landing = document.getElementById('premium-landing');
         
         // Check 1: Did someone delete the landing div?
         if (!landing) {
@@ -927,9 +926,9 @@ targetCard.scrollIntoView({ behavior: 'auto', block: 'center' });
         }
 
         // Check 2: Did someone remove the lockdown class from body?
-        if (!body.classList.contains('trojan-lockdown') && !localStorage.getItem(TROJAN_KEY)) {
+        if (!body.classList.contains('premium-lockdown') && !localStorage.getItem(premium_KEY)) {
             // Re-apply immediately
-            body.classList.add('trojan-lockdown');
+            body.classList.add('premium-lockdown');
         }
 
         // Check 3: Did someone try to hide the landing div via inline style?
