@@ -65,5 +65,10 @@
   },             
   "premium": {
     "titlerw": "Listen to premium content with distraction-free viewing."
+    "subtitlerw": "Premium streaming provider — <b>Join 1.5 billion listeners</b>"
+    "buttonrw": "Start watching for free"
+    "legal": "*Promotional pricing of USD 0.00/mo valid for the initial 60-month term. Plan automatically continues at the standard zero-cost rate thereafter. No commitment; cancel anytime. No payment method required."
+    "price": "/ First 60 Months. No credit card"
+
   }
 }
