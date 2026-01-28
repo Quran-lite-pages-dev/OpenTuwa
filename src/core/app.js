@@ -141,7 +141,7 @@ const TRANSLATIONS_CONFIG = {
             'sq': { name: 'Albanian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sq.ahmeti.xml' },
             'ber': { name: 'Amazigh', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ber.mensur.xml' },
             'am': { name: 'Amharic', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/am.sadiq.xml' },
-            'ar': { name: 'Arabic Tafsir', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ar.muyassar.xml' },
+            'ar': { name: 'Arabic', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ar.muyassar.xml' },
             'az': { name: 'Azerbaijani', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/az.musayev.xml' },
             'bn': { name: 'Bengali', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bn.bengali.xml' },
             'bs': { name: 'Bosnian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bs.korkut.xml' },
@@ -153,7 +153,7 @@ const TRANSLATIONS_CONFIG = {
             'fr': { name: 'French ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fr.hamidullah.xml' },
             'de': { name: 'German ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/de.bubenheim.xml' },
             'ha': { name: 'Hausa', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ha.gumi.xml' },
-            'he': { name: 'Hebrew ENC', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/he.xml' },
+            'he': { name: 'Hebrew', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/he.xml' },
             'hi': { name: 'Hindi', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/hi.hindi.xml' },
             'id': { name: 'Indonesian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/id.indonesian.xml' },
             'it': { name: 'Italian ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/it.piccardo.xml' },
@@ -571,7 +571,7 @@ function refreshDashboard() {
     // 1. Get all lists like before
     const allIndices = Array.from({length: 114}, (_, i) => i);
     const shortRowIndices = allIndices.slice(77, 114);
-    const trendingIndices = [36, 67, 18, 55, 1, 112, 113, 114].map(id => id - 1);
+    const trendingIndices = [53, 54, 81, 86, 69, 56, 88, 85].map(id => id - 1);
 
     // 2. COMBINE into one massive list for "Single Fish"
     // This merges trending, short, and all into ONE scrolling row
