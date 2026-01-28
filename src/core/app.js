@@ -522,8 +522,7 @@ async function initializeApp() {
         populateChapterSelect();
         populateReciterSelect();
         populateTranslationSelectOptions();
-        populateTranslationAudioSelect();
-
+        
         // --- FIX: Always restore state to set defaults based on browser ---
         // This ensures that when dashboard loads, the hidden dropdowns 
         // already have the correct "First Time" defaults.
@@ -571,7 +570,7 @@ function refreshDashboard() {
     // 1. Get all lists like before
     const allIndices = Array.from({length: 114}, (_, i) => i);
     const shortRowIndices = allIndices.slice(77, 114);
-    const trendingIndices = [53, 54, 81, 86, 69, 56, 88, 85].map(id => id - 1);
+    const trendingIndices = [85, 54, 104, 81, 86, 69, 56, 88, 53].map(id => id - 1);
 
     // 2. COMBINE into one massive list for "Single Fish"
     // This merges trending, short, and all into ONE scrolling row
@@ -1243,35 +1242,13 @@ function updateQuranAudio(chNum, vNum, play) {
 }
 
 async function updateTranslationAudio(chNum, vNum, play) {
-    const taId = getSelectValue(elements.selects.transAudio);
-    
-    if (taId === 'none') {
-        elements.transAudio.src = '';
-        return;
-    }
-    
-    if (!taId.startsWith('tts:')) {
-        const config = TRANSLATION_AUDIO_CONFIG[taId];
-        const padCh = String(chNum).padStart(3, '0');
-        const padV = String(vNum).padStart(3, '0');
-        
-        let url;
-        if (config.path.startsWith('httpIA')) url = `${config.path.replace('httpIA', 'https')}/${padCh}${padV}.mp3`;
-        else if (config.path.startsWith('http')) url = `${config.path}/${padCh}${padV}.mp3`;
-        else url = `https://everyayah.com/data/${config.path}/${padCh}${padV}.mp3`;
-
-        if(!url.endsWith('.mp3')) url += `/${padCh}${padV}.mp3`;
-        elements.transAudio.src = url;
-        if(play) elements.transAudio.play();
-    }
+    // Deprecated: Function disabled.
+    return;
 }
 
 function handleQuranEnd() {
-    if (elements.transAudio.src && elements.transAudio.src !== window.location.href) {
-        elements.transAudio.play().catch(() => nextVerse());
-    } else {
-        nextVerse();
-    }
+    // Deprecated: Audio translation logic removed. Immediately go to next verse.
+    nextVerse();
 }
 
 function nextVerse() {

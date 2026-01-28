@@ -130,7 +130,7 @@ html[dir="rtl"] .app-brand {
     line-height: 1; 
     margin-top: 2px; 
     
-    text-shadow: 0 4px 30px rgba(255, 255, 255,0.2);
+    text-shadow: 0 4px 30px #1a1d29;
     white-space: nowrap;
 }
 

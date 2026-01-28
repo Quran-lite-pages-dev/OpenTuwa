@@ -1,91 +1,88 @@
 /* styles/custom-select.css */
 
-/* 1. The "Mom" (Wrapper): Fixed to 200px always */
+/* 1. The "Mom" (Wrapper) */
 .custom-select-wrapper {
     position: relative;
     user-select: none;
-    width: 200px; /* Fixed width for the button itself */
+    width: 200px;
     font-family: 'Inter', sans-serif;
 }
 
-/* The Trigger: The "Mom" Box */
+/* The Trigger:  Cinematic Style */
 .custom-select-trigger {
     position: relative;
     display: flex;
     align-items: center;
-    
-    /* IMPORTANT: Changed from 'center' to 'flex-start' so long text doesn't disappear to the left */
     justify-content: flex-start; 
     
-    padding: 0 15px;
-    font-size: 1.3rem;
+    padding: 0 16px;
+    font-size: 1.1rem; /* Slightly tighter font for that premium look */
     font-weight: 600;
-    color: #e5e5e5;
-    height: 44px; 
-    background: rgba(255, 255, 255, 0.05); 
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: 12px;
+    color: #f9f9f9;
+    height: 48px; 
+    background: rgba(255, 255, 255, 0.04); 
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px; /* Slightly sharper corners like  */
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
     
-    /* Box Width Settings */
     width: 100%; 
 }
 
-/* NEW: This handles the text magic (Center if short, Left if long) */
+/* Text Magic */
 .custom-select-trigger span {
-    /* "margin: auto" centers the span if it has space */
     margin: 0 auto; 
-    
-    /* If text is long, max-width stops it from growing */
     max-width: 100%;
-    
-    /* Standard cut-off rules */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    letter-spacing: 0.5px;
 }
 
-/* Hover & Focus States */
+/*  Hover & Focus (The Vibrant Glow) */
 .custom-select-trigger:hover,
-.custom-select-trigger:focus,
 .custom-select-wrapper.open .custom-select-trigger {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--accent);
-    outline: none;
-    box-shadow: 0 0 15px rgba(209, 209, 214, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.8); /* Becomes bright on hover */
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
 }
-/* 2. The Options (Dropdown): Bigger size (300px) */
+
+/* 2. The Options (Dropdown) */
 .custom-options {
     position: absolute;
-    bottom: 110%; 
+    bottom: 115%; /* Slight gap for depth */
     
-    /* WIDTH SETTINGS */
-    width: 370px; /* Wider than the wrapper */
-    
-    /* CENTERING SETTINGS */
-    left: 50%; /* Move to middle */
-    margin-left: -150px; /* Pull back by half of width (300/2) to center perfectly */
-    /* Alternatively, you can use transform: translateX(-50%) below, but margin is safer with animations */
+    width: 370px; 
+    left: 50%; 
+    margin-left: -185px; /* Updated to match half of 370px width */
 
-    background: rgba(20, 20, 20, 0.95);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
+    border-radius: 10px;
     z-index: 9999; 
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
     
-    /* Animation start state */
-    transform: translateY(10px); 
-    transition: all 0.2s cubic-bezier(0.2, 0, 0.2, 1);
+    /* Smooth upward slide */
+    transform: translateY(15px); 
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
     
-    max-height: 300px;
+    max-height: 320px;
     overflow-y: auto;
-    scrollbar-width: thin;
-    scrollbar-color: var(--accent) transparent;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+}
+
+/* Custom Scrollbar for Dropdown */
+.custom-options::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-options::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
 }
 
 /* Open State */
@@ -93,19 +90,19 @@
     opacity: 1;
     visibility: visible;
     pointer-events: all;
-    transform: translateY(0); /* Resets the Y movement */
+    transform: translateY(0);
 }
 
 /* Individual Options */
 .custom-option {
     position: relative;
     display: block;
-    padding: 12px 20px;
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #b0b0b0;
+    padding: 14px 20px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #a9a9b3; /* Muted text */
     cursor: pointer;
-    transition: background 0.2s, color 0.2s;
+    transition: all 0.2s ease;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     text-align: center;
     white-space: nowrap; 
@@ -117,51 +114,53 @@
     border-bottom: none;
 }
 
+/*  Active Item Highlight */
 .custom-option:hover,
-.custom-option:focus, 
 .custom-option.selected {
-    background: rgba(209, 209, 214, 0.1);
-    color: #fff;
-    outline: none;
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+    padding-left: 25px; /* Subtle indent on hover */
 }
 
+/* Selected Accent Bar */
 .custom-option.selected::before {
     content: '';
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
-    width: 3px;
-    background: var(--accent);
+    width: 4px;
+    background: var(--accent); /* Your color kept */
+    box-shadow: 2px 0 10px var(--accent);
 }
 
 /* Mobile Adjustments */
 @media (max-width: 768px) {
     .custom-select-wrapper {
-        width: 100%; /* Full width on mobile */
+        width: 100%; 
     }
     
     .custom-options {
-        /* Reset desktop centering for mobile */
-        width: 80%;
-        left: 10%;
+        width: 90%;
+        left: 5%;
         margin-left: 0; 
         
-        bottom: 50%; 
+        bottom: 15%; 
         top: auto;
-        transform: translateY(50%) scale(0.9);
+        transform: translateY(20px) scale(0.95);
         position: fixed; 
-        max-height: 50vh;
-        box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        max-height: 60vh;
     }
 
     .custom-select-wrapper.open .custom-options {
         transform: translateY(0) scale(1);
     }
 }
+
 /* --- MODE 0: HIDING LOGIC --- */
-/* Matches the exact IDs in your HTML: chapterSelectWrapper & reciterSelectWrapper */
 body.simple-mode #chapterSelectWrapper,
+body.simple-mode #verseSelectWrapper,
+body.simple-mode #translationAudioSelectWrapper,
 body.simple-mode #reciterSelectWrapper {
     display: none !important;
 }
