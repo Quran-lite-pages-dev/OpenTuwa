@@ -483,18 +483,28 @@ window.addEventListener('DOMContentLoaded', () => {
             </div>
             <span class="brand-text">Tuwa</span>
         </a>
-        <h1 class="premium-title">Listen to premium content with distraction-free viewing.</h1>
-        <p class="premium-subtitle">Premium streaming provider — <b>Join 1.5 billion listeners</b></p>
+        <h1 class="premium-title">Access to premium content with distraction-free viewing.</h1>
+<p class="premium-subtitle">Premium streaming platform — <b>1.5 billion listeners daily</b></p>
 
-        <div class="premium-price-tag">
-            <span class="price-big">USD 0.00</span>
-            <span class="price-term">/ First 60 Months. No credit card</span>
-        </div>
-
+<div class="premium-card-wrapper">
+    <div class="premium-price-tag">
+        <span class="price-period"></span>
+        
+        <span class="price-big">USD 0</span> 
+        
+        <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 4px;">
+            <span class="price-term-common" style="color: #fff;">Premium Plan • <b>12 Months</b> (Limited time offer)</span>
+            <span class="price-term-common"></span>
         <button id="premium-start-btn" class="premium-btn">Start watching for free</button>
+ <nobr><span class="price-term">No credit card needed</span></nobr>
+        </div>
+    </div>
+</div>
 
+
+        
         <p class="premium-legal-disclaimer">
-            *Promotional pricing of USD 0.00/mo valid for the initial 60-month term. Plan automatically continues at the standard zero-cost rate thereafter. No commitment; cancel anytime. No payment method required.
+            *Promotional pricing of USD 0/mo valid for the initial 12-month term. Plan automatically continues at the standard zero-cost rate thereafter. No commitment; cancel anytime. No payment method required.
         </p>
     </div>
 
@@ -503,17 +513,169 @@ window.addEventListener('DOMContentLoaded', () => {
         <div class="premium-status-text" id="premium-status">Confirming availability</div>
     </div>
 
-    <div class="premium-footer">
-        <div class="premium-legal-links">
-            <span>Privacy Policy</span>
-            <span>Terms of Use</span>
-            <span>Cookie Preferences</span>
-            <span>Corporate Information</span>
-            <span>Regulatory Compliance</span>
-        </div>
-        <p>© 2024-2026 Tuwa Media. All Rights Reserved. Tuwa and OpenTuwa are trademarks of Tuwa Media.</p>
+<footer class="premium-footer footer-reveal">
+    <div class="premium-legal-links">
+        <span onclick="openLegal('privacy')">Privacy Policy</span>
+        <span onclick="openLegal('terms')">Terms of Use</span>
+        <span onclick="openLegal('compliance')">Regulatory Compliance</span>
+    </div>
+    <div class="premium-copyright">
+        &copy; 2024-2026 Tuwa Media. All Rights Reserved.
+    </div>
+</footer>
+
+<div id="legal-overlay" class="legal-backdrop">
+    <div class="legal-glass-panel">
+        <button class="legal-close" onclick="closeLegal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+        </button>
+        <div id="legal-content-area" class="legal-scroll-content">
+            </div>
     </div>
 </div>
+<style>
+/* --- LEGAL OVERLAY SYSTEM --- */
+.legal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 9995; /* Above everything, below Anti-Tamper cursor blockers if any */
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s var(--transition-smooth);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.legal-backdrop.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.legal-glass-panel {
+    width: 90%;
+    max-width: 600px;
+    height: 80vh;
+    background: var(--glass-surface, rgba(20, 20, 20, 0.6));
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+    border-radius: var(--radius-lg, 24px);
+    box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+    transform: scale(0.95) translateY(20px);
+    transition: transform 0.5s var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.legal-backdrop.active .legal-glass-panel {
+    transform: scale(1) translateY(0);
+}
+
+.legal-scroll-content {
+    padding: 40px;
+    overflow-y: auto;
+    color: var(--text);
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-size: 1.4rem;
+    line-height: 1.8;
+}
+
+.legal-scroll-content h2 {
+    font-size: 2.4rem;
+    margin-bottom: 2rem;
+    color: #fff;
+    font-weight: 700;
+    letter-spacing: -1px;
+}
+
+.legal-scroll-content p {
+    margin-bottom: 1.5rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.legal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    z-index: 10;
+}
+
+.legal-close:hover { background: rgba(255,255,255,0.25); }
+
+/* MATCHING YOUR SCROLLBAR HIDING PREFERENCE */
+.legal-scroll-content::-webkit-scrollbar { display: none; }
+.legal-scroll-content { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+<script>
+const legalData = {
+    privacy: `
+        <h2>Privacy Policy</h2>
+        <p><strong>Effective Date: 2026</strong></p>
+        <p>Tuwa Media is committed to "Sight for everyone" while respecting user's digital footprint. This minimal-collection policy ensures your streaming experience remains private.</p>
+        <p><strong>1. Data We Collect</strong><br>We only collect necessary data for streaming stability and experience.</p>
+        <p><strong>2. Third-Party Analytics</strong><br>No personally identifiable information (PII) is bridged to these sessions.</p>
+    `,
+    terms: `
+        <h2>Terms of Use</h2>
+        <p><strong>1. License to Access</strong><br>By accessing Tuwa (OpenTuwa.com - Tuwa Audio), you are granted a limited, non-exclusive license to stream content for personal use.</p>
+        <p><strong>2. Anti-Tamper Mechanism</strong><br>This platform is protected by proprietary integrity checks. Attempting to bypass the overlay, inject styles, or manipulate the system constitutes a violation of these terms and will result in immediate access termination.</p>
+        <p><strong>3. Intellectual Property</strong><br>All assets, and the "Tuwa", "OpenTuwa" and "Tuwa Audio" brand assets are the exclusive property of Tuwa Media and its partners.</p>
+    `,
+    cookies: `
+        <h2>Cookie Preferences</h2>
+        <p>We use a "Strictly Necessary" architecture.</p>
+        <p><strong>Essential Cookies:</strong> No user's personal informations are stored.</p>
+    `,
+    corporate: `
+        <h2>Corporate Information</h2>
+        <p><strong>Tuwa Media</strong><br>Copyright (C) 2024-2026<br></p>
+        <p><strong>Contact:</strong> legal@tuwamedia.com</p>
+    `,
+    compliance: `
+        <h2>Regulatory Compliance</h2>
+        <p><strong>GDPR / CCPA</strong><br>As a privacy-first platform, Tuwa Media (OpenTuwa.com) processes data on a legitimate interest basis. You retain the right to request local data erasure by clearing your browser cache.</p>
+        <p><strong>Audio Standards</strong><br>Our streaming conforms to standard loudness normalization protocols (-14 LUFS) to ensure auditory safety during prolonged listening.</p>
+    `
+};
+
+function openLegal(type) {
+    const overlay = document.getElementById('legal-overlay');
+    const content = document.getElementById('legal-content-area');
+    
+    // 1. Inject Content
+    content.innerHTML = legalData[type] || "<h2>Content Unavailable</h2>";
+    
+    // 2. Reveal Overlay
+    overlay.classList.add('active');
+}
+
+function closeLegal() {
+    document.getElementById('legal-overlay').classList.remove('active');
+}
+
+// Close on backdrop click
+document.getElementById('legal-overlay').addEventListener('click', (e) => {
+    if (e.target === document.getElementById('legal-overlay')) closeLegal();
+});
+</script>
 
 <script>
 (function() {
@@ -763,7 +925,7 @@ window.addEventListener('DOMContentLoaded', () => {
         } catch (e) {
             // If Intl fails (e.g. invalid code), fallback manually
             const priceTag = document.querySelector('.price-big');
-            if (priceTag) priceTag.innerText = currencyCode + " 0.00";
+            if (priceTag) priceTag.innerText = currencyCode + " 0";
         }
 
         // Update Legal Text
@@ -949,7 +1111,7 @@ targetCard.scrollIntoView({ behavior: 'auto', block: 'center' });
     // Disable Right Click (Optional, adds to the "DRM" feel)
     document.addEventListener('contextmenu', event => event.preventDefault());
 
-    // ... REST OF YOUR EXISTING CURRENCY LOGIC HERE ...
+
 })();
 </script>
 </body>
