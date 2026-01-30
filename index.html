@@ -794,104 +794,113 @@ color: #000; }
     const authModal = document.getElementById('hybrid-auth-modal');
     const authError = document.getElementById('auth-error');
     
-    // Create Processing Elements dynamically if missing in HTML
+    // Create Processing Elements dynamically if missing
     let premiumProcessing = document.querySelector('.premium-processing');
     let statusText = document.getElementById('premium-status');
 
-    // FIX 2: IMMEDIATE PERSISTENCE CHECK (Fixes the refresh loop)
-    // We run this BEFORE any Supabase calls to ensure instant unlock
+    // --- STEP 0: INSTANT CHECK (Prevent Flash) ---
     const isUnlocked = localStorage.getItem(STORAGE_KEY);
     if (isUnlocked === 'true') {
-        // Destroy the landing page immediately
-        if (premiumLayer) premiumLayer.style.display = 'none'; // Instant hide
-        setTimeout(() => { if (premiumLayer) premiumLayer.remove(); }, 10);
-        
+        if (premiumLayer) premiumLayer.remove(); // Instant removal
         if (document.body.classList.contains('premium-lockdown')) document.body.classList.remove('premium-lockdown');
         if (islandSearch) islandSearch.style.removeProperty('display');
-        return; // STOP HERE. The user is free.
+        return; 
     }
     
-    // 1. CHECK SESSION & DETERMINE STATE
+    // --- STEP 1: SMART CURRENCY LOADING (Solves the "USD->MYR" Glitch) ---
+    const paintPrice = (currency) => {
+        const priceTag = document.querySelector('.price-big');
+        if (priceTag) {
+            priceTag.innerText = `${currency} 0.00`; // Added decimal for premium feel
+            priceTag.classList.add('loaded'); // Triggers the CSS fade-in
+        }
+    };
+
+    // 1. Start fetching immediately
+    // 2. We do NOT paint default USD. We wait.
+    fetch('https://ipapi.co/json/')
+        .then(r => r.json())
+        .then(d => { 
+            paintPrice(d.currency || 'USD'); 
+        })
+        .catch(() => { 
+            paintPrice('USD'); // Fallback only on error
+        });
+
+
+    // --- STEP 2: SESSION & STATE MANAGEMENT ---
     const { data: { session } } = await supabase.auth.getSession();
 
     if (session) {
-        // STATE: Logged in -> Show "Choose this plan" & Prepare Sequence
         initializePostLogin();
     } else {
-        // STATE: Guest -> Show "Start watching for free"
         initializeGuest();
     }
 
-    // --- LOGIC HANDLERS ---
-
     function initializeGuest() {
         lockDownInterface();
-        
         if (startBtn) {
             startBtn.innerText = "Start watching for free";
-            // Ensure we remove old listeners if any, then add the guest listener
             const newBtn = startBtn.cloneNode(true);
             startBtn.parentNode.replaceChild(newBtn, startBtn);
             
             newBtn.addEventListener('click', () => {
+                // Smooth Fade In for Modal
                 authModal.style.display = 'flex';
-                setTimeout(() => authModal.classList.add('visible'), 10);
+                // Small timeout to allow display:flex to apply before adding opacity class
+                requestAnimationFrame(() => {
+                    authModal.classList.add('visible');
+                });
             });
         }
     }
 
     function initializePostLogin() {
         lockDownInterface();
-
-        // Change UI to "Premium Selection" Mode
-        // We find the button again to be safe
         const btn = document.getElementById('premium-start-btn');
+        
         if (btn) {
-            btn.innerText = "Choose this plan";
+            // Update button visual state immediately
+            btn.innerText = "Activate Premium"; // More active language
             btn.style.background = "#fff"; 
             btn.style.color = "#000";
+            btn.style.fontWeight = "700";
             
-            // Clean old event listeners by cloning
+            // Remove "No credit card" text for logged in users (cleaner look)
+            const terms = document.querySelectorAll('.price-term, .price-term-common');
+            terms.forEach(t => t.style.opacity = '0'); 
+
             const newBtn = btn.cloneNode(true);
             btn.parentNode.replaceChild(newBtn, btn);
-            
-            // Bind the OTT Sequence
             newBtn.addEventListener('click', runOTTSequence);
         }
-
-        // Hide "No credit card needed" for a cleaner "Premium" look
-        const term = document.querySelector('.price-term');
-        if (term) term.style.visibility = 'hidden';
     }
 
+    // --- STEP 3: THE "NETFLIX" STYLE LOADING SEQUENCE ---
     function runOTTSequence() {
-        // 1. Fade out the pricing card
         if (premiumContent) premiumContent.classList.add('fade-out');
         
-        // 2. Show the Loader
         if (premiumProcessing) {
             premiumProcessing.classList.add('active');
         } else {
-            // Fallback if HTML is missing, just unlock
-            console.log("Processing UI missing, unlocking immediately.");
             unlockSite();
             return;
         }
 
-        // 3. The "Netflix-style" Text Sequence
+        // REWRITTEN COPY: Human-centric, not "Server-centric"
         const steps = [
-            { text: "Confirming subscription...", delay: 800 },
-            { text: "Verifying secure token...", delay: 2200 },
-            { text: "Personalizing experience...", delay: 4000 },
-            { text: "Building your library...", delay: 5500 },
-            { text: "Ready", delay: 6800 }
+            { text: "Confirming eligibility...", delay: 800 },
+            { text: "Securing your connection...", delay: 2000 },
+            { text: "Personalizing your library...", delay: 3800 },
+            { text: "Applying high-fidelity audio...", delay: 5200 }, // Sounds very premium
+            { text: "Welcome to Tuwa", delay: 6500 }
         ];
 
-        // Execute text updates
         steps.forEach(step => {
             setTimeout(() => {
                 if (statusText) {
-                    statusText.style.opacity = 0; // Blink effect
+                    // Smooth text transition
+                    statusText.style.opacity = 0; 
                     setTimeout(() => {
                         statusText.innerText = step.text;
                         statusText.style.opacity = 1;
@@ -900,39 +909,43 @@ color: #000; }
             }, step.delay);
         });
 
-        // 4. Final Unlock
         setTimeout(() => {
             unlockSite();
-        }, 7500);
+        }, 7200);
     }
 
-    // --- UTILITIES ---
+    // --- STEP 4: UTILITIES ---
 
     function lockDownInterface() {
         if (premiumLayer) premiumLayer.style.display = 'flex';
         document.body.classList.add('premium-lockdown');
-        toggleIsland(true); // Hide search bar
+        toggleIsland(true);
     }
 
     function unlockSite() {
-        // Save the unlocked state so it persists on refresh
         localStorage.setItem(STORAGE_KEY, 'true');
-
-        // Fade out the entire overlay
+        
         if (premiumLayer) {
-            premiumLayer.style.transition = 'opacity 1s ease';
+            premiumLayer.style.transition = 'opacity 1.2s ease'; // Slower fade for dramatic effect
             premiumLayer.style.opacity = '0';
+            
+            // Wait for fade to finish
             setTimeout(() => {
                 premiumLayer.remove();
                 document.body.classList.remove('premium-lockdown');
-                toggleIsland(false); // Show search bar
-                window.dispatchEvent(new Event('resize')); // Trigger layout fix
-            }, 1000);
+                toggleIsland(false); 
+                window.dispatchEvent(new Event('resize')); 
+            }, 1200);
         }
     }
 
     window.handleSocialLogin = async (provider) => {
         authError.style.display = 'none';
+        
+        // Visual feedback on button click
+        const authCard = document.querySelector('.auth-card');
+        if(authCard) authCard.style.opacity = '0.5';
+        
         try {
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: provider,
@@ -940,8 +953,9 @@ color: #000; }
             });
             if (error) throw error;
         } catch (err) {
+            if(authCard) authCard.style.opacity = '1';
             authError.style.display = 'block';
-            authError.innerText = "Error: " + err.message;
+            authError.innerText = "Connection interrupted. Please try again."; // Softer error message
         }
     };
 
@@ -956,17 +970,10 @@ color: #000; }
         else islandSearch.style.removeProperty('display');
     }
 
-    // --- PRESERVE YOUR CURRENCY & ANTI-TAMPER LOGIC ---
-    const paintUI = (currencyCode) => {
-        const priceTag = document.querySelector('.price-big');
-        if (priceTag) priceTag.innerText = currencyCode + " 0";
-    };
-    paintUI('USD');
-    fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{ paintUI(d.currency||'USD'); }).catch(()=>{ paintUI('USD'); });
-
-    // Anti-Tamper (Pauses during fade-out to prevent flickering)
+    // Anti-Tamper Logic
     const antiTamper = new MutationObserver((mutations) => {
         const landing = document.getElementById('premium-landing');
+        // Only enforce if we haven't started the unlock fade-out
         if (document.body.classList.contains('premium-lockdown') && landing && landing.style.opacity !== '0') {
             if (landing.style.display === 'none') landing.setAttribute('style', 'display: flex !important;');
         }
@@ -1033,14 +1040,15 @@ color: #000; }
 }
 
 .premium-status-text {
-    font-family: "Plus Jakarta Sans", sans-serif;
-    font-size: 1.4rem;
-    font-weight: 500;
-    letter-spacing: 0.2em; /* Premium feel spacing */
-    color: rgba(255, 255, 255, 0.8);
-    text-transform: uppercase;
     animation: text-pulse 2s ease-in-out infinite;
     transition: opacity 0.3s ease;
+font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+    font-size: 1.2rem; /* Slightly smaller for elegance */
+    font-weight: 500;
+    letter-spacing: 0.15em;
+    color: rgba(255, 255, 255, 0.9);
+    text-transform: uppercase;
+    text-align: center;
 }
 
 @keyframes text-pulse {

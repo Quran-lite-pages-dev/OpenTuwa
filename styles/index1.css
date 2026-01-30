@@ -1202,13 +1202,15 @@ width: 100%;
 }
 
 .premium-price-tag {
-    display: flex;
-    flex-direction: column;
     align-items: center;
     gap: 0.25rem;
     color: #ffffff;
     font-family: var(--font-heading);
 white-space: nowrap;
+min-height: 120px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .premium-price-tag .price-period {
@@ -1221,7 +1223,6 @@ font-size: 0.75rem;
 }
 
 .premium-price-tag .price-big {
-/* THIS IS THE SECRET SAUCE */
     font-family: 'Inter', sans-serif;
     font-size: 5rem; /* Massive scale */
     font-weight: 700; /* Bold but not Black */
@@ -1236,6 +1237,15 @@ font-size: 0.75rem;
     
     /* Glow */
     filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
+opacity: 0; 
+    transform: translateY(10px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    will-change: opacity, transform;
+}
+
+.price-big.loaded {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .premium-price-tag .price-term-common {
@@ -1256,7 +1266,9 @@ font-size: 0.75rem;
     font-weight: 600;
     border-radius: 999px; /* Pill shape is more modern/premium */
     cursor: pointer;
-    transition: all 0.3s var(--ease-spring);
+transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* Ensure no text flickering during hover */
+    -webkit-font-smoothing: antialiased;
     letter-spacing: -0.01em;
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
     position: relative;
