@@ -777,6 +777,7 @@ color: #000; }
 
 <script>
 (async function() {
+    // --- CONFIGURATION ---
     const SUPABASE_URL = 'https://csuyapzneytubzdrdegl.supabase.co'; 
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzdXlhcHpuZXl0dWJ6ZHJkZWdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MzM1MzMsImV4cCI6MjA4NTMwOTUzM30.m5lhtxB-9Wutmt1E-3mlO8R0KlgE8YNXaPP1_UJF2k0';
 
@@ -786,65 +787,67 @@ color: #000; }
         supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
     } catch (e) { console.error("Supabase Init Error"); }
 
+    // DOM Elements
     const premiumLayer = document.getElementById('premium-landing');
+    const premiumContent = document.querySelector('.premium-content');
+    const startBtn = document.getElementById('premium-start-btn');
     const islandSearch = document.getElementById('island-search-wrapper');
     const authModal = document.getElementById('hybrid-auth-modal');
     const authError = document.getElementById('auth-error');
     
-    // Animation Elements
-    const premiumContent = document.querySelector('.premium-content');
-    const premiumProcessing = document.querySelector('.premium-processing');
-    const statusText = document.getElementById('premium-status');
-    const startBtn = document.getElementById('premium-start-btn');
-
-    // 1. SESSION CHECK & LOGIC BRANCHING
+    // Create Processing Elements dynamically if missing in HTML
+    let premiumProcessing = document.querySelector('.premium-processing');
+    let statusText = document.getElementById('premium-status');
+    
+    // 1. CHECK SESSION & DETERMINE STATE
     const { data: { session } } = await supabase.auth.getSession();
 
     if (session) {
-        // LOGGED IN: Show "Choose this plan" -> Run Sequence
-        setupPostLoginFlow();
+        // STATE: Logged in -> Show "Choose this plan" & Prepare Sequence
+        initializePostLogin();
     } else {
-        // LOGGED OUT: Show "Start watching for free" -> Open Auth
-        setupGuestFlow();
+        // STATE: Guest -> Show "Start watching for free"
+        initializeGuest();
     }
 
-    // --- FLOW HANDLERS ---
+    // --- LOGIC HANDLERS ---
 
-    function setupGuestFlow() {
-        if (premiumLayer) premiumLayer.style.display = 'flex';
-        document.body.classList.add('premium-lockdown');
-        toggleIsland(true);
+    function initializeGuest() {
+        lockDownInterface();
         
-        // Bind Guest Click (Open Modal)
         if (startBtn) {
-            startBtn.addEventListener('click', () => {
+            startBtn.innerText = "Start watching for free";
+            // Ensure we remove old listeners if any, then add the guest listener
+            const newBtn = startBtn.cloneNode(true);
+            startBtn.parentNode.replaceChild(newBtn, startBtn);
+            
+            newBtn.addEventListener('click', () => {
                 authModal.style.display = 'flex';
                 setTimeout(() => authModal.classList.add('visible'), 10);
             });
         }
     }
 
-    function setupPostLoginFlow() {
-        // Ensure landing is still visible (Locked)
-        if (premiumLayer) premiumLayer.style.display = 'flex';
-        document.body.classList.add('premium-lockdown');
-        toggleIsland(true);
+    function initializePostLogin() {
+        lockDownInterface();
 
-        // Update Button Text & Behavior
-        if (startBtn) {
-            startBtn.innerText = "Choose this plan";
-            startBtn.style.background = "#fff"; 
-            startBtn.style.color = "#000";
+        // Change UI to "Premium Selection" Mode
+        // We find the button again to be safe
+        const btn = document.getElementById('premium-start-btn');
+        if (btn) {
+            btn.innerText = "Choose this plan";
+            btn.style.background = "#fff"; 
+            btn.style.color = "#000";
             
-            // Clone button to strip previous event listeners cleanly
-            const newBtn = startBtn.cloneNode(true);
-            startBtn.parentNode.replaceChild(newBtn, startBtn);
+            // Clean old event listeners by cloning
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
             
-            // Bind New Action (Run OTT Sequence)
+            // Bind the OTT Sequence
             newBtn.addEventListener('click', runOTTSequence);
         }
 
-        // Hide "No credit card needed" for a cleaner look
+        // Hide "No credit card needed" for a cleaner "Premium" look
         const term = document.querySelector('.price-term');
         if (term) term.style.visibility = 'hidden';
     }
@@ -853,27 +856,30 @@ color: #000; }
         // 1. Fade out the pricing card
         if (premiumContent) premiumContent.classList.add('fade-out');
         
-        // 2. Activate Processing View
+        // 2. Show the Loader
         if (premiumProcessing) {
-            premiumProcessing.style.display = 'flex';
-            setTimeout(() => premiumProcessing.classList.add('active'), 100);
+            premiumProcessing.classList.add('active');
+        } else {
+            // Fallback if HTML is missing, just unlock
+            console.log("Processing UI missing, unlocking immediately.");
+            unlockSite();
+            return;
         }
 
-        // 3. The Sequence Steps
+        // 3. The "Netflix-style" Text Sequence
         const steps = [
-            { text: "Confirming subscription...", delay: 500 },
-            { text: "Verifying secure token...", delay: 2000 },
-            { text: "Personalizing experience...", delay: 3500 },
-            { text: "Setting up library...", delay: 5000 },
-            { text: "Ready", delay: 6000 }
+            { text: "Confirming subscription...", delay: 800 },
+            { text: "Verifying secure token...", delay: 2200 },
+            { text: "Personalizing experience...", delay: 4000 },
+            { text: "Building your library...", delay: 5500 },
+            { text: "Ready", delay: 6800 }
         ];
 
-        // Execute Steps
+        // Execute text updates
         steps.forEach(step => {
             setTimeout(() => {
                 if (statusText) {
-                    // Simple fade effect on text change
-                    statusText.style.opacity = 0;
+                    statusText.style.opacity = 0; // Blink effect
                     setTimeout(() => {
                         statusText.innerText = step.text;
                         statusText.style.opacity = 1;
@@ -885,10 +891,30 @@ color: #000; }
         // 4. Final Unlock
         setTimeout(() => {
             unlockSite();
-        }, 6500);
+        }, 7500);
     }
 
-    // --- SHARED UTILS ---
+    // --- UTILITIES ---
+
+    function lockDownInterface() {
+        if (premiumLayer) premiumLayer.style.display = 'flex';
+        document.body.classList.add('premium-lockdown');
+        toggleIsland(true); // Hide search bar
+    }
+
+    function unlockSite() {
+        // Fade out the entire overlay
+        if (premiumLayer) {
+            premiumLayer.style.transition = 'opacity 1s ease';
+            premiumLayer.style.opacity = '0';
+            setTimeout(() => {
+                premiumLayer.remove();
+                document.body.classList.remove('premium-lockdown');
+                toggleIsland(false); // Show search bar
+                window.dispatchEvent(new Event('resize')); // Trigger layout fix
+            }, 1000);
+        }
+    }
 
     window.handleSocialLogin = async (provider) => {
         authError.style.display = 'none';
@@ -909,108 +935,81 @@ color: #000; }
         setTimeout(() => authModal.style.display = 'none', 300);
     };
 
-    function unlockSite() {
-        // Fade out the whole landing layer
-        if (premiumLayer) {
-            premiumLayer.style.transition = 'opacity 0.8s ease';
-            premiumLayer.style.opacity = '0';
-            setTimeout(() => {
-                premiumLayer.remove();
-                document.body.classList.remove('premium-lockdown');
-                toggleIsland(false);
-                window.dispatchEvent(new Event('resize'));
-            }, 800);
-        }
-    }
-
     function toggleIsland(hide) {
         if (!islandSearch) return;
         if (hide) islandSearch.style.setProperty('display', 'none', 'important');
         else islandSearch.style.removeProperty('display');
     }
 
-    // --- CURRENCY & ANTI-TAMPER ---
+    // --- PRESERVE YOUR CURRENCY & ANTI-TAMPER LOGIC ---
     const paintUI = (currencyCode) => {
         const priceTag = document.querySelector('.price-big');
         if (priceTag) priceTag.innerText = currencyCode + " 0";
     };
     paintUI('USD');
-    
-    fetch('https://ipapi.co/json/')
-        .then(r => r.json())
-        .then(d => { paintUI(d.currency || 'USD'); })
-        .catch(() => { paintUI('USD'); });
+    fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{ paintUI(d.currency||'USD'); }).catch(()=>{ paintUI('USD'); });
 
-    // Anti-Tamper (Relaxed for the animation)
+    // Anti-Tamper (Pauses during fade-out to prevent flickering)
     const antiTamper = new MutationObserver((mutations) => {
         const landing = document.getElementById('premium-landing');
-        // Only run tamper check if we are truly locked down AND not currently fading out
         if (document.body.classList.contains('premium-lockdown') && landing && landing.style.opacity !== '0') {
-            if (landing.style.display === 'none') {
-                 landing.setAttribute('style', 'display: flex !important;');
-            }
+            if (landing.style.display === 'none') landing.setAttribute('style', 'display: flex !important;');
         }
     });
-    antiTamper.observe(document.documentElement, {
-        childList: true, attributes: true, subtree: true, attributeFilter: ['style']
-    });
+    antiTamper.observe(document.documentElement, { childList: true, attributes: true, subtree: true, attributeFilter: ['style'] });
 
 })();
 </script>
-<style>
-    /* --- NEW OTT SEQUENCE STYLES --- */
-    .premium-processing {
-        display: none; /* Hidden by default */
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        z-index: 20;
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.5s ease;
-    }
+/* --- OTT LOAD SEQUENCER --- */
+.premium-processing {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 20;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
 
-    .premium-processing.active {
-        opacity: 1;
-        pointer-events: all;
-    }
+.premium-processing.active {
+    display: flex;
+    opacity: 1;
+}
 
-    /* Hide the card content smoothly */
-    .premium-content {
-        transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-    .premium-content.fade-out {
-        opacity: 0;
-        transform: scale(0.95);
-        pointer-events: none;
-    }
+/* Smooth fade out for the card content */
+.premium-content {
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.premium-content.fade-out {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+}
 
-    /* Spinner Animation */
-    .premium-loader {
-        width: 40px;
-        height: 40px;
-        border: 3px solid rgba(255,255,255,0.1);
-        border-radius: 50%;
-        border-top-color: #fff;
-        animation: spin 0.8s ease-in-out infinite;
-        margin-bottom: 24px;
-    }
+/* Spinner Animation */
+.premium-loader {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 0.8s ease-in-out infinite;
+    margin-bottom: 24px;
+}
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-    .premium-status-text {
-        font-family: "Plus Jakarta Sans", sans-serif;
-        font-size: 1.1rem;
-        color: rgba(255,255,255,0.7);
-        letter-spacing: 0.5px;
-        font-weight: 400;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-    }
-</style>
+.premium-status-text {
+    font-family: "Plus Jakarta Sans", sans-serif;
+    color: rgba(255,255,255,0.7);
+    letter-spacing: 1px;
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    transition: opacity 0.3s ease;
+}
 
 
 </body>
