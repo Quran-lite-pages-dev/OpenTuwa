@@ -888,25 +888,47 @@ document.getElementById('legal-overlay').addEventListener('click', (e) => {
         authError.innerText = "";
     });
 
+    // --- 5. AUTH LOGIC (Updated with Redirect Fix) ---
+    toggleBtn.addEventListener('click', () => {
+        isSignUp = !isSignUp;
+        submitBtn.innerText = isSignUp ? "Create Account" : "Sign In";
+        toggleBtn.innerHTML = isSignUp ? "Have an account? <b>Sign In</b>" : "New here? <b>Create Account</b>";
+        authError.innerText = "";
+    });
+
     authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('h-email').value;
         const password = document.getElementById('h-password').value;
         
+        // Get the current URL (e.g., https://your-site.pages.dev)
+        const currentURL = window.location.origin;
+
         submitBtn.disabled = true;
-        submitBtn.innerText = "Verifying...";
+        submitBtn.innerText = "Processing...";
         authError.innerText = "";
 
         try {
             let error;
             if (isSignUp) {
-                const res = await supabase.auth.signUp({ email, password });
+                // FIX: Added 'options' with emailRedirectTo
+                const res = await supabase.auth.signUp({ 
+                    email: email, 
+                    password: password,
+                    options: {
+                        emailRedirectTo: currentURL
+                    }
+                });
                 error = res.error;
+                
                 if (!error) {
-                    authError.style.color = '#4dff88';
-                    authError.innerText = "Success! Please check email to confirm.";
-                    submitBtn.disabled = false;
-                    return; 
+                    // Check if the user was created but requires verification
+                    if (res.data.user && !res.data.session) {
+                        authError.style.color = '#4dff88';
+                        authError.innerText = "Success! Check your SPAM folder for the email.";
+                        submitBtn.innerText = "Email Sent";
+                        return; // Stop here, don't run animation yet
+                    }
                 }
             } else {
                 const res = await supabase.auth.signInWithPassword({ email, password });
@@ -915,25 +937,23 @@ document.getElementById('legal-overlay').addEventListener('click', (e) => {
 
             if (error) throw error;
 
-            // --- SUCCESS! RUN YOUR ORIGINAL ANIMATION NOW ---
+            // --- SUCCESS! RUN ANIMATION ---
             closeAuth();
             
-            // UI Animations (From your code)
             if (premiumContent) premiumContent.classList.add('content-hidden');
             if (footer) footer.classList.remove('footer-reveal'); 
             if (premiumProcessing) premiumProcessing.classList.add('active');
 
             const steps = [
-                { msg: "Processing subscription", delay: 1000 },
-                { msg: "Personalizing experience", delay: 2000 },
-                { msg: "Creating a content library", delay: 3000 }
+                { msg: "Verifying credentials...", delay: 1000 },
+                { msg: "Syncing profile data...", delay: 2000 },
+                { msg: "Unlocking library...", delay: 3000 }
             ];
 
             steps.forEach(step => {
                 setTimeout(() => { if (statusText) statusText.innerText = step.msg; }, step.delay);
             });
 
-            // The Handover
             setTimeout(() => {
                 if (premiumLayer) premiumLayer.classList.add('premium-hidden');
                 setTimeout(() => {
