@@ -795,43 +795,112 @@ color: #000; }
     const premiumContent = document.querySelector('.premium-content');
     const premiumProcessing = document.querySelector('.premium-processing');
     const statusText = document.getElementById('premium-status');
-    const footer = document.querySelector('.premium-footer');
+    const startBtn = document.getElementById('premium-start-btn');
 
-    // 1. SESSION CHECK
+    // 1. SESSION CHECK & LOGIC BRANCHING
     const { data: { session } } = await supabase.auth.getSession();
 
     if (session) {
-        unlockSite();
+        // LOGGED IN: Show "Choose this plan" -> Run Sequence
+        setupPostLoginFlow();
     } else {
+        // LOGGED OUT: Show "Start watching for free" -> Open Auth
+        setupGuestFlow();
+    }
+
+    // --- FLOW HANDLERS ---
+
+    function setupGuestFlow() {
         if (premiumLayer) premiumLayer.style.display = 'flex';
         document.body.classList.add('premium-lockdown');
         toggleIsland(true);
+        
+        // Bind Guest Click (Open Modal)
+        if (startBtn) {
+            startBtn.addEventListener('click', () => {
+                authModal.style.display = 'flex';
+                setTimeout(() => authModal.classList.add('visible'), 10);
+            });
+        }
     }
 
-    // 2. BUTTON INTERCEPT
-    const startBtn = document.getElementById('premium-start-btn');
-    if (startBtn) {
-        startBtn.addEventListener('click', function() {
-            authModal.style.display = 'flex';
-            setTimeout(() => authModal.classList.add('visible'), 10);
+    function setupPostLoginFlow() {
+        // Ensure landing is still visible (Locked)
+        if (premiumLayer) premiumLayer.style.display = 'flex';
+        document.body.classList.add('premium-lockdown');
+        toggleIsland(true);
+
+        // Update Button Text & Behavior
+        if (startBtn) {
+            startBtn.innerText = "Choose this plan";
+            startBtn.style.background = "#fff"; 
+            startBtn.style.color = "#000";
+            
+            // Clone button to strip previous event listeners cleanly
+            const newBtn = startBtn.cloneNode(true);
+            startBtn.parentNode.replaceChild(newBtn, startBtn);
+            
+            // Bind New Action (Run OTT Sequence)
+            newBtn.addEventListener('click', runOTTSequence);
+        }
+
+        // Hide "No credit card needed" for a cleaner look
+        const term = document.querySelector('.price-term');
+        if (term) term.style.visibility = 'hidden';
+    }
+
+    function runOTTSequence() {
+        // 1. Fade out the pricing card
+        if (premiumContent) premiumContent.classList.add('fade-out');
+        
+        // 2. Activate Processing View
+        if (premiumProcessing) {
+            premiumProcessing.style.display = 'flex';
+            setTimeout(() => premiumProcessing.classList.add('active'), 100);
+        }
+
+        // 3. The Sequence Steps
+        const steps = [
+            { text: "Confirming subscription...", delay: 500 },
+            { text: "Verifying secure token...", delay: 2000 },
+            { text: "Personalizing experience...", delay: 3500 },
+            { text: "Setting up library...", delay: 5000 },
+            { text: "Ready", delay: 6000 }
+        ];
+
+        // Execute Steps
+        steps.forEach(step => {
+            setTimeout(() => {
+                if (statusText) {
+                    // Simple fade effect on text change
+                    statusText.style.opacity = 0;
+                    setTimeout(() => {
+                        statusText.innerText = step.text;
+                        statusText.style.opacity = 1;
+                    }, 200);
+                }
+            }, step.delay);
         });
+
+        // 4. Final Unlock
+        setTimeout(() => {
+            unlockSite();
+        }, 6500);
     }
 
-    // 3. SOCIAL LOGIN HANDLER (GLOBAL)
+    // --- SHARED UTILS ---
+
     window.handleSocialLogin = async (provider) => {
         authError.style.display = 'none';
-        
         try {
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: provider,
-                options: {
-                    redirectTo: window.location.href // Redirects back to this exact page
-                }
+                options: { redirectTo: window.location.href }
             });
             if (error) throw error;
         } catch (err) {
             authError.style.display = 'block';
-            authError.innerText = "Error: " + err.message + ". Did you enable this provider in Supabase Dashboard?";
+            authError.innerText = "Error: " + err.message;
         }
     };
 
@@ -841,58 +910,45 @@ color: #000; }
     };
 
     function unlockSite() {
-        if (premiumLayer) premiumLayer.remove();
-        document.body.classList.remove('premium-lockdown');
-        toggleIsland(false);
-        window.dispatchEvent(new Event('resize'));
+        // Fade out the whole landing layer
+        if (premiumLayer) {
+            premiumLayer.style.transition = 'opacity 0.8s ease';
+            premiumLayer.style.opacity = '0';
+            setTimeout(() => {
+                premiumLayer.remove();
+                document.body.classList.remove('premium-lockdown');
+                toggleIsland(false);
+                window.dispatchEvent(new Event('resize'));
+            }, 800);
+        }
     }
 
     function toggleIsland(hide) {
         if (!islandSearch) return;
-        if (hide) {
-            islandSearch.style.setProperty('display', 'none', 'important');
-        } else {
-            islandSearch.style.removeProperty('display');
-        }
+        if (hide) islandSearch.style.setProperty('display', 'none', 'important');
+        else islandSearch.style.removeProperty('display');
     }
 
-// 4. CURRENCY & ANTI-TAMPER
-    
-    // Function to update the UI text
+    // --- CURRENCY & ANTI-TAMPER ---
     const paintUI = (currencyCode) => {
         const priceTag = document.querySelector('.price-big');
         if (priceTag) priceTag.innerText = currencyCode + " 0";
     };
-
-    // Default to USD immediately while loading
     paintUI('USD');
+    
+    fetch('https://ipapi.co/json/')
+        .then(r => r.json())
+        .then(d => { paintUI(d.currency || 'USD'); })
+        .catch(() => { paintUI('USD'); });
 
-    // API Call to detect Country and Currency
-    const resolveCurrency = () => {
-        fetch('https://ipapi.co/json/')
-            .then(r => r.json())
-            .then(d => {
-                // ipapi.co returns a 'currency' field (e.g., 'MYR', 'GBP')
-                // We use that directly. If it fails, we fallback to 'USD'.
-                const detectedCurrency = d.currency || 'USD';
-                paintUI(detectedCurrency);
-            })
-            .catch(error => {
-                console.log("Currency detection failed, defaulting to USD");
-                paintUI('USD');
-            });
-    };
-
-    // Trigger the detection
-    resolveCurrency();
-
-    // --- ANTI-TAMPER (Unchanged) ---
+    // Anti-Tamper (Relaxed for the animation)
     const antiTamper = new MutationObserver((mutations) => {
         const landing = document.getElementById('premium-landing');
-        if (!document.body.classList.contains('premium-lockdown')) return;
-        if (!landing) { window.location.reload(); return; }
-        if (landing.style.display === 'none') {
-             landing.setAttribute('style', 'display: flex !important;');
+        // Only run tamper check if we are truly locked down AND not currently fading out
+        if (document.body.classList.contains('premium-lockdown') && landing && landing.style.opacity !== '0') {
+            if (landing.style.display === 'none') {
+                 landing.setAttribute('style', 'display: flex !important;');
+            }
         }
     });
     antiTamper.observe(document.documentElement, {
@@ -901,6 +957,60 @@ color: #000; }
 
 })();
 </script>
+<style>
+    /* --- NEW OTT SEQUENCE STYLES --- */
+    .premium-processing {
+        display: none; /* Hidden by default */
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.5s ease;
+    }
+
+    .premium-processing.active {
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    /* Hide the card content smoothly */
+    .premium-content {
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .premium-content.fade-out {
+        opacity: 0;
+        transform: scale(0.95);
+        pointer-events: none;
+    }
+
+    /* Spinner Animation */
+    .premium-loader {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255,255,255,0.1);
+        border-radius: 50%;
+        border-top-color: #fff;
+        animation: spin 0.8s ease-in-out infinite;
+        margin-bottom: 24px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .premium-status-text {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        font-size: 1.1rem;
+        color: rgba(255,255,255,0.7);
+        letter-spacing: 0.5px;
+        font-weight: 400;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+    }
+</style>
 
 
 </body>
