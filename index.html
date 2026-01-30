@@ -780,11 +780,20 @@ color: #000; }
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzdXlhcHpuZXl0dWJ6ZHJkZWdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MzM1MzMsImV4cCI6MjA4NTMwOTUzM30.m5lhtxB-9Wutmt1E-3mlO8R0KlgE8YNXaPP1_UJF2k0';
     const STORAGE_KEY = 'tuwa_premium_unlocked';
 
-    let supabase;
+    let supabase = null;
+    let session = null;
+
+    // --- STEP 1: SAFE INITIALIZATION ---
     try {
-        const { createClient } = window.supabase;
-        supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
-    } catch (e) { console.error("Supabase Init Error"); }
+        if (window.supabase) {
+            const { createClient } = window.supabase;
+            supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+        } else {
+            console.warn("Supabase library not loaded (likely blocked). Running in guest mode.");
+        }
+    } catch (e) { 
+        console.error("Supabase Init Error", e); 
+    }
 
     // DOM Elements
     const premiumLayer = document.getElementById('premium-landing');
@@ -798,38 +807,52 @@ color: #000; }
     let premiumProcessing = document.querySelector('.premium-processing');
     let statusText = document.getElementById('premium-status');
 
-    // --- STEP 0: INSTANT CHECK (Prevent Flash) ---
+    // --- STEP 2: INSTANT CHECK (Prevent Flash) ---
     const isUnlocked = localStorage.getItem(STORAGE_KEY);
     if (isUnlocked === 'true') {
-        if (premiumLayer) premiumLayer.remove(); // Instant removal
+        if (premiumLayer) premiumLayer.remove(); 
         if (document.body.classList.contains('premium-lockdown')) document.body.classList.remove('premium-lockdown');
         if (islandSearch) islandSearch.style.removeProperty('display');
         return; 
     }
     
-    // --- STEP 1: SMART CURRENCY LOADING (Solves the "USD->MYR" Glitch) ---
+    // --- STEP 3: SMART CURRENCY LOADING ---
+    // Defined BEFORE fetching to ensure it exists
     const paintPrice = (currency) => {
         const priceTag = document.querySelector('.price-big');
         if (priceTag) {
-            priceTag.innerText = `${currency} 0.00`; // Added decimal for premium feel
-            priceTag.classList.add('loaded'); // Triggers the CSS fade-in
+            // CRITICAL: Must use backticks (`), not quotes (' or ")
+            priceTag.innerText = `${currency} 0.00`; 
+            priceTag.classList.add('loaded'); 
         }
     };
 
-    // 1. Start fetching immediately
-    // 2. We do NOT paint default USD. We wait.
+    // Trigger Fetch immediately
     fetch('https://ipapi.co/json/')
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error("API Limit");
+            return r.json();
+        })
         .then(d => { 
             paintPrice(d.currency || 'USD'); 
         })
-        .catch(() => { 
-            paintPrice('USD'); // Fallback only on error
+        .catch((e) => { 
+            console.log("Currency fetch failed, defaulting to USD");
+            paintPrice('USD'); 
         });
 
-
-    // --- STEP 2: SESSION & STATE MANAGEMENT ---
-    const { data: { session } } = await supabase.auth.getSession();
+    // --- STEP 4: SESSION & STATE MANAGEMENT (SAFE MODE) ---
+    // We wrap this in a try/catch block so if it fails, the rest of the site (like currency) still works
+    try {
+        if (supabase) {
+            const { data, error } = await supabase.auth.getSession();
+            if (!error && data) {
+                session = data.session;
+            }
+        }
+    } catch (err) {
+        console.warn("Auth check failed:", err);
+    }
 
     if (session) {
         initializePostLogin();
@@ -841,16 +864,17 @@ color: #000; }
         lockDownInterface();
         if (startBtn) {
             startBtn.innerText = "Start watching for free";
+            // Clean replacement to remove old listeners
             const newBtn = startBtn.cloneNode(true);
             startBtn.parentNode.replaceChild(newBtn, startBtn);
             
             newBtn.addEventListener('click', () => {
-                // Smooth Fade In for Modal
-                authModal.style.display = 'flex';
-                // Small timeout to allow display:flex to apply before adding opacity class
-                requestAnimationFrame(() => {
-                    authModal.classList.add('visible');
-                });
+                if (authModal) {
+                    authModal.style.display = 'flex';
+                    requestAnimationFrame(() => {
+                        authModal.classList.add('visible');
+                    });
+                }
             });
         }
     }
@@ -860,13 +884,11 @@ color: #000; }
         const btn = document.getElementById('premium-start-btn');
         
         if (btn) {
-            // Update button visual state immediately
-            btn.innerText = "Activate Premium"; // More active language
+            btn.innerText = "Activate Premium"; 
             btn.style.background = "#fff"; 
             btn.style.color = "#000";
             btn.style.fontWeight = "700";
             
-            // Remove "No credit card" text for logged in users (cleaner look)
             const terms = document.querySelectorAll('.price-term, .price-term-common');
             terms.forEach(t => t.style.opacity = '0'); 
 
@@ -876,7 +898,7 @@ color: #000; }
         }
     }
 
-    // --- STEP 3: THE "NETFLIX" STYLE LOADING SEQUENCE ---
+    // --- STEP 5: THE LOADING SEQUENCE ---
     function runOTTSequence() {
         if (premiumContent) premiumContent.classList.add('fade-out');
         
@@ -887,19 +909,16 @@ color: #000; }
             return;
         }
 
-        // REWRITTEN COPY: Human-centric, not "Server-centric"
         const steps = [
-            { text: "Confirming eligibility...", delay: 800 },
-            { text: "Securing your connection...", delay: 2000 },
-            { text: "Personalizing your library...", delay: 3800 },
-            { text: "Applying high-fidelity audio...", delay: 5200 }, // Sounds very premium
+            { text: "Confirming subscription", delay: 800 },
+            { text: "Verifying your device", delay: 2000 },
+            { text: "Personalizing your library", delay: 3800 },
             { text: "Welcome to Tuwa", delay: 6500 }
         ];
 
         steps.forEach(step => {
             setTimeout(() => {
                 if (statusText) {
-                    // Smooth text transition
                     statusText.style.opacity = 0; 
                     setTimeout(() => {
                         statusText.innerText = step.text;
@@ -914,8 +933,7 @@ color: #000; }
         }, 7200);
     }
 
-    // --- STEP 4: UTILITIES ---
-
+    // --- STEP 6: UTILITIES ---
     function lockDownInterface() {
         if (premiumLayer) premiumLayer.style.display = 'flex';
         document.body.classList.add('premium-lockdown');
@@ -926,10 +944,9 @@ color: #000; }
         localStorage.setItem(STORAGE_KEY, 'true');
         
         if (premiumLayer) {
-            premiumLayer.style.transition = 'opacity 1.2s ease'; // Slower fade for dramatic effect
+            premiumLayer.style.transition = 'opacity 1.2s ease'; 
             premiumLayer.style.opacity = '0';
             
-            // Wait for fade to finish
             setTimeout(() => {
                 premiumLayer.remove();
                 document.body.classList.remove('premium-lockdown');
@@ -939,13 +956,19 @@ color: #000; }
         }
     }
 
+    // Expose Login Function Globally
     window.handleSocialLogin = async (provider) => {
         authError.style.display = 'none';
-        
-        // Visual feedback on button click
         const authCard = document.querySelector('.auth-card');
         if(authCard) authCard.style.opacity = '0.5';
         
+        if (!supabase) {
+             if(authCard) authCard.style.opacity = '1';
+             authError.style.display = 'block';
+             authError.innerText = "Login service unavailable (Adblock detected).";
+             return;
+        }
+
         try {
             const { data, error } = await supabase.auth.signInWithOAuth({
                 provider: provider,
@@ -955,13 +978,15 @@ color: #000; }
         } catch (err) {
             if(authCard) authCard.style.opacity = '1';
             authError.style.display = 'block';
-            authError.innerText = "Connection interrupted. Please try again."; // Softer error message
+            authError.innerText = "Connection interrupted. Please try again."; 
         }
     };
 
     window.closeAuth = () => {
-        authModal.classList.remove('visible');
-        setTimeout(() => authModal.style.display = 'none', 300);
+        if (authModal) {
+            authModal.classList.remove('visible');
+            setTimeout(() => authModal.style.display = 'none', 300);
+        }
     };
 
     function toggleIsland(hide) {
@@ -973,7 +998,6 @@ color: #000; }
     // Anti-Tamper Logic
     const antiTamper = new MutationObserver((mutations) => {
         const landing = document.getElementById('premium-landing');
-        // Only enforce if we haven't started the unlock fade-out
         if (document.body.classList.contains('premium-lockdown') && landing && landing.style.opacity !== '0') {
             if (landing.style.display === 'none') landing.setAttribute('style', 'display: flex !important;');
         }
