@@ -727,10 +727,11 @@ document.getElementById('legal-overlay').addEventListener('click', (e) => {
 </div>
 
 <!-- 4. THE MASTER HYBRID LOGIC -->
+<!-- 4. THE MASTER HYBRID LOGIC (FIXED) -->
 <script>
 (async function() {
     // ============================================================
-    // 1. SUPABASE CONFIGURATION (PASTE KEYS HERE)
+    // 1. SUPABASE CONFIGURATION
     // ============================================================
     const SUPABASE_URL = 'https://csuyapzneytubzdrdegl.supabase.co'; 
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzdXlhcHpuZXl0dWJ6ZHJkZWdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MzM1MzMsImV4cCI6MjA4NTMwOTUzM30.m5lhtxB-9Wutmt1E-3mlO8R0KlgE8YNXaPP1_UJF2k0';
@@ -754,6 +755,12 @@ document.getElementById('legal-overlay').addEventListener('click', (e) => {
     const authError = document.getElementById('auth-error');
     const toggleBtn = document.getElementById('h-toggle');
     const submitBtn = document.getElementById('h-submit');
+    
+    // Animation Elements
+    const premiumContent = document.querySelector('.premium-content');
+    const premiumProcessing = document.querySelector('.premium-processing');
+    const statusText = document.getElementById('premium-status');
+    const footer = document.querySelector('.premium-footer');
 
     // State
     let isSignUp = false;
@@ -780,26 +787,28 @@ document.getElementById('legal-overlay').addEventListener('click', (e) => {
         if (premiumLayer) premiumLayer.remove();
         document.body.classList.remove('premium-lockdown');
         toggleIsland(false);
-        // Dispatch resize to fix any layout glitches from hidden state
         window.dispatchEvent(new Event('resize'));
     };
 
+    // Make functions global for inline onclicks
+    window.closeAuth = () => {
+        authModal.style.display = 'none';
+        authModal.classList.remove('visible');
+    };
+
     // --- 2. CHECK SESSION (Real Database Check) ---
-    // Instead of local storage, we check Supabase
     const { data: { session } } = await supabase.auth.getSession();
 
     if (session) {
-        // User is logged in -> UNLOCK IMMEDIATELY
         unlockSite();
-        return; // Stop the script here, dashboard is active
+        return; 
     } else {
-        // No user -> SHOW PREMIUM LANDING (Your Original Code Logic)
         if (premiumLayer) premiumLayer.style.display = 'flex';
         body.classList.add('premium-lockdown');
         toggleIsland(true);
     }
 
-    // --- 3. CURRENCY LOGIC (Your Original Code - Preserved) ---
+    // --- 3. CURRENCY LOGIC (Preserved) ---
     const currencyMap = {
         'AF': 'AFN', 'AL': 'ALL', 'DZ': 'DZD', 'AD': 'EUR', 'AO': 'AOA', 'AG': 'XCD', 'AR': 'ARS', 'AM': 'AMD', 'AU': 'AUD', 'AT': 'EUR', 'AZ': 'AZN',
         'BS': 'BSD', 'BH': 'BHD', 'BD': 'BDT', 'BB': 'BBD', 'BY': 'BYN', 'BE': 'EUR', 'BZ': 'BZD', 'BJ': 'XOF', 'BT': 'BTN', 'BO': 'BOB', 'BA': 'BAM', 'BW': 'BWP', 'BR': 'BRL', 'BN': 'BND', 'BG': 'BGN', 'BF': 'XOF', 'BI': 'BIF',
@@ -822,20 +831,11 @@ document.getElementById('legal-overlay').addEventListener('click', (e) => {
         'VU': 'VUV', 'VE': 'VES', 'VN': 'VND', 'YE': 'YER', 'ZM': 'ZMW', 'ZW': 'ZWG', 'HK': 'HKD', 'TW': 'TWD', 'PS': 'ILS', 'XK': 'EUR'
     };
 
-    // (Simplified logic to save space, keeping the core functionality)
     const resolveCurrency = () => {
         let detected = 'USD';
-        try {
-            const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            // ... (Your timezone logic here if needed, simplified for hybrid) ...
-            if (tz.includes('Asia')) detected = 'USD'; // Simplified fallback
-        } catch(e) {}
-        
-        // Use API to be accurate
         fetch('https://ipapi.co/json/').then(r=>r.json()).then(d=>{
             if(d.country_code && currencyMap[d.country_code]) paintUI(currencyMap[d.country_code]);
         }).catch(()=>{});
-
         return detected;
     };
 
@@ -848,49 +848,26 @@ document.getElementById('legal-overlay').addEventListener('click', (e) => {
             const priceTag = document.querySelector('.price-big');
             if (priceTag) priceTag.innerText = currencyCode + " 0";
         }
-        
-        // Update Legal Text
         const legalText = document.querySelector('.premium-legal-disclaimer');
         if (legalText) {
             legalText.innerHTML = legalText.innerHTML.replace(/\b(USD)\b/g, currencyCode);
         }
     };
-
-    paintUI('USD'); // Default start
+    paintUI('USD');
 
     // --- 4. BUTTON INTERCEPTOR ---
     const startBtn = document.getElementById('premium-start-btn');
-    const premiumContent = document.querySelector('.premium-content');
-    const premiumProcessing = document.querySelector('.premium-processing');
-    const statusText = document.getElementById('premium-status');
-    const footer = document.querySelector('.premium-footer');
-
-    // Make functions global for inline onclicks
-    window.closeAuth = () => {
-        authModal.style.display = 'none';
-        authModal.classList.remove('visible');
-    };
-
     if (startBtn) {
-        // INTERCEPT: Don't run animation yet. Show Auth Modal.
         startBtn.addEventListener('click', function() {
             authModal.style.display = 'flex';
-            // Slight delay for fade in
             setTimeout(() => authModal.classList.add('visible'), 10);
         });
     }
 
-    // --- 5. AUTH LOGIC (Supabase) ---
+    // --- 5. AUTH LOGIC (CORRECTED - SINGLE EVENT LISTENER) ---
     toggleBtn.addEventListener('click', () => {
         isSignUp = !isSignUp;
-        submitBtn.innerText = isSignUp ? "Create Account" : "Sign In";
-        toggleBtn.innerHTML = isSignUp ? "Have an account? <b>Sign In</b>" : "New here? <b>Create Account</b>";
-        authError.innerText = "";
-    });
-
-    // --- 5. AUTH LOGIC (Updated with Redirect Fix) ---
-    toggleBtn.addEventListener('click', () => {
-        isSignUp = !isSignUp;
+        // Logic flipped: If isSignUp is true, show "Create Account" on button
         submitBtn.innerText = isSignUp ? "Create Account" : "Sign In";
         toggleBtn.innerHTML = isSignUp ? "Have an account? <b>Sign In</b>" : "New here? <b>Create Account</b>";
         authError.innerText = "";
@@ -900,9 +877,7 @@ document.getElementById('legal-overlay').addEventListener('click', (e) => {
         e.preventDefault();
         const email = document.getElementById('h-email').value;
         const password = document.getElementById('h-password').value;
-        
-        // Get the current URL (e.g., https://your-site.pages.dev)
-        const currentURL = window.location.origin;
+        const currentURL = window.location.origin; // For redirect
 
         submitBtn.disabled = true;
         submitBtn.innerText = "Processing...";
@@ -911,33 +886,31 @@ document.getElementById('legal-overlay').addEventListener('click', (e) => {
         try {
             let error;
             if (isSignUp) {
-                // FIX: Added 'options' with emailRedirectTo
+                // SIGN UP
                 const res = await supabase.auth.signUp({ 
                     email: email, 
                     password: password,
-                    options: {
-                        emailRedirectTo: currentURL
-                    }
+                    options: { emailRedirectTo: currentURL }
                 });
                 error = res.error;
                 
                 if (!error) {
-                    // Check if the user was created but requires verification
                     if (res.data.user && !res.data.session) {
                         authError.style.color = '#4dff88';
-                        authError.innerText = "Success! Check your SPAM folder for the email.";
+                        authError.innerText = "Success! Please check email to confirm.";
                         submitBtn.innerText = "Email Sent";
-                        return; // Stop here, don't run animation yet
+                        return; 
                     }
                 }
             } else {
+                // SIGN IN
                 const res = await supabase.auth.signInWithPassword({ email, password });
                 error = res.error;
             }
 
             if (error) throw error;
 
-            // --- SUCCESS! RUN ANIMATION ---
+            // --- SUCCESS FLOW ---
             closeAuth();
             
             if (premiumContent) premiumContent.classList.add('content-hidden');
@@ -969,18 +942,15 @@ document.getElementById('legal-overlay').addEventListener('click', (e) => {
         }
     });
 
-    // --- 6. ANTI-TAMPER (Preserved) ---
+    // --- 6. ANTI-TAMPER ---
     const antiTamper = new MutationObserver((mutations) => {
         const landing = document.getElementById('premium-landing');
-        // Only run checks if we are NOT logged in
         if (!document.body.classList.contains('premium-lockdown')) return;
-
         if (!landing) { window.location.reload(); return; }
         if (landing.style.display === 'none' || landing.style.opacity === '0' || landing.style.visibility === 'hidden') {
              landing.setAttribute('style', 'display: flex !important; opacity: 1 !important; visibility: visible !important;');
         }
     });
-
     antiTamper.observe(document.documentElement, {
         childList: true, attributes: true, subtree: true, attributeFilter: ['class', 'style']
     });
