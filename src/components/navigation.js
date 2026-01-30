@@ -3,10 +3,13 @@
     /**
      * 1. CONFIGURATION
      */
-    const SELECTOR = 'button, a, input, select, textarea, [tabindex]:not([tabindex="-1"]), .focusable, .surah-card, .nav-item, .custom-select-trigger, .custom-option';
+    // [FIX 1] Updated SELECTOR to exclude .app-brand and .appx-brand so the logo is NOT focusable
+    const SELECTOR = 'button, a:not(.app-brand):not(.appx-brand), input, select, textarea, [tabindex]:not([tabindex="-1"]), .focusable, .surah-card, .nav-item, .custom-select-trigger, .custom-option, .premium-btn, .social-btn';
     
     // 2. VIEW CONTROLLERS
     const VIEWS = {
+        AUTH_MODAL: 'hybrid-auth-modal', // [NEW] Added Auth Modal
+        PREMIUM: 'premium-landing',      // [NEW] Added Premium Landing
         ARABIC_MODAL: 'arabic-modal', 
         SEARCH: 'search-overlay',
         ISLAND_SEARCH: 'island-search-wrapper',
@@ -27,13 +30,28 @@
             return Array.from(openSelect.querySelectorAll('.custom-option'));
         }
 
+        // --- [FIX 2] PRIORITY 0: Auth & Premium Layers ---
+        // These are full-screen blockades, so we must trap focus here if they are visible.
+        
+        const authModal = document.getElementById(VIEWS.AUTH_MODAL);
+        // Check if Auth modal is visible (using your class logic or display style)
+        if (authModal && (authModal.classList.contains('visible') || isVisible(authModal))) {
+            return Array.from(authModal.querySelectorAll(SELECTOR)).filter(isVisible);
+        }
+
+        const premiumLanding = document.getElementById(VIEWS.PREMIUM);
+        if (premiumLanding && isVisible(premiumLanding)) {
+             return Array.from(premiumLanding.querySelectorAll(SELECTOR)).filter(isVisible);
+        }
+        // --- [END FIX] ---
+
         const arabicModal = document.getElementById(VIEWS.ARABIC_MODAL);
         const searchOverlay = document.getElementById(VIEWS.SEARCH);
         const cinemaView = document.getElementById(VIEWS.CINEMA);
         const dashboardView = document.getElementById(VIEWS.DASHBOARD);
         const sidebar = document.getElementById(VIEWS.SIDEBAR);
 
-        // PRIORITY 0: Arabic Modal
+        // PRIORITY 1: Arabic Modal
         if (arabicModal) {
             const style = window.getComputedStyle(arabicModal);
             if (style.display !== 'none' && style.visibility !== 'hidden') {
@@ -41,23 +59,23 @@
             }
         }
 
-        // PRIORITY 1: Search Overlay
+        // PRIORITY 2: Search Overlay
         if (searchOverlay && searchOverlay.classList.contains('active')) {
             return Array.from(searchOverlay.querySelectorAll(SELECTOR)).filter(isVisible);
         }
 
-        // PRIORITY 2: Cinema Mode
+        // PRIORITY 3: Cinema Mode
         if (cinemaView && cinemaView.classList.contains('active')) {
             const candidates = Array.from(cinemaView.querySelectorAll(SELECTOR));
             return candidates.filter(isVisible);
         }
 
-        // PRIORITY 3: Island Search, Dashboard, Sidebar & Trojan
+        // PRIORITY 4: Island Search, Dashboard, Sidebar & Trojan
         const islandSearch = document.getElementById(VIEWS.ISLAND_SEARCH);
-        const trojanContent = document.querySelector('.trojan-content'); // Added Trojan container
+        const trojanContent = document.querySelector('.trojan-content'); 
 
         const islandCandidates = islandSearch ? Array.from(islandSearch.querySelectorAll(SELECTOR)) : [];
-        const trojanCandidates = trojanContent ? Array.from(trojanContent.querySelectorAll(SELECTOR)) : []; // Added Trojan candidates
+        const trojanCandidates = trojanContent ? Array.from(trojanContent.querySelectorAll(SELECTOR)) : [];
         
         const dashCandidates = dashboardView ? Array.from(dashboardView.querySelectorAll(SELECTOR)) : [];
         const sidebarCandidates = sidebar ? Array.from(sidebar.querySelectorAll(SELECTOR)) : [];
@@ -82,24 +100,17 @@
 
     /**
      * Wake Up Helper
-     * Returns true if we just woke up the screen (so we should stop other actions)
      */
     function attemptWakeUp() {
         const isIdle = document.body.classList.contains('idle');
         
-        // If a dropdown is open, we aren't "really" idle in terms of UX flow, 
-        // but if the class is there, we must remove it.
         if (isIdle) {
             document.body.classList.remove('idle');
-            
-            // Dispatch a fake mousemove to reset the inactivity timer in app.js
             document.body.dispatchEvent(new Event('mousemove', { bubbles: true }));
             
-            // Restore visual focus if lost
             if (currentFocus && document.body.contains(currentFocus)) {
                 currentFocus.focus();
             } else {
-                // Recover focus if totally lost
                 const all = getFocusableCandidates();
                 if (all.length > 0) focusElement(all[0]);
             }
@@ -131,13 +142,20 @@
     }
 
     function navigate(direction) {
-        // Just in case (though keydown handler catches it first)
         if (attemptWakeUp()) return;
 
         const all = getFocusableCandidates();
 
         if (!currentFocus || !document.body.contains(currentFocus)) {
-            // Default to Search Box if it exists, otherwise dashboard
+            // [FIX 3] Check if we are in Premium mode first
+            const premiumLanding = document.getElementById(VIEWS.PREMIUM);
+            if (premiumLanding && isVisible(premiumLanding)) {
+                 const btns = premiumLanding.querySelectorAll(SELECTOR);
+                 if (btns.length > 0) focusElement(btns[0]);
+                 return;
+            }
+
+            // Default fallback
             const islandInput = document.getElementById('island-input');
             if (islandInput && isVisible(islandInput)) {
                 focusElement(islandInput);
@@ -146,10 +164,10 @@
             }
             return;
         }
-        // ---------------------------------------
-
-        // If trapped in an invalid state (e.g. focused on a hidden element), jump to safety
+        
+        // If trapped in an invalid state, jump to safety
         if (!all.includes(currentFocus) && all.length > 0) {
+             // Optional recovery logic
         }
 
         const r1 = currentFocus.getBoundingClientRect();
@@ -187,11 +205,9 @@
     // 3. KEYBOARD LISTENERS (GLOBAL)
     window.addEventListener('keydown', (e) => {
         // --- 1. WAKE UP GUARD ---
-        // If the screen is idle, ANY key press should ONLY wake it up.
-        // It must NOT perform the key's default action (like opening a menu).
         if (document.body.classList.contains('idle')) {
             e.preventDefault();
-            e.stopImmediatePropagation(); // Kill the event here
+            e.stopImmediatePropagation(); 
             attemptWakeUp();
             return; 
         }
@@ -202,13 +218,14 @@
             e.preventDefault();
             navigate(e.key);
         }
-// --- 2.5 SEARCH EXECUTION ---
+
+        // --- 2.5 SEARCH EXECUTION ---
         if (e.key === 'Enter') {
             const islandInput = document.getElementById('island-input');
             if (document.activeElement === islandInput) {
                 const trigger = document.querySelector('.enter-trigger');
                 if (trigger) {
-                    trigger.click(); // Manually trigger the search
+                    trigger.click(); 
                     return;
                 }
             }
@@ -224,6 +241,13 @@
                 return;
             }
 
+            // [NEW] Allow closing Auth Modal via Back/Escape
+            const authModal = document.getElementById(VIEWS.AUTH_MODAL);
+            if (authModal && authModal.classList.contains('visible')) {
+                if (window.closeAuth) window.closeAuth();
+                return;
+            }
+
             const arabicModal = document.getElementById(VIEWS.ARABIC_MODAL);
             if (arabicModal && window.getComputedStyle(arabicModal).display !== 'none') {
                  return;
@@ -235,9 +259,6 @@
                 if (closeBtn) closeBtn.click();
             }
         }
-        
-        // 'Enter' is allowed to pass through if we are NOT idle, 
-        // so it hits the click handlers in app.js
     }, true);
 
     // 4. MOUSE/TOUCH LISTENERS
@@ -250,7 +271,6 @@
     // 5. OBSERVER
     const observer = new MutationObserver(() => {
         const all = getFocusableCandidates();
-        // If focus is totally lost (body), try to recover it
         if (all.length > 0 && currentFocus && !document.body.contains(currentFocus)) {
              focusElement(all[0]);
         }
@@ -260,6 +280,14 @@
     // Initial Start
     window.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
+            // [FIX 4] Check Premium First on Load
+            const premiumLanding = document.getElementById(VIEWS.PREMIUM);
+            if (premiumLanding && isVisible(premiumLanding)) {
+                 const startBtn = document.getElementById('premium-start-btn');
+                 if (startBtn) focusElement(startBtn);
+                 return;
+            }
+
             const dash = document.getElementById(VIEWS.DASHBOARD);
             if (dash && dash.classList.contains('active')) {
                 const playBtn = document.getElementById('door-play-btn');
