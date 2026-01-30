@@ -470,7 +470,8 @@ window.addEventListener('DOMContentLoaded', () => {
     <script src="src/ui/artifact.js"></script>
     <script src="src/ui/all-text-fade.js"></script>
     <div id="transition-fade-layer"></div>
-<div id="premium-landing" style="display: none;"> 
+    
+    <div id="premium-landing"> 
     <div class="premium-brand-replica">
         <img src="assets/ui/logo.png" alt="Tuwa Logo">
         <span>Tuwa</span>
@@ -666,10 +667,8 @@ document.getElementById('legal-overlay').addEventListener('click', (e) => {
     if (e.target === document.getElementById('legal-overlay')) closeLegal();
 });
 </script>
-<!-- 1. LOAD SUPABASE SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- 2. SOCIAL AUTH STYLES -->
 <style>
     #hybrid-auth-modal {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -732,7 +731,6 @@ color: #000; }
     .divider span { padding: 0 10px; }
 </style>
 
-<!-- 3. SOCIAL LOGIN FORM -->
 <div id="hybrid-auth-modal">
     <div class="auth-card">
 
@@ -780,6 +778,7 @@ color: #000; }
     // --- CONFIGURATION ---
     const SUPABASE_URL = 'https://csuyapzneytubzdrdegl.supabase.co'; 
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzdXlhcHpuZXl0dWJ6ZHJkZWdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MzM1MzMsImV4cCI6MjA4NTMwOTUzM30.m5lhtxB-9Wutmt1E-3mlO8R0KlgE8YNXaPP1_UJF2k0';
+    const STORAGE_KEY = 'tuwa_premium_unlocked';
 
     let supabase;
     try {
@@ -798,6 +797,19 @@ color: #000; }
     // Create Processing Elements dynamically if missing in HTML
     let premiumProcessing = document.querySelector('.premium-processing');
     let statusText = document.getElementById('premium-status');
+
+    // FIX 2: IMMEDIATE PERSISTENCE CHECK (Fixes the refresh loop)
+    // We run this BEFORE any Supabase calls to ensure instant unlock
+    const isUnlocked = localStorage.getItem(STORAGE_KEY);
+    if (isUnlocked === 'true') {
+        // Destroy the landing page immediately
+        if (premiumLayer) premiumLayer.style.display = 'none'; // Instant hide
+        setTimeout(() => { if (premiumLayer) premiumLayer.remove(); }, 10);
+        
+        if (document.body.classList.contains('premium-lockdown')) document.body.classList.remove('premium-lockdown');
+        if (islandSearch) islandSearch.style.removeProperty('display');
+        return; // STOP HERE. The user is free.
+    }
     
     // 1. CHECK SESSION & DETERMINE STATE
     const { data: { session } } = await supabase.auth.getSession();
@@ -903,6 +915,9 @@ color: #000; }
     }
 
     function unlockSite() {
+        // Save the unlocked state so it persists on refresh
+        localStorage.setItem(STORAGE_KEY, 'true');
+
         // Fade out the entire overlay
         if (premiumLayer) {
             premiumLayer.style.transition = 'opacity 1s ease';
@@ -961,17 +976,22 @@ color: #000; }
 })();
 </script>
 <style>
-/* --- OTT LOAD SEQUENCER --- */
+/* --- CINEMATIC LOAD SEQUENCER (FIXED) --- */
 .premium-processing {
-    display: none; /* Hidden by default */
-    position: absolute;
+    display: none;
+    position: fixed; /* Changed to fixed to ensure it stays centered */
     top: 0; left: 0; width: 100%; height: 100%;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    z-index: 20;
+    z-index: 9999; /* Higher z-index */
     opacity: 0;
-    transition: opacity 0.5s ease;
+    transition: opacity 0.6s cubic-bezier(0.2, 0, 0, 1);
+    
+    /* Cinematic Glass Background */
+    background: rgba(5, 5, 5, 0.85); 
+    backdrop-filter: blur(40px) saturate(120%);
+    -webkit-backdrop-filter: blur(40px) saturate(120%);
 }
 
 .premium-processing.active {
@@ -989,27 +1009,43 @@ color: #000; }
     pointer-events: none;
 }
 
-/* Spinner Animation */
+/* Elegant Spinner (Replaces the cheap border loader) */
 .premium-loader {
-    width: 40px;
-    height: 40px;
-    border: 3px solid rgba(255,255,255,0.1);
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
-    border-top-color: #fff;
-    animation: spin 0.8s ease-in-out infinite;
+    
+    /* Subtle Gradient Ring */
+    background: conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.1) 50%, #fff 100%);
+    
+    /* Mask to create the ring shape */
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px + 0.5px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px + 0.5px));
+    
+    animation: cinema-spin 1s linear infinite;
     margin-bottom: 24px;
+    box-shadow: 0 0 30px rgba(255,255,255,0.05); /* Soft glow */
+    border: none; /* Removed the old border */
 }
 
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes cinema-spin {
+    to { transform: rotate(360deg); }
+}
 
 .premium-status-text {
     font-family: "Plus Jakarta Sans", sans-serif;
-    color: rgba(255,255,255,0.7);
-    letter-spacing: 1px;
+    font-size: 1.4rem;
     font-weight: 500;
+    letter-spacing: 0.2em; /* Premium feel spacing */
+    color: rgba(255, 255, 255, 0.8);
     text-transform: uppercase;
-    font-size: 0.85rem;
+    animation: text-pulse 2s ease-in-out infinite;
     transition: opacity 0.3s ease;
+}
+
+@keyframes text-pulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; text-shadow: 0 0 15px rgba(255,255,255,0.3); }
 }
 </style>
 
