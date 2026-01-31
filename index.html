@@ -833,48 +833,45 @@ color: #000; }
         return; 
     }
     
-    // --- STEP 3: SMART CURRENCY LOADING (VIA CLOUDFLARE TRACE) ---
+    // --- STEP 3: SMART CURRENCY LOADING (ROBUST FIX) ---
+    
+    // 1. Define the paint function using standard "+" to prevent backtick errors
     const paintPrice = (currency) => {
         const priceTag = document.querySelector('.price-big');
         if (priceTag) {
-            priceTag.innerText = `${currency} 0.00`; 
+            // FIX: We use concatenation (+) instead of `${}` to ensure no syntax errors
+            priceTag.innerText = currency + " 0.00"; 
             priceTag.classList.add('loaded'); 
+        } else {
+            console.warn("Price tag element not found");
         }
     };
 
-    // Replace external API with Cloudflare internal trace
-    // /cdn-cgi/trace is available on all Cloudflare Pages and proxied domains
-// Replace external API with Cloudflare internal trace
+    // 2. Fail-Safe: Set default immediately so the user NEVER sees "{currency}"
+    paintPrice('USD'); 
+
+    // 3. Fetch Cloudflare Trace
     fetch('/cdn-cgi/trace')
         .then(r => {
             if (!r.ok) throw new Error("CF Trace failed");
             return r.text();
         })
         .then(text => { 
-            let country = 'US'; // Default fallback
-            const lines = text.split('\n');
+            // improved regex parsing (faster and safer than loop)
+            const match = text.match(/loc=([A-Z]{2})/);
+            const country = match ? match[1] : 'US';
             
-            for (const line of lines) {
-                // Check for loc= line
-                if (line.trim().startsWith('loc=')) {
-                    // Split by '=' and TRIM whitespace/newlines from the value
-                    country = line.split('=')[1].trim(); 
-                    break;
-                }
-            }
-            
-            // Debugging: Check console to see what country was actually detected
             console.log('Detected Country:', country); 
 
-            // Map Country Code to Currency
+            // Map Country Code to Currency (Fail back to USD if country not in list)
             const currency = COUNTRY_TO_CURRENCY[country] || 'USD';
             paintPrice(currency); 
         })
         .catch((e) => { 
-            console.log("Location check failed, defaulting to USD", e);
+            console.log("Location check failed, keeping default:", e);
+            // We already set it to USD in step 2, so we are safe.
             paintPrice('USD'); 
         });
-
     // --- STEP 4: SESSION & STATE MANAGEMENT (SAFE MODE) ---
     try {
         if (supabase) {
