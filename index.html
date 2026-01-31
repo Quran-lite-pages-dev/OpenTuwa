@@ -844,23 +844,29 @@ color: #000; }
 
     // Replace external API with Cloudflare internal trace
     // /cdn-cgi/trace is available on all Cloudflare Pages and proxied domains
+// Replace external API with Cloudflare internal trace
     fetch('/cdn-cgi/trace')
         .then(r => {
             if (!r.ok) throw new Error("CF Trace failed");
             return r.text();
         })
         .then(text => { 
-            // Parse the trace format (Key=Value\n...)
-            let country = 'US'; // Default
+            let country = 'US'; // Default fallback
             const lines = text.split('\n');
+            
             for (const line of lines) {
-                if (line.startsWith('loc=')) {
-                    country = line.split('=')[1];
+                // Check for loc= line
+                if (line.trim().startsWith('loc=')) {
+                    // Split by '=' and TRIM whitespace/newlines from the value
+                    country = line.split('=')[1].trim(); 
                     break;
                 }
             }
             
-            // Map Country Code (e.g., 'MY') to Currency (e.g., 'MYR')
+            // Debugging: Check console to see what country was actually detected
+            console.log('Detected Country:', country); 
+
+            // Map Country Code to Currency
             const currency = COUNTRY_TO_CURRENCY[country] || 'USD';
             paintPrice(currency); 
         })
