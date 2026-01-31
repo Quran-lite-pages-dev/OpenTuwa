@@ -137,7 +137,7 @@ html[dir="rtl"] .appx-brand {
 /* MOBILE RESPONSIVENESS */
 @media screen and (max-width: 1024px) {
     .brand-text {
-        display: none; 
+         
     }
     
     .appx-brand {
@@ -207,16 +207,29 @@ html[dir="rtl"] .app-brand {
     white-space: nowrap;
 }
 
-/* MOBILE RESPONSIVENESS */
 @media screen and (max-width: 1024px) {
-    .brand-text {
-        display: none; 
-    }
-    
     .app-brand {
-        inset-inline-end: 20px; 
+        /* 1. Reset the side anchor */
+        inset-inline-end: auto; 
+        
+        /* 2. Push to horizontal center */
+        left: 50%;
+        transform: translateX(-50%); 
+        
+        /* 3. Keep your top spacing */
         top: 25px;
+
+        /* Optional: ensure it stays flex for internal items */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: max-content; /* Keeps it from stretching full-width */
     }
+
+    /* Keep your existing font and icon size changes below this... */
+    .brand-text { font-size: 19.8px; }
+    .brand-icon img { width: 54px; height: 29px; }
+}
 }
 
 
@@ -1114,11 +1127,11 @@ body.premium-lockdown {
     position: absolute;
     top: 2.5rem;
     left: 2.5rem;
-    display: flex; /* Kept flex, control visibility via opacity or parent */
+    display: flex;
     align-items: center;
     gap: 0.75rem;
     pointer-events: none;
-    opacity: 0; /* Default hidden, toggle via JS if needed */
+    opacity: 0;
     transition: opacity 0.5s ease;
 }
 
@@ -1134,14 +1147,15 @@ body.premium-lockdown {
 /* --- 4. CONTENT WRAPPER --- */
 .premium-content {
     text-align: center;
-    width: 100%;
-    max-width: 600px;
-    padding: 2rem;
+    /* CHANGED: Removed max-width 600px constraint to allow full width alignment */
+    width: 100%; 
+    max-width: 100%; 
+    padding: 2rem 0; /* Vertical padding only, horiz handled by children */
     z-index: 2;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 1.5rem; /* Clean spacing between elements */
+    align-items: center; /* This keeps the Card and Button centered */
+    gap: 1.5rem;
     transition: opacity 0.5s ease, transform 0.5s var(--ease-out-expo);
 }
 
@@ -1155,11 +1169,19 @@ body.premium-lockdown {
 /* Typography */
 .premium-title {
     font-family: var(--font-heading);
-    font-size: clamp(2.5rem, 5vw, 3.5rem); /* Responsive scaling */
-    font-weight: 800;
+    font-size: clamp(3.5rem, 10vw, 4.5rem);
+    font-weight: 999;
     letter-spacing: -0.03em;
     line-height: 1.1;
     margin: 0;
+
+    /* Left Alignment Logic - DESKTOP */
+
+    text-align: center;             
+    width: 100%;                  
+    max-width: 1200px;            /* Reads better on ultra-wide */
+
+    
     background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1167,80 +1189,113 @@ body.premium-lockdown {
 
 .premium-subtitle {
     font-family: var(--font-body);
-    font-size: 1.15rem;
+    font-size: 2.15rem;
     color: #a1a1a6;
     font-weight: 400;
     line-height: 1.5;
     margin: 0;
-    max-width: 480px;
+
+    /* Left Alignment Logic - DESKTOP */
+
+    text-align: center;
+    max-width: 700px;
+
 }
+
+/* --- MOBILE RESPONSIVENESS --- */
+@media (max-width: 768px) {
+    .premium-content { 
+        padding: 1.5rem; 
+        max-width: 100%; /* Ensure full width on mobile too */
+    }
+    
+    /* Reset to center for mobile */
+    .premium-title, .premium-subtitle { 
+        font-size: 2.25rem; /* Slightly smaller for mobile safety */
+        align-self: center; 
+        text-align: center;
+        padding-left: 0; /* Remove the desktop offset */
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .premium-subtitle {
+        font-size: 1rem;
+        max-width: 90%; /* prevent edge touching */
+    }
+    
+    .premium-brand-replica { top: 1.5rem; left: 1.5rem; }
+    .premium-footer { padding-bottom: max(2rem, env(safe-area-inset-bottom)); } 
+}
+
 .price-term {
+display: none;
     font-size: 0.9rem;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.4);
     margin-top: 0.5rem;
-white-space: nowrap;
+    white-space: nowrap;
 }
+
 /* --- 5. THE PRICE HOOK (GLASS CARD) --- */
 .premium-card-wrapper {
-width: 100%;
-    max-width: 380px; /* Slightly wider for breathing room */
-    background: var(--glass-surface);
-    backdrop-filter: blur(25px); /* Increased blur for premium feel */
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid var(--glass-border);
-    box-shadow: 
-        inset 0 0 0 1px rgba(255, 255, 255, 0.05),
-        0 20px 50px -10px rgba(0, 0, 0, 0.8); /* Deeper shadow */
-    border-radius: 32px; /* Softer, more modern corners */
+    scale: 1.4;
+    width: 100%;
+    max-width: 300px; 
+    max-height: 600px;
+    border-radius: 4px;
     padding: 3rem 2rem;
     margin: 1.5rem 0 2.5rem 0;
     text-align: center;
     transition: transform 0.4s var(--ease-out-expo);
     white-space: nowrap;
+    
+    /* Ensure it stays centered even if title is left */
+    align-self: center; 
 }
 
 .premium-card-wrapper:hover {
-    transform: translateY(-5px); /* Gentle lift */
+    transform: translateY(-5px);
 }
 
 .premium-price-tag {
+display: none;
     align-items: center;
     gap: 0.25rem;
     color: #ffffff;
     font-family: var(--font-heading);
-white-space: nowrap;
-min-height: 120px; 
+    white-space: nowrap;
+    min-height: 120px; 
     display: flex;
     flex-direction: column;
     justify-content: center;
 }
 
 .premium-price-tag .price-period {
-font-size: 0.75rem;
+display: none;
+    font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.2em; /* Very wide spacing for small text */
-    color: #888; /* Optional: Netflix Red accent, or keep it #888 */
+    letter-spacing: 0.2em;
+    color: #888;
     margin-bottom: 0.25rem;
 }
 
 .premium-price-tag .price-big {
+display: none;
     font-family: 'Inter', sans-serif;
-    font-size: 5rem; /* Massive scale */
-    font-weight: 700; /* Bold but not Black */
+    font-size: 3.5rem;
+    font-weight: 700;
     line-height: 1;
-    letter-spacing: -0.05em; /* Tight tracking makes numbers look expensive */
-    font-variant-numeric: tabular-nums; /* Ensures numbers align perfectly */
+    letter-spacing: -0.05em;
+    font-variant-numeric: tabular-nums;
     
-    /* Pure White Gradient */
     background: linear-gradient(180deg, #FFFFFF 40%, #A0A0A0 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     
-    /* Glow */
     filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
-opacity: 0; 
+    opacity: 0; 
     transform: translateY(10px);
     transition: opacity 0.8s ease, transform 0.8s ease;
     will-change: opacity, transform;
@@ -1252,6 +1307,7 @@ opacity: 0;
 }
 
 .premium-price-tag .price-term-common {
+display: none;
     font-size: 0.95rem;
     font-weight: 500;
     color: rgba(255, 255, 255, 0.6);
@@ -1259,37 +1315,11 @@ opacity: 0;
 }
 
 /* --- 6. ACTION BUTTON --- */
-.premium-btn {
-    background: #fff;
-    color: #000;
-    border: none;
-    padding: 18px 56px; /* slightly larger click target */
-    font-size: 1.05rem;
-    font-family: var(--font-body);
-    font-weight: 600;
-    border-radius: 999px; /* Pill shape is more modern/premium */
-    cursor: pointer;
-transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    /* Ensure no text flickering during hover */
-    -webkit-font-smoothing: antialiased;
-    letter-spacing: -0.01em;
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
-    position: relative;
-    overflow: hidden;
-}
 
-.premium-btn:hover {
-    background: #f2f2f2;
-    transform: translateY(-2px) scale(1.02); /* Proper lift physics */
-    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
-}
-
-.premium-btn:active {
-    transform: translateY(1px) scale(0.98);
-}
 
 /* Disclaimer text */
 .premium-legal-disclaimer {
+    display: none;
     display: block;
     font-size: 0.75rem;
     color: rgba(255, 255, 255, 0.35);
@@ -1351,15 +1381,6 @@ transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     50% { opacity: 1; } 
 }
 
-/* --- MOBILE RESPONSIVENESS --- */
-@media (max-width: 768px) {
-    .premium-content { padding: 1.5rem; }
-    .premium-title { font-size: 2.75rem; }
-    .premium-brand-replica { top: 1.5rem; left: 1.5rem; }
-    /* Ensure content doesn't get covered by footer on small screens */
-    .premium-footer { padding-bottom: max(2rem, env(safe-area-inset-bottom)); } 
-}
-}
 /* --- AUTH MODAL STYLES (Real Database) --- */
 #auth-modal {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;

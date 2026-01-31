@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tuwa - Premium Access</title>
+    <title>Tuwa - Web player</title>
+
+    <link rel="icon" type="image/png" sizes="128x128" href="assets/ui/web.png">
+    <link rel="shortcut icon" href="assets/ui/web.ico">
+    <link rel="apple-touch-icon" href="assets/ui/apple-touch-icon.png">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -31,7 +35,7 @@
 
     <div id="premium-landing" style="display: flex;"> 
         <div class="premium-brand-replica">
-            <img src="assets/ui/logo.png" alt="Tuwa Logo">
+            <img src="assets/ui/logo.png" alt="Tuwa Logo" class="lazyload">
             <span>Tuwa</span>
         </div>
 
@@ -42,26 +46,147 @@
                 </div>
                 <span class="brand-text">Tuwa</span>
             </div>
-            <h1 class="premium-title">Access to premium content with distraction-free viewing.</h1>
-            <p class="premium-subtitle">Premium streaming platform — <b>1.5 billion listeners daily</b></p>
+            <h1 class="premium-title">Premium content with distraction-free viewing.</h1>
+            <p class="premium-subtitle">The Global Standard in Streaming — <b> Join 1.5 Billion Daily Listeners. </b></p>
 
             <div class="premium-card-wrapper">
-                <div class="premium-price-tag">
-                    <span class="price-period"></span>
-                    <span class="price-big">USD 0</span> 
-                    <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 4px;">
-                        <span class="price-term-common" style="color: #fff;">Premium Plan • <b>12 Months</b> (Limited time offer)</span>
-                        <span class="price-term-common"></span>
-                        <button id="premium-start-btn" class="premium-btn">Start watching for free</button>
-                        <nobr><span class="price-term">No credit card needed</span></nobr>
-                    </div>
-                </div>
-            </div>
+<div class="premium-price-tag" style="display: flex; flex-direction: column; align-items: center;">
+    <span class="price-term-common" style="color: rgba(255,255,255,0.6); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 4px;">
+        Limited Time Offer
+    </span>
+
+    <span class="price-term-common" style="color: #fff; font-size: 1.4rem; font-weight: 500; margin-bottom: 0px;">
+        12 Months of Premium
+    </span>
+
+    <span class="price-big" style="font-size: 5rem; font-weight: 800; letter-spacing: -2px; margin: 8px 0 16px 0;">
+        USD 0
+    </span>
+
+    <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; align-items: center;">
+<button id="premium-start-btn" class="premium-btn">
+    <span>Start watching now</span>
+    <svg 
+        class="btn-icon" 
+        aria-hidden="true" 
+        xmlns="http://www.w3.org/2000/svg" 
+        width="24" 
+        height="24" 
+        fill="none" 
+        viewBox="0 0 24 24"
+    >
+        <path 
+            stroke="currentColor" 
+            stroke-linecap="round" 
+            stroke-linejoin="round" 
+            stroke-width="2" 
+            d="m10 16 4-4-4-4"
+        />
+    </svg>
+</button>
+</div>
+        
+        <nobr><span class="price-term" style="opacity: 0.7; font-size: 0.9rem;">No credit card needed</span></nobr>
+    </div>
+</div>
+</div>
+<style>
+.premium-btn {
+    /* 1. LAYOUT ESSENTIALS */
+    display: inline-flex;       /* Forces icon and text side-by-side */
+    align-items: center;        /* Vertically centers them */
+    justify-content: center;    /* Horizontally centers them */
+    gap: 12px;                  /* Space between text and arrow */
+    
+    /* 2. SIZING */
+    padding: 12px 24px;         /* Reduced side padding so icon fits */
+    width: auto;                /* Let it grow naturally */
+    
+    /* 3. VISUALS (Your original styles) */
+    background: #fff;
+    color: #000;
+    border: none;
+    font-size: 1.5rem;
+    font-family: var(--font-body);
+    font-weight: 900;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+    position: relative;
+    overflow: hidden;           /* Now safe because Flexbox prevents wrapping */
+}
+
+/* 4. PREVENT ICON SQUISHING */
+.premium-btn svg {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+/* 5. HOVER EFFECTS */
+.premium-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
+    
+    /* Text Gradient */
+    background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* IMPORTANT: The arrow needs a real color since text-fill is transparent */
+    color: #f2f2f2; 
+    opacity: 0.9;
+}
+
+.premium-btn:hover svg {
+    transform: translateX(4px); /* Slide arrow on hover */
+}
+
+@media (max-width: 768px) {
+.premium-title {
+    font-family: var(--font-heading);
+    font-size: clamp(0.5rem, 10vw, 4.5rem);
+    font-weight: 999;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin: 0;
+
+    /* Left Alignment Logic - DESKTOP */
+
+    text-align: center;             
+    width: 90%;                  
+    max-width: 900px;            /* Reads better on ultra-wide */
+
+    
+    background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.premium-subtitle {
+    font-family: var(--font-body);
+    font-size: 2.15rem;
+    color: #a1a1a6;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0;
+
+    /* Left Alignment Logic - DESKTOP */
+
+    text-align: center;
+        width: 90%;                  
+    max-width: 900px; 
+
+}
+</style>
+
             
-            <p class="premium-legal-disclaimer">
+            <p class="premium-legal-disclaimer" style="display: none;">
                 *Promotional pricing of USD 0/mo valid for the initial 12-month term. Plan automatically continues at the standard zero-cost rate thereafter. No commitment; cancel anytime. No payment method required.
             </p>
         </div>
+
 
         <div class="premium-processing">
             <div class="premium-loader"></div>
@@ -78,19 +203,61 @@
         </div>
     </div>
 
-    <div id="hybrid-auth-modal">
-        <div class="auth-card">
-            <h2 class="auth-card-title" style="color:#fff; margin:0; font-family:'Inter',sans-serif;">Your bespoke premium content is on its way.</h2>
-            <div id="auth-error"></div>
+<div id="hybrid-auth-modal" style="background: rgba(0,0,0,0.8); padding: 40px; text-align: center;">
+    <style>
 
-            <button onclick="handleSocialLogin('google')" class="social-btn btn-google">
-                <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.715H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
-                Continue with Google
-            </button>
-            <button class="social-btn btn-discord" style="opacity:0.5; cursor:not-allowed;">Discord (Coming Soon)</button>
-            <div style="margin-top:20px; font-size:0.8rem; color:#444; cursor:pointer;" onclick="closeAuth()">Cancel</div>
-        </div>
+
+
+        
+        /* Standardized SVG sizing */
+        .social-btn svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+    </style>
+
+    <div class="auth-card">
+        <h2 class="auth-card-title">Your bespoke premium content is on its way.</h2>
+        <div id="auth-error"></div>
+
+        <button onclick="handleSocialLogin('google')" class="social-btn btn-google" style="font-size: 2rem; font-weight: 700;">
+            <svg viewBox="0 0 18 18">
+                <path d="M17.64 9.2c0-.637-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
+                <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.715H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
+                <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
+                <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
+            </svg>
+            Continue with Google
+        </button>
+
+        <button onclick="handleSocialLogin('discord')" class="social-btn btn-google" style="font-size: 2rem; font-weight: 700;">
+            <svg viewBox="0 0 512 365">
+                <path fill="currentColor" d="M378.186 365.028s-15.794-18.865-28.956-35.099c57.473-16.232 79.41-51.77 79.41-51.77-17.989 11.846-35.099 20.182-50.454 25.885-21.938 9.213-42.997 14.917-63.617 18.866-42.118 7.898-80.726 5.703-113.631-.438-25.008-4.827-46.506-11.407-64.494-18.867-10.091-3.947-21.059-8.774-32.027-14.917-1.316-.877-2.633-1.316-3.948-2.193-.877-.438-1.316-.878-1.755-.878-7.898-4.388-12.285-7.458-12.285-7.458s21.06 34.659 76.779 51.331c-13.163 16.673-29.395 35.977-29.395 35.977C36.854 362.395 0 299.218 0 299.218 0 159.263 63.177 45.633 63.177 45.633 126.354-1.311 186.022.005 186.022.005l4.388 5.264C111.439 27.645 75.461 62.305 75.461 62.305s9.653-5.265 25.886-12.285c46.945-20.621 84.236-25.885 99.592-27.64 2.633-.439 4.827-.878 7.458-.878 26.763-3.51 57.036-4.387 88.624-.878 41.68 4.826 86.43 17.111 132.058 41.68 0 0-34.66-32.906-109.244-55.281l6.143-7.019s60.105-1.317 122.844 45.628c0 0 63.178 113.631 63.178 253.585 0-.438-36.854 62.739-133.813 65.81l-.001.001zm-43.874-203.133c-25.006 0-44.75 21.498-44.75 48.262 0 26.763 20.182 48.26 44.75 48.26 25.008 0 44.752-21.497 44.752-48.26 0-26.764-20.182-48.262-44.752-48.262zm-160.135 0c-25.008 0-44.751 21.498-44.751 48.262 0 26.763 20.182 48.26 44.751 48.26 25.007 0 44.75-21.497 44.75-48.26.439-26.763-19.742-48.262-44.75-48.262z"/>
+            </svg>
+            Continue with Discord
+        </button>
+
+        <div style="display: none; margin-top:20px; font-size:0.8rem; color:#888; cursor:pointer;" onclick="closeAuth()">Cancel</div>
     </div>
+</div>
+<style>
+/* Target the SVGs inside your buttons */
+.social-btn svg {
+    width: 18px; /* Adjust size as needed */
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 10px;
+    
+    /* 1. Force the icon to be white */
+    /* fill: white; works for most, but filter is a 'nuclear' option for multi-color SVGs */
+    filter: brightness(0) invert(1) 
+            drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+}
+
+
+</style>
+
 
     <style>
         .legal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9995; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); opacity: 0; pointer-events: none; transition: opacity 0.4s; display: flex; align-items: center; justify-content: center; }
@@ -102,9 +269,48 @@
         
         #hybrid-auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2147483647; display: none; justify-content: center; align-items: center; backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease; }
         #hybrid-auth-modal.visible { opacity: 1; pointer-events: all; }
-        .auth-card { background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 40px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 40px 80px rgba(0,0,0,1); display: flex; flex-direction: column; gap: 12px; transform: scale(0.95); transition: transform 0.3s; }
+.auth-card {
+  /* 1. FORCE Full Screen (Break out of any parent containers) */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;  /* Anchors to right edge */
+  bottom: 0 !important; /* Anchors to bottom edge */
+  
+  width: 100vw !important;  /* Forces full Viewport Width */
+  height: 100vh !important; /* Forces full Viewport Height */
+  z-index: 99999 !important; /* Ensures it is on top of EVERYTHING */
+
+  /* 2. Aesthetics & Reset */
+  background: rgba(20, 20, 20, 1) !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 20px !important; /* Comfortable padding for mobile */
+  
+  border: none !important;
+  border-radius: 0 !important; /* Removes those rounded corners from the screenshot */
+  box-shadow: none !important;
+  transform: none !important;
+
+  /* 3. Perfect Centering */
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important; /* Ensures text inside is centered, not left-aligned */
+  gap: 16px !important;
+
+  /* 4. Mobile Safety (Prevents "Scrapped" look) */
+  overflow-y: auto !important; /* Allows scrolling if screen is too small */
+}
+
+/* 5. VITAL: Prevent the inner content from breaking mobile screens */
+.auth-card > * {
+  max-width: 100% !important; /* Prevents buttons/text from being wider than the phone screen */
+  flex-shrink: 1; /* Allows content to shrink if needed */
+}
         #hybrid-auth-modal.visible .auth-card { transform: scale(1); }
-        .social-btn { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-size: 1rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s, background 0.2s; color: #fff; font-family: 'Inter', sans-serif; }
+        .social-btn { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-size: 2rem; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s, background 0.2s; color: #fff; font-family: 'Inter', sans-serif; }
         .social-btn:hover { transform: scale(1.02); }
         .btn-google { background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: #000; }
         
@@ -116,6 +322,128 @@
         .premium-status-text { animation: text-pulse 2s ease-in-out infinite; transition: opacity 0.3s ease; font-family: "Plus Jakarta Sans", "Inter", sans-serif; font-size: 1.2rem; font-weight: 500; letter-spacing: 0.15em; color: rgba(255, 255, 255, 0.9); text-transform: uppercase; text-align: center; }
         @keyframes text-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; text-shadow: 0 0 15px rgba(255,255,255,0.3); } }
     </style>
+<style>
+
+    #hybrid-auth-modal {
+
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+
+        background: rgba(0,0,0,0.85); z-index: 2147483647;
+
+        display: none; justify-content: center; align-items: center;
+
+        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+
+        opacity: 0; transition: opacity 0.4s ease;
+
+    }
+
+    #hybrid-auth-modal.visible { opacity: 1; pointer-events: all; }
+
+    
+
+    .auth-card {
+
+        background: rgba(20, 20, 20, 0.8);
+
+        border: 1px solid rgba(255, 255, 255, 0.1);
+
+        border-radius: 24px; padding: 40px; width: 90%; max-width: 400px;
+
+        text-align: center; box-shadow: 0 40px 80px rgba(0,0,0,1);
+
+        display: flex; flex-direction: column; gap: 12px;
+
+        transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    }
+
+    #hybrid-auth-modal.visible .auth-card { transform: scale(1); }
+
+    .auth-card-title {
+
+    font-family: var(--font-heading);
+
+    font-size: clamp(4.5rem, 5vw, 3.5rem); /* Responsive scaling */
+
+    font-weight: 800;
+
+    letter-spacing: -0.03em;
+
+    line-height: 1.1;
+
+    margin: 0;
+
+    background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+
+    -webkit-background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+
+    }
+
+
+
+
+
+
+
+    .social-btn {
+
+        width: 100%; padding: 14px; border-radius: 12px;
+
+        border: 1px solid rgba(255,255,255,0.1);
+
+        cursor: pointer; font-size: 1rem; font-weight: 600;
+
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+
+        transition: transform 0.2s, background 0.2s;
+
+        color: #fff; font-family: 'Inter', sans-serif;
+
+    }
+
+    .social-btn:hover { transform: scale(1.02); }
+
+    
+
+    /* Brand Colors */
+
+    .btn-google { background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%); 
+
+-webkit-background-clip: text; 
+
+-webkit-text-fill-color: transparent; 
+
+color: #000; }
+
+    .btn-spotify { display: none; background: #1DB954; color: #fff; }
+
+    .btn-facebook { display: none; background: #1877F2; color: #fff; }
+
+    .btn-discord { background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%); 
+
+-webkit-background-clip: text; 
+
+-webkit-text-fill-color: transparent; 
+
+color: #000; }
+
+    .btn-x { display: none; background: #000; border-color: #333; color: #fff; }
+
+
+
+    #auth-error { color: #ff4444; font-size: 0.9rem; margin-top: 10px; min-height: 1.2em; display:none;}
+
+    .divider { display: flex; align-items: center; color: #555; margin: 10px 0; font-size: 0.8rem; }
+
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #333; }
+
+    .divider span { padding: 0 10px; }
+
+</style>
+
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -174,17 +502,35 @@
             initializeGuest();
         }
 
-        function initializeGuest() {
-            if (premiumContent) premiumContent.classList.add('visible');
-            if (startBtn) {
-                startBtn.innerText = "Start watching for free";
-                startBtn.onclick = () => {
-                    authModal.style.display = 'flex';
-                    setTimeout(() => authModal.classList.add('visible'), 10);
-                };
-            }
-        }
-
+function initializeGuest() {
+    if (premiumContent) premiumContent.classList.add('visible');
+    
+    if (startBtn) {
+        // CHANGED: Use innerHTML so the browser renders the SVG
+        startBtn.innerHTML = `Start watching<svg 
+            class="btn-icon" 
+            aria-hidden="true" 
+            xmlns="http://www.w3.org/2000/svg" 
+            width="24" 
+            height="24" 
+            fill="none" 
+            viewBox="0 0 24 24"
+        >
+            <path 
+                stroke="currentColor" 
+                stroke-linecap="round" 
+                stroke-linejoin="round" 
+                stroke-width="2" 
+                d="m10 16 4-4-4-4"
+            />
+        </svg>`;
+        
+        startBtn.onclick = () => {
+            authModal.style.display = 'flex';
+            setTimeout(() => authModal.classList.add('visible'), 10);
+        };
+    }
+}
         function initializePostLogin() {
             // === CIRCUIT BREAKER ===
             // Check if we tried to activate in the last 15 seconds
@@ -282,5 +628,6 @@
         window.closeLegal = () => document.getElementById('legal-overlay').classList.remove('active');
     })();
     </script>
+<script src="src/components/navigation.js"></script> 
 </body>
 </html>
