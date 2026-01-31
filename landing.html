@@ -112,7 +112,7 @@
         @keyframes text-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; text-shadow: 0 0 15px rgba(255,255,255,0.3); } }
     </style>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
     (async function() {
         const SUPABASE_URL = 'https://csuyapzneytubzdrdegl.supabase.co'; 
@@ -162,6 +162,7 @@
         if (supabase) {
             const { data } = await supabase.auth.getSession();
             if (data && data.session) {
+                // If logged in, immediately start the sequence (skip the button)
                 initializePostLogin();
             } else {
                 initializeGuest();
@@ -181,21 +182,13 @@
         }
 
         function initializePostLogin() {
-            if (startBtn) {
-                startBtn.innerText = "Activate Premium"; 
-                startBtn.style.background = "#fff"; 
-                startBtn.style.color = "#000";
-                startBtn.style.fontWeight = "700";
-                
-                const terms = document.querySelectorAll('.price-term, .price-term-common');
-                terms.forEach(t => t.style.opacity = '0'); 
-
-                startBtn.onclick = runOTTSequence;
-            }
+            // AUTOMATICALLY TRIGGER THE LOADING SEQUENCE
+            // This hides the landing content immediately and starts the loader
+            runOTTSequence();
         }
 
         async function runOTTSequence() {
-            // Visuals
+            // Visuals: Fade out landing content, Fade in loader
             premiumContent.classList.add('fade-out');
             premiumProcessing.classList.add('active');
 
@@ -218,24 +211,20 @@
                 }, step.delay);
             });
 
-            // ... inside runOTTSequence ...
-
-            // SECURE AUTH REQUEST
+            // SECURE AUTH REQUEST & REDIRECT
             setTimeout(async () => {
                 try {
                     const response = await fetch('/login', { method: 'POST' });
                     if (response.ok) {
-                         // CHANGED: Force a hard navigation to root instead of reload()
-                         // We add a timestamp (?t=...) to bust the browser cache 
-                         // and ensure the middleware runs again.
+                         // Force hard navigation to root with timestamp to bust cache
                          window.location.href = "/?t=" + new Date().getTime();
                     } else {
+                        // If activation fails on server, reload to try again
                         alert("Activation Failed. Please refresh.");
                         window.location.reload();
                     }
                 } catch (e) {
                     console.error("Auth Error", e);
-                    // Optional: Remove the loading state if it fails so they can try again
                     premiumProcessing.classList.remove('active');
                     premiumContent.classList.remove('fade-out');
                 }
@@ -260,8 +249,7 @@
             setTimeout(() => authModal.style.display = 'none', 300);
         };
         
-        // Legal Overlay Logic
-        window.openLegal = (type) => { /* Reuse logic if needed, simplified for brief */ };
+        window.openLegal = (type) => { };
         window.closeLegal = () => document.getElementById('legal-overlay').classList.remove('active');
     })();
     </script>
