@@ -218,21 +218,26 @@
                 }, step.delay);
             });
 
+            // ... inside runOTTSequence ...
+
             // SECURE AUTH REQUEST
-            // At the end of the visual sequence, we ask the server for the key
             setTimeout(async () => {
                 try {
                     const response = await fetch('/login', { method: 'POST' });
                     if (response.ok) {
-                         // Reloading the page will cause the middleware 
-                         // to see the new cookie and serve app.html
-                         window.location.reload();
+                         // CHANGED: Force a hard navigation to root instead of reload()
+                         // We add a timestamp (?t=...) to bust the browser cache 
+                         // and ensure the middleware runs again.
+                         window.location.href = "/?t=" + new Date().getTime();
                     } else {
                         alert("Activation Failed. Please refresh.");
                         window.location.reload();
                     }
                 } catch (e) {
                     console.error("Auth Error", e);
+                    // Optional: Remove the loading state if it fails so they can try again
+                    premiumProcessing.classList.remove('active');
+                    premiumContent.classList.remove('fade-out');
                 }
             }, 7200);
         }
