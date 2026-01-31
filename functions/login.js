@@ -1,21 +1,21 @@
 export async function onRequestPost(context) {
-  const headers = new Headers();
+  const url = new URL(context.request.url);
+  // Always use Secure if on HTTPS. 
+  // If you are on localhost (http), the browser simply ignores 'Secure', which is safer than complex logic.
+  const isHttps = url.protocol === 'https:';
   
-  // CHANGED: SameSite=Lax (Better for navigation)
-  // NOTE: If you are testing on localhost (http), remove "; Secure" manually, 
-  // or the cookie will be rejected by the browser.
-  const cookieVal = `TUWA_PREMIUM=true; Path=/; Secure; HttpOnly; SameSite=Lax; Max-Age=31536000`;
+  // 1. Force Path=/ to ensure it covers the whole site
+  // 2. Use SameSite=Lax to allow top-level navigation usage
+  const cookieVal = `TUWA_PREMIUM=true; Path=/; ${isHttps ? 'Secure;' : ''} HttpOnly; SameSite=Lax; Max-Age=31536000`;
 
-  headers.set("Set-Cookie", cookieVal);
+  const headers = new Headers();
+  headers.append("Set-Cookie", cookieVal);
   
   return new Response(JSON.stringify({ status: "activated" }), {
     headers: { 
       ...headers, 
       "Content-Type": "application/json",
-      // Add these to force the browser to not cache the response
-      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-      "Pragma": "no-cache",
-      "Expires": "0"
+      "Cache-Control": "no-store, no-cache"
     }
   });
 }

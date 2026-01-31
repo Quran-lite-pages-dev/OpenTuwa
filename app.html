@@ -217,10 +217,6 @@
                 <h1 class="hero-title-text" id="door-hero-title" data-i18n="hero.title"></h1>
                 <div class="hero-subtitle" id="door-hero-subtitle" data-i18n="hero.subtitle"></div>
                 <button id="door-play-btn" class="start-btn dash-btn" tabindex="0">
-                    <span data-i18n="hero.play">Play</span>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-left:8px;">
-                        <path d="M18.25 12L7.75 5.75V18.25L18.25 12Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
                 </button>
             </div>
         </div>
@@ -236,7 +232,8 @@
         </div>
     </div>
 
-    <audio id="preview-audio" crossorigin="anonymous"></audio>
+    <audio id="preview-audio" crossorigin="anonymous" muted></audio>
+
 
     <div id="cinema-view">
         <div id="loading-overlay">
@@ -294,24 +291,12 @@
         </div>
     </div>
 
-    <div id="arabic-modal">
-        <div class="arabic-modal-card">
-            <h2><b data-i18n="arabicModal.question">Do you know how to read Arabic?</b></h2>
-            <h3 data-i18n="arabicModal.subtitle">Or you'll simply see only the translation.</h3>
-            <div class="arabic-btn-group">
-                <button id="btn-arabic-yes" class="arabic-btn" data-i18n="arabicModal.yes">Yes</button>
-                <button id="btn-arabic-no" class="arabic-btn" data-i18n="arabicModal.no">No</button>
-            </div>
-        </div>
-    </div>
+
     
     <script src="src/core/app.js"></script>
     <script src="src/core/ai-override.js"></script> 
     <script src="src/components/navigation.js"></script> 
-    <script src="src/components/arabic-modal-handler.js"></script>
-    <script src="src/components/search/voice-search-bridge.js"></script>
     <script src="src/utils/content-protection.js"></script>
-    <script src="src/components/search/grid-navigation.js"></script>
     <script src="src/ui/artifact.js"></script>
     <script src="src/ui/all-text-fade.js"></script>
     <div id="transition-fade-layer"></div>

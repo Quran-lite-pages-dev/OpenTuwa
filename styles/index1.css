@@ -757,6 +757,7 @@ transform: none;
     border-top-color: var(--accent); animation: spin 0.8s ease-in-out infinite; margin-bottom: 2rem;
 }
 .start-btn {
+   display: none;
     /* 1. Layout & Sizing */
     position: relative; 
     left: 50%;
@@ -795,6 +796,7 @@ transform: none;
 }
 
 .start-btn:focus, .start-btn:hover { 
+   display: none;
     /* Keep translate values consistent to avoid "jumping" */
     transform: translate(-50%, -280%) scale(1.05); 
 
@@ -1025,6 +1027,7 @@ select:focus {
 
 /* 3. Dashboard Button Armor */
 .dash-btn {
+display: none;
     position: relative; /* Ensure pseudo aligns to button */
 }
 .dash-btn::before {
