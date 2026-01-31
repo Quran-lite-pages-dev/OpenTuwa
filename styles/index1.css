@@ -234,21 +234,28 @@ html[dir="rtl"] .app-brand {
 
 
 /* --- ISLAND SEARCH BOX --- */
+/* --- ISLAND SEARCH BOX FIX --- */
 #island-search-wrapper {
-    position: fixed;
-    bottom: 30px;
-    left: 0;
-    width: 100%;
-display: flex;
-    align-items: flex-start; /* Standard left alignment */
-    justify-content: flex-start;
+    /* 1. Force Positioning */
+    position: fixed !important;
+    top: auto !important;    /* CRITICAL: Prevents it from sticking to top */
+    bottom: 30px !important; /* Force the bottom gap */
+    left: 0 !important;
     
-    /* This creates the 'safe' visual gap from the edge */
+    /* 2. Constrain Geometry */
+    width: 100% !important;
+    height: auto !important; /* CRITICAL: Prevents full-screen stretching */
+    
+    /* 3. Layout */
+    display: flex !important;
+    align-items: flex-end !important; /* Safety: Ensure alignment is bottom-biased */
+    justify-content: flex-start !important;
+    
+    /* 4. Visuals */
     padding-left: 5%; 
-    gap: 12px; /* Creates the space between the Input Island and the Button Satellite */
-    pointer-events: none;
-    pointer-events: none; /* Clicks pass through the empty space */
-    z-index: 9999;
+    gap: 12px;
+    z-index: 9999 !important;
+    pointer-events: none; /* Keep the wrapper click-through */
 }
 
 
@@ -467,8 +474,6 @@ animation-delay: 1s;
     pointer-events: all;
 }
 
-
-
 /* --- 2. DASHBOARD STYLES --- */
 #dashboard-view {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -683,8 +688,8 @@ transform: none;
     outline: none;
 }
 
-.card-bg-num { position: absolute; top: -15px; right: 5px; font-size: 7rem; font-weight: 900; color: rgba(255,255,255,0.05); line-height: 1; }
-.card-title { font-size: 1.6rem; font-weight: 700; color: #fff; z-index: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-bg-num { display: none; position: absolute; top: -15px; right: 5px; font-size: 7rem; font-weight: 900; color: rgba(255,255,255,0.05); line-height: 1; }
+.card-title { font-size: 1.8rem; font-weight: 700; color: #fff; z-index: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-sub { display: none; font-size: 1.1rem; color: #aaa; z-index: 2; margin-top: 0.2rem; }
 
 /* --- 3. SEARCH OVERLAY & EXTRAS (Full Width Fixes) --- */
@@ -971,6 +976,7 @@ select:focus {
 
 /* Preview Subtitles */
 #hero-subtitle-overlay {
+    display: none;
     position: fixed !important; bottom: 120px; right: 5%; max-width: 600px;
     color: #fff; font-size: 1.4rem; font-weight: 500;
     text-shadow: 0 2px 4px rgba(0,0,0,0.9);

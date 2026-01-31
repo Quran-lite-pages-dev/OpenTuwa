@@ -146,6 +146,42 @@
           syncH1toH2();
       });
     </script>
+<style>
+    /* --- FORCE ISLAND SEARCH BAR VISIBILITY --- */
+/* --- ISLAND SEARCH BOX FIX --- */
+#island-search-wrapper {
+    /* 1. Force Positioning */
+    position: fixed !important;
+    top: auto !important;    /* CRITICAL: Prevents it from sticking to top */
+    bottom: 30px !important; /* Force the bottom gap */
+    left: 0 !important;
+    
+    /* 2. Constrain Geometry */
+    width: 100% !important;
+    height: auto !important; /* CRITICAL: Prevents full-screen stretching */
+    
+    /* 3. Layout */
+    display: flex !important;
+    align-items: flex-end !important; /* Safety: Ensure alignment is bottom-biased */
+    justify-content: flex-start !important;
+    
+    /* 4. Visuals */
+    padding-left: 5%; 
+    gap: 12px;
+    z-index: 9999 !important;
+    pointer-events: none; /* Keep the wrapper click-through */
+}
+
+    /* 4. ...BUT force the actual box and button to be clickable */
+    #island-search-wrapper .island-search-box,
+    #island-search-wrapper #island-trigger {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        
+        /* Optional: Add a subtle background if it was blending in too much */
+        backdrop-filter: blur(20px);
+    }
+</style>
 </head>
 <body>
 <a href="/" class="app-brand" aria-label="Tuwa Home">
@@ -300,6 +336,99 @@
     <script src="src/ui/artifact.js"></script>
     <script src="src/ui/all-text-fade.js"></script>
     <div id="transition-fade-layer"></div>
+<script>
+(function() {
+    'use strict';
+
+    // CONFIGURATION
+    const TARGET_CLASS = 'brand-icon';
+
+    // 1. Inject CSS for the "Invisible Shield"
+    // This creates a layer on top of the image that intercepts all clicks/drags.
+    const style = document.createElement('style');
+    style.innerHTML = `
+        .${TARGET_CLASS} {
+            position: relative !important; /* Anchors the shield */
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
+        }
+        
+        /* The Shield */
+        .${TARGET_CLASS}::after {
+            content: '' !important;
+            display: block !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            z-index: 100 !important; /* Sit on top of the image */
+            background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7') !important; /* 1x1 transparent gif trick for IE/Old browsers */
+        }
+
+        /* Hide the image from print selection if possible */
+        @media print {
+            .${TARGET_CLASS} img {
+                display: none !important;
+            }
+            .${TARGET_CLASS}::after {
+                content: 'Protected Image';
+                display: block;
+                border: 1px dashed #ccc;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // 2. JavaScript Event Blockers
+    // We attach these to the CONTAINER, which now holds the shield.
+    function protectSafe() {
+        const containers = document.querySelectorAll(`.${TARGET_CLASS}`);
+
+        containers.forEach(div => {
+            // Disable native dragging on the image tag underneath
+            const img = div.querySelector('img');
+            if (img) {
+                img.setAttribute('draggable', 'false');
+                img.style.pointerEvents = 'none'; // Ensures clicks pass to the ::after shield or container
+            }
+
+            // Block Right Click
+            div.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }, true);
+
+            // Block Drag Start
+            div.addEventListener('dragstart', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }, true);
+
+            // Block Copy
+            div.addEventListener('copy', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }, true);
+            
+            // Block Touch/Long-press on mobile
+            div.style.webkitTouchCallout = 'none';
+        });
+    }
+
+    // Run immediately
+    protectSafe();
+
+    // Watch for new content (e.g. infinite scroll or dynamic loading)
+    new MutationObserver(protectSafe).observe(document.body, { childList: true, subtree: true });
+
+})();
+</script>
 
 </body>
 </html>
