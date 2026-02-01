@@ -1,4 +1,0 @@
-com.opentuwa.stream.test.app-androidTest-0 C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\build\generated\res\resValues\androidTest\debug
-com.opentuwa.stream.test.app-mergeDebugAndroidTestResources-1 C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\merged.dir
-com.opentuwa.stream.test.app-mergeDebugAndroidTestResources-2 C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\build\intermediates\incremental\debugAndroidTest\mergeDebugAndroidTestResources\stripped.dir
-com.opentuwa.stream.test.app-merged_res-3 C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\build\intermediates\merged_res\debugAndroidTest
