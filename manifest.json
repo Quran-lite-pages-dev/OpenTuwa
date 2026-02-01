@@ -1,7 +1,7 @@
 {
   "name": "Tuwa",
   "short_name": "Tuwa",
-  "description": "Premium streaming provider with distraction-free viewing. A brand of Tuwa Media.",
+  "description": "Premium streaming provider with distraction-free viewing. A brand of OpenTuwa.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#121212",
