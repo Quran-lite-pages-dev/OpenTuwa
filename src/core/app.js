@@ -1,8 +1,8 @@
 /**
- * TUWA - The Sacred Valley
+ * TUWA - OpenTuwa
  * Copyright (c) 2024-2026 Haykal M. Zaidi (d/b/a Tuwa Media).
  * * PROPRIETARY IDENTITY:
- * The name "Tuwa" and "Sacred Valley" are trademarks of Tuwa Media.
+ * The name "Tuwa" and "OpenTuwa" are trademarks of Tuwa Media.
  * This code is licensed under MIT + Trademark Lock.
  */
 
@@ -570,7 +570,7 @@ function refreshDashboard() {
     // 1. Get all lists like before
     const allIndices = Array.from({length: 114}, (_, i) => i);
     const shortRowIndices = allIndices.slice(77, 114);
-    const trendingIndices = [85, 54, 104, 81, 86, 69, 56, 88, 53].map(id => id - 1);
+    const trendingIndices = [81, 82, 85, 54, 104, 81, 86, 69, 56, 88, 53].map(id => id - 1);
 
     // 2. COMBINE into one massive list for "Single Fish"
     // This merges trending, short, and all into ONE scrolling row
