@@ -1,4 +1,4 @@
-#Mon Feb 02 02:18:57 MYT 2026
+#Mon Feb 02 02:43:52 MYT 2026
 base.0=C\:\\Users\\SCSM11\\Downloads\\Quran-lite.pages.dev\\tv\\app\\build\\intermediates\\dex\\debug\\mergeExtDexDebug\\classes.dex
 base.1=C\:\\Users\\SCSM11\\Downloads\\Quran-lite.pages.dev\\tv\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\0\\classes.dex
 base.2=C\:\\Users\\SCSM11\\Downloads\\Quran-lite.pages.dev\\tv\\app\\build\\intermediates\\dex\\debug\\mergeProjectDexDebug\\11\\classes.dex

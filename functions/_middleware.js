@@ -2,61 +2,49 @@ export async function onRequest(context) {
   const { request, next, env } = context;
   const url = new URL(request.url);
 
-  // --- CONFIGURATION ---
-  // List of protected folders. Users cannot browse these directly.
+  // --- 1. CONFIGURATION ---
+  // Define folders users should never see in the browser address bar.
   const protectedPaths = ['/src', '/assets', '/style', '/functions', '/locales'];
 
-  // Check for Premium Cookie immediately
-  const cookieHeader = request.headers.get("Cookie");
-  const hasPremium = cookieHeader && cookieHeader.includes("TUWA_PREMIUM=true");
+  // --- 2. ROBUST SECURITY TRAP ---
   
-  // Decide which page acts as the "Mask" (Interception content)
-  const maskPage = hasPremium ? '/app.html' : '/landing.html';
-
-  // --- 1. SECURITY INTERCEPTION LOGIC ---
+  // FIX 1: Case Insensitivity
+  // Convert path to lowercase strictly for the check.
+  // This prevents '/SRC/app.js' from bypassing the filter.
+  const lowerPath = url.pathname.toLowerCase();
   
-  // Check if the request is for one of the protected folders
-  const isProtectedPath = protectedPaths.some(path => url.pathname.startsWith(path));
+  // Check if the user is touching a protected folder
+  const isProtectedPath = protectedPaths.some(path => lowerPath.startsWith(path));
 
-  // Check if this is a "Navigation" request (User typing URL in browser bar)
-  // 'document' means the browser wants to display this as a full page.
-  const isNavigation = request.headers.get("Sec-Fetch-Dest") === "document";
+  // Check if this is a "Navigation" (Human using browser) vs "Subresource" (App loading script)
+  // - Sec-Fetch-Dest: 'document' is the modern standard for top-level navigation.
+  // - Accept: 'text/html' catches older browsers or direct navigation attempts.
+  const dest = request.headers.get("Sec-Fetch-Dest");
+  const accept = request.headers.get("Accept");
+  const isNavigation = dest === "document" || (accept && accept.includes("text/html"));
 
   if (isProtectedPath && isNavigation) {
-    // SECURITY BLOCK:
-    // The user tried to browse a protected folder directly.
-    // We INTERCEPT the request. The URL stays the same (e.g. /src/config.js),
-    // but we serve the content of the Mask Page (Landing or App).
-    return env.ASSETS.fetch(new URL(maskPage, request.url));
+    // FIX 2: The Redirect (Solves the "Indexless" / Broken CSS Bug)
+    // We do NOT serve the file. We do NOT rewrite.
+    // We bounce the user back to the Root URL.
+    // Result: URL changes to '/', Landing Page loads, CSS works perfectly.
+    return Response.redirect(new URL('/', request.url), 302);
   }
 
-  // --- 2. STATIC ASSETS & LOGIN ---
+  // --- 3. AUTHENTICATION ---
+  const cookieHeader = request.headers.get("Cookie");
+  const hasPremium = cookieHeader && cookieHeader.includes("TUWA_PREMIUM=true");
+
+  // --- 4. ROUTING (Root Path) ---
   
-  // Now it is safe to pass through assets because we blocked direct user navigation above.
-  // This allows the browser to load <img src="/assets/logo.png"> but prevents the user from visiting it.
-  if (url.pathname.match(/\.(css|js|png|jpg|ico|xml|mp3|json|woff2)$/) || url.pathname === '/login') {
-    return next();
+  // Only handle the exact root or index.html
+  if (lowerPath === '/' || lowerPath === '/index.html' || lowerPath === '') {
+    // Serve the "Mask" page based on auth status
+    const targetPage = hasPremium ? '/app.html' : '/landing.html';
+    return env.ASSETS.fetch(new URL(targetPage, request.url));
   }
 
-  // --- 3. ROUTING LOGIC (Root Path) ---
-
-  // A. User is NOT Premium (serve landing)
-  if (!hasPremium) {
-    // If they are at root, serve landing
-    if (url.pathname === '/' || url.pathname === '/index.html') {
-       return env.ASSETS.fetch(new URL('/landing.html', request.url));
-    }
-    // Note: If they requested a non-existent page not caught above, we might want 404 or Landing.
-    // For high security, default to Landing:
-    return env.ASSETS.fetch(new URL('/landing.html', request.url));
-  }
-
-  // B. User IS Premium
-  if (hasPremium) {
-    if (url.pathname === '/' || url.pathname === '/index.html') {
-      return env.ASSETS.fetch(new URL('/app.html', request.url));
-    }
-  }
-
+  // --- 5. PASSTHROUGH ---
+  // If we are here, it is a safe asset request (e.g. your app.html loading app.js).
   return next();
 }
