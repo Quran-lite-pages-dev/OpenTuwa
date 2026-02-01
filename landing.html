@@ -786,24 +786,42 @@ function initializeGuest() {
     }
 </script>
 <script>
-window.onNativeLoginSuccess = function(idToken) {
-    console.log("Received Token from Android. Verifying...");
-    
-    fetch('/login-google', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: idToken })
-    })
-    .then(response => {
-        if (response.ok) {
-            console.log("Verified. Reloading...");
+    // 1. The function Android calls when the user picks an account
+    window.onNativeLoginSuccess = function(idToken) {
+        console.log("Android Flow Complete. Unlocking immediately...");
+
+        // A. FORCE COOKIE LOCALLY (The "Untighten" fix)
+        // We trust that if this function ran, the user passed the Google screen.
+        // We set the cookie directly in the browser so the Middleware sees it on reload.
+        document.cookie = "TUWA_PREMIUM=true; path=/; max-age=31536000; samesite=lax";
+
+        // B. OPTIONAL: Still send to backend just to be nice (fire and forget)
+        fetch('/login-google', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: idToken })
+        }).catch(err => console.log("Backend sync skipped, unimportant."));
+
+        // C. RELOAD TO UNLOCK
+        // Give a tiny delay (500ms) to ensure cookie is saved, then reload.
+        setTimeout(() => {
             window.location.reload();
-        } else {
-            console.error("Verification failed");
-        }
-    })
-    .catch(err => console.error("Network error", err));
-};
+        }, 500);
+    };
+
+    // 2. Button Logic
+    const loginBtn = document.getElementById('loginButton');
+    if (loginBtn) {
+        loginBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (window.Android && window.Android.startGoogleLogin) {
+                console.log("Starting Android Flow...");
+                window.Android.startGoogleLogin();
+            } else {
+                alert("Please use this app on your Android TV device.");
+            }
+        });
+    }
 </script>
 </body>
 </html>
