@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Tuwa - Web player</title>
-
-    <link rel="icon" type="image/png" sizes="128x128" href="assets/ui/web.png">
-    <link rel="shortcut icon" href="assets/ui/web.ico">
-    <link rel="apple-touch-icon" href="assets/ui/apple-touch-icon.png">
+    <title>Tuwa - Premium Access</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,25 +13,15 @@
     
     <style>
         body { background: #000; overflow: hidden; }
+        /* Landing Page Specific Overrides to match index1.css variable usage */
         #premium-landing { display: flex !important; }
-
-        /* CRITICAL FIX: Hide content initially to prevent flashing the button */
-        .premium-content { 
-            opacity: 0; 
-            transition: opacity 0.8s ease; 
-            pointer-events: none; /* Prevent clicking while hidden */
-        }
-        .premium-content.visible { 
-            opacity: 1; 
-            pointer-events: all; 
-        }
     </style>
 </head>
 <body>
 
     <div id="premium-landing" style="display: flex;"> 
         <div class="premium-brand-replica">
-            <img src="assets/ui/logo.png" alt="Tuwa Logo" class="lazyload">
+            <img src="assets/ui/logo.png" alt="Tuwa Logo">
             <span>Tuwa</span>
         </div>
 
@@ -46,178 +32,62 @@
                 </div>
                 <span class="brand-text">Tuwa</span>
             </div>
-            <h1 class="premium-title">Premium content with distraction-free viewing.</h1>
-            <p class="premium-subtitle">The Global Standard in Streaming — <b> Join 1.5 Billion Daily Listeners. </b></p>
+            <h1 class="premium-title">Access to premium content with distraction-free viewing.</h1>
+            <p class="premium-subtitle">Premium streaming platform — <b>1.5 billion listeners daily</b></p>
 
             <div class="premium-card-wrapper">
-                <div class="premium-price-tag" style="display: flex; flex-direction: column; align-items: center;">
-                    <span class="price-term-common" style="color: rgba(255,255,255,0.6); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 4px;">
-                        Limited Time Offer
-                    </span>
-
-                    <span class="price-term-common" style="color: #fff; font-size: 1.4rem; font-weight: 500; margin-bottom: 0px;">
-                        12 Months of Premium
-                    </span>
-
-                    <span class="price-big" style="font-size: 5rem; font-weight: 800; letter-spacing: -2px; margin: 8px 0 16px 0;">
-                        USD 0
-                    </span>
-
-                    <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; align-items: center;">
-                        <button id="premium-start-btn" class="premium-btn">
-                            <span>Start watching now</span>
-                            <svg 
-                                class="btn-icon" 
-                                aria-hidden="true" 
-                                xmlns="http://www.w3.org/2000/svg" 
-                                width="24" 
-                                height="24" 
-                                fill="none" 
-                                viewBox="0 0 24 24"
-                            >
-                                <path 
-                                    stroke="currentColor" 
-                                    stroke-linecap="round" 
-                                    stroke-linejoin="round" 
-                                    stroke-width="2" 
-                                    d="m10 16 4-4-4-4"
-                                />
-                            </svg>
-                        </button>
+                <div class="premium-price-tag">
+                    <span class="price-period"></span>
+                    <span class="price-big">USD 0</span> 
+                    <div style="margin-top: 1rem; display: flex; flex-direction: column; gap: 4px;">
+                        <span class="price-term-common" style="color: #fff;">Premium Plan • <b>12 Months</b> (Limited time offer)</span>
+                        <span class="price-term-common"></span>
+                        <button id="premium-start-btn" class="premium-btn">Start watching for free</button>
+                        <nobr><span class="price-term">No credit card needed</span></nobr>
                     </div>
-                        
-                    <nobr><span class="price-term" style="opacity: 0.7; font-size: 0.9rem;">No credit card needed</span></nobr>
                 </div>
             </div>
+            
+            <p class="premium-legal-disclaimer">
+                *Promotional pricing of USD 0/mo valid for the initial 12-month term. Plan automatically continues at the standard zero-cost rate thereafter. No commitment; cancel anytime. No payment method required.
+            </p>
         </div>
 
-        <style>
-            .premium-btn {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                gap: 12px;
-                padding: 12px 24px;
-                width: auto;
-                background: #fff;
-                color: #000;
-                border: none;
-                font-size: 1.5rem;
-                font-family: var(--font-body);
-                font-weight: 900;
-                border-radius: 4px;
-                cursor: pointer;
-                transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-                box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
-                position: relative;
-                overflow: hidden;
-            }
+        <div class="premium-processing">
+            <div class="premium-loader"></div>
+            <div class="premium-status-text" id="premium-status">Confirming availability</div>
+        </div>
 
-            .premium-btn svg {
-                flex-shrink: 0;
-                transition: transform 0.3s ease;
-            }
-
-            .premium-btn:hover {
-                transform: translateY(-2px) scale(1.02);
-                box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
-                background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
-                -webkit-background-clip: text;
-                background-clip: text;
-                -webkit-text-fill-color: transparent;
-                color: #f2f2f2; 
-                opacity: 0.9;
-            }
-
-            .premium-btn:hover svg {
-                transform: translateX(4px);
-            }
-
-            @media (max-width: 768px) {
-                .premium-title {
-                    font-family: var(--font-heading);
-                    font-size: clamp(0.5rem, 10vw, 4.5rem);
-                    font-weight: 999;
-                    letter-spacing: -0.03em;
-                    line-height: 1.1;
-                    margin: 0;
-                    text-align: center;             
-                    width: 90%;                  
-                    max-width: 900px;
-                    background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
-                    -webkit-background-clip: text;
-                    -webkit-text-fill-color: transparent;
-                }
-
-                .premium-subtitle {
-                    font-family: var(--font-body);
-                    font-size: 2.15rem;
-                    color: #a1a1a6;
-                    font-weight: 400;
-                    line-height: 1.5;
-                    margin: 0;
-                    text-align: center;
-                    width: 90%;                  
-                    max-width: 900px; 
-                }
-            }
-        </style>
-
-        <p class="premium-legal-disclaimer" style="display: none;">
-            *Promotional pricing of USD 0/mo valid for the initial 12-month term. Plan automatically continues at the standard zero-cost rate thereafter. No commitment; cancel anytime. No payment method required.
-        </p>
-    </div>
-
-
-    <div class="premium-processing">
-        <div class="premium-loader"></div>
-        <div class="premium-status-text" id="premium-status">Confirming availability</div>
-    </div>
-
-    <div id="legal-overlay" class="legal-backdrop">
-        <div class="legal-glass-panel">
-            <button class="legal-close" onclick="closeLegal()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
-            </button>
-            <div id="legal-content-area" class="legal-scroll-content"></div>
+        <div id="legal-overlay" class="legal-backdrop">
+            <div class="legal-glass-panel">
+                <button class="legal-close" onclick="closeLegal()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
+                </button>
+                <div id="legal-content-area" class="legal-scroll-content"></div>
+            </div>
         </div>
     </div>
 
-    <div id="hybrid-auth-modal" style="background: rgba(0,0,0,0.8); padding: 40px; text-align: center;">
+    <!-- Hybrid Auth Modal (Used by the 'Start watching for free' flow) -->
+    <div id="hybrid-auth-modal">
         <div class="auth-card">
-            <h2 class="auth-card-title">Your bespoke premium content is on its way.</h2>
+            <h2 class="auth-card-title" style="color:#fff; margin:0; font-family:'Inter',sans-serif;">Your bespoke premium content is on its way.</h2>
             <div id="auth-error"></div>
 
-            <button onclick="handleSocialLogin('google')" class="social-btn btn-google" style="font-size: 2rem; font-weight: 700;">
-                <svg viewBox="0 0 18 18">
-                    <path d="M17.64 9.2c0-.637-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
-                    <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.715H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
-                    <path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/>
-                    <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
-                </svg>
+            <button onclick="handleSocialLogin('google')" class="social-btn btn-google">
+                <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.715H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/><path d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
                 Continue with Google
             </button>
+            <!-- Other buttons kept for visual fidelity -->
+            <button class="social-btn btn-discord" style="opacity:0.5; cursor:not-allowed;">Discord (Coming Soon)</button>
 
-            <button onclick="handleSocialLogin('discord')" class="social-btn btn-google" style="font-size: 2rem; font-weight: 700;">
-                <svg viewBox="0 0 512 365">
-                    <path fill="currentColor" d="M378.186 365.028s-15.794-18.865-28.956-35.099c57.473-16.232 79.41-51.77 79.41-51.77-17.989 11.846-35.099 20.182-50.454 25.885-21.938 9.213-42.997 14.917-63.617 18.866-42.118 7.898-80.726 5.703-113.631-.438-25.008-4.827-46.506-11.407-64.494-18.867-10.091-3.947-21.059-8.774-32.027-14.917-1.316-.877-2.633-1.316-3.948-2.193-.877-.438-1.316-.878-1.755-.878-7.898-4.388-12.285-7.458-12.285-7.458s21.06 34.659 76.779 51.331c-13.163 16.673-29.395 35.977-29.395 35.977C36.854 362.395 0 299.218 0 299.218 0 159.263 63.177 45.633 63.177 45.633 126.354-1.311 186.022.005 186.022.005l4.388 5.264C111.439 27.645 75.461 62.305 75.461 62.305s9.653-5.265 25.886-12.285c46.945-20.621 84.236-25.885 99.592-27.64 2.633-.439 4.827-.878 7.458-.878 26.763-3.51 57.036-4.387 88.624-.878 41.68 4.826 86.43 17.111 132.058 41.68 0 0-34.66-32.906-109.244-55.281l6.143-7.019s60.105-1.317 122.844 45.628c0 0 63.178 113.631 63.178 253.585 0-.438-36.854 62.739-133.813 65.81l-.001.001zm-43.874-203.133c-25.006 0-44.75 21.498-44.75 48.262 0 26.763 20.182 48.26 44.75 48.26 25.008 0 44.752-21.497 44.752-48.26 0-26.764-20.182-48.262-44.752-48.262zm-160.135 0c-25.008 0-44.751 21.498-44.751 48.262 0 26.763 20.182 48.26 44.751 48.26 25.007 0 44.75-21.497 44.75-48.26.439-26.763-19.742-48.262-44.75-48.262z"/>
-                </svg>
-                Continue with Discord
-            </button>
-
-            <div style="display: none; margin-top:20px; font-size:0.8rem; color:#888; cursor:pointer;" onclick="closeAuth()">Cancel</div>
+            <div style="margin-top:20px; font-size:0.8rem; color:#444; cursor:pointer;" onclick="closeAuth()">Cancel</div>
         </div>
     </div>
 
+    <!-- Styles for Auth/Legal/Processing -->
     <style>
-        .social-btn svg {
-            width: 18px; 
-            height: 18px;
-            vertical-align: middle;
-            margin-right: 10px;
-            filter: brightness(0) invert(1) drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
-        }
-        
+        /* Reused from original index.html */
         .legal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9995; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); opacity: 0; pointer-events: none; transition: opacity 0.4s; display: flex; align-items: center; justify-content: center; }
         .legal-backdrop.active { opacity: 1; pointer-events: all; }
         .legal-glass-panel { width: 90%; max-width: 600px; height: 80vh; background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 40px 80px rgba(0,0,0,0.8); transform: scale(0.95) translateY(20px); transition: transform 0.5s; position: relative; overflow: hidden; display: flex; flex-direction: column; }
@@ -227,215 +97,168 @@
         
         #hybrid-auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2147483647; display: none; justify-content: center; align-items: center; backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease; }
         #hybrid-auth-modal.visible { opacity: 1; pointer-events: all; }
-        
-        .auth-card {
-          position: fixed !important;
-          top: 0 !important;
-          left: 0 !important;
-          right: 0 !important;
-          bottom: 0 !important;
-          width: 100vw !important;
-          height: 100vh !important;
-          z-index: 99999 !important;
-          background: rgba(20, 20, 20, 1) !important;
-          box-sizing: border-box !important;
-          margin: 0 !important;
-          padding: 20px !important;
-          border: none !important;
-          border-radius: 0 !important;
-          box-shadow: none !important;
-          transform: none !important;
-          display: flex !important;
-          flex-direction: column !important;
-          justify-content: center !important;
-          align-items: center !important;
-          text-align: center !important;
-          gap: 16px !important;
-          overflow-y: auto !important;
-        }
-
-        .auth-card > * {
-          max-width: 100% !important;
-          flex-shrink: 1;
-        }
-        
+        .auth-card { background: rgba(20, 20, 20, 0.8); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; padding: 40px; width: 90%; max-width: 400px; text-align: center; box-shadow: 0 40px 80px rgba(0,0,0,1); display: flex; flex-direction: column; gap: 12px; transform: scale(0.95); transition: transform 0.3s; }
         #hybrid-auth-modal.visible .auth-card { transform: scale(1); }
-        .social-btn { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-size: 2rem; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s, background 0.2s; color: #fff; font-family: 'Inter', sans-serif; }
+        .social-btn { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-size: 1rem; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s, background 0.2s; color: #fff; font-family: 'Inter', sans-serif; }
         .social-btn:hover { transform: scale(1.02); }
         .btn-google { background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: #000; }
         
         .premium-processing { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 0.6s cubic-bezier(0.2, 0, 0, 1); background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(40px) saturate(120%); }
         .premium-processing.active { display: flex; opacity: 1; }
+        .premium-content.fade-out { opacity: 0; transform: scale(0.95); pointer-events: none; }
         .premium-loader { width: 50px; height: 50px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.1) 50%, #fff 100%); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px + 0.5px)); mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px + 0.5px)); animation: cinema-spin 1s linear infinite; margin-bottom: 24px; box-shadow: 0 0 30px rgba(255,255,255,0.05); }
         @keyframes cinema-spin { to { transform: rotate(360deg); } }
         .premium-status-text { animation: text-pulse 2s ease-in-out infinite; transition: opacity 0.3s ease; font-family: "Plus Jakarta Sans", "Inter", sans-serif; font-size: 1.2rem; font-weight: 500; letter-spacing: 0.15em; color: rgba(255, 255, 255, 0.9); text-transform: uppercase; text-align: center; }
         @keyframes text-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; text-shadow: 0 0 15px rgba(255,255,255,0.3); } }
     </style>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-    // --- CONFIGURATION ---
-    const SUPABASE_URL = "https://csuyapzneytubzdrdegl.supabase.co"; // Replace if needed
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzdXlhcHpuZXl0dWJ6ZHJkZWdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MzM1MzMsImV4cCI6MjA4NTMwOTUzM30.m5lhtxB-9Wutmt1E-3mlO8R0KlgE8YNXaPP1_UJF2k0"; // cloudflare backend
-    const supabase = (window.supabase && window.supabase.createClient) 
-        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) 
-        : null;
-
-    // --- UI ELEMENTS ---
-    const premiumProcessing = document.querySelector('.premium-processing');
-    const statusText = document.getElementById('premium-status');
-    const modal = document.getElementById('hybrid-auth-modal');
-    const content = document.querySelector('.premium-content');
-
-    // --- MAIN INITIALIZATION (BYPASS MODE) ---
-    (function checkAuthStatus() {
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+    (async function() {
+        const SUPABASE_URL = 'https://csuyapzneytubzdrdegl.supabase.co'; 
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNzdXlhcHpuZXl0dWJ6ZHJkZWdsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MzM1MzMsImV4cCI6MjA4NTMwOTUzM30.m5lhtxB-9Wutmt1E-3mlO8R0KlgE8YNXaPP1_UJF2k0';
         
-        // 1. Check if user is returning from a Redirect (Look for Hash)
-        const hasHash = window.location.hash && window.location.hash.length > 5;
+        // Currency Data
+        const COUNTRY_TO_CURRENCY = { "AF": "AFN", "AL": "ALL", "DZ": "DZD", "AS": "USD", "AD": "EUR", "AO": "AOA", "AI": "XCD", "AQ": "USD", "AG": "XCD", "AR": "ARS", "AM": "AMD", "AW": "AWG", "AU": "AUD", "AT": "EUR", "AZ": "AZN", "BS": "BSD", "BH": "BHD", "BD": "BDT", "BB": "BBD", "BY": "BYN", "BE": "EUR", "BZ": "BZD", "BJ": "XOF", "BM": "BMD", "BT": "BTN", "BO": "BOB", "BQ": "USD", "BA": "BAM", "BW": "BWP", "BV": "NOK", "BR": "BRL", "IO": "USD", "BN": "BND", "BG": "BGN", "BF": "XOF", "BI": "BIF", "CV": "CVE", "KH": "KHR", "CM": "XAF", "CA": "CAD", "KY": "KYD", "CF": "XAF", "TD": "XAF", "CL": "CLP", "CN": "CNY", "CX": "AUD", "CC": "AUD", "CO": "COP", "KM": "KMF", "CD": "CDF", "CG": "XAF", "CK": "NZD", "CR": "CRC", "HR": "EUR", "CU": "CUP", "CW": "ANG", "CY": "EUR", "CZ": "CZK", "CI": "XOF", "DK": "DKK", "DJ": "DJF", "DM": "XCD", "DO": "DOP", "EC": "USD", "EG": "EGP", "SV": "USD", "GQ": "XAF", "ER": "ERN", "EE": "EUR", "SZ": "SZL", "ET": "ETB", "FK": "FKP", "FO": "DKK", "FJ": "FJD", "FI": "EUR", "FR": "EUR", "GF": "EUR", "PF": "XPF", "TF": "EUR", "GA": "XAF", "GM": "GMD", "GE": "GEL", "DE": "EUR", "GH": "GHS", "GI": "GIP", "GR": "EUR", "GL": "DKK", "GD": "XCD", "GP": "EUR", "GU": "USD", "GT": "GTQ", "GG": "GBP", "GN": "GNF", "GW": "XOF", "GY": "GYD", "HT": "HTG", "HM": "AUD", "VA": "EUR", "HN": "HNL", "HK": "HKD", "HU": "HUF", "IS": "ISK", "IN": "INR", "ID": "IDR", "IR": "IRR", "IQ": "IQD", "IE": "EUR", "IM": "GBP", "IL": "ILS", "IT": "EUR", "JM": "JMD", "JP": "JPY", "JE": "GBP", "JO": "JOD", "KZ": "KZT", "KE": "KES", "KI": "AUD", "KP": "KPW", "KR": "KRW", "KW": "KWD", "KG": "KGS", "LA": "LAK", "LV": "EUR", "LB": "LBP", "LS": "LSL", "LR": "LRD", "LY": "LYD", "LI": "CHF", "LT": "EUR", "LU": "EUR", "MO": "MOP", "MG": "MGA", "MW": "MWK", "MY": "MYR", "MV": "MVR", "ML": "XOF", "MT": "EUR", "MH": "USD", "MQ": "EUR", "MR": "MRU", "MU": "MUR", "YT": "EUR", "MX": "MXN", "FM": "USD", "MD": "MDL", "MC": "EUR", "MN": "MNT", "ME": "EUR", "MS": "XCD", "MA": "MAD", "MZ": "MZN", "MM": "MMK", "NA": "NAD", "NR": "AUD", "NP": "NPR", "NL": "EUR", "NC": "XPF", "NZ": "NZD", "NI": "NIO", "NE": "XOF", "NG": "NGN", "NU": "NZD", "NF": "AUD", "MK": "MKD", "MP": "USD", "NO": "NOK", "OM": "OMR", "PK": "PKR", "PW": "USD", "PS": "ILS", "PA": "PAB", "PG": "PGK", "PY": "PYG", "PE": "PEN", "PH": "PHP", "PN": "NZD", "PL": "PLN", "PT": "EUR", "PR": "USD", "QA": "QAR", "RE": "EUR", "RO": "RON", "RU": "RUB", "RW": "RWF", "BL": "EUR", "SH": "SHP", "KN": "XCD", "LC": "XCD", "MF": "EUR", "PM": "EUR", "VC": "XCD", "WS": "WST", "SM": "EUR", "ST": "STN", "SA": "SAR", "SN": "XOF", "RS": "RSD", "SC": "SCR", "SL": "SLE", "SG": "SGD", "SX": "ANG", "SK": "EUR", "SI": "EUR", "SB": "SBD", "SO": "SOS", "ZA": "ZAR", "GS": "GBP", "SS": "SSP", "ES": "EUR", "LK": "LKR", "SD": "SDG", "SR": "SRD", "SJ": "NOK", "SE": "SEK", "CH": "CHF", "SY": "SYP", "TW": "TWD", "TJ": "TJS", "TZ": "TZS", "TH": "THB", "TL": "USD", "TG": "XOF", "TK": "NZD", "TO": "TOP", "TT": "TTD", "TN": "TND", "TR": "TRY", "TM": "TMT", "TC": "USD", "TV": "AUD", "UG": "UGX", "UA": "UAH", "AE": "AED", "GB": "GBP", "US": "USD", "UM": "USD", "UY": "UYU", "UZ": "UZS", "VU": "VUV", "VE": "VES", "VN": "VND", "VG": "USD", "VI": "USD", "WF": "XPF", "EH": "MAD", "YE": "YER", "ZM": "ZMW", "ZW": "ZWG" };
 
-        // 2. Check for the Handshake (Proof they clicked the button in THIS tab)
-        const authPendingTime = sessionStorage.getItem('tuwa_auth_pending');
-        const now = Date.now();
-        const tenMinutes = 10 * 60 * 1000;
+        let supabase = null;
+        let session = null;
+        
+        try {
+            if (window.supabase) {
+                const { createClient } = window.supabase;
+                supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+            }
+        } catch (e) { console.error("Supabase Init Error", e); }
 
-        // 3. VALIDATION:
-        // - Must have URL Hash (from Google/Discord redirect)
-        // - Must have clicked button (sessionStorage exists)
-        // - Must be recent (< 10 mins)
-        const isValidReturn = hasHash && 
-                              authPendingTime && 
-                              ((now - parseInt(authPendingTime)) < tenMinutes);
+        const startBtn = document.getElementById('premium-start-btn');
+        const authModal = document.getElementById('hybrid-auth-modal');
+        const premiumContent = document.querySelector('.premium-content');
+        const premiumProcessing = document.querySelector('.premium-processing');
+        const statusText = document.getElementById('premium-status');
 
-        if (isValidReturn) {
-            console.log("Fake Auth: Valid Return Detected. Granting Access.");
-            
-            // Clean up to prevent loops (optional, but good practice)
-            // sessionStorage.removeItem('tuwa_auth_pending'); 
+        // Currency Loading
+        const paintPrice = (currency) => {
+            const priceTag = document.querySelector('.price-big');
+            if (priceTag) {
+                priceTag.innerText = currency + " 0.00"; 
+                priceTag.classList.add('loaded'); 
+            }
+        };
 
-            // Show loading immediately
-            if (premiumProcessing) premiumProcessing.classList.add('active');
-            if (statusText) statusText.innerText = "Finalizing setup...";
+        paintPrice('USD'); 
 
-            // Trigger the success sequence
-            initializePostLogin();
+        fetch('/cdn-cgi/trace')
+            .then(r => { if (!r.ok) throw new Error("CF Trace failed"); return r.text(); })
+            .then(text => { 
+                const match = text.match(/loc=([A-Z]{2})/);
+                const country = match ? match[1] : 'US';
+                const currency = COUNTRY_TO_CURRENCY[country] || 'USD';
+                paintPrice(currency); 
+            })
+            .catch(() => paintPrice('USD'));
+
+        // Check Auth
+        if (supabase) {
+            const { data } = await supabase.auth.getSession();
+            if (data && data.session) {
+                initializePostLogin();
+            } else {
+                initializeGuest();
+            }
         } else {
-            console.log("Fake Auth: Guest Mode (No valid handshake found).");
             initializeGuest();
         }
 
-    })();
-
-    // --- GUEST MODE (SHOW LANDING) ---
-    function initializeGuest() {
-        if (content) content.classList.add('visible');
-        
-        const btn = document.getElementById('premium-start-btn');
-        if (btn) {
-            btn.addEventListener('click', () => {
-                if (modal) {
-                    modal.style.display = 'flex';
-                    setTimeout(() => modal.classList.add('visible'), 10);
-                }
-            });
-        }
-    }
-
-    // --- LOGIN TRIGGER (SETS HANDSHAKE) ---
-    window.handleSocialLogin = async (provider) => {
-        if (!supabase) return;
-
-        // [SECURITY HANDSHAKE] 
-        // We mark this browser tab as "Expecting a return".
-        // If the user comes back without this timestamp, we block them.
-        sessionStorage.setItem('tuwa_auth_pending', Date.now());
-
-        try {
-            // We still use Supabase to generate the correct Google/Discord URL
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider: provider,
-                options: { redirectTo: window.location.href }
-            });
-            if (error) throw error;
-        } catch (err) {
-            console.error("Login Error (Ignored in Fake Mode):", err);
-        }
-    };
-
-    window.closeAuth = () => {
-        if (modal) {
-            modal.classList.remove('visible');
-            setTimeout(() => modal.style.display = 'none', 400);
-        }
-    };
-
-    // --- SUCCESS SEQUENCE ---
-    async function initializePostLogin() {
-        // 1. Text Animation sequence
-        const messages = [
-            "Authenticating...",
-            "Verifying premium status...",
-            "Unlocking high-fidelity audio...",
-            "Decrypting secure streams...",
-            "Welcome to Tuwa."
-        ];
-
-        for (const msg of messages) {
-            await typeWriter(msg, statusText);
-            await new Promise(r => setTimeout(r, 600)); 
-        }
-
-        // 2. Set the Cookie via your Worker (Essential for Middleware)
-        try {
-            await fetch('/login', { method: 'POST' });
-        } catch (e) {
-            console.log("Cookie set attempt finished."); 
-        }
-
-        // 3. Reload (Middleware will now see the cookie and serve App.html)
-        window.location.reload();
-    }
-
-    // Utility: Typewriter effect
-    function typeWriter(text, element) {
-        return new Promise(resolve => {
-            element.innerText = "";
-            element.style.opacity = 1;
-            let i = 0;
-            function type() {
-                if (i < text.length) {
-                    element.innerText += text.charAt(i);
-                    i++;
-                    setTimeout(type, 30); 
-                } else {
-                    setTimeout(resolve, 500);
-                }
+        function initializeGuest() {
+            if (startBtn) {
+                startBtn.innerText = "Start watching for free";
+                startBtn.onclick = () => {
+                    authModal.style.display = 'flex';
+                    setTimeout(() => authModal.classList.add('visible'), 10);
+                };
             }
-            type();
-        });
-    }
-
-    // --- CONTENT PROTECTION (PREVENTS INSPECT/COPY) ---
-    (function() {
-        const TARGET_CLASS = 'premium-content'; 
-        
-        function protectSafe() {
-            const containers = document.querySelectorAll(`.${TARGET_CLASS}`);
-            containers.forEach(div => {
-                const img = div.querySelector('img');
-                if (img) {
-                    img.setAttribute('draggable', 'false');
-                    img.style.pointerEvents = 'none'; 
-                }
-                div.addEventListener('contextmenu', (e) => { e.preventDefault(); e.stopPropagation(); return false; }, true);
-                div.addEventListener('dragstart', (e) => { e.preventDefault(); e.stopPropagation(); return false; }, true);
-                div.addEventListener('copy', (e) => { e.preventDefault(); e.stopPropagation(); return false; }, true);
-                div.style.webkitTouchCallout = 'none';
-            });
         }
 
-        protectSafe();
-        new MutationObserver(protectSafe).observe(document.body, { childList: true, subtree: true });
+        function initializePostLogin() {
+            if (startBtn) {
+                startBtn.innerText = "Activate Premium"; 
+                startBtn.style.background = "#fff"; 
+                startBtn.style.color = "#000";
+                startBtn.style.fontWeight = "700";
+                
+                const terms = document.querySelectorAll('.price-term, .price-term-common');
+                terms.forEach(t => t.style.opacity = '0'); 
+
+                startBtn.onclick = runOTTSequence;
+            }
+        }
+
+        async function runOTTSequence() {
+            // Visuals
+            premiumContent.classList.add('fade-out');
+            premiumProcessing.classList.add('active');
+
+            const steps = [
+                { text: "Confirming subscription", delay: 800 },
+                { text: "Verifying your device", delay: 2000 },
+                { text: "Personalizing your library", delay: 3800 },
+                { text: "Welcome to Tuwa", delay: 6500 }
+            ];
+
+            steps.forEach(step => {
+                setTimeout(() => {
+                    if (statusText) {
+                        statusText.style.opacity = 0; 
+                        setTimeout(() => {
+                            statusText.innerText = step.text;
+                            statusText.style.opacity = 1;
+                        }, 200);
+                    }
+                }, step.delay);
+            });
+
+            // SECURE AUTH REQUEST
+            // At the end of the visual sequence, we ask the server for the key
+            setTimeout(async () => {
+                try {
+                    const response = await fetch('/login', { method: 'POST' });
+                    if (response.ok) {
+                         // Reloading the page will cause the middleware 
+                         // to see the new cookie and serve app.html
+                         window.location.reload();
+                    } else {
+                        alert("Activation Failed. Please refresh.");
+                        window.location.reload();
+                    }
+                } catch (e) {
+                    console.error("Auth Error", e);
+                }
+            }, 7200);
+        }
+
+        window.handleSocialLogin = async (provider) => {
+            if (!supabase) return;
+            try {
+                const { error } = await supabase.auth.signInWithOAuth({
+                    provider: provider,
+                    options: { redirectTo: window.location.href }
+                });
+                if (error) throw error;
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        window.closeAuth = () => {
+            authModal.classList.remove('visible');
+            setTimeout(() => authModal.style.display = 'none', 300);
+        };
+        
+        // Legal Overlay Logic
+        window.openLegal = (type) => { /* Reuse logic if needed, simplified for brief */ };
+        window.closeLegal = () => document.getElementById('legal-overlay').classList.remove('active');
     })();
-</script>
+    </script>
 </body>
 </html>

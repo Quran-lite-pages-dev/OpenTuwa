@@ -1,14 +1,12 @@
 export async function onRequestPost(context) {
-  const url = new URL(context.request.url);
-  const isHttps = url.protocol === 'https:';
+  const headers = new Headers();
   
-  // This is the magic ticket that the Middleware looks for
-  const cookieVal = `TUWA_PREMIUM=true; Path=/; ${isHttps ? 'Secure;' : ''} HttpOnly; SameSite=Lax; Max-Age=31536000`;
+  // Set a secure, HTTP-only cookie that JavaScript cannot access or delete
+  const cookieVal = `TUWA_PREMIUM=true; Path=/; Secure; HttpOnly; SameSite=Strict; Max-Age=31536000`;
 
+  headers.set("Set-Cookie", cookieVal);
+  
   return new Response(JSON.stringify({ status: "activated" }), {
-    headers: { 
-      "Set-Cookie": cookieVal,
-      "Content-Type": "application/json"
-    }
+    headers: { ...headers, "Content-Type": "application/json" }
   });
 }
