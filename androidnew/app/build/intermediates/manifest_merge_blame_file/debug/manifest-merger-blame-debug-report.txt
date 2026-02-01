@@ -52,90 +52,89 @@
 33-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:13:9-29
 34        android:supportsRtl="true"
 34-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:14:9-35
-35        android:testOnly="true"
-36        android:theme="@style/Theme.AppCompat.NoActionBar" >
-36-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:15:9-59
-37        <activity
-37-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:17:9-25:20
-38            android:name="com.opentuwa.stream.MainActivity"
-38-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:18:13-41
-39            android:exported="true"
-39-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:19:13-36
-40            android:screenOrientation="landscape" >
-40-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:20:13-50
-41            <intent-filter>
-41-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:21:13-24:29
-42                <action android:name="android.intent.action.MAIN" />
-42-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:22:17-69
-42-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:22:25-66
-43
-44                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-44-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:23:17-86
-44-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:23:27-83
-45            </intent-filter>
-46        </activity>
-47        <activity
-47-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:23:9-27:75
-48            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
-48-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:24:13-93
-49            android:excludeFromRecents="true"
-49-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:25:13-46
-50            android:exported="false"
-50-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:26:13-37
-51            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-51-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:27:13-72
-52        <!--
-53            Service handling Google Sign-In user revocation. For apps that do not integrate with
-54            Google Sign-In, this service will never be started.
-55        -->
-56        <service
-56-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:33:9-37:51
-57            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
-57-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:34:13-89
-58            android:exported="true"
-58-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:35:13-36
-59            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
-59-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:36:13-107
-60            android:visibleToInstantApps="true" />
-60-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:37:13-48
-61
-62        <activity
-62-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\SCSM11\.gradle\caches\transforms-4\3a684163909e422f5b377b2e20c4b219\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:20:9-22:45
-63            android:name="com.google.android.gms.common.api.GoogleApiActivity"
-63-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\SCSM11\.gradle\caches\transforms-4\3a684163909e422f5b377b2e20c4b219\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:20:19-85
-64            android:exported="false"
-64-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\SCSM11\.gradle\caches\transforms-4\3a684163909e422f5b377b2e20c4b219\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:22:19-43
-65            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-65-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\SCSM11\.gradle\caches\transforms-4\3a684163909e422f5b377b2e20c4b219\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:21:19-78
-66
-67        <meta-data
-67-->[com.google.android.gms:play-services-basement:18.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\650a97ff571e841bf5a609344ffcac58\transformed\jetified-play-services-basement-18.2.0\AndroidManifest.xml:21:9-23:69
-68            android:name="com.google.android.gms.version"
-68-->[com.google.android.gms:play-services-basement:18.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\650a97ff571e841bf5a609344ffcac58\transformed\jetified-play-services-basement-18.2.0\AndroidManifest.xml:22:13-58
-69            android:value="@integer/google_play_services_version" />
-69-->[com.google.android.gms:play-services-basement:18.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\650a97ff571e841bf5a609344ffcac58\transformed\jetified-play-services-basement-18.2.0\AndroidManifest.xml:23:13-66
-70
-71        <provider
-71-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
-72            android:name="androidx.startup.InitializationProvider"
-72-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:25:13-67
-73            android:authorities="com.opentuwa.stream.androidx-startup"
-73-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:26:13-68
-74            android:exported="false" >
-74-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:27:13-37
-75            <meta-data
-75-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
-76                android:name="androidx.emoji2.text.EmojiCompatInitializer"
-76-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
-77                android:value="androidx.startup" />
-77-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
-78            <meta-data
-78-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\transforms-4\8f47a22c3e939e0725854bd2ec88a5f4\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
-79                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
-79-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\transforms-4\8f47a22c3e939e0725854bd2ec88a5f4\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
-80                android:value="androidx.startup" />
-80-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\transforms-4\8f47a22c3e939e0725854bd2ec88a5f4\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
-81        </provider>
-82    </application>
-83
-84</manifest>
+35        android:theme="@style/Theme.AppCompat.NoActionBar" >
+35-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:15:9-59
+36        <activity
+36-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:17:9-25:20
+37            android:name="com.opentuwa.stream.MainActivity"
+37-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:18:13-41
+38            android:exported="true"
+38-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:19:13-36
+39            android:screenOrientation="landscape" >
+39-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:20:13-50
+40            <intent-filter>
+40-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:21:13-24:29
+41                <action android:name="android.intent.action.MAIN" />
+41-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:22:17-69
+41-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:22:25-66
+42
+43                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+43-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:23:17-86
+43-->C:\Users\SCSM11\Downloads\Quran-lite.pages.dev\androidnew\app\src\main\AndroidManifest.xml:23:27-83
+44            </intent-filter>
+45        </activity>
+46        <activity
+46-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:23:9-27:75
+47            android:name="com.google.android.gms.auth.api.signin.internal.SignInHubActivity"
+47-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:24:13-93
+48            android:excludeFromRecents="true"
+48-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:25:13-46
+49            android:exported="false"
+49-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:26:13-37
+50            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+50-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:27:13-72
+51        <!--
+52            Service handling Google Sign-In user revocation. For apps that do not integrate with
+53            Google Sign-In, this service will never be started.
+54        -->
+55        <service
+55-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:33:9-37:51
+56            android:name="com.google.android.gms.auth.api.signin.RevocationBoundService"
+56-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:34:13-89
+57            android:exported="true"
+57-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:35:13-36
+58            android:permission="com.google.android.gms.auth.api.signin.permission.REVOCATION_NOTIFICATION"
+58-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:36:13-107
+59            android:visibleToInstantApps="true" />
+59-->[com.google.android.gms:play-services-auth:20.7.0] C:\Users\SCSM11\.gradle\caches\transforms-4\29312850ce691d3e6318346632110730\transformed\jetified-play-services-auth-20.7.0\AndroidManifest.xml:37:13-48
+60
+61        <activity
+61-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\SCSM11\.gradle\caches\transforms-4\3a684163909e422f5b377b2e20c4b219\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:20:9-22:45
+62            android:name="com.google.android.gms.common.api.GoogleApiActivity"
+62-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\SCSM11\.gradle\caches\transforms-4\3a684163909e422f5b377b2e20c4b219\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:20:19-85
+63            android:exported="false"
+63-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\SCSM11\.gradle\caches\transforms-4\3a684163909e422f5b377b2e20c4b219\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:22:19-43
+64            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+64-->[com.google.android.gms:play-services-base:18.0.1] C:\Users\SCSM11\.gradle\caches\transforms-4\3a684163909e422f5b377b2e20c4b219\transformed\jetified-play-services-base-18.0.1\AndroidManifest.xml:21:19-78
+65
+66        <meta-data
+66-->[com.google.android.gms:play-services-basement:18.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\650a97ff571e841bf5a609344ffcac58\transformed\jetified-play-services-basement-18.2.0\AndroidManifest.xml:21:9-23:69
+67            android:name="com.google.android.gms.version"
+67-->[com.google.android.gms:play-services-basement:18.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\650a97ff571e841bf5a609344ffcac58\transformed\jetified-play-services-basement-18.2.0\AndroidManifest.xml:22:13-58
+68            android:value="@integer/google_play_services_version" />
+68-->[com.google.android.gms:play-services-basement:18.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\650a97ff571e841bf5a609344ffcac58\transformed\jetified-play-services-basement-18.2.0\AndroidManifest.xml:23:13-66
+69
+70        <provider
+70-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+71            android:name="androidx.startup.InitializationProvider"
+71-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:25:13-67
+72            android:authorities="com.opentuwa.stream.androidx-startup"
+72-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:26:13-68
+73            android:exported="false" >
+73-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:27:13-37
+74            <meta-data
+74-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+75                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+75-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
+76                android:value="androidx.startup" />
+76-->[androidx.emoji2:emoji2:1.2.0] C:\Users\SCSM11\.gradle\caches\transforms-4\3ad6a117f66377fb38fb1c0d2d18f65a\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
+77            <meta-data
+77-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\transforms-4\8f47a22c3e939e0725854bd2ec88a5f4\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
+78                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+78-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\transforms-4\8f47a22c3e939e0725854bd2ec88a5f4\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
+79                android:value="androidx.startup" />
+79-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\SCSM11\.gradle\caches\transforms-4\8f47a22c3e939e0725854bd2ec88a5f4\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
+80        </provider>
+81    </application>
+82
+83</manifest>

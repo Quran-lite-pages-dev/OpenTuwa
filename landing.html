@@ -786,54 +786,19 @@ function initializeGuest() {
     }
 </script>
 <script>
-    // 1. The "Safety Net" Receiver (In case Android actually reports back fast)
-    window.onNativeLoginSuccess = function(idToken) {
-        console.log("Android reported back. Unlocking immediately.");
-        unlockAndReload();
-    };
-
-    // 2. The FORCE UNLOCK Function
-    function unlockAndReload() {
-        console.log("Forcing Unlock...");
-        // Set the Premium Cookie directly in the browser
-        document.cookie = "TUWA_PREMIUM=true; path=/; max-age=31536000; samesite=lax";
-        
-        // Reload to let Middleware see the new cookie
-        window.location.reload();
-    }
-
-    // 3. The Button Logic (Click -> Wait 10s -> Unlock)
     const loginBtn = document.getElementById('loginButton');
+    
     if (loginBtn) {
         loginBtn.addEventListener('click', (e) => {
             e.preventDefault();
 
-            // Check if we are in the Android App
+            // Just tell Android to start. 
+            // Android will handle the cookie injection and reload when it finishes.
             if (window.Android && window.Android.startGoogleLogin) {
-                
-                // A. Launch the Native Google Picker
+                loginBtn.innerText = "Please wait...";
                 window.Android.startGoogleLogin();
-
-                // B. START THE TIMER (The "Stubborn" Fix)
-                // We assume that in 10 seconds, the user will have picked an account.
-                // We don't care about the result. We just unlock.
-                const btnText = loginBtn.innerText || "Login";
-                let countdown = 10;
-
-                loginBtn.disabled = true;
-                
-                const timer = setInterval(() => {
-                    loginBtn.innerText = `Unlocking in ${countdown}s...`;
-                    countdown--;
-
-                    if (countdown < 0) {
-                        clearInterval(timer);
-                        unlockAndReload(); // <--- MAGIC HAPPENS HERE
-                    }
-                }, 1000);
-
             } else {
-                alert("Please use this app on your Android TV device.");
+                alert("Use this on Android TV.");
             }
         });
     }

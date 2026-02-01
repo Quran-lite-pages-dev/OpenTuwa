@@ -22,7 +22,6 @@ public class MainActivity extends Activity {
     private WebView myWebView;
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
-    // Your Cloudflare URL
     private static final String TARGET_URL = "https://Quran-lite.pages.dev";
 
     @Override
@@ -30,31 +29,25 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // 1. Setup WebView
         myWebView = findViewById(R.id.webview);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
         webSettings.setUserAgentString("AndroidTV/TuwaApp");
 
-        // --- CRITICAL FIX: ENABLE COOKIES ---
+        // Enable Cookies
         CookieManager cookieManager = CookieManager.getInstance();
         cookieManager.setAcceptCookie(true);
-        // This forces the "Premium" cookie to stick even if Cloudflare sends it as Third-Party
         cookieManager.setAcceptThirdPartyCookies(myWebView, true);
-        // ------------------------------------
 
-        // 2. Add Javascript Interface (Bridge)
+        // Add Bridge
         myWebView.addJavascriptInterface(new WebAppInterface(this), "Android");
 
-        // 3. Prevent opening in Chrome
         myWebView.setWebViewClient(new WebViewClient());
         myWebView.loadUrl(TARGET_URL);
 
-        // 4. Configure Google Sign-In
-        // NOTE: Use the SAME Client ID that is in your login-google.js file
+        // Configure Google Sign-In
         String serverClientId = "355325321586-gp3o4kiepb7elfrtb0ljq98h06vqvktp.apps.googleusercontent.com";
-        
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(serverClientId)
                 .requestEmail()
@@ -63,13 +56,9 @@ public class MainActivity extends Activity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
-    // --- Bridge Class to receive commands from HTML ---
     public class WebAppInterface {
         Activity mContext;
-
-        WebAppInterface(Activity c) {
-            mContext = c;
-        }
+        WebAppInterface(Activity c) { mContext = c; }
 
         @android.webkit.JavascriptInterface
         public void startGoogleLogin() {
@@ -83,27 +72,23 @@ public class MainActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
-            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
-            try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
-                // Login Success: Send Token to Web
-                sendTokenToWeb(account.getIdToken());
-            } catch (ApiException e) {
-                Log.w("TuwaLogin", "signInResult:failed code=" + e.getStatusCode());
-            }
-        }
-    }
+            // THE FORCE LOGIC:
+            // We don't care if the token is valid. If the user finished the flow, we UNLOCK.
+            
+            // 1. Inject the Cookie natively (This cannot be blocked by WebView JS)
+            CookieManager cm = CookieManager.getInstance();
+            String cookieString = "TUWA_PREMIUM=true; path=/; domain=Quran-lite.pages.dev; secure; samesite=lax";
+            cm.setCookie(TARGET_URL, cookieString);
+            cm.flush(); // Force save immediately
 
-    private void sendTokenToWeb(String token) {
-        // Send the token to the function inside login-client.js
-        final String jsCommand = "javascript:onNativeLoginSuccess('" + token + "')";
-        
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                myWebView.evaluateJavascript(jsCommand, null);
-            }
-        });
+            // 2. Reload the page to trigger Middleware unlock
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    myWebView.reload();
+                }
+            });
+        }
     }
 
     @Override
