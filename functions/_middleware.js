@@ -2,8 +2,11 @@ export async function onRequest(context) {
   const { request, next, env } = context;
   const url = new URL(request.url);
 
-  // 1. Pass through all static assets and the login endpoint
-  if (url.pathname.match(/\.(css|js|png|jpg|ico|xml|mp3|json|woff2)$/) || url.pathname === '/login') {
+  // 1. ROBUST STATIC ASSET CHECK (Case Insensitive)
+  // Added fonts, svgs, and webp to be safe
+  const isStatic = /\.(css|js|png|jpg|jpeg|ico|xml|mp3|json|woff2|woff|ttf|svg|webp)$/i.test(url.pathname);
+  
+  if (isStatic || url.pathname === '/login') {
     return next();
   }
 
@@ -13,17 +16,17 @@ export async function onRequest(context) {
 
   // 3. Routing Logic
   
-  // A. User is NOT Premium (or cookie expired)
+  // A. User is NOT Premium -> Serve Landing
   if (!hasPremium) {
-    // Serve landing.html, but keep URL as "/"
-    return context.env.ASSETS.fetch(new URL('/landing.html', request.url));
+    return env.ASSETS.fetch(new URL('/landing.html', request.url));
   }
 
-  // B. User IS Premium
+  // B. User IS Premium -> Serve App
   if (hasPremium) {
-    // If accessing root, serve the App
+    // Intercept root requests and serve app.html
     if (url.pathname === '/' || url.pathname === '/index.html') {
-      return context.env.ASSETS.fetch(new URL('/app.html', request.url));
+      // ENSURE app.html EXISTS in your project root!
+      return env.ASSETS.fetch(new URL('/app.html', request.url));
     }
   }
 
