@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.webkit.CookieManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -21,54 +22,71 @@ public class MainActivity extends Activity {
     private WebView myWebView;
     private GoogleSignInClient mGoogleSignInClient;
     private static final int RC_SIGN_IN = 9001;
-    // Ensure this URL matches your Cloudflare deployment exactly
+    // Your Cloudflare URL
     private static final String TARGET_URL = "https://Quran-lite.pages.dev";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
-        // 1. Setup Layout (Ensure your res/layout/activity_main.xml has a WebView with id 'webview')
         setContentView(R.layout.activity_main);
 
-        // 2. Configure Google Sign-In
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken("355325321586-gp3o4kiepb7elfrtb0ljq98h06vqvktp.apps.googleusercontent.com")
-                .requestEmail()
-                .build();
-
-        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        // 3. Configure WebView
+        // 1. Setup WebView
         myWebView = findViewById(R.id.webview);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
-        
-        // CRITICAL FIX: Register the Javascript Interface
-        // This connects "window.Android.startGoogleLogin()" in HTML to the Java method below
-        myWebView.addJavascriptInterface(new WebAppInterface(this, this), "Android");
+        webSettings.setUserAgentString("AndroidTV/TuwaApp");
 
+        // --- CRITICAL FIX: ENABLE COOKIES ---
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        // This forces the "Premium" cookie to stick even if Cloudflare sends it as Third-Party
+        cookieManager.setAcceptThirdPartyCookies(myWebView, true);
+        // ------------------------------------
+
+        // 2. Add Javascript Interface (Bridge)
+        myWebView.addJavascriptInterface(new WebAppInterface(this), "Android");
+
+        // 3. Prevent opening in Chrome
         myWebView.setWebViewClient(new WebViewClient());
         myWebView.loadUrl(TARGET_URL);
+
+        // 4. Configure Google Sign-In
+        // NOTE: Use the SAME Client ID that is in your login-google.js file
+        String serverClientId = "355325321586-gp3o4kiepb7elfrtb0ljq98h06vqvktp.apps.googleusercontent.com";
+        
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(serverClientId)
+                .requestEmail()
+                .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
-    // CRITICAL FIX: This method was missing. It is called by WebAppInterface.
-    public void launchNativeLogin() {
-        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
-        startActivityForResult(signInIntent, RC_SIGN_IN);
+    // --- Bridge Class to receive commands from HTML ---
+    public class WebAppInterface {
+        Activity mContext;
+
+        WebAppInterface(Activity c) {
+            mContext = c;
+        }
+
+        @android.webkit.JavascriptInterface
+        public void startGoogleLogin() {
+            Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+            startActivityForResult(signInIntent, RC_SIGN_IN);
+        }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
         if (requestCode == RC_SIGN_IN) {
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
                 GoogleSignInAccount account = task.getResult(ApiException.class);
-                // Signed in successfully, send token to JavaScript
+                // Login Success: Send Token to Web
                 sendTokenToWeb(account.getIdToken());
             } catch (ApiException e) {
                 Log.w("TuwaLogin", "signInResult:failed code=" + e.getStatusCode());
@@ -76,9 +94,8 @@ public class MainActivity extends Activity {
         }
     }
 
-    // Send the Google Token back to the Website
     private void sendTokenToWeb(String token) {
-        // This calls the function defined at the bottom of landing.html
+        // Send the token to the function inside login-client.js
         final String jsCommand = "javascript:onNativeLoginSuccess('" + token + "')";
         
         runOnUiThread(new Runnable() {

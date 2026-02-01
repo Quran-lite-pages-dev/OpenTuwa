@@ -1,8 +1,9 @@
-// 1. The function that Android will call when login finishes
+// 1. The function Android calls automatically after you pick an account
 window.onNativeLoginSuccess = function(idToken) {
-    console.log("Received Token from Android TV. Verifying...");
-    
-    // Send token to your Cloudflare Backend
+    // VISUAL DEBUG: Confirm Android sent the token
+    alert("Token Received from Android! Verifying...");
+
+    // Send token to Cloudflare
     fetch('/login-google', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -10,26 +11,28 @@ window.onNativeLoginSuccess = function(idToken) {
     })
     .then(response => {
         if (response.ok) {
-            console.log("Login Verified! Reloading...");
-            // Reload page to force the Middleware to see the new Cookie
-            window.location.reload();
+            alert("Verification Success! Reloading App...");
+            // Force a hard reload to pick up the new Premium Cookie
+            window.location.href = window.location.href; 
         } else {
-            console.error("Verification failed");
+            response.text().then(txt => alert("Login Failed: " + txt));
         }
     })
-    .catch(err => console.error("Network error during login", err));
+    .catch(err => alert("Network Error: " + err.message));
 };
 
-// 2. Attach this to your Login Button (Make sure you have <button id="loginButton">)
+// 2. The Listener for the "Login" button on your page
+// Ensure your HTML button has id="loginButton"
 const loginBtn = document.getElementById('loginButton');
 if (loginBtn) {
-    loginBtn.addEventListener('click', () => {
-        // Check if we are running inside the Android App
-        if (window.Android) {
-            // Trigger the Native Android TV Login
+    loginBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // Check if running inside the Android App
+        if (window.Android && window.Android.startGoogleLogin) {
             window.Android.startGoogleLogin();
         } else {
-            alert("This button is for Android TV Native Login. Please use standard web login.");
+            alert("Please use this app on your Android TV device.");
         }
     });
 }
