@@ -491,16 +491,50 @@ color: #000; }
         }).catch(() => paintPrice('USD'));
 
         // Check Auth
+        // ... (Keep your existing initialization code above) ...
+
+        // --- AUTH LOGIC REPLACEMENT ---
         if (supabase) {
-            const { data } = await supabase.auth.getSession();
-            if (data && data.session) {
-                initializePostLogin();
-            } else {
-                initializeGuest();
+            // 1. Check if we are currently handling an OAuth Redirect (hash exists)
+            const isAuthRedirect = window.location.hash && window.location.hash.includes('access_token');
+
+            // If redirecting, immediately show loading state to hide the "Start" button
+            if (isAuthRedirect) {
+                if (premiumProcessing) premiumProcessing.classList.add('active');
+                if (statusText) statusText.innerText = "Verifying Access...";
             }
+
+            // 2. Use onAuthStateChange to catch the moment the hash is processed
+            supabase.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_IN' && session) {
+                    // Session established! Start the sequence.
+                    // We check if we already started it to avoid double-firing
+                    if (!premiumProcessing.classList.contains('active') || statusText.innerText === "Verifying Access...") {
+                        initializePostLogin();
+                    }
+                } else if (event === 'SIGNED_OUT') {
+                    // Only show guest UI if we aren't waiting for the redirect to finish
+                    if (!isAuthRedirect) {
+                        initializeGuest();
+                    }
+                }
+            });
+
+            // 3. Initial Check (for users who are already logged in from previous visits)
+            supabase.auth.getSession().then(({ data }) => {
+                if (data && data.session) {
+                    initializePostLogin();
+                } else if (!isAuthRedirect) {
+                    // Only initialize guest if NO session AND NO pending redirect
+                    initializeGuest();
+                }
+            });
+
         } else {
+            // Fallback if Supabase fails to load
             initializeGuest();
         }
+
 
 function initializeGuest() {
     if (premiumContent) premiumContent.classList.add('visible');
@@ -569,17 +603,22 @@ function initializeGuest() {
                     // 2. Set the timestamp BEFORE reloading to catch loops
                     sessionStorage.setItem(LOOP_PROTECTION_KEY, Date.now());
                     
-                    // 3. Reload
-                    window.location.href = "/?t=" + new Date().getTime();
+                    // 3. Clear the hash and Reload
+                    // This removes the #access_token from the history before reloading
+                    history.replaceState(null, null, ' ');
+                    
+                    // Force reload to hit the Middleware
+                    window.location.href = "/"; 
                 } else {
                     alert("Activation not responding. Please refresh.");
+                    premiumProcessing.classList.remove('active');
                 }
             } catch (e) {
                 console.error("Activation Error", e);
                 alert("Connection failed. Please try again.");
+                premiumProcessing.classList.remove('active');
             }
         }
-
         async function runOTTSequence() {
             premiumProcessing.classList.add('active');
 
