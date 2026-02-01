@@ -16,13 +16,15 @@
     justify-content: flex-start; 
     
     padding: 0 16px;
-    font-size: 1.1rem; /* Slightly tighter font for that premium look */
-    font-weight: 600;
+    font-size: 1.5rem;
+    font-family: var(--font-body);
+    font-weight: 600;        
+    letter-spacing: -0.02em; 
     color: #f9f9f9;
     height: 48px; 
     background: rgba(255, 255, 255, 0.04); 
-    border: 1.5px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px; /* Slightly sharper corners like  */
+    border: 1px solid rgba(255, 255, 255, 0.2); 
+    border-radius: 4px;    
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
     
@@ -163,4 +165,31 @@ body.simple-mode #verseSelectWrapper,
 body.simple-mode #translationAudioSelectWrapper,
 body.simple-mode #reciterSelectWrapper {
     display: none !important;
+}
+/* */
+
+/* Premium Focus Style for Transport Buttons */
+.transport-control-btn {
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
+    opacity: 0.7;
+}
+
+.transport-control-btn:hover {
+    opacity: 1;
+}
+
+/* When focused via Keyboard */
+.transport-control-btn:focus-visible {
+    opacity: 1;
+    transform: scale(1.15); /* Pop effect */
+    outline: none;
+    /* Optional: A subtle glow instead of a harsh browser ring */
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
+}
+
+/* Ensure the Translation Select matches */
+.custom-select-trigger:focus-visible {
+    border-color: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1);
 }

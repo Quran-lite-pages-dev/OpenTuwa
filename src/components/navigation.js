@@ -3,13 +3,12 @@
     /**
      * 1. CONFIGURATION
      */
-    // [FIX 1] Updated SELECTOR to exclude .app-brand and .appx-brand so the logo is NOT focusable
     const SELECTOR = 'button, a:not(.app-brand):not(.appx-brand), input, select, textarea, [tabindex]:not([tabindex="-1"]), .focusable, .surah-card, .nav-item, .custom-select-trigger, .custom-option, .premium-btn, .social-btn';
     
     // 2. VIEW CONTROLLERS
     const VIEWS = {
-        AUTH_MODAL: 'hybrid-auth-modal', // [NEW] Added Auth Modal
-        PREMIUM: 'premium-landing',      // [NEW] Added Premium Landing
+        AUTH_MODAL: 'hybrid-auth-modal',
+        PREMIUM: 'premium-landing',
         ARABIC_MODAL: 'arabic-modal', 
         SEARCH: 'search-overlay',
         ISLAND_SEARCH: 'island-search-wrapper',
@@ -19,6 +18,7 @@
     };
 
     let currentFocus = null;
+    let cinemaFailsafeTimer = null; 
 
     /**
      * Determines which elements are currently valid candidates for focus.
@@ -30,11 +30,8 @@
             return Array.from(openSelect.querySelectorAll('.custom-option'));
         }
 
-        // --- [FIX 2] PRIORITY 0: Auth & Premium Layers ---
-        // These are full-screen blockades, so we must trap focus here if they are visible.
-        
+        // PRIORITY 0: Auth & Premium Layers
         const authModal = document.getElementById(VIEWS.AUTH_MODAL);
-        // Check if Auth modal is visible (using your class logic or display style)
         if (authModal && (authModal.classList.contains('visible') || isVisible(authModal))) {
             return Array.from(authModal.querySelectorAll(SELECTOR)).filter(isVisible);
         }
@@ -43,8 +40,8 @@
         if (premiumLanding && isVisible(premiumLanding)) {
              return Array.from(premiumLanding.querySelectorAll(SELECTOR)).filter(isVisible);
         }
-        // --- [END FIX] ---
 
+        // Gather References
         const arabicModal = document.getElementById(VIEWS.ARABIC_MODAL);
         const searchOverlay = document.getElementById(VIEWS.SEARCH);
         const cinemaView = document.getElementById(VIEWS.CINEMA);
@@ -70,17 +67,15 @@
             return candidates.filter(isVisible);
         }
 
-        // PRIORITY 4: Island Search, Dashboard, Sidebar & Trojan
+        // PRIORITY 4: Standard Views (Dashboard, Island, Sidebar)
         const islandSearch = document.getElementById(VIEWS.ISLAND_SEARCH);
         const trojanContent = document.querySelector('.trojan-content'); 
 
         const islandCandidates = islandSearch ? Array.from(islandSearch.querySelectorAll(SELECTOR)) : [];
         const trojanCandidates = trojanContent ? Array.from(trojanContent.querySelectorAll(SELECTOR)) : [];
-        
         const dashCandidates = dashboardView ? Array.from(dashboardView.querySelectorAll(SELECTOR)) : [];
         const sidebarCandidates = sidebar ? Array.from(sidebar.querySelectorAll(SELECTOR)) : [];
         
-        // Include islandCandidates and trojanCandidates in the return array
         return [...islandCandidates, ...sidebarCandidates, ...dashCandidates, ...trojanCandidates].filter(isVisible);
     }
 
@@ -108,6 +103,12 @@
             document.body.classList.remove('idle');
             document.body.dispatchEvent(new Event('mousemove', { bubbles: true }));
             
+            // In Cinema, waking up shouldn't grab focus automatically; wait for explicit Down key
+            const cinemaView = document.getElementById(VIEWS.CINEMA);
+            if (cinemaView && cinemaView.classList.contains('active')) {
+                return true; 
+            }
+
             if (currentFocus && document.body.contains(currentFocus)) {
                 currentFocus.focus();
             } else {
@@ -117,6 +118,22 @@
             return true;
         }
         return false;
+    }
+
+    /**
+     * Cinema Failsafe Timer
+     */
+    function resetCinemaFailsafe() {
+        if (cinemaFailsafeTimer) clearTimeout(cinemaFailsafeTimer);
+        
+        cinemaFailsafeTimer = setTimeout(() => {
+            // 5 Seconds elapsed: Release Focus
+            if (document.activeElement) {
+                document.activeElement.blur();
+            }
+            currentFocus = null;
+            cinemaFailsafeTimer = null; 
+        }, 5000);
     }
 
     function getDistance(r1, r2, dir) {
@@ -147,7 +164,7 @@
         const all = getFocusableCandidates();
 
         if (!currentFocus || !document.body.contains(currentFocus)) {
-            // [FIX 3] Check if we are in Premium mode first
+            // Check Premium First
             const premiumLanding = document.getElementById(VIEWS.PREMIUM);
             if (premiumLanding && isVisible(premiumLanding)) {
                  const btns = premiumLanding.querySelectorAll(SELECTOR);
@@ -155,7 +172,6 @@
                  return;
             }
 
-            // Default fallback
             const islandInput = document.getElementById('island-input');
             if (islandInput && isVisible(islandInput)) {
                 focusElement(islandInput);
@@ -165,11 +181,6 @@
             return;
         }
         
-        // If trapped in an invalid state, jump to safety
-        if (!all.includes(currentFocus) && all.length > 0) {
-             // Optional recovery logic
-        }
-
         const r1 = currentFocus.getBoundingClientRect();
         let bestCandidate = null;
         let minScore = Infinity;
@@ -214,6 +225,121 @@
 
         // --- 2. NAVIGATION LOGIC ---
         if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            
+            // ============================================================
+            // START CINEMA LOGIC
+            // ============================================================
+            const cinemaView = document.getElementById(VIEWS.CINEMA);
+            
+            // [FIX] STRICT CHECK: Only run cinema logic if it is TRULY active and visible.
+            // This prevents it from hijacking Dashboard or other views.
+            const isCinemaActive = cinemaView && cinemaView.classList.contains('active') && isVisible(cinemaView);
+
+            if (isCinemaActive) {
+                const active = document.activeElement;
+                const isFocusedOnControl = (cinemaView.contains(active) && active !== document.body);
+                const isDropdownOpen = !!document.querySelector('.custom-select-wrapper.open');
+                const isInControlMode = isFocusedOnControl || isDropdownOpen;
+
+                // SCENARIO A: User presses DOWN (Enter Control Mode)
+                if (e.key === 'ArrowDown') {
+                    if (!isInControlMode) {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        
+                        const candidates = cinemaView.querySelectorAll(SELECTOR);
+                        const visibleCandidates = Array.from(candidates).filter(isVisible);
+
+                        if (visibleCandidates.length > 0) {
+                            const playBtn = visibleCandidates.find(el => el.classList.contains('play-btn')) || visibleCandidates[0];
+                            focusElement(playBtn);
+                            resetCinemaFailsafe(); 
+                        }
+                        return;
+                    }
+                    resetCinemaFailsafe();
+                }
+
+                // SCENARIO B: User presses UP (Exit Control Mode)
+                if (e.key === 'ArrowUp') {
+                    if (isInControlMode) {
+                        // [FIX START] Don't exit control mode if we are just scrolling inside a dropdown!
+                        if (isDropdownOpen) {
+                            // Do nothing here, let it fall through to navigate(e.key) below
+                            // which correctly handles the focus trap inside the dropdown.
+                        } else {
+                            if(active) active.blur();
+                            currentFocus = null;
+                            if(cinemaFailsafeTimer) clearTimeout(cinemaFailsafeTimer);
+                            cinemaFailsafeTimer = null;
+                            return; 
+                        }
+                        // [FIX END]
+                    }
+                }
+
+// SCENARIO C: User presses LEFT / RIGHT
+                // SCENARIO C: User presses LEFT / RIGHT
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                    if (isInControlMode) {
+                        resetCinemaFailsafe(); 
+                        e.stopImmediatePropagation(); 
+                        e.preventDefault(); 
+                        navigate(e.key);
+                        return; 
+                    } else {
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        
+                        // 1. Perform the Smart Seek
+                        const direction = e.key === 'ArrowLeft' ? -10 : 10;
+                        if (window.smartSeek) window.smartSeek(direction);
+
+                        // 2. SELF-HEALING VISUAL INDICATOR
+                        // This function creates the HTML elements automatically if they are missing
+                        const ensureIndicator = (id, isLeft) => {
+                            let el = document.getElementById(id);
+                            if (!el) {
+                                el = document.createElement('div');
+                                el.id = id;
+                                el.className = `cinema-seek-indicator ${isLeft ? 'left' : 'right'}`;
+                                el.innerHTML = isLeft 
+                                    ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg><span>-10s</span>'
+                                    : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6-8.5-6z"/></svg><span>+10s</span>';
+                                document.body.appendChild(el);
+                            }
+                            return el;
+                        };
+
+                        const isLeft = e.key === 'ArrowLeft';
+                        const indicatorId = isLeft ? 'seek-indicator-left' : 'seek-indicator-right';
+                        const indicator = ensureIndicator(indicatorId, isLeft);
+                        
+                        // 3. Trigger Animation
+                        if (indicator) {
+                            // Reset animation frame
+                            indicator.classList.remove('active');
+                            void indicator.offsetWidth; // Force CSS Reflow
+                            indicator.classList.add('active');
+
+                            // Clear previous timer to prevent flickering
+                            if (indicator.dataset.timer) clearTimeout(parseInt(indicator.dataset.timer));
+                            
+                            // Hide after 600ms
+                            const timer = setTimeout(() => {
+                                indicator.classList.remove('active');
+                            }, 600);
+                            indicator.dataset.timer = timer;
+                        }
+
+                        return;
+                    }
+                }
+            }
+            // ============================================================
+            // END CINEMA LOGIC
+            // ============================================================
+
             e.stopImmediatePropagation();
             e.preventDefault();
             navigate(e.key);
@@ -229,6 +355,11 @@
                     return;
                 }
             }
+            // Reset Cinema timer on Enter too
+            const cinemaView = document.getElementById(VIEWS.CINEMA);
+            if (cinemaView && cinemaView.classList.contains('active')) {
+                resetCinemaFailsafe();
+            }
         }
         
         // --- 3. BACK/ESCAPE ---
@@ -241,7 +372,6 @@
                 return;
             }
 
-            // [NEW] Allow closing Auth Modal via Back/Escape
             const authModal = document.getElementById(VIEWS.AUTH_MODAL);
             if (authModal && authModal.classList.contains('visible')) {
                 if (window.closeAuth) window.closeAuth();
@@ -280,7 +410,6 @@
     // Initial Start
     window.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
-            // [FIX 4] Check Premium First on Load
             const premiumLanding = document.getElementById(VIEWS.PREMIUM);
             if (premiumLanding && isVisible(premiumLanding)) {
                  const startBtn = document.getElementById('premium-start-btn');

@@ -777,20 +777,43 @@ function playPreviewStep(chapterNum, reciterId) {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const transId = saved.trans || 'en';
     const cache = translationCache[transId];
-    if(cache) {
-        const sura = cache.querySelector(`sura[index="${chapterNum}"]`);
-        const aya = sura ? sura.querySelector(`aya[index="${verseNum}"]`) : null;
-        const text = aya ? aya.getAttribute('text') : "";
-        if(text) {
-            elements.subtitle.textContent = text;
-            elements.subtitle.classList.add('active');
-            if (RTL_CODES.has(transId)) elements.subtitle.dir = 'rtl';
-            else elements.subtitle.dir = 'ltr';
+    /* --- START BRIDGE TO LYRICS ENGINE (MULTI-LINE LOOP) --- */
+if (cache) {
+    const sura = cache.querySelector(`sura[index="${chNum}"]`);
+    const aya = sura ? sura.querySelector(`aya[index="${vNum}"]`) : null;
+    
+    // 1. Get Current Verse Text
+    const currentText = aya 
+        ? aya.getAttribute('text') 
+        : (window.t ? window.t('errors.translationUnavailable') : "Translation unavailable");
+
+    // 2. Get Next 4 Lines (The Loop)
+    const nextLines = [];
+    const currentInt = parseInt(vNum);
+    
+    for (let i = 1; i <= 4; i++) { // Fetch next 4 verses
+        const targetIndex = currentInt + i;
+        // Try finding the verse (handles both string '2' and number 2 matches)
+        const nextAya = sura ? sura.querySelector(`aya[index="${targetIndex}"]`) : null;
+        
+        if (nextAya) {
+            nextLines.push(nextAya.getAttribute('text'));
+        } else {
+            // Stop if we hit the end of the Surah
+            break; 
         }
-    } else {
-        elements.subtitle.classList.remove('active');
     }
 
+    // 3. Send to Engine
+    if (window.LyricsEngine) {
+        window.LyricsEngine.update(elements.display.trans, currentText, nextLines);
+    } else {
+        // Fallback
+        elements.display.trans.textContent = currentText;
+        adjustFontSize(elements.display.trans);
+    }
+}
+/* --- END BRIDGE --- */
     const rPath = RECITERS_CONFIG[reciterId]?.path || RECITERS_CONFIG['alafasy'].path;
     const audioUrl = `https://everyayah.com/data/${rPath}/${padCh}${padV}.mp3`;
     elements.previewAudio.src = audioUrl;
@@ -1502,5 +1525,184 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('popstate', hideElement);
     window.addEventListener('hashchange', hideElement);
 })();
+// --- Cinema Transition Logic for #start-btn ---
+document.addEventListener('click', function(e) {
+    // Target your specific button
+    const startBtn = e.target.closest('#start-btn');
 
+    if (startBtn) {
+        // 1. Stop immediate action so we can show the animation
+        e.preventDefault();
 
+        // 2. Activate the existing fade layer
+        const fadeLayer = document.getElementById('transition-fade-layer');
+        if (fadeLayer) {
+            fadeLayer.classList.add('active');
+
+            // 3. Wait exactly 800ms (matches your index1.css transition time)
+            setTimeout(() => {
+                // --- INSERT "GO TO CINEMA" LOGIC HERE ---
+                // Example: window.location.href = '/cinema';
+                // Example: document.getElementById('player-overlay').style.display = 'block';
+                
+                console.log('Transition complete. Loading cinema...'); 
+            }, 800); 
+        }
+    }
+});
+// --- FORCE RESET: Fix "Stuck on Black Screen" Issue ---
+function forceRemoveFadeLayer() {
+    const fadeLayer = document.getElementById('transition-fade-layer');
+    if (fadeLayer) {
+        // 1. Remove the active class causing the black screen
+        fadeLayer.classList.remove('active');
+        
+        // 2. Force CSS reset just to be safe
+        fadeLayer.style.opacity = '0';
+        fadeLayer.style.pointerEvents = 'none';
+        
+        console.log('Fade layer reset.');
+    }
+}
+
+// Scenario A: When the page loads normally
+document.addEventListener('DOMContentLoaded', forceRemoveFadeLayer);
+
+// Scenario B: When coming back from "Back" button (BF Cache)
+window.addEventListener('pageshow', forceRemoveFadeLayer);
+
+// Scenario C: When using browser history arrows
+window.addEventListener('popstate', forceRemoveFadeLayer);
+
+// Scenario D: Failsafe - Run it immediately just in case
+forceRemoveFadeLayer();
+//
+// ... existing code ...
+
+//
+// ... existing code ...
+
+// --- SMART SEEK STATE ---
+let pendingSeekOffset = null; // Stores { direction: 'backward'|'forward', remainder: number }
+
+// --- METADATA LISTENER ---
+// Applies the calculated time once the new verse (and its duration) is loaded
+elements.quranAudio.addEventListener('loadedmetadata', () => {
+    if (pendingSeekOffset !== null) {
+        const duration = elements.quranAudio.duration;
+        let newTime = 0;
+
+        if (pendingSeekOffset.direction === 'backward') {
+            // e.g. Remainder 5s. Duration 20s. Result: 15s.
+            newTime = Math.max(0, duration - pendingSeekOffset.remainder);
+        } else if (pendingSeekOffset.direction === 'forward') {
+            // e.g. Remainder 5s. Duration 20s. Result: 5s.
+            newTime = Math.min(duration, pendingSeekOffset.remainder);
+        }
+
+        elements.quranAudio.currentTime = newTime;
+        // Optionally auto-play if not already playing
+        elements.quranAudio.play().catch(e => console.log("Auto-resume after seek"));
+        
+        pendingSeekOffset = null; // Reset
+    }
+});
+
+/**
+ * Handles 10s Rewind/Forward with precise Cross-Verse & Cross-Chapter math.
+ * @param {number} seconds - e.g. -10 or 10
+ */
+window.smartSeek = function(seconds) {
+    const audio = elements.quranAudio;
+    if (!audio || isNaN(audio.duration)) return;
+
+    const currentT = audio.currentTime;
+    const duration = audio.duration;
+    const targetT = currentT + seconds;
+
+    // --- CASE 1: Standard Seek (Fits in current verse) ---
+    if (targetT >= 0 && targetT <= duration) {
+        audio.currentTime = targetT;
+        return;
+    }
+
+    // --- CASE 2: BACKWARD OVERFLOW (Into Previous Verse/Chapter) ---
+    if (targetT < 0) {
+        const remainder = Math.abs(targetT); // Amount of time to "deduct" from previous verse end
+        const currentVIdx = getSelectValue(elements.selects.verse); // 0-based index
+        const currentChIdx = getSelectValue(elements.selects.chapter); // 0-based index
+
+        if (currentVIdx > 0) {
+            // 2A: Previous Verse in SAME Chapter
+            const prevVIdx = currentVIdx - 1;
+            setSelectValue(elements.selects.verse, prevVIdx);
+            
+            pendingSeekOffset = { direction: 'backward', remainder: remainder };
+            triggerVerseChange();
+        } 
+        else if (currentChIdx > 0) {
+            // 2B: Previous CHAPTER (Last Verse)
+            const prevChIdx = currentChIdx - 1;
+            
+            // Switch Chapter first to get correct metadata
+            setSelectValue(elements.selects.chapter, prevChIdx);
+            
+            // Now we need to find the LAST verse of this new chapter.
+            // Using quranData directly from your app.js structure
+            const prevChapterData = quranData[prevChIdx]; 
+            const lastVerseIdx = prevChapterData.verses.length - 1;
+
+            // Populate verse select for the new chapter so the DOM is ready
+            populateVerseSelect(); 
+            setSelectValue(elements.selects.verse, lastVerseIdx);
+
+            pendingSeekOffset = { direction: 'backward', remainder: remainder };
+            triggerVerseChange();
+        } 
+        else {
+            // 2C: Absolute Start of Quran (Ch 1, V 1) - Just reset to 0
+            audio.currentTime = 0;
+        }
+    }
+
+    // --- CASE 3: FORWARD OVERFLOW (Into Next Verse/Chapter) ---
+    else if (targetT > duration) {
+        const remainder = targetT - duration; // Amount of time to "add" to next verse start
+        const currentVIdx = getSelectValue(elements.selects.verse);
+        const currentChIdx = getSelectValue(elements.selects.chapter);
+        
+        // Check if current verse is the last in the chapter
+        const totalVersesInCh = quranData[currentChIdx].verses.length;
+
+        if (currentVIdx < totalVersesInCh - 1) {
+            // 3A: Next Verse in SAME Chapter
+            setSelectValue(elements.selects.verse, currentVIdx + 1);
+            
+            pendingSeekOffset = { direction: 'forward', remainder: remainder };
+            triggerVerseChange();
+        } 
+        else if (currentChIdx < quranData.length - 1) {
+            // 3B: Next CHAPTER (First Verse)
+            const nextChIdx = currentChIdx + 1;
+            
+            setSelectValue(elements.selects.chapter, nextChIdx);
+            populateVerseSelect(); // Update verse list for new chapter
+            setSelectValue(elements.selects.verse, 0); // Start at Verse 1
+
+            pendingSeekOffset = { direction: 'forward', remainder: remainder };
+            triggerVerseChange();
+        }
+        else {
+            // 3C: End of Quran - Just finish
+            // Optionally triggering your 'khatam' logic here
+            console.log("End of Quran reached via seek");
+        }
+    }
+};
+
+// Reuse existing trigger helper (ensure this exists or add it)
+function triggerVerseChange() {
+    // This forces the app to load the new audio file
+    // The 'loadedmetadata' listener above will catch it when it's ready
+    loadVerse(true); // Assuming 'loadVerse(true)' plays the audio, based on your app.js
+}
