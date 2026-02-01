@@ -16,3 +16,32 @@ export async function onRequestPost(context) {
     }
   });
 }
+// 1. The function that Android will call when login finishes
+window.onNativeLoginSuccess = function(idToken) {
+    console.log("Received Token from Android TV:", idToken);
+    
+    // SEND this token to your backend (Cloudflare Worker) to verify it
+    fetch('/login-google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: idToken })
+    })
+    .then(response => {
+        if (response.ok) {
+            // Reload page to show Premium content
+            window.location.reload();
+        }
+    });
+};
+
+// 2. Attach this to your Login Button
+document.getElementById('loginButton').addEventListener('click', () => {
+    // Check if we are running inside the Android App
+    if (window.Android) {
+        // Trigger the Native Android TV Login
+        window.Android.startGoogleLogin();
+    } else {
+        // Fallback for normal web browsers
+        alert("Please use the Mobile App or standard web login.");
+    }
+});
