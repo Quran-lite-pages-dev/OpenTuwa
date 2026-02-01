@@ -1236,7 +1236,7 @@ function bufferNextResources(currentChIdx, currentVIdx) {
     const padCh = String(nextCh).padStart(3, '0');
     const padV = String(nextV).padStart(3, '0');
     const aud = new Audio();
-    aud.src = `https://everyayah.com/data/${qPath}/${padCh}${padV}.mp3`;
+    aud.src = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${padCh}${padV}.mp3`;
     aud.preload = 'auto'; 
 }
 
@@ -1260,7 +1260,7 @@ function updateQuranAudio(chNum, vNum, play) {
     const padCh = String(chNum).padStart(3, '0');
     const padV = String(vNum).padStart(3, '0');
     
-    elements.quranAudio.src = `https://everyayah.com/data/${path}/${padCh}${padV}.mp3`;
+    elements.quranAudio.src = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${padCh}${padV}.mp3`;
     if(play) elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
 }
 
