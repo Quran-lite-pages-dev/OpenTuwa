@@ -14,11 +14,12 @@ public class WebAppInterface {
 
     // This method can be called from your Website using Android.startGoogleLogin()
     @JavascriptInterface
-public void startGoogleLogin() {
-    mActivity.runOnUiThread(new Runnable() {
-        @Override
-        public void run() {
-            mActivity.launchNativeLogin();
-        }
-    });
-}
+    public void startGoogleLogin() {
+        mActivity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mActivity.launchNativeLogin();
+            }
+        });
+    }
+} // <--- THIS WAS MISSING

@@ -30,6 +30,7 @@
             pointer-events: all; 
         }
     </style>
+<script src="/login-client.js"></script>
 </head>
 <body>
 
@@ -783,6 +784,26 @@ function initializeGuest() {
     } else {
         console.error("Critical: #loginButton not found in HTML. Login will not work.");
     }
+</script>
+<script>
+window.onNativeLoginSuccess = function(idToken) {
+    console.log("Received Token from Android. Verifying...");
+    
+    fetch('/login-google', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: idToken })
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Verified. Reloading...");
+            window.location.reload();
+        } else {
+            console.error("Verification failed");
+        }
+    })
+    .catch(err => console.error("Network error", err));
+};
 </script>
 </body>
 </html>
