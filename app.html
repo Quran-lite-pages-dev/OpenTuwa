@@ -485,23 +485,45 @@ window.addEventListener('DOMContentLoaded', () => {
         backdrop-filter: blur(20px);
     }
 </style>
+<script>
+(function() {
+  const style = document.createElement('style');
+  style.textContent = `
+    /* Disable text selection across the whole app */
+    html, body {
+      user-select: none;
+      -webkit-user-select: none;
+      
+      /* Disable 'rubber band' scrolling */
+      overscroll-behavior: none;
+      
+      /* Optimize touch interactions */
+      touch-action: manipulation;
+      
+      /* Remove mobile tap highlight flash */
+      -webkit-tap-highlight-color: transparent;
+    }
 
+    /* Re-enable selection for inputs and textareas so users can still type */
+    input, textarea, [contenteditable="true"] {
+      user-select: text;
+      -webkit-user-select: text;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+</script>
 
 
     </head>
 <body>
 <div id="transition-fade-layer"></div>
-<a href="/" class="app-brand" aria-label="Tuwa Home">
+<a href="/" class="app-brand" id="brand-link" aria-label="Tuwa Home">
     <div class="brand-icon">
         <img src="assets/ui/logo.png" alt="Tuwa Logo">
     </div>
     <span class="brand-text">Tuwa</span>
 </a>
-
-    <script src="src/utils/resolution.js"></script>
-    <script src="src/components/recommendations.js"></script>
-    <script src="src/components/offline-status.js"></script>
-    <script src="src/utils/service-worker-registration.js"></script>
 <div id="island-search-wrapper">
     <div class="island-search-box">
         <div class="search-icon-wrapper">
@@ -517,6 +539,30 @@ window.addEventListener('DOMContentLoaded', () => {
             </svg>
     </button>
 </div>
+<script>
+    const toggleBrandVisibility = () => {
+        const brandLink = document.getElementById('brand-link');
+        if (!brandLink) return;
+
+        // Set your threshold (e.g., 768px for mobile/tablet)
+        if (window.innerWidth < 768) {
+            brandLink.style.display = 'none';
+        } else {
+            brandLink.style.display = 'flex'; // Or 'block' depending on layout
+        }
+    };
+
+    // Run on initial load
+    window.addEventListener('DOMContentLoaded', toggleBrandVisibility);
+    // Run whenever the screen is resized
+    window.addEventListener('resize', toggleBrandVisibility);
+</script>
+
+    <script src="src/utils/resolution.js"></script>
+    <script src="src/components/recommendations.js"></script>
+    <script src="src/components/offline-status.js"></script>
+    <script src="src/utils/service-worker-registration.js"></script>
+
 
     <nav id="tv-sidebar">
         <a href="#" class="nav-item active" id="nav-home" tabindex="1">

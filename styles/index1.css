@@ -236,54 +236,48 @@ html[dir="rtl"] .app-brand {
 
 /* --- ISLAND SEARCH BOX --- */
 /* --- ISLAND SEARCH BOX FIX --- */
+/* --- ISLAND SEARCH BOX FIX --- */
 #island-search-wrapper {
-    /* 1. Force Positioning */
     position: fixed !important;
-    top: auto !important;    /* CRITICAL: Prevents it from sticking to top */
-    bottom: 30px !important; /* Force the bottom gap */
+    top: 30px !important;    /* Forces it to the top */
+    bottom: auto !important; /* Explicitly disables bottom pinning */
     left: 0 !important;
-    
-    /* 2. Constrain Geometry */
     width: 100% !important;
-    height: auto !important; /* CRITICAL: Prevents full-screen stretching */
     
-    /* 3. Layout */
+    /* Crucial: height must be auto so it doesn't span the whole screen */
+    height: auto !important; 
+    
     display: flex !important;
-    align-items: flex-end !important; /* Safety: Ensure alignment is bottom-biased */
+    /* This was likely the culprit: align-items must be flex-start */
+    align-items: flex-start !important; 
     justify-content: flex-start !important;
     
-    /* 4. Visuals */
     padding-left: 5%; 
-    gap: 12px;
     z-index: 9999 !important;
-    pointer-events: none; /* Keep the wrapper click-through */
+    pointer-events: none;
 }
 
-
 .island-search-box {
-    pointer-events: auto; /* Re-enable clicks for the box */
-position: relative;
-z-index: 10;
+    pointer-events: auto;
+    position: relative;
+    /* Reset any old bottom-centric transforms */
+    margin-bottom: 0 !important; 
+    margin-top: 0 !important;
+    
+    /* Keep your existing styles below */
     background: #050505;
-    backdrop-filter: blur(25px) saturate(100%);
-    -webkit-backdrop-filter: blur(25px) saturate(180%);
-    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(25px);
     border-radius: 50px;
+    width: 240px;
+    padding: 6px 14px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-    display: flex;
-    align-items: center;
-
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-/* Remove the old flex gap that was spacing the button inside */
-    gap: 0; 
-    
-    /* Make padding symmetrical since the button is gone */
-    padding: 6px 14px; 
-    
-    /* Ensure the input fills the space */
-    width: 240px; /* Base width */
-    transform: translateY(0);
+/* Interaction States - Ensuring they don't break the top position */
+.island-search-box:focus-within,
+.island-search-box:hover {
+    width: 340px;
+    transform: translateY(5px); /* Changed to positive to move DOWN slightly on hover */
 }
 /* --- SLIM THINKING STATE --- */
 
@@ -474,7 +468,42 @@ animation-delay: 1s;
     opacity: 1;
     pointer-events: all;
 }
+@media screen and (max-width: 768px) {
+    #island-search-wrapper {
+        /* 1. RESET the anchors */
+        bottom: auto !important; 
+        top: calc(15px + env(safe-area-inset-top)) !important; 
+        
+        /* 2. FIX FLEX ALIGNMENT (Crucial) */
+        /* Desktop was 'flex-end', which forces it back down. 
+           We need 'center' or 'flex-start' for the top. */
+        align-items: center !important; 
+        justify-content: center !important;
+        
+        /* 3. RESET PADDING & WIDTH */
+        padding-left: 0 !important; /* Removes the desktop 5% offset */
+        padding: 0 15px !important; /* Balanced side spacing */
+        left: 0 !important;
+        width: 100% !important;
+        height: 60px !important; /* Give the wrapper a specific height */
+    }
 
+    .island-search-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: 52px !important; 
+        
+        /* Disable the desktop hover expansion on mobile to prevent 'glitching' */
+        transform: none !important; 
+        transition: none !important;
+    }
+
+    /* Keep the 'Enter' button aligned or hide it if it overlaps */
+    .enter-trigger {
+        height: 42px !important;
+        width: 42px !important;
+    }
+}
 /* --- 2. DASHBOARD STYLES --- */
 #dashboard-view {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -798,7 +827,7 @@ transform: none;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); 
     
     border: 1px solid rgba(255, 255, 255, 0.2); 
-    border-radius: 4px;     
+    border-radius: 14px;     
     color: #ffffff; /* Ensure high contrast for accessibility */
     
     /* 3. Typography */
@@ -820,7 +849,7 @@ transform: none;
     /* Keep translate values consistent to avoid "jumping" */
     transform: translate(-50%, -240%) scale(1.02); 
 
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.1); /* Subtle transparency */
     border-color: rgba(255, 255, 255, 0.5);
     /* Hover shadow: slightly deeper, but not solid black */
     box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3); 
@@ -836,6 +865,7 @@ margin: 0 auto;
 font-size: 1.1rem;
 padding: 12px 24px;
 box-sizing: border-box;  
+transform: translate(-50%, 220%);
 
 
         
@@ -844,7 +874,7 @@ box-sizing: border-box;
     }
 
     .start-btn:focus, .start-btn:hover { 
-        /* Match the X-axis centering for mobile hover states */
+        transform: translate(-50%, 220%) scale(1.02); 
        
     }
 }
@@ -924,7 +954,7 @@ body.idle #chapter-title { transform: translateX(100%); opacity: 0; pointer-even
     position: fixed; bottom: 0; left: 0; right: 0;
     display: flex; justify-content: center; align-items: center;
     flex-wrap: wrap; gap: 0.5rem; 
-    padding: 2rem;
+    padding: 4rem;
     background: linear-gradient(to top, #121212 20%, transparent);
     transition: transform 0.4s ease, opacity 0.4s ease; 
     z-index: 100;
@@ -1252,7 +1282,6 @@ display: none;
     width: 100%;
     max-width: 300px; 
     max-height: 600px;
-    border-radius: 4px;
     padding: 3rem 2rem;
     margin: 1.5rem 0 2.5rem 0;
     text-align: center;
@@ -1264,63 +1293,32 @@ display: none;
 }
 
 .premium-card-wrapper:hover {
-    transform: translateY(-5px);
+   
 }
 
 .premium-price-tag {
 display: none;
-    align-items: center;
-    gap: 0.25rem;
-    color: #ffffff;
-    font-family: var(--font-heading);
-    white-space: nowrap;
-    min-height: 120px; 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+
 }
 
 .premium-price-tag .price-period {
 display: none;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    color: #888;
-    margin-bottom: 0.25rem;
+
 }
 
 .premium-price-tag .price-big {
 display: none;
-    font-family: 'Inter', sans-serif;
-    font-size: 3.5rem;
-    font-weight: 700;
-    line-height: 1;
-    letter-spacing: -0.05em;
-    font-variant-numeric: tabular-nums;
-    
-    background: linear-gradient(180deg, #FFFFFF 40%, #A0A0A0 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    
-    filter: drop-shadow(0 0 20px rgba(255,255,255,0.1));
-    opacity: 0; 
-    transform: translateY(10px);
-    transition: opacity 0.8s ease, transform 0.8s ease;
-    will-change: opacity, transform;
+
 }
 
 .price-big.loaded {
-    opacity: 1;
-    transform: translateY(0);
+display: none;
+
 }
 
 .premium-price-tag .price-term-common {
 display: none;
-    font-size: 0.95rem;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.6);
-    margin-top: 0.25rem;
+
 }
 
 /* --- 6. ACTION BUTTON --- */
@@ -1490,103 +1488,444 @@ display: none;
     opacity: 1;
     transform: translateY(-50%) scale(1.1);
 }
-/* --- MOBILE NATIVE PATCH (v4.0 - UNIVERSAL VERIFIED) --- */
+/* --- MOBILE NATIVE PATCH (v4.0 - INDUSTRIAL STANDARD) --- */
 @media screen and (max-width: 768px) {
 
-    /* 1. NATIVE FEEL (Removes "Webby" Blue Taps & Rubber Banding) */
+    /* 1. GLOBAL MOBILE RESET & PHYSICS */
+    html, body {
+        overflow-x: hidden !important; /* Prevent horizontal wobble */
+        overscroll-behavior-y: none;   /* Disable pull-to-refresh feel */
+    }
+
     * {
-        -webkit-tap-highlight-color: transparent !important; /* Removes blue tap box */
-        -webkit-touch-callout: none !important; /* Disables long-press menu */
-        touch-action: manipulation; /* Disables double-tap to zoom */
+        -webkit-tap-highlight-color: transparent !important;
+        -webkit-touch-callout: none !important;
+        touch-action: manipulation;
     }
 
-    /* 2. FIX LANDING PAGE OVERFLOW (The "USD 0" Killer) */
-    .premium-card-wrapper {
-        scale: 1 !important; /* Resets the 1.4x desktop zoom */
+
+    /* 3. HERO SECTION (The Overlap Fix) */
+    /* Strategy: Use flex column + gap to force title above the cards */
+    .hero-banner {
+        height: -200vh !important;
+        min-height: 55dvh !important; /* Use dynamic viewport height */
+        padding: 120px 24px 20px 24px !important; /* High top padding clears logo */
+        
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-end !important; /* Push content to bottom of this block */
+        align-items: flex-start !important;
+        
+        overflow: visible !important; /* Allow shadows to bleed */
+        margin-bottom: 0 !important;
+    }
+
+    /* 4. TYPOGRAPHY (Anti-Lazy Mode) */
+    /* Huge Title - wraps naturally, no ellipsis */
+    .heroz-title-text, 
+    .hero-title-text {
+        font-size: clamp(32px, 11vw, 56px) !important; /* Scales with screen width */
+        line-height: 1.05 !important; /* Tight industrial leading */
+        font-weight: 800 !important;
+        
+        text-align: left !important;
+        margin: 0 0 16px 0 !important; /* Strict bottom spacing */
+        
         width: 100% !important;
-        margin: 10px 0 !important;
-        padding: 20px 0 !important;
+        white-space: normal !important; /* ALLOW WRAPPING */
+        word-break: keep-all !important; /* Don't break words mid-letter */
+        hyphens: auto;
+        
+        text-shadow: 0 10px 30px rgba(0,0,0,0.5); /* Legibility over background */
+        transform: none !important;
     }
 
-    /* CRITICAL: Overrides the inline 'style="font-size: 5rem"' in your HTML */
-    .price-big {
-        font-size: 3.5rem !important; 
-        line-height: 1.1 !important;
-        letter-spacing: -1px !important;
+    /* 8. PREMIUM LANDING MOBILE FIXES */
+    .premium-content {
+        padding: 24px !important;
+        justify-content: center !important;
     }
     
     .premium-title {
-        font-size: clamp(2.5rem, 8vw, 3.5rem) !important;
-        line-height: 1.1 !important;
-        width: 100% !important;
-        padding: 0 15px !important;
-        white-space: normal !important; /* prevents text running off screen */
-    }
-
-    .premium-subtitle {
-        font-size: 1.2rem !important;
-        opacity: 0.8;
-        padding: 0 20px;
-    }
-
-    /* 3. FIX APP DASHBOARD TYPOGRAPHY */
-    .heroz-title-text, 
-    .hero-title-text {
-        font-size: clamp(3rem, 10vw, 4.5rem) !important;
-        line-height: 1.05 !important;
-        margin-left: 0 !important;
-        width: 100% !important;
-        text-align: left !important;
+        font-size: clamp(36px, 12vw, 48px) !important;
+        text-align: center !important;
         white-space: normal !important;
-        word-break: break-word !important; /* Breaks long words like "Baqarah" if needed */
-    }
-
-    /* 4. LAYOUT & VIEWPORT SAFETY */
-    .hero-banner {
-        min-height: 50dvh !important; /* 'dvh' fixes the Android address bar jump */
-        padding: 100px 20px 20px 20px !important;
-        justify-content: flex-end !important;
-    }
-
-    .surah-card {
-        flex: 0 0 160px !important; /* Standard mobile card size */
-        height: 220px !important;
-    }
-
-    /* 5. FIX THE "ISLAND" SEARCH BAR */
-    #island-search-wrapper {
-        bottom: calc(15px + env(safe-area-inset-bottom)) !important;
-        padding: 0 15px !important;
+        padding: 0 !important;
     }
     
-    .island-search-box {
-        width: 100% !important;
-        height: 54px !important;
-        background: rgba(20,20,20,0.9) !important; /* Darker for better contrast */
+    .premium-subtitle {
+        font-size: 16px !important;
+        text-align: center !important;
+        padding: 0 10px !important;
+        margin-top: 16px !important;
     }
 
-    #island-input {
-        font-size: 16px !important; /* 16px prevents iOS from auto-zooming */
-    }
-
-    /* 6. HIDE TV ELEMENTS */
-    #tv-sidebar { display: none !important; }
     
-    .app-brand {
-        position: absolute !important;
-        top: 20px !important;
-        left: 20px !important;
-        right: auto !important;
-        transform: none !important;
-        width: auto !important;
-    }
-    
-    .brand-text {
-        font-size: 20px !important; /* Smaller logo text */
-    }
-    
-    .brand-icon img {
-        width: 40px !important;
-        height: auto !important;
+    .price-big {
+        font-size: 48px !important; /* Big but fits mobile */
     }
 }
+<style>
+.premium-btn {
+    /* 1. LAYOUT ESSENTIALS */
+    display: inline-flex;       /* Forces icon and text side-by-side */
+    align-items: center;        /* Vertically centers them */
+    justify-content: center;    /* Horizontally centers them */
+    gap: 12px;                  /* Space between text and arrow */
+    
+    /* 2. SIZING */
+    padding: 12px 24px;         /* Reduced side padding so icon fits */
+    width: auto;                /* Let it grow naturally */
+    
+    /* 3. VISUALS (Your original styles) */
+    background: #fff;
+    color: #000;
+    border: none;
+    font-size: 1.5rem;
+    font-family: var(--font-body);
+    font-weight: 900;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
+    position: relative;
+    overflow: hidden;           /* Now safe because Flexbox prevents wrapping */
+}
+
+/* 4. PREVENT ICON SQUISHING */
+.premium-btn svg {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+/* 5. HOVER EFFECTS */
+.premium-btn:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
+    
+    /* Text Gradient */
+    background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    /* IMPORTANT: The arrow needs a real color since text-fill is transparent */
+    color: #f2f2f2; 
+    opacity: 0.9;
+}
+
+.premium-btn:hover svg {
+    transform: translateX(4px); /* Slide arrow on hover */
+}
+
+@media (max-width: 768px) {
+.premium-title {
+    font-family: var(--font-heading);
+    font-size: clamp(0.5rem, 10vw, 4.5rem);
+    font-weight: 999;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin: 0;
+
+    /* Left Alignment Logic - DESKTOP */
+
+    text-align: center;             
+    width: 90%;                  
+    max-width: 900px;            /* Reads better on ultra-wide */
+
+    
+    background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.premium-subtitle {
+    font-family: var(--font-body);
+    font-size: 2.15rem;
+    color: #a1a1a6;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0;
+
+    /* Left Alignment Logic - DESKTOP */
+
+    text-align: center;
+        width: 90%;                  
+    max-width: 900px; 
+
+}
+</style>
+ <style>
+
+
+
+        
+        /* Standardized SVG sizing */
+        .social-btn svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+    </style>
+<style>
+/* Target the SVGs inside your buttons */
+.social-btn svg {
+    width: 18px; /* Adjust size as needed */
+    height: 18px;
+    vertical-align: middle;
+    margin-right: 10px;
+    
+    /* 1. Force the icon to be white */
+    /* fill: white; works for most, but filter is a 'nuclear' option for multi-color SVGs */
+    filter: brightness(0) invert(1) 
+            drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+}
+
+
+</style>
+
+
+    <style>
+        .legal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9995; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); opacity: 0; pointer-events: none; transition: opacity 0.4s; display: flex; align-items: center; justify-content: center; }
+        .legal-backdrop.active { opacity: 1; pointer-events: all; }
+        .legal-glass-panel { width: 90%; max-width: 600px; height: 80vh; background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 40px 80px rgba(0,0,0,0.8); transform: scale(0.95) translateY(20px); transition: transform 0.5s; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        .legal-backdrop.active .legal-glass-panel { transform: scale(1) translateY(0); }
+        .legal-scroll-content { padding: 40px; overflow-y: auto; color: #f0f0f0; font-family: "Plus Jakarta Sans", sans-serif; font-size: 1.4rem; line-height: 1.8; }
+        .legal-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 36px; height: 36px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; z-index: 10; }
+        
+        #hybrid-auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2147483647; display: none; justify-content: center; align-items: center; backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease; }
+        #hybrid-auth-modal.visible { opacity: 1; pointer-events: all; }
+.auth-card {
+  /* 1. FORCE Full Screen (Break out of any parent containers) */
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;  /* Anchors to right edge */
+  bottom: 0 !important; /* Anchors to bottom edge */
+  
+  width: 100vw !important;  /* Forces full Viewport Width */
+  height: 100vh !important; /* Forces full Viewport Height */
+  z-index: 99999 !important; /* Ensures it is on top of EVERYTHING */
+
+  /* 2. Aesthetics & Reset */
+  background: rgba(20, 20, 20, 1) !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 20px !important; /* Comfortable padding for mobile */
+  
+  border: none !important;
+  border-radius: 0 !important; /* Removes those rounded corners from the screenshot */
+  box-shadow: none !important;
+  transform: none !important;
+
+  /* 3. Perfect Centering */
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important; /* Ensures text inside is centered, not left-aligned */
+  gap: 16px !important;
+
+  /* 4. Mobile Safety (Prevents "Scrapped" look) */
+  overflow-y: auto !important; /* Allows scrolling if screen is too small */
+}
+
+/* 5. VITAL: Prevent the inner content from breaking mobile screens */
+.auth-card > * {
+  max-width: 100% !important; /* Prevents buttons/text from being wider than the phone screen */
+  flex-shrink: 1; /* Allows content to shrink if needed */
+}
+        #hybrid-auth-modal.visible .auth-card { transform: scale(1); }
+        .social-btn { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-size: 2rem; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s, background 0.2s; color: #fff; font-family: 'Inter', sans-serif; }
+        .social-btn:hover { transform: scale(1.02); }
+        .btn-google { background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: #000; }
+        
+        .premium-processing { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 0.6s cubic-bezier(0.2, 0, 0, 1); background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(40px) saturate(120%); }
+        .premium-processing.active { display: flex; opacity: 1; }
+        
+        .premium-loader { width: 50px; height: 50px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.1) 50%, #fff 100%); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px + 0.5px)); mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px + 0.5px)); animation: cinema-spin 1s linear infinite; margin-bottom: 24px; box-shadow: 0 0 30px rgba(255,255,255,0.05); }
+        @keyframes cinema-spin { to { transform: rotate(360deg); } }
+        .premium-status-text { animation: text-pulse 2s ease-in-out infinite; transition: opacity 0.3s ease; font-family: "Plus Jakarta Sans", "Inter", sans-serif; font-size: 1.2rem; font-weight: 500; letter-spacing: 0.15em; color: rgba(255, 255, 255, 0.9); text-transform: uppercase; text-align: center; }
+        @keyframes text-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; text-shadow: 0 0 15px rgba(255,255,255,0.3); } }
+    </style>
+<style>
+
+    #hybrid-auth-modal {
+
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+
+        background: rgba(0,0,0,0.85); z-index: 2147483647;
+
+        display: none; justify-content: center; align-items: center;
+
+        backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+
+        opacity: 0; transition: opacity 0.4s ease;
+
+    }
+
+    #hybrid-auth-modal.visible { opacity: 1; pointer-events: all; }
+
+    
+
+    .auth-card {
+
+        background: rgba(20, 20, 20, 0.8);
+
+        border: 1px solid rgba(255, 255, 255, 0.1);
+
+        border-radius: 24px; padding: 40px; width: 90%; max-width: 400px;
+
+        text-align: center; box-shadow: 0 40px 80px rgba(0,0,0,1);
+
+        display: flex; flex-direction: column; gap: 12px;
+
+        transform: scale(0.95); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    }
+
+    #hybrid-auth-modal.visible .auth-card { transform: scale(1); }
+
+    .auth-card-title {
+    /* 1. Basic Fallbacks for Ancient Devices (Android 5/Legacy iOS) */
+    font-family: var(--font-heading), sans-serif;
+    font-size: 3.5rem; /* Fallback for when clamp() isn't understood */
+    color: #FFFFFF;    /* Fallback for when text-fill-color isn't understood */
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin: 0;
+
+    /* 2. Modern Responsive Sizing */
+    /* Note: I fixed your clamp. Your 'min' was larger than your 'max' (4.5rem > 3.5rem) */
+    font-size: clamp(2.5rem, 8vw, 4.5rem); 
+
+    /* 3. The Gradient Effect */
+    background: #FFFFFF; /* Solid color fallback */
+    background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+    
+    /* Vendor prefixes for maximum compatibility */
+    -webkit-background-clip: text;
+    background-clip: text; 
+    -webkit-text-fill-color: transparent;
+}
+
+/* 4. Extra Safety for very small screens (iPhone Mini / SE) */
+@media (max-width: 320px) {
+    .auth-card-title {
+        font-size: 2.2rem;
+        letter-spacing: -0.01em; /* Tight tracking looks messy on tiny screens */
+    }
+}
+
+
+
+
+
+
+    .social-btn {
+
+        width: 100%; padding: 14px; border-radius: 12px;
+
+        border: 1px solid rgba(255,255,255,0.1);
+
+        cursor: pointer; font-size: 1rem; font-weight: 600;
+
+        display: flex; align-items: center; justify-content: center; gap: 10px;
+
+        transition: transform 0.2s, background 0.2s;
+
+        color: #fff; font-family: 'Inter', sans-serif;
+
+    }
+
+    .social-btn:hover { transform: scale(1.02); }
+
+    
+
+    /* Brand Colors */
+
+    .btn-google { background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%); 
+
+-webkit-background-clip: text; 
+
+-webkit-text-fill-color: transparent; 
+
+color: #000; }
+
+    .btn-spotify { display: none; background: #1DB954; color: #fff; }
+
+    .btn-facebook { display: none; background: #1877F2; color: #fff; }
+
+    .btn-discord { background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%); 
+
+-webkit-background-clip: text; 
+
+-webkit-text-fill-color: transparent; 
+
+color: #000; }
+
+    .btn-x { display: none; background: #000; border-color: #333; color: #fff; }
+
+
+
+    #auth-error { color: #ff4444; font-size: 0.9rem; margin-top: 10px; min-height: 1.2em; display:none;}
+
+    .divider { display: flex; align-items: center; color: #555; margin: 10px 0; font-size: 0.8rem; }
+
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #333; }
+
+    .divider span { padding: 0 10px; }
+
+</style>
+ <style>
+        body { background: #000; overflow: hidden; }
+        #premium-landing { display: flex !important; }
+
+        /* CRITICAL FIX: Hide content initially to prevent flashing the button */
+        .premium-content { 
+            opacity: 0; 
+            transition: opacity 0.8s ease; 
+            pointer-events: none; /* Prevent clicking while hidden */
+        }
+        .premium-content.visible { 
+            opacity: 1; 
+            pointer-events: all; 
+        }
+    </style>
+<style>
+    /* --- FORCE ISLAND SEARCH BAR VISIBILITY --- */
+/* --- ISLAND SEARCH BOX FIX --- */
+#island-search-wrapper {
+    /* 1. Force Positioning */
+    position: fixed !important;
+    top: auto !important;    /* CRITICAL: Prevents it from sticking to top */
+    bottom: 30px !important; /* Force the bottom gap */
+    left: 0 !important;
+    
+    /* 2. Constrain Geometry */
+    width: 100% !important;
+    height: auto !important; /* CRITICAL: Prevents full-screen stretching */
+    
+    /* 3. Layout */
+    display: flex !important;
+    align-items: flex-end !important; /* Safety: Ensure alignment is bottom-biased */
+    justify-content: flex-start !important;
+    
+    /* 4. Visuals */
+    padding-left: 5%; 
+    gap: 12px;
+    z-index: 9999 !important;
+    pointer-events: none; /* Keep the wrapper click-through */
+}
+
+    /* 4. ...BUT force the actual box and button to be clickable */
+    #island-search-wrapper .island-search-box,
+    #island-search-wrapper #island-trigger {
+        pointer-events: auto !important;
+        cursor: pointer !important;
+        
+        /* Optional: Add a subtle background if it was blending in too much */
+        backdrop-filter: blur(20px);
+    }
+</style>

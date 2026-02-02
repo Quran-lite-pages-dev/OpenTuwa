@@ -31,8 +31,54 @@
         }
     </style>
 <script src="functions/login-client.js"></script>
+<script>
+(function() {
+  const style = document.createElement('style');
+  style.textContent = `
+    /* Disable text selection across the whole app */
+    html, body {
+      user-select: none;
+      -webkit-user-select: none;
+      
+      /* Disable 'rubber band' scrolling */
+      overscroll-behavior: none;
+      
+      /* Optimize touch interactions */
+      touch-action: manipulation;
+      
+      /* Remove mobile tap highlight flash */
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Re-enable selection for inputs and textareas so users can still type */
+    input, textarea, [contenteditable="true"] {
+      user-select: text;
+      -webkit-user-select: text;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+</script>
 </head>
 <body>
+<script>
+    const toggleBrandVisibility = () => {
+        const brandLink = document.getElementById('brand-link');
+        if (!brandLink) return;
+
+        // Set your threshold (e.g., 768px for mobile/tablet)
+        if (window.innerWidth < 768) {
+            brandLink.style.display = 'none';
+        } else {
+            brandLink.style.display = 'flex'; // Or 'block' depending on layout
+        }
+    };
+
+    // Run on initial load
+    window.addEventListener('DOMContentLoaded', toggleBrandVisibility);
+    // Run whenever the screen is resized
+    window.addEventListener('resize', toggleBrandVisibility);
+</script>
 
     <div id="premium-landing" style="display: flex;"> 
         <div class="premium-brand-replica">
@@ -40,15 +86,16 @@
             <span>Tuwa</span>
         </div>
 
+
         <div class="premium-content">
-            <div class="appx-brand" aria-label="Tuwa Home">
+            <div class="appx-brand" id="brand-link" aria-label="Tuwa Home">
                 <div class="brand-icon">
                     <img src="assets/ui/logo.png" alt="Tuwa Logo">
                 </div>
                 <span class="brand-text">Tuwa</span>
             </div>
             <h1 class="premium-title">Premium content with distraction-free viewing.</h1>
-            <p class="premium-subtitle">The Global Standard in Streaming — <b> Join 1.5 Billion Daily Listeners. </b></p>
+            <p class="premium-subtitle"><b> Join 1.5 Billion Daily Listeners. </b></p>
 
             <div class="premium-card-wrapper">
 <div class="premium-price-tag" style="display: flex; flex-direction: column; align-items: center;">
@@ -399,27 +446,36 @@
     #hybrid-auth-modal.visible .auth-card { transform: scale(1); }
 
     .auth-card-title {
-
-    font-family: var(--font-heading);
-
-    font-size: clamp(4.5rem, 5vw, 3.5rem); /* Responsive scaling */
-
+    /* 1. Basic Fallbacks for Ancient Devices (Android 5/Legacy iOS) */
+    font-family: var(--font-heading), sans-serif;
+    font-size: 3.5rem; /* Fallback for when clamp() isn't understood */
+    color: #FFFFFF;    /* Fallback for when text-fill-color isn't understood */
     font-weight: 800;
-
     letter-spacing: -0.03em;
-
     line-height: 1.1;
-
     margin: 0;
 
+    /* 2. Modern Responsive Sizing */
+    /* Note: I fixed your clamp. Your 'min' was larger than your 'max' (4.5rem > 3.5rem) */
+    font-size: clamp(2.5rem, 8vw, 4.5rem); 
+
+    /* 3. The Gradient Effect */
+    background: #FFFFFF; /* Solid color fallback */
     background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
-
+    
+    /* Vendor prefixes for maximum compatibility */
     -webkit-background-clip: text;
-
+    background-clip: text; 
     -webkit-text-fill-color: transparent;
+}
 
+/* 4. Extra Safety for very small screens (iPhone Mini / SE) */
+@media (max-width: 320px) {
+    .auth-card-title {
+        font-size: 2.2rem;
+        letter-spacing: -0.01em; /* Tight tracking looks messy on tiny screens */
     }
-
+}
 
 
 
