@@ -397,21 +397,20 @@ display: block;
 
 <script>
     (function() {
-        // Detect if "?tv" is in the URL query string
-        const params = new URLSearchParams(window.location.search);
-        const isTvMode = params.has('tv');
+        // CHANGED: Use .includes() to allow combined formats like ?tv+mb
+        const search = window.location.search;
+        const isTvMode = search.includes('tv');
 
         const webGroup = document.getElementById('auth-group-web');
         const tvGroup = document.getElementById('auth-group-tv');
 
         if (isTvMode) {
-            // Case: URL contains ?tv -> Show Android/TV Button only
+            // Case: URL contains "tv" -> Show Android/TV Button only
             if(tvGroup) tvGroup.style.display = 'block';
             if(webGroup) webGroup.style.display = 'none';
         } else {
-            // Case: URL does NOT contain ?tv -> Show Web/Discord Buttons
+            // Case: URL does NOT contain "tv" -> Show Web/Discord Buttons
             if(tvGroup) tvGroup.style.display = 'none';
-            // Use flex to keep your layout alignment
             if(webGroup) webGroup.style.display = 'flex'; 
         }
     })();
@@ -687,34 +686,46 @@ color: #000; }
         }
 
 function initializeGuest() {
-    if (premiumContent) premiumContent.classList.add('visible');
-    
-    if (startBtn) {
-        // CHANGED: Use innerHTML so the browser renders the SVG
-        startBtn.innerHTML = `Start watching<svg 
-            class="btn-icon" 
-            aria-hidden="true" 
-            xmlns="http://www.w3.org/2000/svg" 
-            width="24" 
-            height="24" 
-            fill="none" 
-            viewBox="0 0 24 24"
-        >
-            <path 
-                stroke="currentColor" 
-                stroke-linecap="round" 
-                stroke-linejoin="round" 
-                stroke-width="2" 
-                d="m10 16 4-4-4-4"
-            />
-        </svg>`;
-        
-        startBtn.onclick = () => {
-            authModal.style.display = 'flex';
-            setTimeout(() => authModal.classList.add('visible'), 10);
-        };
-    }
-}
+            if (premiumContent) premiumContent.classList.add('visible');
+            
+            if (startBtn) {
+                // CHANGED: Use innerHTML so the browser renders the SVG
+                startBtn.innerHTML = `Start watching<svg 
+                    class="btn-icon" 
+                    aria-hidden="true" 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width="24" 
+                    height="24" 
+                    fill="none" 
+                    viewBox="0 0 24 24"
+                >
+                    <path 
+                        stroke="currentColor" 
+                        stroke-linecap="round" 
+                        stroke-linejoin="round" 
+                        stroke-width="2" 
+                        d="m10 16 4-4-4-4"
+                    />
+                </svg>`;
+                
+                startBtn.onclick = () => {
+                    authModal.style.display = 'flex';
+                    setTimeout(() => authModal.classList.add('visible'), 10);
+                };
+
+                // --- NEW: AUTO-TRIGGER LOGIC ---
+                // Detect 'mb' in URL search (?mb, ?tv+mb) OR path (/mb)
+                const search = window.location.search;
+                const path = window.location.pathname;
+
+                if (search.includes('mb') || path.includes('/mb')) {
+                    // Trigger the click immediately so the modal opens on load
+                    startBtn.click();
+                }
+                // ------------------------------
+            }
+        }
+
         function initializePostLogin() {
             // === CIRCUIT BREAKER ===
             // Check if we tried to activate in the last 15 seconds
