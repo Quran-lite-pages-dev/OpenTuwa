@@ -1,50 +1,46 @@
 export async function onRequest(context) {
   const { request, next, env } = context;
   const url = new URL(request.url);
+  const lowerPath = url.pathname.toLowerCase();
 
   // --- 1. CONFIGURATION ---
-  // Define folders users should never see in the browser address bar.
+  // Folders that are strictly protected.
   const protectedPaths = ['/src', '/assets', '/style', '/functions', '/locales'];
 
-  // --- 2. ROBUST SECURITY TRAP ---
-  
-  // FIX 1: Case Insensitivity
-  // Convert path to lowercase strictly for the check.
-  // This prevents '/SRC/app.js' from bypassing the filter.
-  const lowerPath = url.pathname.toLowerCase();
-  
-  // Check if the user is touching a protected folder
+  // --- 2. SECURITY TRAP (Source Code & Assets) ---
   const isProtectedPath = protectedPaths.some(path => lowerPath.startsWith(path));
-
-  // Check if this is a "Navigation" (Human using browser) vs "Subresource" (App loading script)
-  // - Sec-Fetch-Dest: 'document' is the modern standard for top-level navigation.
-  // - Accept: 'text/html' catches older browsers or direct navigation attempts.
+  
+  // Detect if this is a "Navigation" (Browser loading a page)
   const dest = request.headers.get("Sec-Fetch-Dest");
   const accept = request.headers.get("Accept");
   const isNavigation = dest === "document" || (accept && accept.includes("text/html"));
 
   if (isProtectedPath && isNavigation) {
-    // FIX 2: The Redirect (Solves the "Indexless" / Broken CSS Bug)
-    // We do NOT serve the file. We do NOT rewrite.
-    // We bounce the user back to the Root URL.
-    // Result: URL changes to '/', Landing Page loads, CSS works perfectly.
     return Response.redirect(new URL('/', request.url), 302);
   }
 
-  // --- 3. AUTHENTICATION ---
+  // --- 3. THE "APP" TRAP (CRITICAL FIX) ---
+  // This explicitly blocks direct access to /app or /app.html
+  // If a user types "/app", we force them back to "/"
+  // This ensures the file is NEVER served directly, only via the Root rewrite below.
+  if (lowerPath === '/app' || lowerPath === '/app.html') {
+     return Response.redirect(new URL('/', request.url), 302);
+  }
+
+  // --- 4. AUTHENTICATION ---
   const cookieHeader = request.headers.get("Cookie");
   const hasPremium = cookieHeader && cookieHeader.includes("TUWA_PREMIUM=true");
 
-  // --- 4. ROUTING (Root Path) ---
-  
-  // Only handle the exact root or index.html
+  // --- 5. ROUTING (Root Path Only) ---
+  // This is the ONLY place where app.html is allowed to exist.
   if (lowerPath === '/' || lowerPath === '/index.html' || lowerPath === '') {
-    // Serve the "Mask" page based on auth status
+    // If Premium: Serve App content, but keep URL as "/"
+    // If Guest: Serve Landing content, keep URL as "/"
     const targetPage = hasPremium ? '/app.html' : '/landing.html';
     return env.ASSETS.fetch(new URL(targetPage, request.url));
   }
 
-  // --- 5. PASSTHROUGH ---
-  // If we are here, it is a safe asset request (e.g. your app.html loading app.js).
+  // --- 6. PASSTHROUGH ---
+  // For safe static assets (images, css, etc.)
   return next();
 }
