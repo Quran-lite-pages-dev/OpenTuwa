@@ -208,18 +208,17 @@
         text-align: left;              
         
         width: 70%;                  
-        max-width: 400px; 
+        max-width: 110px; 
     gap: 12px;                  /* Space between text and arrow */
     
     /* 2. SIZING */
-    padding: 12px 24px;         /* Reduced side padding so icon fits */
-    width: auto;                /* Let it grow naturally */
+    padding: 6.7px 24px;         
     
     /* 3. VISUALS (Your original styles) */
     background: #fff;
     color: #000;
     border: none;
-    font-size: 1.5rem;
+    font-size: 0.9rem;
     font-family: var(--font-body);
     font-weight: 900;
     border-radius: 4px;
@@ -234,7 +233,7 @@
     .premium-title {
 display: block;
         font-family: var(--font-heading);
-        font-size: clamp(0.5rem, 10vw, 4rem);
+        font-size: clamp(0.5rem, 10vw, 2rem);
         font-weight: 999;
         letter-spacing: -0.03em;
         line-height: 1.1;
@@ -247,7 +246,7 @@ display: block;
         text-align: left;              
         
         width: 70%;                  
-        max-width: 400px; 
+        max-width: 100px; 
 
         background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
         -webkit-background-clip: text;
@@ -290,14 +289,13 @@ display: block;
 @media (max-width: 768px) {
 .premium-subtitle {
 display: block;
-    /* 1. Basic Fallbacks for Ancient Devices (Android 5/Legacy iOS) */
-    font-family: var(--font-heading), sans-serif;
-    color: #FFFFFF;    /* Fallback for when text-fill-color isn't understood */
-    font-weight: 800;
-    
+        font-family: var(--font-heading);
+        font-size: clamp(0.5rem, 10vw, 2rem);
+        font-weight: 999;
         letter-spacing: -0.03em;
         line-height: 1.1;
 
+        /* Position the container on the left */
         margin-left: 0;
         margin-right: auto;
         
@@ -305,16 +303,10 @@ display: block;
         text-align: left;              
         
         width: 70%;                  
-        max-width: 400px; 
+        max-width: 100px; 
 
-
-    font-size: clamp(2.5rem, 8vw, 4.5rem); 
-
-    background: #FFFFFF; /* Solid color fallback */
-    background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
-    
-    -webkit-background-clip: text;
-    -webkit-background-clip: text;
+        background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+        -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
   }
 }
