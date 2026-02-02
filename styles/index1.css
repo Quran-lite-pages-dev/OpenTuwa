@@ -827,7 +827,7 @@ transform: none;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2); 
     
     border: 1px solid rgba(255, 255, 255, 0.2); 
-    border-radius: 14px;     
+    border-radius: 24px;     
     color: #ffffff; /* Ensure high contrast for accessibility */
     
     /* 3. Typography */
@@ -866,6 +866,7 @@ font-size: 1.1rem;
 padding: 12px 24px;
 box-sizing: border-box;  
 transform: translate(-50%, 220%);
+border: 1px solid rgba(255, 255, 255, 0.1); 
 
 
         
@@ -875,6 +876,7 @@ transform: translate(-50%, 220%);
 
     .start-btn:focus, .start-btn:hover { 
         transform: translate(-50%, 220%) scale(1.02); 
+border-color: rgba(255, 255, 255, 0);
        
     }
 }
@@ -1248,15 +1250,38 @@ body.premium-lockdown {
         max-width: 100%; /* Ensure full width on mobile too */
     }
     
-    /* Reset to center for mobile */
-    .premium-title, .premium-subtitle { 
-        font-size: 2.25rem; /* Slightly smaller for mobile safety */
-        align-self: center; 
-        text-align: center;
-        padding-left: 0; /* Remove the desktop offset */
-        width: 100%;
-        max-width: 100%;
+    
+    @media (max-width: 768px) {
+    .premium-title {
+        font-family: var(--font-heading);
+        font-size: clamp(0.5rem, 10vw, 4.5rem);
+        font-weight: 999;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+
+        /* Position the container on the left */
+        margin-left: 0;
+        margin-right: auto;
+        
+        /* Keep the text itself centered inside that container */
+        text-align: center;              
+        
+        width: 90%;                  
+        max-width: 900px; 
+
+        background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
+}
+
+/* 4. Extra Safety for very small screens (iPhone Mini / SE) */
+@media (max-width: 320px) {
+    .auth-card-title {
+        font-size: 2.2rem;
+        letter-spacing: -0.01em; /* Tight tracking looks messy on tiny screens */
+    }
+}
 
     .premium-subtitle {
         font-size: 1rem;
@@ -1546,12 +1571,7 @@ display: none;
         justify-content: center !important;
     }
     
-    .premium-title {
-        font-size: clamp(36px, 12vw, 48px) !important;
-        text-align: center !important;
-        white-space: normal !important;
-        padding: 0 !important;
-    }
+    
     
     .premium-subtitle {
         font-size: 16px !important;
@@ -1619,40 +1639,60 @@ display: none;
 }
 
 @media (max-width: 768px) {
-.premium-title {
-    font-family: var(--font-heading);
-    font-size: clamp(0.5rem, 10vw, 4.5rem);
-    font-weight: 999;
+    .premium-title {
+        font-family: var(--font-heading);
+        font-size: clamp(0.5rem, 10vw, 4.5rem);
+        font-weight: 999;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+
+        /* Position the container on the left */
+        margin-left: 0;
+        margin-right: auto;
+        
+        /* Keep the text itself centered inside that container */
+        text-align: center;              
+        
+        width: 90%;                  
+        max-width: 900px; 
+
+        background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+}
+
+@media (max-width: 768px) {
+    .premium-subtitle {
+    /* 1. Basic Fallbacks for Ancient Devices (Android 5/Legacy iOS) */
+    font-family: var(--font-heading), sans-serif;
+    font-size: 3.5rem; /* Fallback for when clamp() isn't understood */
+    color: #FFFFFF;    /* Fallback for when text-fill-color isn't understood */
+    font-weight: 800;
     letter-spacing: -0.03em;
     line-height: 1.1;
     margin: 0;
 
-    /* Left Alignment Logic - DESKTOP */
+    /* 2. Modern Responsive Sizing */
+    /* Note: I fixed your clamp. Your 'min' was larger than your 'max' (4.5rem > 3.5rem) */
+    font-size: clamp(2.5rem, 8vw, 4.5rem); 
 
-    text-align: center;             
-    width: 90%;                  
-    max-width: 900px;            /* Reads better on ultra-wide */
-
-    
+    /* 3. The Gradient Effect */
+    background: #FFFFFF; /* Solid color fallback */
     background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+    
+    /* Vendor prefixes for maximum compatibility */
     -webkit-background-clip: text;
+    background-clip: text; 
     -webkit-text-fill-color: transparent;
 }
 
-.premium-subtitle {
-    font-family: var(--font-body);
-    font-size: 2.15rem;
-    color: #a1a1a6;
-    font-weight: 400;
-    line-height: 1.5;
-    margin: 0;
-
-    /* Left Alignment Logic - DESKTOP */
-
-    text-align: center;
-        width: 90%;                  
-    max-width: 900px; 
-
+/* 4. Extra Safety for very small screens (iPhone Mini / SE) */
+@media (max-width: 320px) {
+    .premium-subtitle {
+        font-size: 2.2rem;
+        letter-spacing: -0.01em; /* Tight tracking looks messy on tiny screens */
+    }
 }
 </style>
  <style>
