@@ -144,7 +144,7 @@ export async function onRequest(context) {
         'ja': { name: 'Japanese', url: 'https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/ja.japanese.xml' },
         'ko': { name: 'Korean', url: 'https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/ko.korean.xml' },
         'ku': { name: 'Kurdish', url: 'https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/ku.asan.xml' },
-        'ms': { name: 'Malay', url: 'https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/ms.basmeih.xml' },
+        'ms': { name: 'Malay', url: 'https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/ms.malay.xml' },
         'ml': { name: 'Malayalam', url: 'https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/ml.abdulhameed.xml' },
         'no': { name: 'Norwegian', url: 'https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/no.berg.xml' },
         'ps': { name: 'Pashto', url: 'https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/ps.abdulwali.xml' },
