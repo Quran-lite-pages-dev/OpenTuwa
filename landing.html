@@ -94,8 +94,9 @@
                 </div>
                 <span class="brand-text">Tuwa</span>
             </div>
-            <h1 class="premium-title">Premium content with distraction-free viewing.</h1>
-            <p class="premium-subtitle"><b> Join 1.5 Billion Daily Listeners. </b></p>
+            <h1 class="premium-title">Premium content</h1>
+            <h1 class="premium-title">Fulfillment. not the feed</h1>
+            <p class="premium-subtitle"><b> Join 1.5 Billion Daily Listeners </b></p>
 
             <div class="premium-card-wrapper">
 <div class="premium-price-tag" style="display: flex; flex-direction: column; align-items: center;">
@@ -138,6 +139,28 @@
     </div>
 </div>
 </div>
+<style>
+    .premium-title {
+    font-family: var(--font-heading);
+    font-size: clamp(3.5rem, 10vw, 5.5rem);
+    font-weight: 1199;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin: 0;
+
+    /* Left Alignment Logic - DESKTOP */
+
+    text-align: center;             
+    width: 90%;                  
+    max-width: 900px;            /* Reads better on ultra-wide */
+
+    
+    background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    }
+}
+</style>
 <style>
 .premium-btn {
     /* 1. LAYOUT ESSENTIALS */
@@ -191,66 +214,26 @@
     transform: translateX(4px); /* Slide arrow on hover */
 }
 
-@media (max-width: 768px) {
-.premium-btn {
-    /* 1. LAYOUT ESSENTIALS */
-    display: inline-flex;       /* Forces icon and text side-by-side */
-    align-items: center;        /* Vertically centers them */
-    justify-content: center;    /* Horizontally centers them */
-        letter-spacing: -0.03em;
-        line-height: 1.1;
 
-        /* Position the container on the left */
-        margin-left: 0;
-        margin-right: auto;
-        
-        /* Keep the text itself centered inside that container */
-        text-align: left;              
-        
-        width: 70%;                  
-        max-width: 110px; 
-    gap: 12px;                  /* Space between text and arrow */
-    
-    /* 2. SIZING */
-    padding: 6.7px 24px;         
-    
-    /* 3. VISUALS (Your original styles) */
-    background: #fff;
-    color: #000;
-    border: none;
-    font-size: 0.9rem;
-    font-family: var(--font-body);
-    font-weight: 900;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
-    position: relative;
-    overflow: hidden;           /* Now safe because Flexbox prevents wrapping */
-  }
-}
 @media (max-width: 768px) {
     .premium-title {
-display: block;
-        font-family: var(--font-heading);
-        font-size: clamp(0.5rem, 10vw, 2rem);
-        font-weight: 999;
-        letter-spacing: -0.03em;
-        line-height: 1.1;
+    font-family: var(--font-heading);
+    font-size: clamp(0.5rem, 10vw, 4.5rem);
+    font-weight: 999;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin: 0;
 
-        /* Position the container on the left */
-        margin-left: 0;
-        margin-right: auto;
-        
-        /* Keep the text itself centered inside that container */
-        text-align: left;              
-        
-        width: 70%;                  
-        max-width: 100px; 
+    /* Left Alignment Logic - DESKTOP */
 
-        background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+    text-align: center;             
+    width: 90%;                  
+    max-width: 900px;            /* Reads better on ultra-wide */
+
+    
+    background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     }
 }
 
@@ -267,14 +250,14 @@ display: block;
     /* 1. Basic Fallbacks for Ancient Devices (Android 5/Legacy iOS) */
     font-family: var(--font-heading), sans-serif;
     color: #FFFFFF;    /* Fallback for when text-fill-color isn't understood */
-    font-weight: 800;
+    font-weight: 650;
     letter-spacing: -0.03em;
     line-height: 1.1;
     margin: 0;
 
     /* 2. Modern Responsive Sizing */
     /* Note: I fixed your clamp. Your 'min' was larger than your 'max' (4.5rem > 3.5rem) */
-    font-size: clamp(2.5rem, 8vw, 4.5rem); 
+    font-size: clamp(0.5rem, 8vw, 4.5rem); 
 
     /* 3. The Gradient Effect */
     background: #FFFFFF; /* Solid color fallback */
@@ -289,25 +272,18 @@ display: block;
 @media (max-width: 768px) {
 .premium-subtitle {
 display: block;
-        font-family: var(--font-heading);
-        font-size: clamp(0.5rem, 10vw, 2rem);
-        font-weight: 999;
-        letter-spacing: -0.03em;
-        line-height: 1.1;
+    font-family: var(--font-body);
+    font-size: 2.15rem;
+    color: #a1a1a6;
+    font-weight: 400;
+    line-height: 1.5;
+    margin: 0;
 
-        /* Position the container on the left */
-        margin-left: 0;
-        margin-right: auto;
-        
-        /* Keep the text itself centered inside that container */
-        text-align: left;              
-        
-        width: 70%;                  
-        max-width: 100px; 
+    /* Left Alignment Logic - DESKTOP */
 
-        background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+    text-align: center;
+        width: 90%;                  
+    max-width: 900px; 
   }
 }
 /* 4. Extra Safety for very small screens (iPhone Mini / SE) */

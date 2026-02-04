@@ -1283,10 +1283,7 @@ body.premium-lockdown {
     }
 }
 
-    .premium-subtitle {
-        font-size: 1rem;
-        max-width: 90%; /* prevent edge touching */
-    }
+
     
     .premium-brand-replica { top: 1.5rem; left: 1.5rem; }
     .premium-footer { padding-bottom: max(2rem, env(safe-area-inset-bottom)); } 
@@ -1675,7 +1672,7 @@ display: none;
 
     /* 2. Modern Responsive Sizing */
     /* Note: I fixed your clamp. Your 'min' was larger than your 'max' (4.5rem > 3.5rem) */
-    font-size: clamp(2.5rem, 8vw, 4.5rem); 
+    font-size: clamp(0.5rem, 8vw, 4.5rem); 
 
     /* 3. The Gradient Effect */
     background: #FFFFFF; /* Solid color fallback */
