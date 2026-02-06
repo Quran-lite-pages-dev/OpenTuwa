@@ -22,15 +22,6 @@ let RECITERS_CONFIG = {};
 const ACTIVE_PROFILE_ID = "1";
 const STORAGE_KEY = `quranState_${ACTIVE_PROFILE_ID}`;
 
-// --- NEW: VIRTUAL SILENT BACKING TRACK (ANTI-GLITCH) ---
-// A minimal silent MP3 file (base64) to keep the Media Session active between verses
-const SILENT_MP3_DATA = "data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//OEAAAAAAAAAAAAAAAAAAAAAAAASW5mbwAAAA8AAAAEAAABIADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD//////////////////////////////////////////////////////////////////wAAAAxMYXZjNTguNTQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPAAGAAAAAAAAAAAAF//OEZAAAAAAAAAAAABhAAAAAAAAAAAAAAAIUAAABAAAAAAAAAAAARAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//OEZAAAAAAAAAAAABiAAAAAAAAAAAAAAAIUAAABAAAAAAAAAAAARAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==";
-
-const virtualBackingTrack = new Audio(SILENT_MP3_DATA);
-virtualBackingTrack.loop = true;
-virtualBackingTrack.volume = 0; // Silent
-// -------------------------------------------------------
-
 // Keep Audio Config here as it contains no secrets
 const TRANSLATION_AUDIO_CONFIG = {
     'none': { name: 'No Audio Translation' }, 
@@ -287,10 +278,6 @@ function switchView(viewName) {
         stopPreview();
         elements.sidebar.container.style.display = 'none';
         
-        // Ensure the silent backing track is active if we are in cinema mode
-        // (Though typically started by the Start button)
-        virtualBackingTrack.play().catch(e => { /* Autoplay block handled by Start button */ });
-
         setTimeout(() => {
             const chapterTrigger = elements.selects.chapter.querySelector('.custom-select-trigger');
             if(chapterTrigger) chapterTrigger.focus();
@@ -302,10 +289,6 @@ function switchView(viewName) {
         elements.sidebar.container.style.display = 'none';
         elements.quranAudio.pause();
         elements.transAudio.pause();
-        
-        // Pause the silent backing track when leaving cinema
-        virtualBackingTrack.pause();
-        
         refreshDashboard();
         document.getElementById('door-play-btn').focus();
     }
@@ -1079,11 +1062,6 @@ function setupEventListeners() {
     elements.startBtn.addEventListener('click', () => {
         elements.overlay.style.opacity = 0;
         setTimeout(() => elements.overlay.style.display = 'none', 500);
-        
-        // --- START SILENT BACKING TRACK ON USER INTERACTION ---
-        virtualBackingTrack.play().catch(e => console.log("Silent track blocked:", e));
-        // -----------------------------------------------------
-        
         loadVerse(true); 
     });
 
@@ -1113,29 +1091,20 @@ let currentSurahTitle = "";
 
 function updateMediaSession(surah, verse, artist) {
     if ('mediaSession' in navigator) {
-        // We update metadata regardless of which audio is "really" playing
-        // The silent backing track keeps the session alive.
+        if (surah === currentSurahTitle) {
+            return; 
+        }
+
         navigator.mediaSession.metadata = new MediaMetadata({
-            title: `${currentChapterData.english_name} (Verse ${verse})`, // Updated to show verse in title
+            title: `${currentChapterData.english_name}`,
             artist: `The Sight | Original Series`,
             album: `Tuwa Audio`,
             artwork: [{ src: 'https://Quran-lite.pages.dev/social-preview.jpg', sizes: '512x512', type: 'image/jpeg' }]
         });
 
         navigator.mediaSession.setActionHandler('nexttrack', () => {
-            // Logic handled by app state (optional: trigger nextVerse())
+            // Logic handled by app state
         });
-        
-        // --- ADD HANDLERS TO SYNC PLAY/PAUSE FOR BOTH TRACKS ---
-        navigator.mediaSession.setActionHandler('play', () => {
-            virtualBackingTrack.play();
-            elements.quranAudio.play();
-        });
-        navigator.mediaSession.setActionHandler('pause', () => {
-            virtualBackingTrack.pause();
-            elements.quranAudio.pause();
-        });
-        // --------------------------------------------------------
 
         currentSurahTitle = surah;
     }
