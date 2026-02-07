@@ -55,7 +55,7 @@ export async function onRequest(context) {
         
         // Strict security: Only allow specific extensions
         if (filename.endsWith('.json') || filename.endsWith('.xml')) {
-            realSource = `${dataBase}${filename}`;
+            realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/${filename}`;
         }
     }
 
@@ -108,7 +108,10 @@ export async function onRequest(context) {
       '/functions/login-client.js',
       '/src/components/navigation.js',
       '/favicon.ico',
-      '/manifest.json'
+      '/manifest.json',
+      '/src/utils/resolution.js',
+      '/src/components/recommendations.js',
+      '/src/utils/content-protection.js'
     ];
 
     const allowedGuestStarts = [
