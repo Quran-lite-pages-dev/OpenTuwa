@@ -1356,3 +1356,58 @@ window.smartSeek = function(seconds) {
 function triggerVerseChange() {
     loadVerse(true); 
 }
+// --- INTERACTION FEEDBACK LOGIC ---
+
+/**
+ * Triggers the visual "pop" for a specific action
+ * @param {string} type - 'play', 'pause', 'forward', 'backward'
+ */
+function showInteractionFeedback(type) {
+    // Optional: Only show if Cinema View is active
+    // if (!elements.views.cinema.classList.contains('active')) return;
+
+    const iconId = `icon-${type}`;
+    const icon = document.getElementById(iconId);
+    
+    if (icon) {
+        // Reset animation by removing and re-adding class
+        icon.classList.remove('animate');
+        void icon.offsetWidth; // Force Reflow (Magic trick to restart CSS animation)
+        icon.classList.add('animate');
+    }
+}
+
+// 1. Hook into Audio Events (Play/Pause)
+// This ensures it works whether you click a button or use a key
+if (elements.quranAudio) {
+    elements.quranAudio.addEventListener('play', () => showInteractionFeedback('play'));
+    elements.quranAudio.addEventListener('pause', () => showInteractionFeedback('pause'));
+}
+
+// 2. Hook into Keyboard Events (Seeking)
+document.addEventListener('keydown', (e) => {
+    // Only capture if we are interacting with the app (not typing in search)
+    if (document.activeElement.tagName === 'INPUT') return;
+
+    switch(e.key) {
+        case 'ArrowRight':
+            showInteractionFeedback('forward');
+            // Add actual seek logic here if missing: elements.quranAudio.currentTime += 5;
+            break;
+        case 'ArrowLeft':
+            showInteractionFeedback('backward');
+            // Add actual seek logic here if missing: elements.quranAudio.currentTime -= 5;
+            break;
+        case ' ': // Spacebar
+            // Prevent default page scroll
+            e.preventDefault(); 
+            if (elements.quranAudio.paused) {
+                elements.quranAudio.play();
+                // 'play' event listener above will trigger the visual
+            } else {
+                elements.quranAudio.pause();
+                // 'pause' event listener above will trigger the visual
+            }
+            break;
+    }
+});

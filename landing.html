@@ -94,23 +94,69 @@
                 </div>
                 <span class="brand-text">Tuwa</span>
             </div>
-            <h1 class="premium-title">Premium content</h1> 
+<style>
+    .premium-title {
+        /* --- Base Text Styles --- */
+        font-family: var(--font-heading);
+        font-size: clamp(4.5rem, 8vw, 7.5rem);
+        font-weight: 900;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin: 0 auto;
+        
+        /* --- Layout --- */
+        text-align: center;
+        width: 100%;
+        max-width: 1000px;
+    }
 
-            <h1 class="premium-title">Fulfillment. not the feed</h1> 
-            <p class="premium-subtitle"><b> Join 1.5 Billion Daily Listeners </b></p>
-            <div class="premium-card-wrapper">
-<div class="premium-price-tag" style="display: flex; flex-direction: column; align-items: center;">
-    <span class="price-term-common" style="color: rgba(255,255,255,0.6); font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 4px;">
-        Limited Time Offer
-    </span>
+    /* --- LINE 1: The Main Title (Keeps the Gradient) --- */
+    .premium-title .line-1 {
+        display: block; /* Forces own line */
+        
+        /* The Gradient Logic */
+        background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 
-    <span class="price-term-common" style="color: #fff; font-size: 1.4rem; font-weight: 500; margin-bottom: 0px;">
-        12 Months of Premium
-    </span>
+    /* --- LINE 2: The Subtitle (Solid Color & Smaller) --- */
+    .premium-title .line-2 {
+        display: block; /* Forces own line */
+        
+        /* Visual Hierarchy */
 
-    <span class="price-big" style="font-size: 5rem; font-weight: 800; letter-spacing: -2px; margin: 8px 0 16px 0;">
-        USD 0
-    </span>
+        letter-spacing: 0; /* Normal spacing for readability */
+        margin-top: 10px; /* Space between title and subtitle */
+
+        /* Override the parent gradient to make this solid color */
+        background: none; 
+        -webkit-text-fill-color: #999999; /* Solid Light Gray */
+        color: #999999;
+    }
+
+    /* --- Mobile Tweak --- */
+    @media (max-width: 768px) {
+        .premium-title {
+            font-size: clamp(2rem, 10vw, 3.5rem);
+        }
+        /* Optional: make subtitle slightly larger on mobile for readability */
+        .premium-title .line-2 {
+            font-size: 0.6em; 
+        }
+    }
+</style>
+
+<h1 class="premium-title">
+    <span class="line-1">Fulfillment</span>
+    <span class="line-2">not the feed</span>
+</h1>
+            <p class="premium-subtitle"><b>1.5 Billion Daily Listeners</b></p>
+<h2></h2>
+
+
+
 
 
 
@@ -137,47 +183,25 @@
     </svg>
 </button>
 </div>
-        
-        <nobr><span class="price-term" style="opacity: 0.7; font-size: 0.9rem;">No credit card needed</span></nobr>
+
     </div>
 </div>
 </div>
 <style>
-    .premium-title {
-    font-family: var(--font-heading);
-    font-size: clamp(3.5rem, 10vw, 5.5rem);
-    font-weight: 1199;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    margin: 0;
-
-    /* Left Alignment Logic - DESKTOP */
-
-    text-align: center;             
-    width: 90%;                  
-    max-width: 900px;            /* Reads better on ultra-wide */
-
-    
-    background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    }
-}
-</style>
-<style>
 .premium-btn {
     /* 1. LAYOUT ESSENTIALS */
-    display: inline-flex;       /* Forces icon and text side-by-side */
-    align-items: center;        /* Vertically centers them */
-    justify-content: center;    /* Horizontally centers them */
-    gap: 12px;                  /* Space between text and arrow */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
     
     /* 2. SIZING */
-    padding: 12px 24px;         /* Reduced side padding so icon fits */
-    width: auto;                /* Let it grow naturally */
+    padding: 12px 24px;
+    width: 400px;
     
-    /* 3. VISUALS (Your original styles) */
+    /* 3. VISUALS & POSITIONING */
     background: #fff;
+        /* The Gradient Logic */
     color: #000;
     border: none;
     font-size: 1.5rem;
@@ -185,10 +209,15 @@
     font-weight: 900;
     border-radius: 4px;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.15);
     position: relative;
-    overflow: hidden;           /* Now safe because Flexbox prevents wrapping */
+    overflow: hidden;
+
+    /* MOVE DOWN 10% OF ITS OWN HEIGHT */
+    transform: translateY(10%); 
+
+    /* TRANSITION: Includes transform for smooth hover return */
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* 4. PREVENT ICON SQUISHING */
@@ -199,6 +228,7 @@
 
 /* 5. HOVER EFFECTS */
 .premium-btn:hover {
+    /* We override the 10% move on hover to lift it up slightly */
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
     
@@ -208,37 +238,16 @@
     background-clip: text;
     -webkit-text-fill-color: transparent;
     
-    /* IMPORTANT: The arrow needs a real color since text-fill is transparent */
     color: #f2f2f2; 
     opacity: 0.9;
 }
 
 .premium-btn:hover svg {
-    transform: translateX(4px); /* Slide arrow on hover */
+    transform: translateX(4px);
 }
 
 
-@media (max-width: 768px) {
-    .premium-title {
-    font-family: var(--font-heading);
-    font-size: clamp(0.5rem, 10vw, 4.5rem);
-    font-weight: 999;
-    letter-spacing: -0.03em;
-    line-height: 1.1;
-    margin: 0;
 
-    /* Left Alignment Logic - DESKTOP */
-
-    text-align: center;             
-    width: 90%;                  
-    max-width: 900px;            /* Reads better on ultra-wide */
-
-    
-    background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    }
-}
 
 /* 4. Extra Safety for very small screens (iPhone Mini / SE) */
 @media (max-width: 320px) {
@@ -260,7 +269,7 @@
 
     /* 2. Modern Responsive Sizing */
     /* Note: I fixed your clamp. Your 'min' was larger than your 'max' (4.5rem > 3.5rem) */
-    font-size: clamp(0.5rem, 8vw, 4.5rem); 
+    font-size: clamp(0.5rem, 8vw, 2.5rem); 
 
     /* 3. The Gradient Effect */
     background: #FFFFFF; /* Solid color fallback */
@@ -297,9 +306,7 @@ display: block;
     }
 }
 </style>
-            <p class="premium-legal-disclaimer" style="display: none;">
-                *Promotional pricing of USD 0/mo valid for the initial 12-month term. Plan automatically continues at the standard zero-cost rate thereafter. No commitment; cancel anytime. No payment method required.
-            </p>
+
         </div>
 
         <div class="premium-processing">
@@ -637,22 +644,9 @@ color: #000; }
         // We check sessionStorage to see if we recently tried to activate.
         const LOOP_PROTECTION_KEY = 'tuwa_activation_attempt';
 
-        // ... (Keep your paintPrice and fetch logic here) ...
 
-        const paintPrice = (currency) => {
-            const priceTag = document.querySelector('.price-big');
-            if (priceTag) {
-                priceTag.innerText = currency + " 0.00"; 
-                priceTag.classList.add('loaded'); 
-            }
-        };
-        paintPrice('USD'); 
-        fetch('/cdn-cgi/trace').then(r => r.text()).then(text => { 
-            const match = text.match(/loc=([A-Z]{2})/);
-            const country = match ? match[1] : 'US';
-            const currency = COUNTRY_TO_CURRENCY[country] || 'USD';
-            paintPrice(currency); 
-        }).catch(() => paintPrice('USD'));
+
+
 
         // Check Auth
         if (supabase) {
