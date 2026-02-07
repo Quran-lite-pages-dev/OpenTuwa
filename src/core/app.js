@@ -217,8 +217,21 @@ function setSelectValue(wrapper, value) {
 
     if (foundText) {
         wrapper.dataset.value = value;
-        const trigger = wrapper.querySelector('.custom-select-trigger');
-        if(trigger) trigger.textContent = foundText;
+
+        // IDs of wrappers that should keep their static label (e.g. "Reciter")
+        // instead of showing the selected value.
+        const staticLabelIds = [
+            'reciterSelectWrapper', 
+            'translationSelectWrapper', 
+            'translationAudioSelectWrapper'
+            // Add 'chapterSelectWrapper' or 'verseSelectWrapper' here if you want those to be static too
+        ];
+
+        // Only update the trigger text if the wrapper ID is NOT in the static list
+        if (!staticLabelIds.includes(wrapper.id)) {
+            const trigger = wrapper.querySelector('.custom-select-trigger');
+            if(trigger) trigger.textContent = foundText;
+        }
     }
 }
 
