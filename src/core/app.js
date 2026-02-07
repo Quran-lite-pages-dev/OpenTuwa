@@ -1359,67 +1359,85 @@ function triggerVerseChange() {
 // --- SMART INTERACTION FEEDBACK LOGIC ---
 
 let lastKnownSrc = null;
+let isSeekingInteraction = false; // Flag to block conflicting events
+let seekResetTimeout;
 
 /**
  * Triggers the visual "pop" for a specific action
  * @param {string} type - 'play', 'pause', 'forward', 'backward'
  */
 function showInteractionFeedback(type) {
-    // Optional: Only show if Cinema View is active
-    if (!elements.views.cinema.classList.contains('active')) return;
+    // Optional: Check if Cinema/View is active
+    if (elements.views.cinema && !elements.views.cinema.classList.contains('active')) return;
 
     const iconId = `icon-${type}`;
     const icon = document.getElementById(iconId);
     
     if (icon) {
-        icon.classList.remove('animate');
-        void icon.offsetWidth; // Force Reflow to restart animation
+        // Reset any other icons first (optional, but cleaner)
+        document.querySelectorAll('.feedback-icon').forEach(el => el.classList.remove('animate'));
+        
+        // Trigger animation
+        void icon.offsetWidth; // Force Reflow
         icon.classList.add('animate');
     }
 }
 
-// 1. SETUP AUDIO LISTENERS (The Robust Way)
+/**
+ * Helper to show Directional icons and BLOCK Play/Pause for a moment
+ */
+function showDirectionalFeedback(type) {
+    showInteractionFeedback(type);
+    
+    // 1. Raise the flag: "We are seeking, ignore play/pause events"
+    isSeekingInteraction = true;
+    
+    // 2. Clear previous timer if spamming keys
+    clearTimeout(seekResetTimeout);
+    
+    // 3. Lower the flag after 800ms (enough time for the audio to settle)
+    seekResetTimeout = setTimeout(() => {
+        isSeekingInteraction = false;
+    }, 800);
+}
+
+// 1. SETUP AUDIO LISTENERS
 if (elements.quranAudio) {
     
-    // PLAY EVENT: Fires when playback is requested (by user OR system)
     elements.quranAudio.addEventListener('play', () => {
-        const currentSrc = elements.quranAudio.src;
+        // STOP if this event was caused by seeking
+        if (isSeekingInteraction) return;
 
-        // If the SRC is the same as before, it means we are RESUMING.
-        // This implies a User Action (Toggle).
+        const currentSrc = elements.quranAudio.src;
         if (currentSrc === lastKnownSrc) {
             showInteractionFeedback('play');
         } 
-        
-        // If SRC is different, it's a System Action (New Verse).
-        // We do NOT show feedback, but we update the tracker.
         lastKnownSrc = currentSrc;
     });
 
-    // PAUSE EVENT: Fires when playback stops
     elements.quranAudio.addEventListener('pause', () => {
-        // We check !ended because we don't want a "Pause" icon when the verse simply finishes.
-        // We check readyState > 2 to ensure it's not just buffering/loading.
+        // STOP if this event was caused by seeking
+        if (isSeekingInteraction) return;
+
         if (!elements.quranAudio.ended && elements.quranAudio.readyState > 2) {
              showInteractionFeedback('pause');
         }
     });
 }
 
-// 2. SETUP SEEK LISTENERS (Directional)
-// We still use keys for Seek because 'seeking' event doesn't tell us direction (Left/Right) easily.
+// 2. SETUP KEY LISTENERS
 document.addEventListener('keydown', (e) => {
+    // Ignore if typing in a search box
     if (document.activeElement.tagName === 'INPUT') return;
 
     if (e.key === 'ArrowRight') {
-        showInteractionFeedback('forward');
-        // smartSeek is already handled in your existing code
+        // Use the helper function that sets the blocker flag
+        showDirectionalFeedback('forward');
     } 
     else if (e.key === 'ArrowLeft') {
-        showInteractionFeedback('backward');
-        // smartSeek is already handled in your existing code
+        // Use the helper function that sets the blocker flag
+        showDirectionalFeedback('backward');
     }
-    // Note: We REMOVED the 'Space' handler here because the 
-    // audio 'play'/'pause' listeners above will handle it automatically 
-    // (and more accurately).
+    // Spacebar is handled automatically by the audio 'play'/'pause' listeners
+    // because spacebar doesn't cause the "seek conflict" issue.
 });
