@@ -46,7 +46,7 @@ const elements = {
     selects: {
         chapter: document.getElementById('chapterSelectWrapper'),
         verse: document.getElementById('verseSelectWrapper'),
-        trans: document.getElementById('reciterSelectWrapper'),
+        trans: document.getElementById('translationSelectWrapper'),
         reciter: document.getElementById('reciterSelectWrapper'),
         transAudio: document.getElementById('translationAudioSelectWrapper')
     },
@@ -206,7 +206,6 @@ function setSelectValue(wrapper, value) {
     const options = wrapper.querySelectorAll('.custom-option');
     let foundText = null;
 
-    // 1. Find the selected option text
     options.forEach(opt => {
         if (opt.dataset.value == value) {
             opt.classList.add('selected');
@@ -216,18 +215,10 @@ function setSelectValue(wrapper, value) {
         }
     });
 
-    // 2. Update the trigger (BUT KEEP SVG IF IT IS AN ICON TRIGGER)
     if (foundText) {
         wrapper.dataset.value = value;
         const trigger = wrapper.querySelector('.custom-select-trigger');
-        
-        if (trigger) {
-            // FIX: If the button has the class "icon-trigger", we DO NOT overwrite the content.
-            // This preserves your SVG icon while still updating the data-value.
-            if (!trigger.classList.contains('icon-trigger')) {
-                trigger.textContent = foundText;
-            }
-        }
+        if(trigger) trigger.textContent = foundText;
     }
 }
 
