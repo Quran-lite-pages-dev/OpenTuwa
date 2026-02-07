@@ -193,3 +193,53 @@ body.simple-mode #reciterSelectWrapper {
     box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.1);
 }
+/* --- MODE 0: FIXED ICON TRANSLATION --- */
+
+/* 1. Position the Wrapper Fixed at Bottom Right */
+body.simple-mode #translationSelectWrapper {
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 5% !important;
+    left: auto !important;
+    
+    width: auto !important;
+    z-index: 9999;
+}
+
+/* 2. Style the Button: JUST THE SVG (No Circle/Border) */
+body.simple-mode #translationSelectWrapper .custom-select-trigger {
+    /* Remove fixed width/height so it fits the icon */
+    width: auto;
+    height: auto;
+    padding: 10px; /* Small padding creates a better click target */
+    
+    /* Remove all container styling */
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    
+    /* Ensure icon centering */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hover Effect: Simple Scale, No Background */
+body.simple-mode #translationSelectWrapper .custom-select-trigger:hover {
+    background: transparent !important;
+    transform: scale(1.2); /* Slightly larger zoom on hover */
+    opacity: 0.8;
+}
+
+/* 3. Dropdown Position */
+body.simple-mode #translationSelectWrapper .custom-options {
+    bottom: 100%;
+    right: 0;
+    left: auto;
+    width: 260px;
+    margin-bottom: 10px; /* Add space between icon and menu */
+    transform-origin: bottom right;
+    max-height: 60vh;
+}

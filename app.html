@@ -832,10 +832,17 @@ window.addEventListener('DOMContentLoaded', () => {
                 <div class="custom-options"></div>
             </div>
 
-            <div id="translationSelectWrapper" class="custom-select-wrapper">
-                <button class="custom-select-trigger" tabindex="0" data-i18n="player.translation"><span>Translation</span></button>
-                <div class="custom-options"></div>
-            </div>
+<div id="translationSelectWrapper" class="custom-select-wrapper">
+    <button class="custom-select-trigger icon-trigger" tabindex="0" aria-label="Translation">
+        <svg fill="#f9f9f9" height="24px" width="24px" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" xml:space="preserve">
+            <g id="subtitles">
+                <path d="M12,24l-4.4-5H0V0h24v19h-7.6L12,24z M2,17h6.4l3.6,4l3.6-4H22V2H2V17z"/>
+                <path d="M4,13h7v2H4V13z M12,13h7v2h-7V13z M4,10h5v2H4V10z M14,10h6v2h-6V10z M10,10h3v2h-3V10z"/>
+            </g>
+        </svg>
+    </button>
+    <div class="custom-options"></div>
+</div>
 
             <div id="translationAudioSelectWrapper" class="custom-select-wrapper">
                 <button class="custom-select-trigger" tabindex="0" data-i18n="player.audioTrans"><span>Audio Translation</span></button>
