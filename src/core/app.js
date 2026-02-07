@@ -1356,7 +1356,9 @@ window.smartSeek = function(seconds) {
 function triggerVerseChange() {
     loadVerse(true); 
 }
-// --- INTERACTION FEEDBACK LOGIC ---
+// --- SMART INTERACTION FEEDBACK LOGIC ---
+
+let lastKnownSrc = null;
 
 /**
  * Triggers the visual "pop" for a specific action
@@ -1364,50 +1366,60 @@ function triggerVerseChange() {
  */
 function showInteractionFeedback(type) {
     // Optional: Only show if Cinema View is active
-    // if (!elements.views.cinema.classList.contains('active')) return;
+    if (!elements.views.cinema.classList.contains('active')) return;
 
     const iconId = `icon-${type}`;
     const icon = document.getElementById(iconId);
     
     if (icon) {
-        // Reset animation by removing and re-adding class
         icon.classList.remove('animate');
-        void icon.offsetWidth; // Force Reflow (Magic trick to restart CSS animation)
+        void icon.offsetWidth; // Force Reflow to restart animation
         icon.classList.add('animate');
     }
 }
 
-// 1. Hook into Audio Events (Play/Pause)
-// This ensures it works whether you click a button or use a key
+// 1. SETUP AUDIO LISTENERS (The Robust Way)
 if (elements.quranAudio) {
-    elements.quranAudio.addEventListener('play', () => showInteractionFeedback('play'));
-    elements.quranAudio.addEventListener('pause', () => showInteractionFeedback('pause'));
+    
+    // PLAY EVENT: Fires when playback is requested (by user OR system)
+    elements.quranAudio.addEventListener('play', () => {
+        const currentSrc = elements.quranAudio.src;
+
+        // If the SRC is the same as before, it means we are RESUMING.
+        // This implies a User Action (Toggle).
+        if (currentSrc === lastKnownSrc) {
+            showInteractionFeedback('play');
+        } 
+        
+        // If SRC is different, it's a System Action (New Verse).
+        // We do NOT show feedback, but we update the tracker.
+        lastKnownSrc = currentSrc;
+    });
+
+    // PAUSE EVENT: Fires when playback stops
+    elements.quranAudio.addEventListener('pause', () => {
+        // We check !ended because we don't want a "Pause" icon when the verse simply finishes.
+        // We check readyState > 2 to ensure it's not just buffering/loading.
+        if (!elements.quranAudio.ended && elements.quranAudio.readyState > 2) {
+             showInteractionFeedback('pause');
+        }
+    });
 }
 
-// 2. Hook into Keyboard Events (Seeking)
+// 2. SETUP SEEK LISTENERS (Directional)
+// We still use keys for Seek because 'seeking' event doesn't tell us direction (Left/Right) easily.
 document.addEventListener('keydown', (e) => {
-    // Only capture if we are interacting with the app (not typing in search)
     if (document.activeElement.tagName === 'INPUT') return;
 
-    switch(e.key) {
-        case 'ArrowRight':
-            showInteractionFeedback('forward');
-            // Add actual seek logic here if missing: elements.quranAudio.currentTime += 5;
-            break;
-        case 'ArrowLeft':
-            showInteractionFeedback('backward');
-            // Add actual seek logic here if missing: elements.quranAudio.currentTime -= 5;
-            break;
-        case ' ': // Spacebar
-            // Prevent default page scroll
-            e.preventDefault(); 
-            if (elements.quranAudio.paused) {
-                elements.quranAudio.play();
-                // 'play' event listener above will trigger the visual
-            } else {
-                elements.quranAudio.pause();
-                // 'pause' event listener above will trigger the visual
-            }
-            break;
+    if (e.key === 'ArrowRight') {
+        showInteractionFeedback('forward');
+        // smartSeek is already handled in your existing code
+    } 
+    else if (e.key === 'ArrowLeft') {
+        showInteractionFeedback('backward');
+        // smartSeek is already handled in your existing code
     }
+    // Note: We REMOVED the 'Space' handler here because the 
+    // audio 'play'/'pause' listeners above will handle it automatically 
+    // (and more accurately).
 });

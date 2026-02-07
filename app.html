@@ -524,54 +524,42 @@ window.addEventListener('DOMContentLoaded', () => {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    pointer-events: none; /* Let clicks pass through */
-    z-index: 9999;
+    pointer-events: none;
+    z-index: 2147483647; /* Highest layer */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .feedback-icon {
-    position: absolute; /* Stack them on top of each other */
+    position: absolute;
     width: 70px;
     height: 70px;
-    background: rgba(0, 0, 0, 0.5); /* Semi-transparent dark circle */
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    
     opacity: 0;
     transform: scale(0.5);
-    transition: none; /* JS will handle the animation class */
 }
 
 .feedback-icon svg {
     width: 32px;
     height: 32px;
     fill: #fff;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
 
-/* The Pop Animation */
+/* POP ANIMATION */
 .feedback-icon.animate {
-    animation: cinema-pop 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: cinema-pop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
 }
 
 @keyframes cinema-pop {
-    0% {
-        opacity: 0;
-        transform: scale(0.8);
-    }
-    20% {
-        opacity: 1;
-        transform: scale(1.1);
-    }
-    100% {
-        opacity: 0;
-        transform: scale(1.4);
-    }
+    0% { opacity: 0; transform: scale(0.8); }
+    20% { opacity: 1; transform: scale(1.1); }
+    100% { opacity: 0; transform: scale(1.5); }
 }
 </style>
 <div id="interaction-overlay" class="interaction-overlay">
