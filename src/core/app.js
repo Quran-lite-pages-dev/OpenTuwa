@@ -338,7 +338,7 @@ async function initializeApp() {
             // Fallback could go here if needed
         }
 
-        const jsonResponse = await fetch('https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/2TM3TM.json');
+        const jsonResponse = await fetch('/media/data/2TM3TM.json');
         if (!jsonResponse.ok) throw new Error("Failed to load Quran JSON");
         const jsonData = await jsonResponse.json();
         
@@ -551,7 +551,9 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
     }
 
     const verseNum = previewSequence[0];
-    const imgUrl = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${chapterNum}_${verseNum}.png`;
+    
+    // SECURE FIX: Use the tunnel
+    const imgUrl = `/media/image/${chapterNum}_${verseNum}.png`;
     
     const tempImg = new Image();
     tempImg.src = imgUrl;
@@ -578,7 +580,9 @@ function playPreviewStep(chapterNum, reciterId) {
     
     const imgLayer = document.getElementById('hero-preview-layer');
     const previewImg = document.getElementById('preview-img');
-    const newSrc = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/images/img/{chapterNum}_${verseNum}.png?raw=true$`;
+
+    // SECURE FIX: Use the tunnel
+    const newSrc = `/media/image/${chapterNum}_${verseNum}.png`;
 
     previewImg.style.opacity = 0;
     setTimeout(() => {
@@ -623,7 +627,7 @@ function playPreviewStep(chapterNum, reciterId) {
     }
     /* --- END BRIDGE --- */
     const rPath = RECITERS_CONFIG[reciterId]?.path || RECITERS_CONFIG['alafasy'].path;
-    const audioUrl = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${padCh}${padV}.mp3`;
+    const audioUrl = `/media/audio/${padCh}${padV}.mp3`;
     elements.previewAudio.src = audioUrl;
     elements.previewAudio.volume = 0.6;
     elements.previewAudio.onended = () => {
@@ -927,7 +931,7 @@ async function loadVerse(autoplay = true) {
 
     elements.display.title.innerHTML = `${currentChapterData.title} <span class="chapter-subtitle">(${chNum}:${vNum})</span>`;
     
-    const newSrc = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${chNum}_${vNum}.png`;
+    const newSrc = `/media/image/${chNum}_${vNum}.png`;
     const img1 = elements.display.verse;
     const img2 = elements.display.verseNext;
 
@@ -991,15 +995,18 @@ function bufferNextResources(currentChIdx, currentVIdx) {
     const nextCh = quranData[nextChIdx].chapterNumber;
     const nextV = quranData[nextChIdx].verses[nextVIdx].verseNumber;
 
+    // SECURE FIX: Use the tunnel
     const img = new Image();
-    img.src = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${nextCh}_${nextV}.png`;
+    img.src = `/media/image/${nextCh}_${nextV}.png`;
 
     const rId = getSelectValue(elements.selects.reciter);
     const qPath = RECITERS_CONFIG[rId].path;
     const padCh = String(nextCh).padStart(3, '0');
     const padV = String(nextV).padStart(3, '0');
+    
+    // SECURE FIX: Use the tunnel
     const aud = new Audio();
-    aud.src = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${padCh}${padV}.mp3`;
+    aud.src = `/media/audio/${padCh}${padV}.mp3`;
     aud.preload = 'auto'; 
 }
 
@@ -1019,11 +1026,16 @@ function updateTranslationText(chNum, vNum) {
 
 function updateQuranAudio(chNum, vNum, play) {
     const rId = getSelectValue(elements.selects.reciter);
-    const path = RECITERS_CONFIG[rId].path;
+    // Note: Reciter path is used to build the filename, but currently 
+    // your middleware only supports the standard folder structure.
+    // If your reciters use different folder structures, ensure middleware matches.
+    
     const padCh = String(chNum).padStart(3, '0');
     const padV = String(vNum).padStart(3, '0');
     
-    elements.quranAudio.src = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${padCh}${padV}.mp3`;
+    // SECURE FIX: Use the tunnel
+    elements.quranAudio.src = `/media/audio/${padCh}${padV}.mp3`;
+    
     if(play) elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
 }
 

@@ -4,34 +4,127 @@ export async function onRequest(context) {
   const path = url.pathname;
   const lowerPath = path.toLowerCase();
 
-  // --- 1. AUTHENTICATION CHECK ---
-  // Check if the user has the Premium cookie
+  // =========================================================================
+  // 1. AUTHENTICATION
+  // =========================================================================
   const cookieHeader = request.headers.get("Cookie");
   const hasPremium = cookieHeader && cookieHeader.includes("TUWA_PREMIUM=true");
 
-  // --- 2. ROOT ROUTING (The "Door") ---
-  // This handles the main entry point
+  // =========================================================================
+  // 2. REQUEST TYPE DETECTION (For Anti-Scraping)
+  // =========================================================================
+  // 'dest' tells us IF the browser is loading a page (document) 
+  // or a resource (image, audio, script).
+  const dest = request.headers.get("Sec-Fetch-Dest");
+  const referer = request.headers.get("Referer");
+  
+  // Is the user trying to open a file directly in the address bar?
+  // (e.g. typing tuwa.com/src/app.js) -> We will block this.
+  const isDirectNav = dest === "document";
+
+  // =========================================================================
+  // 3. SECURE MEDIA TUNNEL (The "Proxy")
+  // =========================================================================
+  // This handles requests to /media/... and fetches the real content from jsdelivr.
+  // The browser NEVER sees the jsdelivr URL.
+  
+  if (lowerPath.startsWith('/media/')) {
+    
+    // RULE 1: Only Premium users allowed.
+    if (!hasPremium) return new Response("Not Found", { status: 404 });
+
+    // RULE 2: Anti-Scrape.
+    // If a user tries to open an MP3/JSON directly in a tab, block it.
+    // It must be requested by the page (dest="audio", "image", "empty", etc.)
+    if (isDirectNav) return new Response("Access Denied", { status: 403 });
+
+    let realSource = null;
+
+    // --- A. AUDIO TUNNEL ---
+    // Matches logic in app.js: /assets/cdn/${padCh}${padV}.mp3
+    // Incoming: /media/audio/001001.mp3
+    if (lowerPath.startsWith('/media/audio/')) {
+      const filename = lowerPath.split('/media/audio/')[1];
+      // Source from your app.js logic
+      realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${filename}`;
+    }
+    
+    // --- B. IMAGE TUNNEL ---
+    // Matches logic in app.js: /assets/images/img/${chNum}_${vNum}.png
+    // Incoming: /media/image/1_1.png
+    else if (lowerPath.startsWith('/media/image/')) {
+      const filename = lowerPath.split('/media/image/')[1];
+      // Source from your app.js logic (using refs/heads/master)
+      realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${filename}`;
+    }
+
+    // --- C. DATA TUNNEL (JSON/XML) ---
+    // Matches logic in config.js and app.js
+    // Incoming: /media/data/en.xml OR /media/data/2TM3TM.json
+    else if (lowerPath.startsWith('/media/data/')) {
+        const filename = lowerPath.split('/media/data/')[1];
+        
+        // Base path from your code
+        const dataBase = "https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/";
+        
+        // Check strict extensions to prevent probing
+        if (filename.endsWith('.json') || filename.endsWith('.xml')) {
+            realSource = `${dataBase}${filename}`;
+        }
+    }
+
+    // --- FETCH & RETURN ---
+    if (realSource) {
+      try {
+        const originalResponse = await fetch(realSource);
+
+        if (!originalResponse.ok) return new Response("Media Error", { status: 404 });
+
+        // SANITIZE HEADERS: Hide the fact it came from GitHub/JSDelivr
+        const newHeaders = new Headers(originalResponse.headers);
+        newHeaders.delete('x-github-request-id');
+        newHeaders.delete('access-control-allow-origin');
+        newHeaders.delete('server');
+        newHeaders.delete('x-cache');
+        newHeaders.delete('x-served-by');
+        
+        // Force the browser to treat it as a resource, not a download
+        newHeaders.set('Content-Disposition', 'inline'); 
+        // Cache it privately so it doesn't get stuck in shared caches
+        newHeaders.set('Cache-Control', 'private, max-age=86400');
+
+        return new Response(originalResponse.body, {
+          status: originalResponse.status,
+          headers: newHeaders
+        });
+      } catch (e) {
+        return new Response("Upstream Error", { status: 502 });
+      }
+    }
+  }
+
+  // =========================================================================
+  // 4. ROOT ROUTING (The "Door")
+  // =========================================================================
   if (lowerPath === '/' || lowerPath === '/index.html' || lowerPath === '') {
-    // If Premium: Serve App content
-    // If Guest: Serve Landing content
-    // URL remains "/" for both, hiding the file name
     const targetPage = hasPremium ? '/app.html' : '/landing.html';
     return env.ASSETS.fetch(new URL(targetPage, request.url));
   }
 
-  // --- 3. EXPLICITLY HIDE THE HTML FILES ---
-  // Prevent users from guessing "/app.html" or "/landing.html" directly
+  // =========================================================================
+  // 5. HIDE HTML FILES
+  // =========================================================================
+  // Prevent users from bypassing the logic by typing /app.html
   if (lowerPath === '/app.html' || lowerPath === '/landing.html' || lowerPath === '/app') {
     return Response.redirect(new URL('/', request.url), 302);
   }
 
-  // --- 4. GUEST "BLACK HOLE" MODE ---
-  // If the user is NOT premium, we pretend nothing else exists.
+  // =========================================================================
+  // 6. GUEST LOCKDOWN (Strict Allowlist)
+  // =========================================================================
+  // If NOT Premium, block EVERYTHING except what landing.html needs.
   if (!hasPremium) {
-    
-    // LIST A: Files strictly required for 'landing.html' to look good.
-    // (I extracted these from your uploaded landing.html code)
-    const allowedFiles = [
+    const allowedGuestFiles = [
       '/assets/ui/web.png',
       '/assets/ui/web.ico',
       '/assets/ui/apple-touch-icon.png',
@@ -39,49 +132,43 @@ export async function onRequest(context) {
       '/styles/index1.css',
       '/styles/inline-styles.css',
       '/functions/login-client.js',
-      '/src/components/navigation.js',
+      '/src/components/navigation.js', // As seen in your landing.html
       '/favicon.ico',
-      '/manifest.json' // Optional: if you have a PWA manifest
+      '/manifest.json'
     ];
 
-    // LIST B: API Endpoints needed for login to work
-    const allowedStarts = [
-      '/login',       // Needed to POST login data
-      '/auth/'        // If you use Supabase auth callbacks
+    const allowedGuestStarts = [
+      '/login',       
+      '/login-google',
+      '/auth/',
+      '/api/config' // Allow config if needed for guest previews (optional)
     ];
 
-    // Check: Is the requested file in our allowed list?
-    const isAllowedFile = allowedFiles.includes(lowerPath);
-    // Check: Is it an allowed API endpoint?
-    const isAllowedEndpoint = allowedStarts.some(prefix => lowerPath.startsWith(prefix));
+    const isAllowed = allowedGuestFiles.includes(lowerPath) || 
+                      allowedGuestStarts.some(prefix => lowerPath.startsWith(prefix));
 
-    // THE TRAP: If it's not on the list, return 404 (Not Found)
-    if (!isAllowedFile && !isAllowedEndpoint) {
+    if (!isAllowed) {
+      // 404 makes it look like the files literally don't exist
       return new Response("Not Found", { status: 404 });
     }
   }
 
-  // --- 5. PREMIUM USER PROTECTION ---
-  // Even if they are premium, we don't want them browsing source folders in the address bar.
-  // This block ensures they can load the app, but not navigate to folders.
+  // =========================================================================
+  // 7. PREMIUM SOURCE PROTECTION
+  // =========================================================================
+  // If Premium user tries to "Browse" folders via address bar -> Redirect Home.
+  // This allows the App to fetch the files (script src="...") but blocks the User.
   if (hasPremium) {
-    const protectedFolders = ['/src', '/assets', '/functions', '/locales'];
-    const isProtectedFolder = protectedFolders.some(folder => lowerPath.startsWith(folder));
+    // Folders found in your file tree
+    const protectedFolders = ['/src', '/assets', '/functions', '/locales', '/styles'];
+    const isProtected = protectedFolders.some(folder => lowerPath.startsWith(folder));
     
-    // Check if this is a "Navigation" (user typing URL in browser)
-    const dest = request.headers.get("Sec-Fetch-Dest");
-    const accept = request.headers.get("Accept");
-    const isNavigation = dest === "document" || (accept && accept.includes("text/html"));
-
-    // If they try to "visit" a folder, send them home
-    if (isProtectedFolder && isNavigation) {
+    if (isProtected && isDirectNav) {
+      // If they type "tuwa.com/src/app.js" in the address bar -> BOOM, back to home.
       return Response.redirect(new URL('/', request.url), 302);
     }
   }
 
-  // --- 6. ALLOW ---
-  // If we reached here, the request is either:
-  // A) A Guest asking for a whitelisted file (logo.png)
-  // B) A Premium User accessing the app normally
+  // Pass through to static assets or other Functions
   return next();
 }
