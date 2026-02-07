@@ -46,7 +46,7 @@ const elements = {
     selects: {
         chapter: document.getElementById('chapterSelectWrapper'),
         verse: document.getElementById('verseSelectWrapper'),
-        trans: document.getElementById('translationSelectWrapper'),
+        trans: document.getElementById('reciterSelectWrapper'),
         reciter: document.getElementById('reciterSelectWrapper'),
         transAudio: document.getElementById('translationAudioSelectWrapper')
     },
@@ -218,7 +218,13 @@ function setSelectValue(wrapper, value) {
     if (foundText) {
         wrapper.dataset.value = value;
         const trigger = wrapper.querySelector('.custom-select-trigger');
-        if(trigger) trigger.textContent = foundText;
+        
+        // --- FIX START ---
+        // Only update the text if the trigger is NOT an icon-trigger
+        if (trigger && !trigger.classList.contains('icon-trigger')) {
+            trigger.textContent = foundText;
+        }
+        // --- FIX END ---
     }
 }
 

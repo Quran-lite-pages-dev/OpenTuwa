@@ -939,17 +939,35 @@ body.idle #chapter-title { transform: translateX(100%); opacity: 0; pointer-even
 
 
 #translation-text {
+    /* Base Desktop Styles */
     font-family: 'Inter', sans-serif;
-    line-height: 1.7; flex-grow: 0; flex-shrink: 1; max-height: 30%;
-    overflow-y: auto; white-space: pre-wrap; text-align: center;
-    padding: 0 2rem; 
+    line-height: 1.7;
+    flex-grow: 0;
+    flex-shrink: 1;
+    white-space: pre-wrap;
+    text-align: center;
+    padding: 0 2rem;
     transition: opacity 0.3s;
     color: #F5F5F7;
-    font-weight: 600; 
-    text-shadow: 
-        0px 2px 10px rgba(0, 0, 0, 0.2), 
-        0px 10px 20px rgba(0, 0, 0, 0.1);
+    font-weight: 600;
+    text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.2), 0px 10px 20px rgba(0, 0, 0, 0.1);
     -webkit-font-smoothing: antialiased;
+    
+    /* Default Scrollable Desktop behavior */
+    max-height: 30%;
+    overflow-y: auto;
+}
+
+/* Mobile Version (768px and below) */
+@media (max-width: 768px) {
+    #translation-text {
+        max-height: none;    /* Remove height limit */
+        height: auto;        /* Let text dictate size */
+        overflow-y: hidden;  /* Kill the scrollbar */
+        padding: 0 1.25rem;  /* Tighter padding for small screens */
+        font-size: 0.95rem;  /* Optional: slight shrink for better density */
+        line-height: 1.5;    /* Slightly tighter line height */
+    }
 }
 
 #control-panel {

@@ -141,22 +141,6 @@
     .custom-select-wrapper {
         width: 100%; 
     }
-    
-    .custom-options {
-        width: 90%;
-        left: 5%;
-        margin-left: 0; 
-        
-        bottom: 15%; 
-        top: auto;
-        transform: translateY(20px) scale(0.95);
-        position: fixed; 
-        max-height: 60vh;
-    }
-
-    .custom-select-wrapper.open .custom-options {
-        transform: translateY(0) scale(1);
-    }
 }
 
 /* --- MODE 0: HIDING LOGIC --- */

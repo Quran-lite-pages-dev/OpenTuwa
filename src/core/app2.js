@@ -1389,3 +1389,70 @@ document.addEventListener('keydown', (e) => {
             break;
     }
 });
+// --- SMART INTERACTION FEEDBACK LOGIC ---
+
+let lastKnownSrc = null;
+
+/**
+ * Triggers the visual "pop" for a specific action
+ * @param {string} type - 'play', 'pause', 'forward', 'backward'
+ */
+function showInteractionFeedback(type) {
+    // Optional: Only show if Cinema View is active
+    if (!elements.views.cinema.classList.contains('active')) return;
+
+    const iconId = `icon-${type}`;
+    const icon = document.getElementById(iconId);
+    
+    if (icon) {
+        icon.classList.remove('animate');
+        void icon.offsetWidth; // Force Reflow to restart animation
+        icon.classList.add('animate');
+    }
+}
+
+// 1. SETUP AUDIO LISTENERS (The Robust Way)
+if (elements.quranAudio) {
+    
+    // PLAY EVENT: Fires when playback is requested (by user OR system)
+    elements.quranAudio.addEventListener('play', () => {
+        const currentSrc = elements.quranAudio.src;
+
+        // If the SRC is the same as before, it means we are RESUMING.
+        // This implies a User Action (Toggle).
+        if (currentSrc === lastKnownSrc) {
+            showInteractionFeedback('play');
+        } 
+        
+        // If SRC is different, it's a System Action (New Verse).
+        // We do NOT show feedback, but we update the tracker.
+        lastKnownSrc = currentSrc;
+    });
+
+    // PAUSE EVENT: Fires when playback stops
+    elements.quranAudio.addEventListener('pause', () => {
+        // We check !ended because we don't want a "Pause" icon when the verse simply finishes.
+        // We check readyState > 2 to ensure it's not just buffering/loading.
+        if (!elements.quranAudio.ended && elements.quranAudio.readyState > 2) {
+             showInteractionFeedback('pause');
+        }
+    });
+}
+
+// 2. SETUP SEEK LISTENERS (Directional)
+// We still use keys for Seek because 'seeking' event doesn't tell us direction (Left/Right) easily.
+document.addEventListener('keydown', (e) => {
+    if (document.activeElement.tagName === 'INPUT') return;
+
+    if (e.key === 'ArrowRight') {
+        showInteractionFeedback('forward');
+        // smartSeek is already handled in your existing code
+    } 
+    else if (e.key === 'ArrowLeft') {
+        showInteractionFeedback('backward');
+        // smartSeek is already handled in your existing code
+    }
+    // Note: We REMOVED the 'Space' handler here because the 
+    // audio 'play'/'pause' listeners above will handle it automatically 
+    // (and more accurately).
+});
