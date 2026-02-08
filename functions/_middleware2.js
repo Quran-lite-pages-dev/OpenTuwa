@@ -26,7 +26,7 @@ export async function onRequest(context) {
   const path = url.pathname;
   const lowerPath = path.toLowerCase();
 
-  // SECRET: Still needed for Media Tokens (Keep this hidden!)
+  // SECRET: Fallback is provided, but try to set this in Cloudflare Pages Settings
   const SECRET_KEY = env.SECRET_KEY || "dk29s-29sk2-10sk2-xm102";
 
   // =========================================================================
@@ -43,9 +43,8 @@ export async function onRequest(context) {
   const hasPremium = cookieHeader && cookieHeader.includes("TUWA_PREMIUM=true");
 
   // =========================================================================
-  // 2. LOGIN HANDLER (REVERTED TO OLD BEHAVIOR)
+  // 2. LOGIN HANDLER
   // =========================================================================
-  // No password check. Just requires a POST request to activate.
   if (lowerPath === '/login' && request.method === 'POST') {
     return new Response("Activated", {
       status: 200,
@@ -59,8 +58,6 @@ export async function onRequest(context) {
   // =========================================================================
   // 3. TOKEN GENERATION (Secure Server-Side)
   // =========================================================================
-  // The client calls this to get a signed token for media access.
-  // This still requires the cookie from step 2.
   if (lowerPath === '/api/auth/token') {
     if (!hasPremium) return new Response("Unauthorized", { status: 401 });
 
@@ -84,14 +81,16 @@ export async function onRequest(context) {
     
     // 1. Parse URL: /media/{type}/{token}/{filename}
     const segments = path.split('/');
-    const lowerSegments = lowerPath.split('/');
+    // segments[0]='', [1]='media', [2]=type, [3]=token, [4...]=filename
 
     if (segments.length < 5) {
         return new Response("Malformed Media URL", { status: 400 });
     }
 
+    const mediaType = segments[2].toLowerCase(); // audio, image, data
     const tokenRaw = segments[3];
-    const filename = lowerSegments.slice(4).join('/'); 
+    // Rejoin the rest of the path to handle filenames with slashes if necessary
+    const filename = segments.slice(4).join('/'); 
 
     // 2. Validate Token
     try {
@@ -117,17 +116,20 @@ export async function onRequest(context) {
     // 3. Fetch Content (If token is valid)
     let realSource = null;
 
-    if (lowerPath.startsWith('/media/audio/')) {
-    realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${filename}`;
-} else if (lowerPath.startsWith('/media/image/')) {
-    realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${filename}`;
-}
+    if (mediaType === 'audio') {
+        realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${filename}`;
+    } else if (mediaType === 'image') {
+        realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${filename}`;
+    } else if (mediaType === 'data') {
+        // Restored from OLD file: Handle translations/XML
+        realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/${filename}`;
+    }
 
     if (realSource) {
         const response = await fetch(realSource);
         const newHeaders = new Headers(response.headers);
         newHeaders.set("Access-Control-Allow-Origin", "*");
-        // Hide Source
+        // Clean headers for security
         newHeaders.delete("x-github-request-id");
         newHeaders.delete("via");
         
@@ -142,23 +144,42 @@ export async function onRequest(context) {
   }
 
   // =========================================================================
-  // 5. GUEST ACCESS & FALLBACK
+  // 5. GUEST ACCESS & FALLBACK (The 404 Fix)
   // =========================================================================
-  if (!hasPremium) {
-    // Note: This list was from the new version. 
-    // If you need the longer list from your old file, paste it here.
-    const allowedGuestFiles = [
-      '/', '/landing.html', '/style.css', '/app.js', 
-      '/login-client.js', '/src/components/navigation.js', 
-      '/favicon.ico', '/manifest.json'
-    ];
-    const allowedGuestStarts = ['/login', '/api/config', '/auth/'];
-    
-    const isAllowed = allowedGuestFiles.includes(lowerPath) || 
-                      allowedGuestStarts.some(prefix => lowerPath.startsWith(prefix));
-
-    if (!isAllowed) return new Response("Not Found", { status: 404 });
+  
+  // A. IF USER IS PREMIUM, ALLOW EVERYTHING
+  if (hasPremium) {
+      // Optional: You can block strict folders here like in your old file if needed,
+      // but 'next()' is usually sufficient for authenticated users.
+      return next();
   }
 
-  return next();
+  // B. IF GUEST, RESTRICT ACCESS
+  // Define exactly what guests can see
+  const allowedGuestFiles = [
+    '/', 
+    '/index.html', 
+    '/landing.html', 
+    '/style.css', 
+    '/app.js', 
+    '/login-client.js', 
+    '/src/components/navigation.js', 
+    '/favicon.ico', 
+    '/manifest.json'
+  ];
+  const allowedGuestStarts = ['/login', '/api/config', '/auth/'];
+
+  const isAllowed = allowedGuestFiles.includes(lowerPath) || 
+                    allowedGuestStarts.some(prefix => lowerPath.startsWith(prefix));
+
+  if (isAllowed) {
+      // CRITICAL FIX: Explicitly fetch assets for root to prevent 404
+      if (lowerPath === '/' || lowerPath === '/index.html') {
+          return env.ASSETS.fetch(request);
+      }
+      return next();
+  }
+
+  // If not in the allowed list, 404.
+  return new Response("Not Found", { status: 404 });
 }

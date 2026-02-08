@@ -22,59 +22,6 @@ let RECITERS_CONFIG = {};
 const ACTIVE_PROFILE_ID = "1";
 const STORAGE_KEY = `quranState_${ACTIVE_PROFILE_ID}`;
 
-// --- 3. SECURITY & TUNNEL CONFIG ---
-let sessionToken = null;
-
-/**
- * Fetches a signed token from the server.
- * Called automatically during app initialization.
- */
-async function refreshMediaToken() {
-    try {
-        const res = await fetch('/api/auth/token');
-        if (res.ok) {
-            const data = await res.json();
-            sessionToken = data.token;
-            console.log("Secure Session Established");
-        } else {
-            console.warn("Session Init Failed - User might not be logged in");
-        }
-    } catch (e) {
-        console.error("Token Fetch Error", e);
-    }
-}
-
-/**
- * Constructs the secure tunnel URL using the server-provided token
- */
-function getSecureUrl(type, filename) {
-    // If no token (e.g. guest or error), use a placeholder or try anyway (middleware will reject)
-    const token = sessionToken || "guest"; 
-    // URL Safe encoding for the filename part just in case
-    return `/media/${type}/${token}/${filename}`;
-}
-
-/**
- * NEW: Login Function
- * Call this from your console or UI: login('MySuperSecretPass2026')
- */
-// New Simplified Login for app.js
-window.login = async function() {
-    try {
-        // No body/password needed anymore
-        const res = await fetch('/login', { method: 'POST' });
-        
-        if (res.ok) {
-            alert("Activated! Reloading...");
-            location.reload();
-        }
-    } catch (e) {
-        console.error(e);
-    }
-};
-
-
-
 // Keep Audio Config here as it contains no secrets
 const TRANSLATION_AUDIO_CONFIG = {
     'none': { name: 'No Audio Translation' }, 
@@ -83,9 +30,7 @@ const TRANSLATION_AUDIO_CONFIG = {
     'es': { name: 'Spanish', path: 'https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/audio/play' }
 };
 
-// Use the tunnel for FTT data if strict security is on, otherwise keep CDN
-// For this fix, we will route it through the 'data' tunnel as the middleware supports it
-const FTT_FILENAME = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/FTT.XML'; 
+const FTT_URL = 'https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/FTT.XML';
 const RTL_CODES = new Set(['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ur', 'ug']);
 
 // Elements Reference
@@ -272,12 +217,17 @@ function setSelectValue(wrapper, value) {
 
     if (foundText) {
         wrapper.dataset.value = value;
+
+        // IDs of wrappers that should keep their static label (e.g. "Reciter")
+        // instead of showing the selected value.
         const staticLabelIds = [
             'reciterSelectWrapper', 
             'translationSelectWrapper', 
             'translationAudioSelectWrapper'
+            // Add 'chapterSelectWrapper' or 'verseSelectWrapper' here if you want those to be static too
         ];
 
+        // Only update the trigger text if the wrapper ID is NOT in the static list
         if (!staticLabelIds.includes(wrapper.id)) {
             const trigger = wrapper.querySelector('.custom-select-trigger');
             if(trigger) trigger.textContent = foundText;
@@ -372,11 +322,8 @@ async function initializeApp() {
     try {
         initCustomSelects();
 
-        await refreshMediaToken();
-
-        // 1. SECURE CONFIG FETCH
+        // 1. SECURE CONFIG FETCH (REPLACES HARDCODED DATA)
         try {
-            // Note: If /api/config is also behind middleware, you might need headers or cookies
             const configResponse = await fetch('/api/config');
             if(configResponse.ok) {
                 const configData = await configResponse.json();
@@ -388,20 +335,18 @@ async function initializeApp() {
             }
         } catch(e) {
             console.error("Config Load Failed", e);
+            // Fallback could go here if needed
         }
 
-        // Updated: Use Secure Tunnel for JSON Data if preferred, or keep CDN. 
-        // Keeping CDN for initial load stability as per original code, but could be switched to getSecureUrl('data', '2TM3TM.json')
         const jsonResponse = await fetch('https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/2TM3TM.json');
         if (!jsonResponse.ok) throw new Error("Failed to load Quran JSON");
         const jsonData = await jsonResponse.json();
         
+        // Now it's safe to use mergeMetadata because SURAH_METADATA is loaded
         quranData = mergeMetadata(jsonData.chapters);
 
         try {
-            // Updated: Use Secure Tunnel for XML
-            const fttUrl = getSecureUrl('data', FTT_FILENAME);
-            const fttResp = await fetch(fttUrl);
+            const fttResp = await fetch(FTT_URL);
             if (fttResp.ok) {
                 const fttText = await fttResp.text();
                 const fttDoc = new DOMParser().parseFromString(fttText, 'application/xml');
@@ -452,7 +397,7 @@ async function initializeApp() {
     }
 }
 
-// --- UPDATED: DASHBOARD LOGIC ---
+// --- UPDATED: DASHBOARD LOGIC (SINGLE FISH MODE & INFINITE SCROLL) ---
 function refreshDashboard() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const heroBtn = document.getElementById('door-play-btn');
@@ -607,8 +552,8 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
 
     const verseNum = previewSequence[0];
     
-    // UPDATED: Use secure tunnel for Dashboard Preview Image
-    const imgUrl = getSecureUrl('image', `${chapterNum}_${verseNum}.png`);
+    // SECURE FIX: Use the tunnel
+    const imgUrl = `/media/image/${chapterNum}_${verseNum}.png`;
     
     const tempImg = new Image();
     tempImg.src = imgUrl;
@@ -636,8 +581,8 @@ function playPreviewStep(chapterNum, reciterId) {
     const imgLayer = document.getElementById('hero-preview-layer');
     const previewImg = document.getElementById('preview-img');
 
-    // UPDATED: Use secure tunnel for Preview Layer Image
-    const newSrc = getSecureUrl('image', `${chapterNum}_${verseNum}.png`);
+    // SECURE FIX: Use the tunnel
+    const newSrc = `/media/image/${chapterNum}_${verseNum}.png`;
 
     previewImg.style.opacity = 0;
     setTimeout(() => {
@@ -681,9 +626,8 @@ function playPreviewStep(chapterNum, reciterId) {
         }
     }
     /* --- END BRIDGE --- */
-    
-    // UPDATED: Use secure tunnel for Preview Audio
-    const audioUrl = getSecureUrl('audio', `${padCh}${padV}.mp3`);
+    const rPath = RECITERS_CONFIG[reciterId]?.path || RECITERS_CONFIG['alafasy'].path;
+    const audioUrl = `/media/audio/${padCh}${padV}.mp3`;
     elements.previewAudio.src = audioUrl;
     elements.previewAudio.volume = 0.6;
     elements.previewAudio.onended = () => {
@@ -729,8 +673,6 @@ async function loadTranslationData(id) {
     if (!TRANSLATIONS_CONFIG[id]) return;
     try {
         toggleBuffering(true);
-        // Note: Translation URLs in config might be external. 
-        // If they are internal/secured, you should parse the filename and use getSecureUrl('data', filename)
         const res = await fetch(TRANSLATIONS_CONFIG[id].url);
         if (res.ok) {
             const txt = await res.text();
@@ -989,9 +931,7 @@ async function loadVerse(autoplay = true) {
 
     elements.display.title.innerHTML = `${currentChapterData.title} <span class="chapter-subtitle">(${chNum}:${vNum})</span>`;
     
-    // UPDATED: Use Secure Tunnel for Main Verse Image
-    const newSrc = getSecureUrl('image', `${chNum}_${vNum}.png`);
-    
+    const newSrc = `/media/image/${chNum}_${vNum}.png`;
     const img1 = elements.display.verse;
     const img2 = elements.display.verseNext;
 
@@ -1055,17 +995,18 @@ function bufferNextResources(currentChIdx, currentVIdx) {
     const nextCh = quranData[nextChIdx].chapterNumber;
     const nextV = quranData[nextChIdx].verses[nextVIdx].verseNumber;
 
-    // UPDATED: Buffer using secure tunnel
+    // SECURE FIX: Use the tunnel
     const img = new Image();
-    img.src = getSecureUrl('image', `${nextCh}_${nextV}.png`);
+    img.src = `/media/image/${nextCh}_${nextV}.png`;
 
     const rId = getSelectValue(elements.selects.reciter);
-    // Note: Assuming standard naming for buffering logic here
+    const qPath = RECITERS_CONFIG[rId].path;
     const padCh = String(nextCh).padStart(3, '0');
     const padV = String(nextV).padStart(3, '0');
     
+    // SECURE FIX: Use the tunnel
     const aud = new Audio();
-    aud.src = getSecureUrl('audio', `${padCh}${padV}.mp3`);
+    aud.src = `/media/audio/${padCh}${padV}.mp3`;
     aud.preload = 'auto'; 
 }
 
@@ -1085,12 +1026,15 @@ function updateTranslationText(chNum, vNum) {
 
 function updateQuranAudio(chNum, vNum, play) {
     const rId = getSelectValue(elements.selects.reciter);
+    // Note: Reciter path is used to build the filename, but currently 
+    // your middleware only supports the standard folder structure.
+    // If your reciters use different folder structures, ensure middleware matches.
     
     const padCh = String(chNum).padStart(3, '0');
     const padV = String(vNum).padStart(3, '0');
     
-    // UPDATED: Use secure tunnel for Main Audio Player
-    elements.quranAudio.src = getSecureUrl('audio', `${padCh}${padV}.mp3`);
+    // SECURE FIX: Use the tunnel
+    elements.quranAudio.src = `/media/audio/${padCh}${padV}.mp3`;
     
     if(play) elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
 }
@@ -1446,6 +1390,7 @@ let lastKnownSrc = null;
  * @param {string} type - 'play', 'pause', 'forward', 'backward'
  */
 function showInteractionFeedback(type) {
+    // Optional: Only show if Cinema View is active
     if (!elements.views.cinema.classList.contains('active')) return;
 
     const iconId = `icon-${type}`;
@@ -1453,36 +1398,53 @@ function showInteractionFeedback(type) {
     
     if (icon) {
         icon.classList.remove('animate');
-        void icon.offsetWidth; 
+        void icon.offsetWidth; // Force Reflow to restart animation
         icon.classList.add('animate');
     }
 }
 
-// 1. SETUP AUDIO LISTENERS
+// 1. SETUP AUDIO LISTENERS (The Robust Way)
 if (elements.quranAudio) {
+    
+    // PLAY EVENT: Fires when playback is requested (by user OR system)
     elements.quranAudio.addEventListener('play', () => {
         const currentSrc = elements.quranAudio.src;
+
+        // If the SRC is the same as before, it means we are RESUMING.
+        // This implies a User Action (Toggle).
         if (currentSrc === lastKnownSrc) {
             showInteractionFeedback('play');
         } 
+        
+        // If SRC is different, it's a System Action (New Verse).
+        // We do NOT show feedback, but we update the tracker.
         lastKnownSrc = currentSrc;
     });
 
+    // PAUSE EVENT: Fires when playback stops
     elements.quranAudio.addEventListener('pause', () => {
+        // We check !ended because we don't want a "Pause" icon when the verse simply finishes.
+        // We check readyState > 2 to ensure it's not just buffering/loading.
         if (!elements.quranAudio.ended && elements.quranAudio.readyState > 2) {
              showInteractionFeedback('pause');
         }
     });
 }
 
-// 2. SETUP SEEK LISTENERS
+// 2. SETUP SEEK LISTENERS (Directional)
+// We still use keys for Seek because 'seeking' event doesn't tell us direction (Left/Right) easily.
 document.addEventListener('keydown', (e) => {
     if (document.activeElement.tagName === 'INPUT') return;
 
     if (e.key === 'ArrowRight') {
         showInteractionFeedback('forward');
+        // smartSeek is already handled in your existing code
     } 
     else if (e.key === 'ArrowLeft') {
         showInteractionFeedback('backward');
+        // smartSeek is already handled in your existing code
     }
+    // Note: We REMOVED the 'Space' handler here because the 
+    // audio 'play'/'pause' listeners above will handle it automatically 
+    // (and more accurately).
 });
