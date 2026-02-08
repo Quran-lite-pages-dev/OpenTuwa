@@ -147,7 +147,7 @@ export async function onRequest(context) {
       // incoming filename like 001001.mp3
       realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${filename}`;
     } else if (type === 'image') {
-      realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${filename}`;
+      realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/web.png`;
     } else if (type === 'data') {
       const dataBase = 'https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/';
       if (filename.endsWith('.json') || filename.endsWith('.xml')) {
