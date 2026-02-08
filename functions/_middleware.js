@@ -57,22 +57,35 @@ export async function onRequest(context) {
       const payload = JSON.parse(payloadJson);
 
       // Check expiry
-      if (!payload.exp || Date.now() > payload.exp) return { ok: false, reason: 'expired' };
+      const now = Date.now();
+      if (!payload.exp || now > payload.exp) {
+        console.error(`Token expired: now=${now}, exp=${payload.exp}`);
+        return { ok: false, reason: 'expired' };
+      }
 
       // Check if nonce already used
       if (!payload.nonce) return { ok: false };
-      if (usedTokens.has(payload.nonce)) return { ok: false, reason: 'used' };
+      if (usedTokens.has(payload.nonce)) {
+        console.error(`Token nonce already used: ${payload.nonce}`);
+        return { ok: false, reason: 'used' };
+      }
 
       // Recreate signature using Web Crypto
       const enc = new TextEncoder();
       const keyData = enc.encode(MEDIA_SECRET);
       const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
-      const sig = Uint8Array.from(atob(sigB64.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+      let sigStr = sigB64.replace(/-/g, '+').replace(/_/g, '/');
+      while (sigStr.length % 4) sigStr += '=';
+      const sig = Uint8Array.from(atob(sigStr), c => c.charCodeAt(0));
       const valid = await crypto.subtle.verify('HMAC', key, sig, enc.encode(payloadJson));
-      if (!valid) return { ok: false, reason: 'bad-signature' };
+      if (!valid) {
+        console.error('Token signature verification failed');
+        return { ok: false, reason: 'bad-signature' };
+      }
 
       return { ok: true, payload };
     } catch (e) {
+      console.error('Token verification error:', e.message);
       return { ok: false };
     }
   }
@@ -95,7 +108,9 @@ export async function onRequest(context) {
     // Validate token
     const verification = await verifyToken(tokenPart);
     if (!verification.ok) {
-      return new Response('Invalid or expired token', { status: 403 });
+      const reason = verification.reason || 'unknown';
+      console.error(`Token validation failed: ${reason}`);
+      return new Response(`Invalid or expired token (${reason})`, { status: 403 });
     }
 
     const payload = verification.payload;
