@@ -338,7 +338,7 @@ async function initializeApp() {
             // Fallback could go here if needed
         }
 
-        const jsonResponse = await fetch('/media/data/2TM3TM.json');
+        const jsonResponse = await fetch('https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/2TM3TM.json');
         if (!jsonResponse.ok) throw new Error("Failed to load Quran JSON");
         const jsonData = await jsonResponse.json();
         
