@@ -148,7 +148,7 @@ export async function onRequest(context) {
     // Note: This list was from the new version. 
     // If you need the longer list from your old file, paste it here.
     const allowedGuestFiles = [
-      '/', '/index.html', '/style.css', '/app.js', 
+      '/', '/landing.html', '/style.css', '/app.js', 
       '/login-client.js', '/src/components/navigation.js', 
       '/favicon.ico', '/manifest.json'
     ];
