@@ -6,6 +6,45 @@
  * This code is licensed under MIT + Trademark Lock.
  */
 
+// --- SECURITY UTILS ---
+const MEDIA_SECRET = "999"; // MUST MATCH MIDDLEWARE
+
+function getSecuredUrl(path) {
+    // Input: /media/audio/081021.mp3
+    // Output: /media/audio/ENCRYPTED_TOKEN/081021.mp3
+    
+    try {
+        const parts = path.split('/');
+        // Ensure it is a media path
+        if (!path.includes('/media/') || parts.length < 4) return path;
+
+        const mediaType = parts[2]; // audio
+        const fileName = parts[parts.length - 1]; // 081021.mp3
+        
+        // 1. Create Payload: ExpiryTime|FileName
+        // Expires in 60 seconds (60000ms)
+        const expiry = Date.now() + 60000; 
+        const payload = `${expiry}|${fileName}`;
+
+        // 2. Encrypt (XOR Cipher)
+        let encrypted = "";
+        for (let i = 0; i < payload.length; i++) {
+            encrypted += String.fromCharCode(payload.charCodeAt(i) ^ MEDIA_SECRET.charCodeAt(i % MEDIA_SECRET.length));
+        }
+
+        // 3. Base64 Encode
+        const token = btoa(encrypted);
+
+        // 4. Construct New URL
+        // /media/audio/TOKEN/filename.mp3
+        return `/media/${mediaType}/${token}/${fileName}`;
+
+    } catch (e) {
+        console.error("Signing failed", e);
+        return path; // Fallback
+    }
+}
+
 document.addEventListener('error', function (event) {
     const target = event.target;
     if (target.tagName.toLowerCase() === 'img') {
@@ -673,7 +712,7 @@ async function loadTranslationData(id) {
     if (!TRANSLATIONS_CONFIG[id]) return;
     try {
         toggleBuffering(true);
-        const res = await fetch(TRANSLATIONS_CONFIG[id].url);
+        const res = await fetch(getSecuredUrl(TRANSLATIONS_CONFIG[id].url);
         if (res.ok) {
             const txt = await res.text();
             translationCache[id] = new DOMParser().parseFromString(txt, 'application/xml');
@@ -1034,7 +1073,8 @@ function updateQuranAudio(chNum, vNum, play) {
     const padV = String(vNum).padStart(3, '0');
     
     // SECURE FIX: Use the tunnel
-    elements.quranAudio.src = `/media/audio/${padCh}${padV}.mp3`;
+    const rawUrl = `/media/audio/${padCh}${padV}.mp3`;
+    elements.quranAudio.src = getSecuredUrl(rawUrl);
     
     if(play) elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
 }

@@ -26,60 +26,74 @@ export async function onRequest(context) {
   }
 
   // =========================================================================
-  // 3. SECURE MEDIA TUNNEL (The "Proxy")
+  // 3. SECURE MEDIA TUNNEL (Time-Based Encryption)
   // =========================================================================
+  // Target URL: /media/(type)/TOKEN/filename.ext
   if (lowerPath.startsWith('/media/')) {
     
-    // Only Premium users allowed to use tunnel
-    if (!hasPremium) return new Response("Forbidden", { status: 403 });
+    // A. CONFIG: Must match app.js
+    const SECRET_KEY = "999"; 
+    const ALLOW_WINDOW_MS = 60000; // 1 minute validity
 
-    let realSource = null;
-
-    // --- A. AUDIO TUNNEL ---
-    if (lowerPath.startsWith('/media/audio/')) {
-      const filename = lowerPath.split('/media/audio/')[1];
-      realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${filename}`;
-    }
+    // B. PARSE URL
+    // Expected: ["", "media", "audio", "TOKEN_HERE", "001001.mp3"]
+    const parts = path.split('/');
     
-    // --- B. IMAGE TUNNEL ---
-    else if (lowerPath.startsWith('/media/image/')) {
-      const filename = lowerPath.split('/media/image/')[1];
-      realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${filename}`;
+    // Check if structure matches secured pattern (5 parts)
+    // If it's a "naked" access (e.g. /media/audio/file.mp3), we BLOCK it
+    if (parts.length < 5) {
+      return new Response("Forbidden: Direct Access Denied", { status: 403 });
     }
 
-    // --- C. DATA TUNNEL (JSON/XML) ---
-    else if (lowerPath.startsWith('/media/data/')) {
-        const filename = lowerPath.split('/media/data/')[1];
-        // Base path for data
-        const dataBase = "https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/";
-        
-        // Strict security: Only allow specific extensions
-        if (filename.endsWith('.json') || filename.endsWith('.xml')) {
-            realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/${filename}`;
-        }
-    }
-
-    if (realSource) {
-      try {
-        const originalResponse = await fetch(realSource);
-        if (!originalResponse.ok) return new Response("Media Not Found", { status: 404 });
-
-        const newHeaders = new Headers(originalResponse.headers);
-        newHeaders.delete('x-github-request-id');
-        newHeaders.delete('server');
-        newHeaders.set('Access-Control-Allow-Origin', '*'); // Allow App to read data
-        newHeaders.set('Cache-Control', 'private, max-age=86400');
-
-        return new Response(originalResponse.body, {
-          status: originalResponse.status,
-          headers: newHeaders
-        });
-      } catch (e) {
-        return new Response("Upstream Error", { status: 502 });
+    const mediaType = parts[2]; // audio, images, data
+    const token = parts[3];
+    const fileName = parts[4];
+    
+    // C. VALIDATION LOGIC
+    try {
+      // 1. Decrypt Token (Base64 -> XOR)
+      const decodedStr = atob(token);
+      let decrypted = "";
+      for (let i = 0; i < decodedStr.length; i++) {
+        decrypted += String.fromCharCode(decodedStr.charCodeAt(i) ^ SECRET_KEY.charCodeAt(i % SECRET_KEY.length));
       }
-    }
-  }
 
+      // 2. Parse Payload "TIMESTAMP|FILENAME"
+      const [expiryStr, linkedFile] = decrypted.split('|');
+      const expiryTime = parseInt(expiryStr);
+
+      // 3. Security Checks
+      const now = Date.now();
+
+      // Check A: Is token expired?
+      if (now > expiryTime) {
+         return new Response("Link Expired", { status: 410 });
+      }
+
+      // Check B: Does token belong to THIS file? (Prevents swapping tokens)
+      if (linkedFile !== fileName) {
+         return new Response("Invalid Token Signature", { status: 403 });
+      }
+      
+      // Check C: Is it too far in the future? (Clock skew protection)
+      if (expiryTime > (now + ALLOW_WINDOW_MS + 5000)) {
+         return new Response("Invalid Time", { status: 400 });
+      }
+
+    } catch (e) {
+      return new Response("Malformation Error", { status: 400 });
+    }
+
+    // D. REWRITE & SERVE
+    // We rewrite the URL to point to the ACTUAL location on the server/storage
+    // Assuming your actual files are stored at /media/type/filename
+    // We strip the token out of the path for the internal fetch
+    const hiddenUrl = new URL(request.url);
+    hiddenUrl.pathname = `/media/${mediaType}/${fileName}`; // Skips the token part
+
+    // Use env.ASSETS.fetch to get the static file securely
+    return env.ASSETS.fetch(new Request(hiddenUrl, request));
+  }
   // =========================================================================
   // 4. ROOT ROUTING
   // =========================================================================
