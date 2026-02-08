@@ -1,4 +1,3 @@
-//
 export async function onRequest(context) {
   const { request, next, env } = context;
   const url = new URL(request.url);
@@ -12,12 +11,14 @@ export async function onRequest(context) {
   const hasPremium = cookieHeader && cookieHeader.includes("TUWA_PREMIUM=true");
 
   // =========================================================================
-  // 2. LOGIN HANDLER
+  // 2. LOGIN HANDLER (CRITICAL FIX)
   // =========================================================================
+  // This actually SETS the cookie when your app calls fetch('/login', {method: 'POST'})
   if (lowerPath === '/login' && request.method === 'POST') {
     return new Response("Activated", {
       status: 200,
       headers: {
+        // Set cookie for 1 year, accessible to entire site
         'Set-Cookie': 'TUWA_PREMIUM=true; Path=/; Max-Age=31536000; Secure; HttpOnly; SameSite=Lax',
         'Content-Type': 'text/plain'
       }
@@ -30,126 +31,153 @@ export async function onRequest(context) {
   if (lowerPath.startsWith('/media/')) {
     
     // Only Premium users allowed to use tunnel
-    if (!hasPremium) return new Response("Forbidden: Premium Required", { status: 403 });
+    if (!hasPremium) return new Response("Forbidden", { status: 403 });
 
-    // --- SECURITY CONFIGURATION ---
-    // Must match the salt in app.js
-    const SECRET_SALT = "TUWA_SECURE_CLOCK_2026"; 
-    // Link validity duration (e.g., 12 hours in milliseconds)
-    const MAX_AGE_MS = 12 * 60 * 60 * 1000; 
+    // *** SECURITY COMPATIBILITY FIX ***
+    // 1. Parse URL: /media/{type}/{token}/{filename}
+    // 2. We split 'path' (case-sensitive) for the token, and 'lowerPath' for filename (legacy behavior)
+    const segments = path.split('/');
+    const lowerSegments = lowerPath.split('/');
+    
+    // Check structure: ["", "media", "type", "TOKEN", "filename"]
+    if (segments.length < 5) {
+        return new Response("Malformed Media URL", { status: 400 });
+    }
 
-    // Helper: Validate Token
-    function validateToken(token) {
-      try {
-        // Decode Base64 (restore standard Base64 from URL-safe if needed)
+    const token = segments[3];
+    // Join remaining parts to handle filenames with slashes (if any)
+    const filename = lowerSegments.slice(4).join('/');
+
+    // 3. Validate Token
+    try {
+        // Decode Base64 (handle URL-safe chars from app.js)
         const base64 = token.replace(/-/g, '+').replace(/_/g, '/');
         const decoded = atob(base64);
-        const [timestampStr, salt] = decoded.split('|');
+        const [timestamp, salt] = decoded.split('|');
 
-        if (!timestampStr || !salt) return false;
-
-        // 1. Check Salt
-        if (salt !== SECRET_SALT) return false;
-
-        // 2. Check Time (Clock Alignment)
-        const linkTime = parseInt(timestampStr, 10);
-        const now = Date.now();
-        
-        // If link is older than MAX_AGE or from the future (allow small drift)
-        if (now - linkTime > MAX_AGE_MS || linkTime - now > 300000) {
-          return false; // Expired
+        // Verify Salt matches app.js
+        if (salt !== "TUWA_SECURE_CLOCK_2026") {
+            return new Response("Invalid Security Token", { status: 403 });
         }
-
-        return true;
-      } catch (e) {
-        return false;
-      }
+    } catch (e) {
+        return new Response("Token Validation Failed", { status: 403 });
     }
+    // *** END FIX ***
 
     let realSource = null;
-    let requestType = ""; // audio, image, data
-    let token = "";
-    let filename = "";
-
-    // Parse URL Structure: /media/{type}/{TOKEN}/{filename}
-    // parts[0]="" parts[1]="media" parts[2]="type" parts[3]="token" parts[4...]="filename"
-    const parts = lowerPath.split('/');
-
-    if (parts.length >= 5) {
-      requestType = parts[2]; // 'audio', 'image', 'data'
-      token = parts[3];
-      // Reconstruct filename (in case it had slashes, though rare for files)
-      filename = parts.slice(4).join('/'); 
-    } else {
-      return new Response("Invalid URL Structure", { status: 400 });
-    }
-
-    // --- VALIDATE TOKEN BEFORE PROCEEDING ---
-    if (!validateToken(token)) {
-      return new Response("Link Expired or Invalid", { status: 410 }); // 410 Gone
-    }
 
     // --- A. AUDIO TUNNEL ---
-    if (requestType === 'audio') {
-      // Logic: Map filename to CDN
-      // Example filename: 001001.mp3 or Reciter/001001.mp3 depending on your logic
-      // Assuming flat file for simple example based on your snippet
+    if (lowerPath.startsWith('/media/audio/')) {
+      // FIX: Use extracted 'filename' variable instead of splitting path again
       realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${filename}`;
     }
     
     // --- B. IMAGE TUNNEL ---
-    else if (requestType === 'image') {
-      realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/ui/${filename}`;
+    else if (lowerPath.startsWith('/media/image/')) {
+      // FIX: Use extracted 'filename' variable
+      realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${filename}`;
     }
 
     // --- C. DATA TUNNEL (JSON/XML) ---
-    else if (requestType === 'data') {
-        // Handle translations, configs, etc.
-        // Example: /media/data/TOKEN/FTT.XML -> FTT.XML
-        // Example: /media/data/TOKEN/ur.junagarhi.xml -> ur.junagarhi.xml
-        realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/${filename}`;
-    }
-    
-    else {
-      return new Response("Unknown Media Type", { status: 404 });
-    }
-
-    // --- FETCH & RETURN ---
-    if (realSource) {
-      const response = await fetch(realSource, {
-        headers: {
-          'User-Agent': 'Tuwa-Secure-Proxy/1.0'
+    else if (lowerPath.startsWith('/media/data/')) {
+        // Base path for data
+        const dataBase = "https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/";
+        
+        // Strict security: Only allow specific extensions
+        if (filename.endsWith('.json') || filename.endsWith('.xml')) {
+            // FIX: Use extracted 'filename' variable
+            realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/${filename}`;
         }
-      });
+    }
 
-      // Clone response to modify headers (CORS, caching) if necessary
-      const newResponse = new Response(response.body, response);
-      newResponse.headers.set('Cache-Control', 'private, no-cache, no-store, must-revalidate'); // Prevent browser caching of the secure link itself
-      
-      return newResponse;
+    if (realSource) {
+      try {
+        const originalResponse = await fetch(realSource);
+        if (!originalResponse.ok) return new Response("Media Not Found", { status: 404 });
+
+        const newHeaders = new Headers(originalResponse.headers);
+        newHeaders.delete('x-github-request-id');
+        newHeaders.delete('server');
+        newHeaders.set('Access-Control-Allow-Origin', '*'); // Allow App to read data
+        newHeaders.set('Cache-Control', 'private, max-age=86400');
+
+        return new Response(originalResponse.body, {
+          status: originalResponse.status,
+          headers: newHeaders
+        });
+      } catch (e) {
+        return new Response("Upstream Error", { status: 502 });
+      }
     }
   }
 
   // =========================================================================
-  // 4. PREMIUM PROTECTION (Allow Everything Else)
+  // 4. ROOT ROUTING
   // =========================================================================
+  if (lowerPath === '/' || lowerPath === '/index.html' || lowerPath === '') {
+    const targetPage = hasPremium ? '/app.html' : '/landing.html';
+    return env.ASSETS.fetch(new URL(targetPage, request.url));
+  }
+
+  // Prevent direct access to HTML files
+  if (lowerPath === '/app.html' || lowerPath === '/landing.html') {
+    return Response.redirect(new URL('/', request.url), 302);
+  }
+
+  // =========================================================================
+  // 5. GUEST LOCKDOWN
+  // =========================================================================
+  // If NOT Premium, block EVERYTHING except Landing Page assets
+  if (!hasPremium) {
+    const allowedGuestFiles = [
+      '/assets/ui/web.png',
+      '/assets/ui/web.ico',
+      '/assets/ui/apple-touch-icon.png',
+      '/assets/ui/logo.png',
+      '/styles/index1.css',
+      '/styles/inline-styles.css',
+      '/functions/login-client.js',
+      '/src/components/navigation.js',
+      '/favicon.ico',
+      '/manifest.json',
+      '/src/utils/resolution.js',
+      '/src/components/recommendations.js',
+      '/src/utils/content-protection.js'
+    ];
+
+    const allowedGuestStarts = [
+      '/login-google',
+      '/auth/',
+      '/api/config'
+    ];
+
+    const isAllowed = allowedGuestFiles.includes(lowerPath) || 
+                      allowedGuestStarts.some(prefix => lowerPath.startsWith(prefix));
+
+    if (!isAllowed) {
+      return new Response("Not Found", { status: 404 });
+    }
+  }
+
+  // =========================================================================
+  // 6. PREMIUM PROTECTION (Allow Everything Else)
+  // =========================================================================
+  // If we are here, the user IS Premium. 
+  // We only block "Direct Navigation" to source folders to prevent snooping.
+  // We MUST allow scripts/images to load normally.
+  
   if (hasPremium) {
     const protectedFolders = ['/src', '/assets', '/functions', '/locales'];
     const isProtected = protectedFolders.some(folder => lowerPath.startsWith(folder));
     
+    // Check if this is a "Top Level" navigation (typing in address bar)
     const dest = request.headers.get("Sec-Fetch-Dest");
-    const isDirectNav = dest === "document" || dest === "frame";
+    const isDirectNav = dest === "document";
 
     if (isProtected && isDirectNav) {
-      return new Response("Access Denied", { status: 403 });
+      return Response.redirect(new URL('/', request.url), 302);
     }
-    return next();
   }
 
-  // DEFAULT: REDIRECT TO LANDING
-  if (lowerPath === '/' || lowerPath === '/index.html' || lowerPath === '/app') {
-    return env.ASSETS.fetch(request); 
-  }
-
-  return new Response("Not Found", { status: 404 });
+  return next();
 }
