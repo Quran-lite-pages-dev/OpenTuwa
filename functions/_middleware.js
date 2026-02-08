@@ -48,25 +48,33 @@ export async function onRequest(context) {
 
   async function verifyToken(token) {
     try {
+      console.log('[TOKEN] Verifying token:', token.substring(0, 50) + '...');
       const parts = token.split('.');
-      if (parts.length !== 2) return { ok: false };
+      if (parts.length !== 2) {
+        console.error('[TOKEN] Invalid format: not 2 parts');
+        return { ok: false };
+      }
       const payloadB64 = parts[0];
       const sigB64 = parts[1];
 
       const payloadJson = unb64(payloadB64);
       const payload = JSON.parse(payloadJson);
+      console.log('[TOKEN] Payload parsed:', payload);
 
       // Check expiry
       const now = Date.now();
       if (!payload.exp || now > payload.exp) {
-        console.error(`Token expired: now=${now}, exp=${payload.exp}`);
+        console.error(`[TOKEN] Expired: now=${now}, exp=${payload.exp}`);
         return { ok: false, reason: 'expired' };
       }
 
       // Check if nonce already used
-      if (!payload.nonce) return { ok: false };
+      if (!payload.nonce) {
+        console.error('[TOKEN] Missing nonce');
+        return { ok: false };
+      }
       if (usedTokens.has(payload.nonce)) {
-        console.error(`Token nonce already used: ${payload.nonce}`);
+        console.error(`[TOKEN] Nonce already used: ${payload.nonce}`);
         return { ok: false, reason: 'used' };
       }
 
@@ -74,10 +82,15 @@ export async function onRequest(context) {
       const enc = new TextEncoder();
       const keyData = enc.encode(MEDIA_SECRET);
       const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+      
       let sigStr = sigB64.replace(/-/g, '+').replace(/_/g, '/');
       while (sigStr.length % 4) sigStr += '=';
       const sig = Uint8Array.from(atob(sigStr), c => c.charCodeAt(0));
+      
+      console.log('[TOKEN] Signature bytes length:', sig.length);
       const valid = await crypto.subtle.verify('HMAC', key, sig, enc.encode(payloadJson));
+      console.log('[TOKEN] Signature valid:', valid);
+      
       if (!valid) {
         console.error('Token signature verification failed');
         return { ok: false, reason: 'bad-signature' };
@@ -85,7 +98,7 @@ export async function onRequest(context) {
 
       return { ok: true, payload };
     } catch (e) {
-      console.error('Token verification error:', e.message);
+      console.error('[TOKEN] Verification error:', e.message, e.stack);
       return { ok: false };
     }
   }
@@ -100,10 +113,12 @@ export async function onRequest(context) {
 
     // Expect path: /media/{type}/{token}/{filename}
     const parts = lowerPath.split('/').filter(Boolean); // ['media','audio','{token}','file.mp3']
+    console.log('[MEDIA] Path parts:', parts);
     if (parts.length < 4) return new Response('Invalid Request', { status: 400 });
 
     const [, type, tokenPart, ...rest] = parts;
     const filename = rest.join('/');
+    console.log('[MEDIA] Type:', type, 'Token:', tokenPart.substring(0, 50) + '...', 'Filename:', filename);
 
     // Validate token
     const verification = await verifyToken(tokenPart);

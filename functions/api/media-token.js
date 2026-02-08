@@ -30,9 +30,13 @@ export async function onRequest(context) {
   const sigBuf = await crypto.subtle.sign('HMAC', key, enc.encode(payloadJson));
   const sigBytes = new Uint8Array(sigBuf);
 
-  // base64url helpers
+  // base64url helpers - safe encoding
   const toB64Url = (arr) => {
-    let str = btoa(String.fromCharCode.apply(null, Array.from(arr)));
+    let binary = '';
+    for (let i = 0; i < arr.length; i++) {
+      binary += String.fromCharCode(arr[i]);
+    }
+    let str = btoa(binary);
     return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   };
 
