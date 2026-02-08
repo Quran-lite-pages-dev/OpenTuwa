@@ -5,6 +5,15 @@ export async function onRequest(context) {
   const lowerPath = path.toLowerCase();
 
   // =========================================================================
+  // 0. FAVICON FIX (Insert this at the top)
+  // =========================================================================
+  // Browsers often request /favicon.ico automatically. 
+  // We rewrite this to your actual icon location so it never 404s.
+  if (lowerPath === '/favicon.ico') {
+    return env.ASSETS.fetch(new URL('/assets/ui/web.ico', request.url));
+  }
+
+  // =========================================================================
   // 1. AUTHENTICATION CHECK
   // =========================================================================
   const cookieHeader = request.headers.get("Cookie");
