@@ -6,7 +6,6 @@ window.onNativeLoginSuccess = function(idToken) {
     // Send token to Cloudflare
     fetch('/login-google', {
         method: 'POST',
-        credentials: 'same-origin',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: idToken })
     })
