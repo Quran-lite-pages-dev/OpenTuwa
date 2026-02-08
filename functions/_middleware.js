@@ -97,10 +97,12 @@ export async function onRequest(context) {
     if (isDirectNav) return new Response('Access Denied', { status: 403 });
 
     // Expect path: /media/{type}/{token}/{filename}
-    const parts = lowerPath.split('/').filter(Boolean);
+    // NOTE: do NOT lowercase the token segment — tokens are case-sensitive.
+    const parts = path.split('/').filter(Boolean);
     if (parts.length < 4) return new Response('Invalid Request', { status: 400 });
 
-    const [, type, tokenPart, ...rest] = parts;
+    const [, rawType, tokenPart, ...rest] = parts;
+    const type = (rawType || '').toLowerCase();
     const filename = rest.join('/');
 
     // Validate token
