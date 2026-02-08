@@ -712,7 +712,7 @@ async function loadTranslationData(id) {
     if (!TRANSLATIONS_CONFIG[id]) return;
     try {
         toggleBuffering(true);
-        const res = await fetch(getSecuredUrl(TRANSLATIONS_CONFIG[id].url);
+        const res = await fetch(getSecuredUrl(TRANSLATIONS_CONFIG[id].url))
         if (res.ok) {
             const txt = await res.text();
             translationCache[id] = new DOMParser().parseFromString(txt, 'application/xml');
