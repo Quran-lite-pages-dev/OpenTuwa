@@ -405,7 +405,7 @@ async function initializeApp() {
         }
 
         setupEventListeners();
-        initSidebarNavigation();
+        if (typeof initSidebarNavigation === 'function') initSidebarNavigation();
         initSearchInterface();
 
     } catch (error) {

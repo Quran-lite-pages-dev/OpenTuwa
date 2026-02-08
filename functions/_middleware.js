@@ -37,6 +37,10 @@ export async function onRequest(context) {
 
   // Secret for HMAC. For production, set via env var (env.MEDIA_SECRET)
   const MEDIA_SECRET = (env && env.MEDIA_SECRET) || 'please-set-a-strong-secret-in-prod';
+  
+  // Log secret hash for debugging
+  const secretHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(MEDIA_SECRET));
+  console.log('[MEDIA-MW] Secret hash:', Array.from(new Uint8Array(secretHash)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16));
 
   // Helpers
   const b64 = (s) => s.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -48,18 +52,32 @@ export async function onRequest(context) {
 
   async function verifyToken(token) {
     try {
-      console.log('[TOKEN] Verifying token:', token.substring(0, 50) + '...');
+      console.log('[TOKEN] Start verify, token length:', token.length);
       const parts = token.split('.');
       if (parts.length !== 2) {
-        console.error('[TOKEN] Invalid format: not 2 parts');
+        console.error('[TOKEN] Format error: expected 2 parts, got', parts.length);
         return { ok: false };
       }
-      const payloadB64 = parts[0];
-      const sigB64 = parts[1];
+      
+      const [payloadB64, sigB64] = parts;
 
-      const payloadJson = unb64(payloadB64);
-      const payload = JSON.parse(payloadJson);
-      console.log('[TOKEN] Payload parsed:', payload);
+      // Decode payload (safely)
+      let payloadJson = '';
+      try {
+        payloadJson = unb64(payloadB64);
+      } catch (e) {
+        console.error('[TOKEN] Payload decode failed:', e.message);
+        return { ok: false };
+      }
+
+      let payload;
+      try {
+        payload = JSON.parse(payloadJson);
+      } catch (e) {
+        console.error('[TOKEN] Payload parse failed:', e.message);
+        return { ok: false };
+      }
+      console.log('[TOKEN] Payload:', { type: payload.type, filename: payload.filename, exp: payload.exp, nonce: payload.nonce });
 
       // Check expiry
       const now = Date.now();
@@ -68,7 +86,7 @@ export async function onRequest(context) {
         return { ok: false, reason: 'expired' };
       }
 
-      // Check if nonce already used
+      // Check nonce not used
       if (!payload.nonce) {
         console.error('[TOKEN] Missing nonce');
         return { ok: false };
@@ -78,27 +96,33 @@ export async function onRequest(context) {
         return { ok: false, reason: 'used' };
       }
 
-      // Recreate signature using Web Crypto
-      const enc = new TextEncoder();
-      const keyData = enc.encode(MEDIA_SECRET);
-      const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
-      
-      let sigStr = sigB64.replace(/-/g, '+').replace(/_/g, '/');
-      while (sigStr.length % 4) sigStr += '=';
-      const sig = Uint8Array.from(atob(sigStr), c => c.charCodeAt(0));
-      
-      console.log('[TOKEN] Signature bytes length:', sig.length);
-      const valid = await crypto.subtle.verify('HMAC', key, sig, enc.encode(payloadJson));
-      console.log('[TOKEN] Signature valid:', valid);
-      
-      if (!valid) {
-        console.error('Token signature verification failed');
-        return { ok: false, reason: 'bad-signature' };
+      // Verify signature
+      try {
+        const enc = new TextEncoder();
+        const keyData = enc.encode(MEDIA_SECRET);
+        const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+        
+        // Decode signature (safely with padding)
+        let sigStr = sigB64.replace(/-/g, '+').replace(/_/g, '/');
+        while (sigStr.length % 4) sigStr += '=';
+        const sig = Uint8Array.from(atob(sigStr), c => c.charCodeAt(0));
+        
+        console.log('[TOKEN] Verifying signature, sig length:', sig.length);
+        const valid = await crypto.subtle.verify('HMAC', key, sig, enc.encode(payloadJson));
+        console.log('[TOKEN] Signature result:', valid);
+        
+        if (!valid) {
+          console.error('[TOKEN] Signature mismatch - possible secret mismatch or payload changed');
+          return { ok: false, reason: 'bad-signature' };
+        }
+      } catch (e) {
+        console.error('[TOKEN] Signature verification threw:', e.message);
+        return { ok: false };
       }
 
       return { ok: true, payload };
     } catch (e) {
-      console.error('[TOKEN] Verification error:', e.message, e.stack);
+      console.error('[TOKEN] Verification error:', e.message);
       return { ok: false };
     }
   }

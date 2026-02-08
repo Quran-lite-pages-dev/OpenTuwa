@@ -16,6 +16,8 @@ export async function onRequest(context) {
 
   // Secret from env (recommended). Fallback to hard-coded for local dev.
   const MEDIA_SECRET = (env && env.MEDIA_SECRET) || 'please-set-a-strong-secret-in-prod';
+  const secretHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(MEDIA_SECRET));
+  console.log('[TOKEN-GEN] Secret hash:', Array.from(new Uint8Array(secretHash)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16));
 
   // Payload: { type, filename, exp, nonce }
   const exp = Date.now() + 60 * 1000; // 1 minute expiry
