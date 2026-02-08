@@ -85,7 +85,7 @@ const TRANSLATION_AUDIO_CONFIG = {
 
 // Use the tunnel for FTT data if strict security is on, otherwise keep CDN
 // For this fix, we will route it through the 'data' tunnel as the middleware supports it
-const FTT_FILENAME = 'FTT.XML'; 
+const FTT_FILENAME = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/FTT.XML'; 
 const RTL_CODES = new Set(['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ur', 'ug']);
 
 // Elements Reference

@@ -118,17 +118,10 @@ export async function onRequest(context) {
     let realSource = null;
 
     if (lowerPath.startsWith('/media/audio/')) {
-        realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${filename}`;
-    } else if (lowerPath.startsWith('/media/image/')) {
-        realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${filename}`;
-    } else if (lowerPath.startsWith('/media/data/')) {
-        const dataBase = "https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/";
-        if (filename.endsWith('.json') || filename.endsWith('.xml')) {
-             realSource = `${dataBase}${filename}`;
-        } else {
-             return new Response("Invalid Data File", { status: 403 });
-        }
-    }
+    realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${filename}`;
+} else if (lowerPath.startsWith('/media/image/')) {
+    realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${filename}`;
+}
 
     if (realSource) {
         const response = await fetch(realSource);
