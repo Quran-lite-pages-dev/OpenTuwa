@@ -278,6 +278,7 @@ async function getTunneledUrl(type, filename) {
     try {
         const res = await fetch('/api/media-token', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ type, filename })
         });
