@@ -22,29 +22,58 @@ let RECITERS_CONFIG = {};
 const ACTIVE_PROFILE_ID = "1";
 const STORAGE_KEY = `quranState_${ACTIVE_PROFILE_ID}`;
 
-// --- 3. SECURITY & TUNNEL CONFIG (MATCHING MIDDLEWARE) ---
-const SECRET_SALT = "TUWA_SECURE_CLOCK_2026"; // Must match _middleware.js
+// --- 3. SECURITY & TUNNEL CONFIG ---
+let sessionToken = null;
 
 /**
- * Generates the secure token required by _middleware.js
- * Structure: Base64( Timestamp | Salt )
+ * Fetches a signed token from the server.
+ * Called automatically during app initialization.
  */
-function generateMediaToken() {
-    const now = Date.now();
-    const raw = `${now}|${SECRET_SALT}`;
-    // Encode to Base64 and make URL-safe (replace + with -, / with _) to match middleware decoding
-    return btoa(raw).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+async function refreshMediaToken() {
+    try {
+        const res = await fetch('/api/auth/token');
+        if (res.ok) {
+            const data = await res.json();
+            sessionToken = data.token;
+            console.log("Secure Session Established");
+        } else {
+            console.warn("Session Init Failed - User might not be logged in");
+        }
+    } catch (e) {
+        console.error("Token Fetch Error", e);
+    }
 }
 
 /**
- * logical wrapper to construct the tunnel URL
- * @param {string} type - 'audio', 'image', or 'data'
- * @param {string} filename - The file to fetch
+ * Constructs the secure tunnel URL using the server-provided token
  */
 function getSecureUrl(type, filename) {
-    const token = generateMediaToken();
+    // If no token (e.g. guest or error), use a placeholder or try anyway (middleware will reject)
+    const token = sessionToken || "guest"; 
+    // URL Safe encoding for the filename part just in case
     return `/media/${type}/${token}/${filename}`;
 }
+
+/**
+ * NEW: Login Function
+ * Call this from your console or UI: login('MySuperSecretPass2026')
+ */
+// New Simplified Login for app.js
+window.login = async function() {
+    try {
+        // No body/password needed anymore
+        const res = await fetch('/login', { method: 'POST' });
+        
+        if (res.ok) {
+            alert("Activated! Reloading...");
+            location.reload();
+        }
+    } catch (e) {
+        console.error(e);
+    }
+};
+
+
 
 // Keep Audio Config here as it contains no secrets
 const TRANSLATION_AUDIO_CONFIG = {
@@ -342,6 +371,8 @@ window.addEventListener('popstate', (event) => {
 async function initializeApp() {
     try {
         initCustomSelects();
+
+        await refreshMediaToken();
 
         // 1. SECURE CONFIG FETCH
         try {
