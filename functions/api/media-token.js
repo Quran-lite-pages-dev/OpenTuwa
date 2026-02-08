@@ -30,6 +30,7 @@ export async function onRequest(context) {
   const ua = request.headers.get('User-Agent') || '';
 
   // Compute a short UA hash via Web Crypto (SHA-256, take first 8 hex chars)
+  // --- First declaration of 'enc' is here ---
   const enc = new TextEncoder();
   const uaDigestBuf = await crypto.subtle.digest('SHA-256', enc.encode(ua));
   const uaDigest = Array.from(new Uint8Array(uaDigestBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
@@ -39,7 +40,7 @@ export async function onRequest(context) {
   const payloadJson = JSON.stringify(payload);
 
   // Sign with HMAC-SHA256
-  const enc = new TextEncoder();
+  // --- FIXED: Removed the duplicate 'const enc = ...' line here ---
   const keyData = enc.encode(MEDIA_SECRET);
   const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
   const sigBuf = await crypto.subtle.sign('HMAC', key, enc.encode(payloadJson));
