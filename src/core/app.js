@@ -273,6 +273,23 @@ function decodeStream(token) {
     }
 }
 
+// Request a single-use tunneled URL from the server
+async function getTunneledUrl(type, filename) {
+    try {
+        const res = await fetch('/api/media-token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type, filename })
+        });
+        if (!res.ok) throw new Error('Token request failed');
+        const j = await res.json();
+        return `/media/${type}/${j.token}/${filename}`;
+    } catch (e) {
+        console.error('Failed to get tunneled URL', e);
+        return null;
+    }
+}
+
 function mergeMetadata(apiChapters) {
     return apiChapters.map((ch, idx) => {
         const meta = SURAH_METADATA.find(m => m.chapter === ch.chapterNumber);
@@ -553,14 +570,17 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
     const verseNum = previewSequence[0];
     
     // SECURE FIX: Use the tunnel
-    const imgUrl = `/media/image/${chapterNum}_${verseNum}.png`;
-    
+    const filename = `${chapterNum}_${verseNum}.png`;
     const tempImg = new Image();
-    tempImg.src = imgUrl;
-    tempImg.onload = () => {
-        const heroImg = document.getElementById('door-hero-img');
-        if (heroImg) heroImg.src = imgUrl;
-    };
+    (async () => {
+        const imgUrl = await getTunneledUrl('image', filename);
+        if (!imgUrl) return;
+        tempImg.src = imgUrl;
+        tempImg.onload = () => {
+            const heroImg = document.getElementById('door-hero-img');
+            if (heroImg) heroImg.src = imgUrl;
+        };
+    })();
 
     const transId = getSelectValue(elements.selects.trans) || 'en';
     if (!translationCache[transId]) {
@@ -573,68 +593,77 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
 }
 
 function playPreviewStep(chapterNum, reciterId) {
-    if (previewSeqIndex >= previewSequence.length) return;
-    const verseNum = previewSequence[previewSeqIndex];
-    const padCh = String(chapterNum).padStart(3, '0');
-    const padV = String(verseNum).padStart(3, '0');
-    
-    const imgLayer = document.getElementById('hero-preview-layer');
-    const previewImg = document.getElementById('preview-img');
+    // make async so we can request tokens
+    return (async function _play() {
+        try {
+            if (previewSeqIndex >= previewSequence.length) return;
+            const verseNum = previewSequence[previewSeqIndex];
+            const padCh = String(chapterNum).padStart(3, '0');
+            const padV = String(verseNum).padStart(3, '0');
+            
+            const imgLayer = document.getElementById('hero-preview-layer');
+            const previewImg = document.getElementById('preview-img');
 
-    // SECURE FIX: Use the tunnel
-    const newSrc = `/media/image/${chapterNum}_${verseNum}.png`;
+            // SECURE FIX: Use the tunnel
+            const newSrcFilename = `${chapterNum}_${verseNum}.png`;
+            const newSrc = await getTunneledUrl('image', newSrcFilename);
 
-    previewImg.style.opacity = 0;
-    setTimeout(() => {
-        previewImg.src = newSrc;
-        previewImg.onload = () => {
-            previewImg.style.opacity = 0.6;
-            imgLayer.classList.add('active');
-        };
-    }, 200);
+            previewImg.style.opacity = 0;
+            setTimeout(() => {
+                if (newSrc) previewImg.src = newSrc;
+                previewImg.onload = () => {
+                    previewImg.style.opacity = 0.6;
+                    imgLayer.classList.add('active');
+                };
+            }, 200);
 
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    const transId = saved.trans || 'en';
-    const cache = translationCache[transId];
-    /* --- START BRIDGE TO LYRICS ENGINE --- */
-    if (cache) {
-        const sura = cache.querySelector(`sura[index="${chapterNum}"]`);
-        const aya = sura ? sura.querySelector(`aya[index="${verseNum}"]`) : null;
-        
-        const currentText = aya 
-            ? aya.getAttribute('text') 
-            : (window.t ? window.t('errors.translationUnavailable') : "Translation unavailable");
+            const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+            const transId = saved.trans || 'en';
+            const cache = translationCache[transId];
+            /* --- START BRIDGE TO LYRICS ENGINE --- */
+            if (cache) {
+                const sura = cache.querySelector(`sura[index="${chapterNum}"]`);
+                const aya = sura ? sura.querySelector(`aya[index="${verseNum}"]`) : null;
+                
+                const currentText = aya 
+                    ? aya.getAttribute('text') 
+                    : (window.t ? window.t('errors.translationUnavailable') : "Translation unavailable");
 
-        const nextLines = [];
-        const currentInt = parseInt(verseNum);
-        
-        for (let i = 1; i <= 4; i++) { 
-            const targetIndex = currentInt + i;
-            const nextAya = sura ? sura.querySelector(`aya[index="${targetIndex}"]`) : null;
-            if (nextAya) {
-                nextLines.push(nextAya.getAttribute('text'));
-            } else {
-                break; 
+                const nextLines = [];
+                const currentInt = parseInt(verseNum);
+                
+                for (let i = 1; i <= 4; i++) { 
+                    const targetIndex = currentInt + i;
+                    const nextAya = sura ? sura.querySelector(`aya[index="${targetIndex}"]`) : null;
+                    if (nextAya) {
+                        nextLines.push(nextAya.getAttribute('text'));
+                    } else {
+                        break; 
+                    }
+                }
+
+                if (window.LyricsEngine) {
+                    window.LyricsEngine.update(elements.display.trans, currentText, nextLines);
+                } else {
+                    elements.display.trans.textContent = currentText;
+                    adjustFontSize(elements.display.trans);
+                }
             }
+            /* --- END BRIDGE --- */
+            const rPath = RECITERS_CONFIG[reciterId]?.path || RECITERS_CONFIG['alafasy'].path;
+            const audioFilename = `${padCh}${padV}.mp3`;
+            const audioUrl = await getTunneledUrl('audio', audioFilename);
+            if (audioUrl) elements.previewAudio.src = audioUrl;
+            elements.previewAudio.volume = 0.6;
+            elements.previewAudio.onended = () => {
+                previewSeqIndex++;
+                _play();
+            };
+            elements.previewAudio.play().catch(e => console.log('Autoplay blocked'));
+        } catch (e) {
+            console.error('Preview step error', e);
         }
-
-        if (window.LyricsEngine) {
-            window.LyricsEngine.update(elements.display.trans, currentText, nextLines);
-        } else {
-            elements.display.trans.textContent = currentText;
-            adjustFontSize(elements.display.trans);
-        }
-    }
-    /* --- END BRIDGE --- */
-    const rPath = RECITERS_CONFIG[reciterId]?.path || RECITERS_CONFIG['alafasy'].path;
-    const audioUrl = `/media/audio/${padCh}${padV}.mp3`;
-    elements.previewAudio.src = audioUrl;
-    elements.previewAudio.volume = 0.6;
-    elements.previewAudio.onended = () => {
-        previewSeqIndex++;
-        playPreviewStep(chapterNum, reciterId);
-    };
-    elements.previewAudio.play().catch(e => console.log("Autoplay blocked"));
+    })();
 }
 
 function launchPlayer(chapterNum, verseNum = 1) {
@@ -931,7 +960,8 @@ async function loadVerse(autoplay = true) {
 
     elements.display.title.innerHTML = `${currentChapterData.title} <span class="chapter-subtitle">(${chNum}:${vNum})</span>`;
     
-    const newSrc = `/media/image/${chNum}_${vNum}.png`;
+    const newSrcFilename = `${chNum}_${vNum}.png`;
+    const newSrc = await getTunneledUrl('image', newSrcFilename);
     const img1 = elements.display.verse;
     const img2 = elements.display.verseNext;
 
@@ -944,7 +974,7 @@ async function loadVerse(autoplay = true) {
 
     if(!imgReady && autoplay) toggleBuffering(true);
 
-    nextImg.src = newSrc;
+    if (newSrc) nextImg.src = newSrc;
     nextImg.onload = () => {
         activeImg.classList.remove('active-verse-img');
         nextImg.classList.add('active-verse-img');
@@ -968,7 +998,7 @@ async function loadVerse(autoplay = true) {
         updateTranslationText(chNum, vNum);
     }
 
-    updateQuranAudio(chNum, vNum, autoplay);
+    await updateQuranAudio(chNum, vNum, autoplay);
     
     if (isForbidden) {
         elements.transAudio.src = '';
@@ -982,8 +1012,9 @@ async function loadVerse(autoplay = true) {
 }
 
 function bufferNextResources(currentChIdx, currentVIdx) {
-    let nextChIdx = parseInt(currentChIdx);
-    let nextVIdx = currentVIdx + 1;
+    return (async function _buffer() {
+        let nextChIdx = parseInt(currentChIdx);
+        let nextVIdx = currentVIdx + 1;
     
     if (nextVIdx >= quranData[nextChIdx].verses.length) {
         nextChIdx = nextChIdx + 1;
@@ -992,22 +1023,24 @@ function bufferNextResources(currentChIdx, currentVIdx) {
 
     if (nextChIdx >= quranData.length) return; 
 
-    const nextCh = quranData[nextChIdx].chapterNumber;
-    const nextV = quranData[nextChIdx].verses[nextVIdx].verseNumber;
+        const nextCh = quranData[nextChIdx].chapterNumber;
+        const nextV = quranData[nextChIdx].verses[nextVIdx].verseNumber;
 
-    // SECURE FIX: Use the tunnel
-    const img = new Image();
-    img.src = `/media/image/${nextCh}_${nextV}.png`;
+        // SECURE FIX: Use the tunnel
+        const img = new Image();
+        const imgFile = `${nextCh}_${nextV}.png`;
+        const imgUrl = await getTunneledUrl('image', imgFile);
+        if (imgUrl) img.src = imgUrl;
 
-    const rId = getSelectValue(elements.selects.reciter);
-    const qPath = RECITERS_CONFIG[rId].path;
-    const padCh = String(nextCh).padStart(3, '0');
-    const padV = String(nextV).padStart(3, '0');
-    
-    // SECURE FIX: Use the tunnel
-    const aud = new Audio();
-    aud.src = `/media/audio/${padCh}${padV}.mp3`;
-    aud.preload = 'auto'; 
+        const rId = getSelectValue(elements.selects.reciter);
+        const padCh = String(nextCh).padStart(3, '0');
+        const padV = String(nextV).padStart(3, '0');
+        const aud = new Audio();
+        const audFile = `${padCh}${padV}.mp3`;
+        const audUrl = await getTunneledUrl('audio', audFile);
+        if (audUrl) aud.src = audUrl;
+        aud.preload = 'auto';
+    })();
 }
 
 function updateTranslationText(chNum, vNum) {
@@ -1024,19 +1057,18 @@ function updateTranslationText(chNum, vNum) {
     adjustFontSize();
 }
 
-function updateQuranAudio(chNum, vNum, play) {
-    const rId = getSelectValue(elements.selects.reciter);
-    // Note: Reciter path is used to build the filename, but currently 
-    // your middleware only supports the standard folder structure.
-    // If your reciters use different folder structures, ensure middleware matches.
-    
-    const padCh = String(chNum).padStart(3, '0');
-    const padV = String(vNum).padStart(3, '0');
-    
-    // SECURE FIX: Use the tunnel
-    elements.quranAudio.src = `/media/audio/${padCh}${padV}.mp3`;
-    
-    if(play) elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
+async function updateQuranAudio(chNum, vNum, play) {
+    try {
+        const rId = getSelectValue(elements.selects.reciter);
+        const padCh = String(chNum).padStart(3, '0');
+        const padV = String(vNum).padStart(3, '0');
+        const filename = `${padCh}${padV}.mp3`;
+        const url = await getTunneledUrl('audio', filename);
+        if (url) elements.quranAudio.src = url;
+        if (play) elements.quranAudio.play().catch(e => console.log('Waiting for user interaction'));
+    } catch (e) {
+        console.error('Failed to set quran audio', e);
+    }
 }
 
 async function updateTranslationAudio(chNum, vNum, play) {

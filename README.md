@@ -195,3 +195,9 @@ rights to use it for any purpose.
 
 For issues, questions, or contributions, please refer to the project repository.
 
+## Notes
+
+Security: media now uses a signed single-use tunneled URL scheme.
+- The client requests a short-lived token from `/api/media-token` and the middleware validates it.
+- Tokens expire after 1 minute and are marked single-use (in-memory). For production durability replace the in-memory store with a persistent KV or Redis and set `MEDIA_SECRET` via environment.
+

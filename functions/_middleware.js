@@ -23,74 +23,122 @@ export async function onRequest(context) {
   const isDirectNav = dest === "document";
 
   // =========================================================================
-  // 3. SECURE MEDIA TUNNEL (The "Proxy")
+  // 3. SECURE MEDIA TUNNEL (Signed, single-use tokens)
   // =========================================================================
-  // This handles requests to /media/... and fetches the real content from jsdelivr.
-  // The browser NEVER sees the jsdelivr URL.
-  
+  // This extends the previous tunnel by requiring a signed token in the
+  // URL: /media/{type}/{token}/{filename}. Tokens are short-lived (1 minute)
+  // and are marked single-use. NOTE: This implementation uses an in-memory
+  // used-token store. For production use, replace with a durable store
+  // (KV/Redis) via `env` bindings.
+
+  // --- Simple in-memory used-token set (nonce => usedAt)
+  if (!globalThis.__USED_MEDIA_TOKENS) globalThis.__USED_MEDIA_TOKENS = new Map();
+  const usedTokens = globalThis.__USED_MEDIA_TOKENS;
+
+  // Secret for HMAC. For production, set via env var (env.MEDIA_SECRET)
+  const MEDIA_SECRET = (env && env.MEDIA_SECRET) || 'please-set-a-strong-secret-in-prod';
+
+  // Helpers
+  const b64 = (s) => s.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const unb64 = (s) => {
+    s = s.replace(/-/g, '+').replace(/_/g, '/');
+    while (s.length % 4) s += '=';
+    return atob(s);
+  };
+
+  async function verifyToken(token) {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 2) return { ok: false };
+      const payloadB64 = parts[0];
+      const sigB64 = parts[1];
+
+      const payloadJson = unb64(payloadB64);
+      const payload = JSON.parse(payloadJson);
+
+      // Check expiry
+      if (!payload.exp || Date.now() > payload.exp) return { ok: false, reason: 'expired' };
+
+      // Check if nonce already used
+      if (!payload.nonce) return { ok: false };
+      if (usedTokens.has(payload.nonce)) return { ok: false, reason: 'used' };
+
+      // Recreate signature using Web Crypto
+      const enc = new TextEncoder();
+      const keyData = enc.encode(MEDIA_SECRET);
+      const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+      const sig = Uint8Array.from(atob(sigB64.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
+      const valid = await crypto.subtle.verify('HMAC', key, sig, enc.encode(payloadJson));
+      if (!valid) return { ok: false, reason: 'bad-signature' };
+
+      return { ok: true, payload };
+    } catch (e) {
+      return { ok: false };
+    }
+  }
+
   if (lowerPath.startsWith('/media/')) {
-    
+
     // RULE 1: Only Premium users allowed.
-    if (!hasPremium) return new Response("Not Found", { status: 404 });
+    if (!hasPremium) return new Response('Not Found', { status: 404 });
 
-    // RULE 2: Anti-Scrape.
-    // If a user tries to open an MP3/JSON directly in a tab, block it.
-    // It must be requested by the page (dest="audio", "image", "empty", etc.)
-    if (isDirectNav) return new Response("Access Denied", { status: 403 });
+    // RULE 2: Anti-Scrape. Block direct navigations.
+    if (isDirectNav) return new Response('Access Denied', { status: 403 });
 
+    // Expect path: /media/{type}/{token}/{filename}
+    const parts = lowerPath.split('/').filter(Boolean); // ['media','audio','{token}','file.mp3']
+    if (parts.length < 4) return new Response('Invalid Request', { status: 400 });
+
+    const [, type, tokenPart, ...rest] = parts;
+    const filename = rest.join('/');
+
+    // Validate token
+    const verification = await verifyToken(tokenPart);
+    if (!verification.ok) {
+      return new Response('Invalid or expired token', { status: 403 });
+    }
+
+    const payload = verification.payload;
+    // Ensure token matches request
+    if (payload.type !== type || payload.filename !== filename) {
+      return new Response('Token mismatch', { status: 403 });
+    }
+
+    // Mark nonce as used (single-use)
+    usedTokens.set(payload.nonce, Date.now());
+
+    // Prune old tokens (keep memory small)
+    const now = Date.now();
+    for (const [k, v] of usedTokens.entries()) {
+      if (now - v > 1000 * 60 * 10) usedTokens.delete(k);
+    }
+
+    // Resolve real source based on type
     let realSource = null;
-
-    // --- A. AUDIO TUNNEL ---
-    // Matches logic in app.js: /assets/cdn/${padCh}${padV}.mp3
-    // Incoming: /media/audio/001001.mp3
-    if (lowerPath.startsWith('/media/audio/')) {
-      const filename = lowerPath.split('/media/audio/')[1];
-      // Source from your app.js logic
+    if (type === 'audio') {
+      // incoming filename like 001001.mp3
       realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${filename}`;
-    }
-    
-    // --- B. IMAGE TUNNEL ---
-    // Matches logic in app.js: /assets/images/img/${chNum}_${vNum}.png
-    // Incoming: /media/image/1_1.png
-    else if (lowerPath.startsWith('/media/image/')) {
-      const filename = lowerPath.split('/media/image/')[1];
-      // Source from your app.js logic (using refs/heads/master)
+    } else if (type === 'image') {
       realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${filename}`;
+    } else if (type === 'data') {
+      const dataBase = 'https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/';
+      if (filename.endsWith('.json') || filename.endsWith('.xml')) {
+        realSource = `${dataBase}${filename}`;
+      }
     }
 
-    // --- C. DATA TUNNEL (JSON/XML) ---
-    // Matches logic in config.js and app.js
-    // Incoming: /media/data/en.xml OR /media/data/2TM3TM.json
-    else if (lowerPath.startsWith('/media/data/')) {
-        const filename = lowerPath.split('/media/data/')[1];
-        
-        // Base path from your code
-        const dataBase = "https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/";
-        
-        // Check strict extensions to prevent probing
-        if (filename.endsWith('.json') || filename.endsWith('.xml')) {
-            realSource = `${dataBase}${filename}`;
-        }
-    }
-
-    // --- FETCH & RETURN ---
     if (realSource) {
       try {
         const originalResponse = await fetch(realSource);
+        if (!originalResponse.ok) return new Response('Media Error', { status: 404 });
 
-        if (!originalResponse.ok) return new Response("Media Error", { status: 404 });
-
-        // SANITIZE HEADERS: Hide the fact it came from GitHub/JSDelivr
         const newHeaders = new Headers(originalResponse.headers);
         newHeaders.delete('x-github-request-id');
         newHeaders.delete('access-control-allow-origin');
         newHeaders.delete('server');
         newHeaders.delete('x-cache');
         newHeaders.delete('x-served-by');
-        
-        // Force the browser to treat it as a resource, not a download
-        newHeaders.set('Content-Disposition', 'inline'); 
-        // Cache it privately so it doesn't get stuck in shared caches
+        newHeaders.set('Content-Disposition', 'inline');
         newHeaders.set('Cache-Control', 'private, max-age=86400');
 
         return new Response(originalResponse.body, {
@@ -98,7 +146,7 @@ export async function onRequest(context) {
           headers: newHeaders
         });
       } catch (e) {
-        return new Response("Upstream Error", { status: 502 });
+        return new Response('Upstream Error', { status: 502 });
       }
     }
   }
