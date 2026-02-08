@@ -5,100 +5,92 @@ export async function onRequest(context) {
   const lowerPath = path.toLowerCase();
 
   // =========================================================================
-  // 1. AUTHENTICATION CHECK
+  // 1. AUTHENTICATION
   // =========================================================================
   const cookieHeader = request.headers.get("Cookie");
   const hasPremium = cookieHeader && cookieHeader.includes("TUWA_PREMIUM=true");
 
   // =========================================================================
-  // 2. LOGIN HANDLER (CRITICAL FIX)
+  // 2. REQUEST TYPE DETECTION (For Anti-Scraping)
   // =========================================================================
-  // This actually SETS the cookie when your app calls fetch('/login', {method: 'POST'})
-  if (lowerPath === '/login' && request.method === 'POST') {
-    return new Response("Activated", {
-      status: 200,
-      headers: {
-        // Set cookie for 1 year, accessible to entire site
-        'Set-Cookie': 'TUWA_PREMIUM=true; Path=/; Max-Age=31536000; Secure; HttpOnly; SameSite=Lax',
-        'Content-Type': 'text/plain'
-      }
-    });
-  }
+  // 'dest' tells us IF the browser is loading a page (document) 
+  // or a resource (image, audio, script).
+  const dest = request.headers.get("Sec-Fetch-Dest");
+  const referer = request.headers.get("Referer");
+  
+  // Is the user trying to open a file directly in the address bar?
+  // (e.g. typing tuwa.com/src/app.js) -> We will block this.
+  const isDirectNav = dest === "document";
 
   // =========================================================================
   // 3. SECURE MEDIA TUNNEL (The "Proxy")
   // =========================================================================
+  // This handles requests to /media/... and fetches the real content from jsdelivr.
+  // The browser NEVER sees the jsdelivr URL.
+  
   if (lowerPath.startsWith('/media/')) {
     
-    // Only Premium users allowed to use tunnel
-    if (!hasPremium) return new Response("Forbidden", { status: 403 });
+    // RULE 1: Only Premium users allowed.
+    if (!hasPremium) return new Response("Not Found", { status: 404 });
 
-    // *** SECURITY COMPATIBILITY FIX ***
-    // 1. Parse URL: /media/{type}/{token}/{filename}
-    // 2. We split 'path' (case-sensitive) for the token, and 'lowerPath' for filename (legacy behavior)
-    const segments = path.split('/');
-    const lowerSegments = lowerPath.split('/');
-    
-    // Check structure: ["", "media", "type", "TOKEN", "filename"]
-    if (segments.length < 5) {
-        return new Response("Malformed Media URL", { status: 400 });
-    }
-
-    const token = segments[3];
-    // Join remaining parts to handle filenames with slashes (if any)
-    const filename = lowerSegments.slice(4).join('/');
-
-    // 3. Validate Token
-    try {
-        // Decode Base64 (handle URL-safe chars from app.js)
-        const base64 = token.replace(/-/g, '+').replace(/_/g, '/');
-        const decoded = atob(base64);
-        const [timestamp, salt] = decoded.split('|');
-
-        // Verify Salt matches app.js
-        if (salt !== "TUWA_SECURE_CLOCK_2026") {
-            return new Response("Invalid Security Token", { status: 403 });
-        }
-    } catch (e) {
-        return new Response("Token Validation Failed", { status: 403 });
-    }
-    // *** END FIX ***
+    // RULE 2: Anti-Scrape.
+    // If a user tries to open an MP3/JSON directly in a tab, block it.
+    // It must be requested by the page (dest="audio", "image", "empty", etc.)
+    if (isDirectNav) return new Response("Access Denied", { status: 403 });
 
     let realSource = null;
 
     // --- A. AUDIO TUNNEL ---
+    // Matches logic in app.js: /assets/cdn/${padCh}${padV}.mp3
+    // Incoming: /media/audio/001001.mp3
     if (lowerPath.startsWith('/media/audio/')) {
-      // FIX: Use extracted 'filename' variable instead of splitting path again
+      const filename = lowerPath.split('/media/audio/')[1];
+      // Source from your app.js logic
       realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${filename}`;
     }
     
     // --- B. IMAGE TUNNEL ---
+    // Matches logic in app.js: /assets/images/img/${chNum}_${vNum}.png
+    // Incoming: /media/image/1_1.png
     else if (lowerPath.startsWith('/media/image/')) {
-      // FIX: Use extracted 'filename' variable
+      const filename = lowerPath.split('/media/image/')[1];
+      // Source from your app.js logic (using refs/heads/master)
       realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${filename}`;
     }
 
     // --- C. DATA TUNNEL (JSON/XML) ---
+    // Matches logic in config.js and app.js
+    // Incoming: /media/data/en.xml OR /media/data/2TM3TM.json
     else if (lowerPath.startsWith('/media/data/')) {
-        // Base path for data
+        const filename = lowerPath.split('/media/data/')[1];
+        
+        // Base path from your code
         const dataBase = "https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/";
         
-        // Strict security: Only allow specific extensions
+        // Check strict extensions to prevent probing
         if (filename.endsWith('.json') || filename.endsWith('.xml')) {
-            // FIX: Use extracted 'filename' variable
-            realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/${filename}`;
+            realSource = `${dataBase}${filename}`;
         }
     }
 
+    // --- FETCH & RETURN ---
     if (realSource) {
       try {
         const originalResponse = await fetch(realSource);
-        if (!originalResponse.ok) return new Response("Media Not Found", { status: 404 });
 
+        if (!originalResponse.ok) return new Response("Media Error", { status: 404 });
+
+        // SANITIZE HEADERS: Hide the fact it came from GitHub/JSDelivr
         const newHeaders = new Headers(originalResponse.headers);
         newHeaders.delete('x-github-request-id');
+        newHeaders.delete('access-control-allow-origin');
         newHeaders.delete('server');
-        newHeaders.set('Access-Control-Allow-Origin', '*'); // Allow App to read data
+        newHeaders.delete('x-cache');
+        newHeaders.delete('x-served-by');
+        
+        // Force the browser to treat it as a resource, not a download
+        newHeaders.set('Content-Disposition', 'inline'); 
+        // Cache it privately so it doesn't get stuck in shared caches
         newHeaders.set('Cache-Control', 'private, max-age=86400');
 
         return new Response(originalResponse.body, {
@@ -112,22 +104,25 @@ export async function onRequest(context) {
   }
 
   // =========================================================================
-  // 4. ROOT ROUTING
+  // 4. ROOT ROUTING (The "Door")
   // =========================================================================
   if (lowerPath === '/' || lowerPath === '/index.html' || lowerPath === '') {
     const targetPage = hasPremium ? '/app.html' : '/landing.html';
     return env.ASSETS.fetch(new URL(targetPage, request.url));
   }
 
-  // Prevent direct access to HTML files
-  if (lowerPath === '/app.html' || lowerPath === '/landing.html') {
+  // =========================================================================
+  // 5. HIDE HTML FILES
+  // =========================================================================
+  // Prevent users from bypassing the logic by typing /app.html
+  if (lowerPath === '/app.html' || lowerPath === '/landing.html' || lowerPath === '/app') {
     return Response.redirect(new URL('/', request.url), 302);
   }
 
   // =========================================================================
-  // 5. GUEST LOCKDOWN
+  // 6. GUEST LOCKDOWN (Strict Allowlist)
   // =========================================================================
-  // If NOT Premium, block EVERYTHING except Landing Page assets
+  // If NOT Premium, block EVERYTHING except what landing.html needs.
   if (!hasPremium) {
     const allowedGuestFiles = [
       '/assets/ui/web.png',
@@ -137,47 +132,43 @@ export async function onRequest(context) {
       '/styles/index1.css',
       '/styles/inline-styles.css',
       '/functions/login-client.js',
-      '/src/components/navigation.js',
+      '/src/components/navigation.js', // As seen in your landing.html
       '/favicon.ico',
-      '/manifest.json',
-      '/src/utils/resolution.js',
-      '/src/components/recommendations.js',
-      '/src/utils/content-protection.js'
+      '/manifest.json'
     ];
 
     const allowedGuestStarts = [
+      '/login',       
       '/login-google',
       '/auth/',
-      '/api/config'
+      '/api/config' // Allow config if needed for guest previews (optional)
     ];
 
     const isAllowed = allowedGuestFiles.includes(lowerPath) || 
                       allowedGuestStarts.some(prefix => lowerPath.startsWith(prefix));
 
     if (!isAllowed) {
+      // 404 makes it look like the files literally don't exist
       return new Response("Not Found", { status: 404 });
     }
   }
 
   // =========================================================================
-  // 6. PREMIUM PROTECTION (Allow Everything Else)
+  // 7. PREMIUM SOURCE PROTECTION
   // =========================================================================
-  // If we are here, the user IS Premium. 
-  // We only block "Direct Navigation" to source folders to prevent snooping.
-  // We MUST allow scripts/images to load normally.
-  
+  // If Premium user tries to "Browse" folders via address bar -> Redirect Home.
+  // This allows the App to fetch the files (script src="...") but blocks the User.
   if (hasPremium) {
-    const protectedFolders = ['/src', '/assets', '/functions', '/locales'];
+    // Folders found in your file tree
+    const protectedFolders = ['/src', '/assets', '/functions', '/locales', '/styles'];
     const isProtected = protectedFolders.some(folder => lowerPath.startsWith(folder));
     
-    // Check if this is a "Top Level" navigation (typing in address bar)
-    const dest = request.headers.get("Sec-Fetch-Dest");
-    const isDirectNav = dest === "document";
-
     if (isProtected && isDirectNav) {
+      // If they type "tuwa.com/src/app.js" in the address bar -> BOOM, back to home.
       return Response.redirect(new URL('/', request.url), 302);
     }
   }
 
+  // Pass through to static assets or other Functions
   return next();
 }
