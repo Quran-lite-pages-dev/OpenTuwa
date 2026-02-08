@@ -10,6 +10,11 @@ export async function onRequest(context) {
     return new Response('Bad Request', { status: 400 });
   }
 
+  // Cookie guard: only allow premium users to generate tokens
+  const cookieHeader = request.headers.get('Cookie') || '';
+  const hasPremium = cookieHeader.includes('TUWA_PREMIUM=true');
+  if (!hasPremium) return new Response('Unauthorized', { status: 401 });
+
   const { type, filename } = body || {};
   const allowed = new Set(['audio', 'image', 'data']);
   if (!allowed.has(type) || !filename) return new Response('Invalid Params', { status: 400 });
@@ -20,8 +25,17 @@ export async function onRequest(context) {
   const exp = Date.now() + 60 * 1000;
   const nonce = Array.from(crypto.getRandomValues(new Uint8Array(12)))
     .map(b => b.toString(16).padStart(2, '0')).join('');
-  
-  const payload = { type, filename, exp, nonce };
+  // Bind token to requester IP and a short UA fingerprint to prevent link sharing
+  const ip = request.headers.get('CF-Connecting-IP') || request.headers.get('X-Forwarded-For') || '';
+  const ua = request.headers.get('User-Agent') || '';
+
+  // Compute a short UA hash via Web Crypto (SHA-256, take first 8 hex chars)
+  const enc = new TextEncoder();
+  const uaDigestBuf = await crypto.subtle.digest('SHA-256', enc.encode(ua));
+  const uaDigest = Array.from(new Uint8Array(uaDigestBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  const ua_hash = uaDigest.slice(0, 8);
+
+  const payload = { type, filename, exp, nonce, ip, ua_hash };
   const payloadJson = JSON.stringify(payload);
 
   // Sign with HMAC-SHA256

@@ -45,6 +45,14 @@ export async function onRequest(context) {
     return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
   };
 
+  // Compute a short UA hash (SHA-256 -> first 8 hex chars)
+  async function computeUaHash(ua) {
+    const enc = new TextEncoder();
+    const buf = await crypto.subtle.digest('SHA-256', enc.encode(ua || ''));
+    const hex = Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    return hex.slice(0, 8);
+  }
+
   async function verifyToken(token) {
     try {
       const parts = token.split('.');
@@ -112,6 +120,13 @@ export async function onRequest(context) {
     }
 
     const payload = verification.payload;
+    // Token Binding: verify IP and UA fingerprint match
+    const currentIp = request.headers.get('CF-Connecting-IP') || request.headers.get('X-Forwarded-For') || '';
+    const currentUa = request.headers.get('User-Agent') || '';
+    const currentUaHash = await computeUaHash(currentUa);
+    if ((payload.ip || '') !== currentIp || (payload.ua_hash || '') !== currentUaHash) {
+      return new Response('Link Stolen/Device Mismatch', { status: 403 });
+    }
     // Ensure token matches request
     if (payload.type !== type || payload.filename !== filename) {
       return new Response('Token mismatch', { status: 403 });
