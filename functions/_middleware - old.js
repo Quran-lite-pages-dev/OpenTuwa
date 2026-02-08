@@ -33,59 +33,28 @@ export async function onRequest(context) {
     // Only Premium users allowed to use tunnel
     if (!hasPremium) return new Response("Forbidden", { status: 403 });
 
-    // *** SECURITY COMPATIBILITY FIX ***
-    // 1. Parse URL: /media/{type}/{token}/{filename}
-    // 2. We split 'path' (case-sensitive) for the token, and 'lowerPath' for filename (legacy behavior)
-    const segments = path.split('/');
-    const lowerSegments = lowerPath.split('/');
-    
-    // Check structure: ["", "media", "type", "TOKEN", "filename"]
-    if (segments.length < 5) {
-        return new Response("Malformed Media URL", { status: 400 });
-    }
-
-    const token = segments[3];
-    // Join remaining parts to handle filenames with slashes (if any)
-    const filename = lowerSegments.slice(4).join('/');
-
-    // 3. Validate Token
-    try {
-        // Decode Base64 (handle URL-safe chars from app.js)
-        const base64 = token.replace(/-/g, '+').replace(/_/g, '/');
-        const decoded = atob(base64);
-        const [timestamp, salt] = decoded.split('|');
-
-        // Verify Salt matches app.js
-        if (salt !== "TUWA_SECURE_CLOCK_2026") {
-            return new Response("Invalid Security Token", { status: 403 });
-        }
-    } catch (e) {
-        return new Response("Token Validation Failed", { status: 403 });
-    }
-    // *** END FIX ***
-
     let realSource = null;
 
     // --- A. AUDIO TUNNEL ---
     if (lowerPath.startsWith('/media/audio/')) {
-      // FIX: Use extracted 'filename' variable instead of splitting path again
+      const filename = lowerPath.split('/media/audio/')[1];
       realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${filename}`;
     }
     
     // --- B. IMAGE TUNNEL ---
     else if (lowerPath.startsWith('/media/image/')) {
-      // FIX: Use extracted 'filename' variable
+      const filename = lowerPath.split('/media/image/')[1];
       realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/${filename}`;
     }
 
     // --- C. DATA TUNNEL (JSON/XML) ---
     else if (lowerPath.startsWith('/media/data/')) {
+        const filename = lowerPath.split('/media/data/')[1];
         // Base path for data
         const dataBase = "https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/";
         
         // Strict security: Only allow specific extensions
         if (filename.endsWith('.json') || filename.endsWith('.xml')) {
-            // FIX: Use extracted 'filename' variable
             realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/${filename}`;
         }
     }
