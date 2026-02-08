@@ -702,7 +702,15 @@ async function loadTranslationData(id) {
     if (!TRANSLATIONS_CONFIG[id]) return;
     try {
         toggleBuffering(true);
-        const res = await fetch(TRANSLATIONS_CONFIG[id].url);
+        let url = TRANSLATIONS_CONFIG[id].url;
+        // If URL uses the /media/data tunnel, request a token first
+        if (url.startsWith('/media/data/')) {
+            const filename = url.split('/media/data/')[1];
+            const tunneled = await getTunneledUrl('data', filename);
+            if (!tunneled) throw new Error('Failed to obtain data token');
+            url = tunneled;
+        }
+        const res = await fetch(url);
         if (res.ok) {
             const txt = await res.text();
             translationCache[id] = new DOMParser().parseFromString(txt, 'application/xml');
