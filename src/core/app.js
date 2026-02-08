@@ -103,44 +103,6 @@ window.wipeUserData = function() {
     location.reload();
 };
 
-// =========================================================================
-// SECURITY HANDLER (Matches _middleware.js)
-// =========================================================================
-const SECURITY_CONFIG = {
-    KEY: "999", // Must match the key in _middleware.js
-    WINDOW_MS: 30000 // Token valid for 30 seconds
-};
-
-/**
- * Generates a secure URL that passes the middleware's validation.
- * Structure: /media/{type}/{TOKEN}/{filename}
- */
-function getSecureUrl(type, filename) {
-    try {
-        const now = Date.now();
-        // Middleware checks: if (now > expiryTime) return 410
-        // So we set expiry in the future
-        const expiry = now + SECURITY_CONFIG.WINDOW_MS; 
-        
-        // Payload format expected by middleware: "TIMESTAMP|FILENAME"
-        const payload = `${expiry}|${filename}`;
-        
-        // XOR Encryption (Symmetric)
-        let encrypted = "";
-        for (let i = 0; i < payload.length; i++) {
-            encrypted += String.fromCharCode(payload.charCodeAt(i) ^ SECURITY_CONFIG.KEY.charCodeAt(i % SECURITY_CONFIG.KEY.length));
-        }
-
-        // Base64 Encode (and make URL safe)
-        const token = btoa(encrypted); // Standard base64 is fine for middleware's atob()
-        
-        return `/media/${type}/${token}/${filename}`;
-    } catch (e) {
-        console.error("Token generation failed", e);
-        return null;
-    }
-}
-
 // mode: 1 = Show All (Default), 0 = Hide Chapter and Reciter
 function initCustomSelects(mode = 0) {
     if (mode === 0) {
@@ -256,13 +218,16 @@ function setSelectValue(wrapper, value) {
     if (foundText) {
         wrapper.dataset.value = value;
 
-        // IDs of wrappers that should keep their static label
+        // IDs of wrappers that should keep their static label (e.g. "Reciter")
+        // instead of showing the selected value.
         const staticLabelIds = [
             'reciterSelectWrapper', 
             'translationSelectWrapper', 
             'translationAudioSelectWrapper'
+            // Add 'chapterSelectWrapper' or 'verseSelectWrapper' here if you want those to be static too
         ];
 
+        // Only update the trigger text if the wrapper ID is NOT in the static list
         if (!staticLabelIds.includes(wrapper.id)) {
             const trigger = wrapper.querySelector('.custom-select-trigger');
             if(trigger) trigger.textContent = foundText;
@@ -357,6 +322,7 @@ async function initializeApp() {
     try {
         initCustomSelects();
 
+        // 1. SECURE CONFIG FETCH (REPLACES HARDCODED DATA)
         try {
             const configResponse = await fetch('/api/config');
             if(configResponse.ok) {
@@ -369,12 +335,14 @@ async function initializeApp() {
             }
         } catch(e) {
             console.error("Config Load Failed", e);
+            // Fallback could go here if needed
         }
 
         const jsonResponse = await fetch('https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/2TM3TM.json');
         if (!jsonResponse.ok) throw new Error("Failed to load Quran JSON");
         const jsonData = await jsonResponse.json();
         
+        // Now it's safe to use mergeMetadata because SURAH_METADATA is loaded
         quranData = mergeMetadata(jsonData.chapters);
 
         try {
@@ -584,8 +552,8 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
 
     const verseNum = previewSequence[0];
     
-    // [SECURE FIX] Use Helper
-    const imgUrl = getSecureUrl('image', `${chapterNum}_${verseNum}.png`);
+    // SECURE FIX: Use the tunnel
+    const imgUrl = `/media/image/${chapterNum}_${verseNum}.png`;
     
     const tempImg = new Image();
     tempImg.src = imgUrl;
@@ -613,8 +581,8 @@ function playPreviewStep(chapterNum, reciterId) {
     const imgLayer = document.getElementById('hero-preview-layer');
     const previewImg = document.getElementById('preview-img');
 
-    // [SECURE FIX] Use Helper
-    const newSrc = getSecureUrl('image', `${chapterNum}_${verseNum}.png`);
+    // SECURE FIX: Use the tunnel
+    const newSrc = `/media/image/${chapterNum}_${verseNum}.png`;
 
     previewImg.style.opacity = 0;
     setTimeout(() => {
@@ -658,10 +626,8 @@ function playPreviewStep(chapterNum, reciterId) {
         }
     }
     /* --- END BRIDGE --- */
-    
-    // [SECURE FIX] Use Helper
-    const audioUrl = getSecureUrl('audio', `${padCh}${padV}.mp3`);
-    
+    const rPath = RECITERS_CONFIG[reciterId]?.path || RECITERS_CONFIG['alafasy'].path;
+    const audioUrl = `/media/audio/${padCh}${padV}.mp3`;
     elements.previewAudio.src = audioUrl;
     elements.previewAudio.volume = 0.6;
     elements.previewAudio.onended = () => {
@@ -965,8 +931,7 @@ async function loadVerse(autoplay = true) {
 
     elements.display.title.innerHTML = `${currentChapterData.title} <span class="chapter-subtitle">(${chNum}:${vNum})</span>`;
     
-    // [SECURE FIX] Use Helper
-    const newSrc = getSecureUrl('image', `${chNum}_${vNum}.png`);
+    const newSrc = `/media/image/${chNum}_${vNum}.png`;
     const img1 = elements.display.verse;
     const img2 = elements.display.verseNext;
 
@@ -1030,18 +995,18 @@ function bufferNextResources(currentChIdx, currentVIdx) {
     const nextCh = quranData[nextChIdx].chapterNumber;
     const nextV = quranData[nextChIdx].verses[nextVIdx].verseNumber;
 
-    // [SECURE FIX] Use Helper
+    // SECURE FIX: Use the tunnel
     const img = new Image();
-    img.src = getSecureUrl('image', `${nextCh}_${nextV}.png`);
+    img.src = `/media/image/${nextCh}_${nextV}.png`;
 
     const rId = getSelectValue(elements.selects.reciter);
-    // const qPath = RECITERS_CONFIG[rId].path; // Path isn't used for standard structure logic below
+    const qPath = RECITERS_CONFIG[rId].path;
     const padCh = String(nextCh).padStart(3, '0');
     const padV = String(nextV).padStart(3, '0');
     
-    // [SECURE FIX] Use Helper
+    // SECURE FIX: Use the tunnel
     const aud = new Audio();
-    aud.src = getSecureUrl('audio', `${padCh}${padV}.mp3`);
+    aud.src = `/media/audio/${padCh}${padV}.mp3`;
     aud.preload = 'auto'; 
 }
 
@@ -1061,13 +1026,15 @@ function updateTranslationText(chNum, vNum) {
 
 function updateQuranAudio(chNum, vNum, play) {
     const rId = getSelectValue(elements.selects.reciter);
+    // Note: Reciter path is used to build the filename, but currently 
+    // your middleware only supports the standard folder structure.
+    // If your reciters use different folder structures, ensure middleware matches.
     
     const padCh = String(chNum).padStart(3, '0');
     const padV = String(vNum).padStart(3, '0');
     
-    // [SECURE FIX] Use Helper
-    const audioUrl = getSecureUrl('audio', `${padCh}${padV}.mp3`);
-    elements.quranAudio.src = audioUrl;
+    // SECURE FIX: Use the tunnel
+    elements.quranAudio.src = `/media/audio/${padCh}${padV}.mp3`;
     
     if(play) elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
 }
@@ -1477,4 +1444,7 @@ document.addEventListener('keydown', (e) => {
         showInteractionFeedback('backward');
         // smartSeek is already handled in your existing code
     }
+    // Note: We REMOVED the 'Space' handler here because the 
+    // audio 'play'/'pause' listeners above will handle it automatically 
+    // (and more accurately).
 });
