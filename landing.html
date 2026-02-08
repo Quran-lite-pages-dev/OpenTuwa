@@ -733,7 +733,7 @@ function initializeGuest() {
         async function performActivation() {
             try {
                 // 1. Call the server to set the cookie
-                const response = await fetch('/login', { method: 'POST' });
+                const response = await fetch('/login', { method: 'POST', credentials: 'same-origin' });
                 
                 if (response.ok) {
                     // 2. Set the timestamp BEFORE reloading to catch loops
@@ -903,6 +903,7 @@ function initializeGuest() {
         // Send the token to your Cloudflare Backend Function
         fetch('/login-google', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ token: idToken })
         })
