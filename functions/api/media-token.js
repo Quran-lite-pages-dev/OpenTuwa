@@ -14,36 +14,34 @@ export async function onRequest(context) {
   const allowed = new Set(['audio', 'image', 'data']);
   if (!allowed.has(type) || !filename) return new Response('Invalid Params', { status: 400 });
 
-  // Secret from env (recommended). Fallback to hard-coded for local dev.
   const MEDIA_SECRET = (env && env.MEDIA_SECRET) || 'please-set-a-strong-secret-in-prod';
-  const secretHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(MEDIA_SECRET));
-  console.log('[TOKEN-GEN] Secret hash:', Array.from(new Uint8Array(secretHash)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16));
 
-  // Payload: { type, filename, exp, nonce }
-  const exp = Date.now() + 60 * 1000; // 1 minute expiry
-  const nonce = crypto.getRandomValues(new Uint8Array(12)).reduce((s, b) => s + ('0' + b.toString(16)).slice(-2), '');
+  // Create payload
+  const exp = Date.now() + 60 * 1000;
+  const nonce = Array.from(crypto.getRandomValues(new Uint8Array(12)))
+    .map(b => b.toString(16).padStart(2, '0')).join('');
+  
   const payload = { type, filename, exp, nonce };
   const payloadJson = JSON.stringify(payload);
 
-  // Sign with HMAC-SHA256 using WebCrypto
+  // Sign with HMAC-SHA256
   const enc = new TextEncoder();
   const keyData = enc.encode(MEDIA_SECRET);
   const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
   const sigBuf = await crypto.subtle.sign('HMAC', key, enc.encode(payloadJson));
   const sigBytes = new Uint8Array(sigBuf);
 
-  // base64url helpers - safe encoding
-  const toB64Url = (arr) => {
-    let binary = '';
-    for (let i = 0; i < arr.length; i++) {
-      binary += String.fromCharCode(arr[i]);
+  // Helper: convert bytes to base64url
+  const toBase64Url = (bytes) => {
+    let str = '';
+    for (let i = 0; i < bytes.length; i++) {
+      str += String.fromCharCode(bytes[i]);
     }
-    let str = btoa(binary);
-    return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+    return btoa(str).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   };
 
-  const payloadB64 = toB64Url(new TextEncoder().encode(payloadJson));
-  const sigB64 = toB64Url(sigBytes);
+  const payloadB64 = toBase64Url(enc.encode(payloadJson));
+  const sigB64 = toBase64Url(sigBytes);
   const token = `${payloadB64}.${sigB64}`;
 
   return new Response(JSON.stringify({ token }), {

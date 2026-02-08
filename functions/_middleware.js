@@ -37,87 +37,48 @@ export async function onRequest(context) {
 
   // Secret for HMAC. For production, set via env var (env.MEDIA_SECRET)
   const MEDIA_SECRET = (env && env.MEDIA_SECRET) || 'please-set-a-strong-secret-in-prod';
-  
-  // Log secret hash for debugging
-  const secretHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(MEDIA_SECRET));
-  console.log('[MEDIA-MW] Secret hash:', Array.from(new Uint8Array(secretHash)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16));
 
-  // Helpers
-  const b64 = (s) => s.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
-  const unb64 = (s) => {
-    s = s.replace(/-/g, '+').replace(/_/g, '/');
-    while (s.length % 4) s += '=';
-    return atob(s);
+  // Helpers for base64url
+  const fromBase64Url = (str) => {
+    let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
+    while (b64.length % 4) b64 += '=';
+    return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
   };
 
   async function verifyToken(token) {
     try {
-      console.log('[TOKEN] Start verify, token length:', token.length);
       const parts = token.split('.');
-      if (parts.length !== 2) {
-        console.error('[TOKEN] Format error: expected 2 parts, got', parts.length);
-        return { ok: false };
-      }
+      if (parts.length !== 2) return { ok: false };
       
-      const [payloadB64, sigB64] = parts;
+      const payloadB64 = parts[0];
+      const sigB64 = parts[1];
 
-      // Decode payload (safely)
-      let payloadJson = '';
-      try {
-        payloadJson = unb64(payloadB64);
-      } catch (e) {
-        console.error('[TOKEN] Payload decode failed:', e.message);
-        return { ok: false };
-      }
-
-      let payload;
-      try {
-        payload = JSON.parse(payloadJson);
-      } catch (e) {
-        console.error('[TOKEN] Payload parse failed:', e.message);
-        return { ok: false };
-      }
-      console.log('[TOKEN] Payload:', { type: payload.type, filename: payload.filename, exp: payload.exp, nonce: payload.nonce });
+      // Decode payload
+      const payloadBytes = fromBase64Url(payloadB64);
+      const payloadJson = new TextDecoder().decode(payloadBytes);
+      const payload = JSON.parse(payloadJson);
 
       // Check expiry
-      const now = Date.now();
-      if (!payload.exp || now > payload.exp) {
-        console.error(`[TOKEN] Expired: now=${now}, exp=${payload.exp}`);
+      if (!payload.exp || Date.now() > payload.exp) {
         return { ok: false, reason: 'expired' };
       }
 
       // Check nonce not used
-      if (!payload.nonce) {
-        console.error('[TOKEN] Missing nonce');
-        return { ok: false };
-      }
-      if (usedTokens.has(payload.nonce)) {
-        console.error(`[TOKEN] Nonce already used: ${payload.nonce}`);
+      if (!payload.nonce || usedTokens.has(payload.nonce)) {
         return { ok: false, reason: 'used' };
       }
 
       // Verify signature
-      try {
-        const enc = new TextEncoder();
-        const keyData = enc.encode(MEDIA_SECRET);
-        const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
-        
-        // Decode signature (safely with padding)
-        let sigStr = sigB64.replace(/-/g, '+').replace(/_/g, '/');
-        while (sigStr.length % 4) sigStr += '=';
-        const sig = Uint8Array.from(atob(sigStr), c => c.charCodeAt(0));
-        
-        console.log('[TOKEN] Verifying signature, sig length:', sig.length);
-        const valid = await crypto.subtle.verify('HMAC', key, sig, enc.encode(payloadJson));
-        console.log('[TOKEN] Signature result:', valid);
-        
-        if (!valid) {
-          console.error('[TOKEN] Signature mismatch - possible secret mismatch or payload changed');
-          return { ok: false, reason: 'bad-signature' };
-        }
-      } catch (e) {
-        console.error('[TOKEN] Signature verification threw:', e.message);
-        return { ok: false };
+      const enc = new TextEncoder();
+      const keyData = enc.encode(MEDIA_SECRET);
+      const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
+      
+      const sig = fromBase64Url(sigB64);
+      const valid = await crypto.subtle.verify('HMAC', key, sig, enc.encode(payloadJson));
+      
+      if (!valid) {
+        console.error('[TOKEN] Signature verification failed for nonce:', payload.nonce);
+        return { ok: false, reason: 'bad-signature' };
       }
 
       return { ok: true, payload };
@@ -136,20 +97,16 @@ export async function onRequest(context) {
     if (isDirectNav) return new Response('Access Denied', { status: 403 });
 
     // Expect path: /media/{type}/{token}/{filename}
-    const parts = lowerPath.split('/').filter(Boolean); // ['media','audio','{token}','file.mp3']
-    console.log('[MEDIA] Path parts:', parts);
+    const parts = lowerPath.split('/').filter(Boolean);
     if (parts.length < 4) return new Response('Invalid Request', { status: 400 });
 
     const [, type, tokenPart, ...rest] = parts;
     const filename = rest.join('/');
-    console.log('[MEDIA] Type:', type, 'Token:', tokenPart.substring(0, 50) + '...', 'Filename:', filename);
 
     // Validate token
     const verification = await verifyToken(tokenPart);
     if (!verification.ok) {
-      const reason = verification.reason || 'unknown';
-      console.error(`Token validation failed: ${reason}`);
-      return new Response(`Invalid or expired token (${reason})`, { status: 403 });
+      return new Response(`Invalid token (${verification.reason || 'unknown'})`, { status: 403 });
     }
 
     const payload = verification.payload;
