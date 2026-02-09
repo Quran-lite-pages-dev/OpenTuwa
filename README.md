@@ -177,17 +177,6 @@ This is an open-source project. Contributions are welcome! Please ensure:
 - Console.log statements are removed
 - Code is properly formatted
 
-## Obfuscation / minify source files
-
-To obfuscate/minify JS and CSS files in-place (with backups), run:
-
-```bash
-npm install --only=dev
-npm run obfuscate:source
-```
-
-This will create a `backup_obfuscation/` folder containing originals and overwrite the project `.js` and `.css` files with minified/obfuscated versions. The script is `tools/obfuscate.js` and uses `terser` and `clean-css`.
-
 ## License
 
 PROPRIETARY AND CONFIDENTIAL - ALL RIGHTS RESERVED

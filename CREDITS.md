@@ -1,4 +1,4 @@
-\# Third-Party Content 
+\# Third-Party Content Credits
 
 
 
@@ -17,4 +17,6 @@ software.
 
 
 \*\*Note:\*\* The content attributed to these third-party sources is used in accordance with their respective licenses or terms of use. All original software logic, scripts, and architectural code in this project are under the strict proprietary license of the author.
+
+
 
