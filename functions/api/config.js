@@ -121,7 +121,7 @@ export async function onRequest(context) {
 
     // 2. TRANSLATIONS CONFIG (Hidden)
     const TRANSLATIONS_CONFIG = {
-        'en': { name: 'English', url: '/media/data/en.xml' },
+        'en': { name: 'English', url: '/media/data/en.arberry_filtered.xml' },
         'sq': { name: 'Albanian', url: '/media/data/sq.ahmeti.xml' },
         'ber': { name: 'Amazigh', url: '/media/data/ber.mensur.xml' },
         'am': { name: 'Amharic', url: '/media/data/am.sadiq.xml' },
