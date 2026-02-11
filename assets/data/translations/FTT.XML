@@ -65,4 +65,36 @@
         <Verse chapter="75" number="23" />
         <Verse chapter="83" number="35" />
     </Group>
+    <Group name="Nafs" root="ن-ف-س">
+        <Verse chapter="3" number="28" />
+        <Verse chapter="3" number="30" />
+        <Verse chapter="5" number="116" />
+        <Verse chapter="6" number="12" />
+        <Verse chapter="6" number="54" />
+        <Verse chapter="20" number="41" />
+    </Group>
+    <Group name="Janb" root="ج-ن-ب">
+        <Verse chapter="39" number="56" note="fī janbi l-lah" />
+    </Group>
+    <Group name="Qabdah" root="ق-ب-ض">
+        <Verse chapter="39" number="67" />
+    </Group>
+    <Group name="Yameen" root="ي-م-ن">
+        <Verse chapter="39" number="67" />
+        <Verse chapter="69" number="45" />
+    </Group>
+    <Group name="Ma'iyyah" root="م-ع">
+        <Verse chapter="4" number="108" />
+        <Verse chapter="57" number="4" note="wa-huwa ma'akum" />
+        <Verse chapter="58" number="7" />
+    </Group>
+    <Group name="Kashf" root="ك-ش-ف">
+        <Verse chapter="53" number="58" note="lay-sa la-ha min duni Allahi kashifa" />
+    </Group>
+
+    <Configuration strictMode="true">
+        <Rule id="1" type="prohibition">Do not translate physically anthropomorphic terms literally without footnotes.</Rule>
+        <Rule id="2" type="requirement">Preserve Arabic terminology in transliteration if target language lacks theological nuance.</Rule>
+        <Rule id="3" type="validation">Flag any instance where root matches and context implies Divine Attribute.</Rule>
+    </Configuration>
 </ForbiddenToTranslate>
