@@ -961,5 +961,23 @@ function initializeGuest() {
         });
     }
 </script>
+<script>
+  (function() {
+    // Wait for the DOM to be fully loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      const premiumBtn = document.getElementById("premium-start-btn");
+
+      if (premiumBtn) {
+        premiumBtn.addEventListener("click", function() {
+          // Injects the cookie upon clicking
+          document.cookie = "TUWA_PREMIUM=true; path=/; max-age=31536000"; 
+          console.log("continue");
+        });
+      } else {
+        console.warn("404");
+      }
+    });
+  })();
+</script>
 </body>
 </html>
