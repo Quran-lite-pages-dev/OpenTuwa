@@ -16,19 +16,96 @@
     <link rel="stylesheet" href="styles/inline-styles.css">
     
     <style>
-        body { background: #000; overflow: hidden; }
-        #premium-landing { display: flex !important; }
+        body { background: #000; overflow: hidden; margin: 0; padding: 0; height: 100vh; width: 100vw; }
+        
+        /* Slider Logic */
+        #slider-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1), transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(1.05); /* Slight zoom effect for Apple-like feel */
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
+            z-index: 2;
+        }
+
+        /* Fixed Overlay for Button and Brand so they stay in place */
+        #fixed-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Let clicks pass through to background if needed */
+            z-index: 50; /* Above slides */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* Space out brand (top) and button (bottom) */
+            padding-bottom: 8vh; /* Lift button from bottom */
+        }
+
+        #fixed-overlay .interactive-element {
+            pointer-events: auto; /* Re-enable clicks for buttons */
+        }
+
+        /* Center the button at bottom */
+        .bottom-actions {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
 
         /* CRITICAL FIX: Hide content initially to prevent flashing the button */
         .premium-content { 
-            opacity: 0; 
+            /* opacity managed by slide now, but keeping for legacy script compatibility */
             transition: opacity 0.8s ease; 
-            pointer-events: none; /* Prevent clicking while hidden */
         }
-        .premium-content.visible { 
-            opacity: 1; 
-            pointer-events: all; 
+
+        /* Styling updates for the snippets provided */
+        .heroz-title-text {
+            font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
+            font-size: clamp(3rem, 6vw, 6rem);
+            font-weight: 900;
+            color: white;
+            text-align: center;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
+
+        .cinema-seek-indicator {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .cinema-seek-indicator svg { width: 30px; height: 30px; }
+        .cinema-seek-indicator.left { left: 40px; }
+        .cinema-seek-indicator.right { right: 40px; }
+
     </style>
 <script src="functions/login-client.js"></script>
 <script>
@@ -80,113 +157,158 @@
     window.addEventListener('resize', toggleBrandVisibility);
 </script>
 
-    <div id="premium-landing" style="display: flex;"> 
-        <div class="premium-brand-replica">
-            <img src="https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/ui/logo.png" alt="Tuwa Logo" class="lazyload">
-            <span>Tuwa</span>
-        </div>
+    <div id="fixed-overlay">
+        <div style="padding: 20px; display: flex;">
+             <div class="premium-brand-replica" style="position: absolute; top: 20px; left: 20px;">
+                <img src="https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/ui/logo.png" alt="Tuwa Logo" class="lazyload">
+                <span>Tuwa</span>
+            </div>
 
-
-        <div class="premium-content">
-            <div class="appx-brand" id="brand-link" aria-label="Tuwa Home">
+            <div class="appx-brand" id="brand-link" aria-label="Tuwa Home" style="margin: 0 auto;">
                 <div class="brand-icon">
                     <img src="https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/ui/logo.png" alt="Tuwa Logo">
                 </div>
                 <span class="brand-text">Tuwa</span>
             </div>
-<style>
-    .premium-title {
-        /* --- Base Text Styles --- */
-        font-family: var(--font-heading);
-        font-size: clamp(4.5rem, 8vw, 7.5rem);
-        font-weight: 900;
-        letter-spacing: -0.03em;
-        line-height: 1.1;
-        margin: 0 auto;
+        </div>
+
+        <div class="bottom-actions">
+            <div class="interactive-element">
+                <button id="premium-start-btn" class="premium-btn">
+                    <span>Start watching now</span>
+                    <svg 
+                        class="btn-icon" 
+                        aria-hidden="true" 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        width="24" 
+                        height="24" 
+                        fill="none" 
+                        viewBox="0 0 24 24"
+                    >
+                        <path 
+                            stroke="currentColor" 
+                            stroke-linecap="round" 
+                            stroke-linejoin="round" 
+                            stroke-width="2" 
+                            d="m10 16 4-4-4-4"
+                        />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="slider-container">
         
-        /* --- Layout --- */
-        text-align: center;
-        width: 100%;
-        max-width: 1000px;
-    }
+        <div class="slide active" id="slide-1">
+            <div class="premium-content visible" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+                
+                <style>
+                    .premium-title {
+                        /* --- Base Text Styles --- */
+                        font-family: var(--font-heading);
+                        font-size: clamp(4.5rem, 8vw, 7.5rem);
+                        font-weight: 900;
+                        letter-spacing: -0.03em;
+                        line-height: 1.1;
+                        margin: 0 auto;
+                        
+                        /* --- Layout --- */
+                        text-align: center;
+                        width: 100%;
+                        max-width: 1000px;
+                    }
 
-    /* --- LINE 1: The Main Title (Keeps the Gradient) --- */
-    .premium-title .line-1 {
-        display: block; /* Forces own line */
-        
-        /* The Gradient Logic */
-        background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
-        -webkit-background-clip: text;
-        background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
+                    /* --- LINE 1: The Main Title (Keeps the Gradient) --- */
+                    .premium-title .line-1 {
+                        display: block; /* Forces own line */
+                        
+                        /* The Gradient Logic */
+                        background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%);
+                        -webkit-background-clip: text;
+                        background-clip: text;
+                        -webkit-text-fill-color: transparent;
+                    }
 
-    /* --- LINE 2: The Subtitle (Solid Color & Smaller) --- */
-    .premium-title .line-2 {
-        display: block; /* Forces own line */
-        
-        /* Visual Hierarchy */
+                    /* --- LINE 2: The Subtitle (Solid Color & Smaller) --- */
+                    .premium-title .line-2 {
+                        display: block; /* Forces own line */
+                        
+                        /* Visual Hierarchy */
 
-        letter-spacing: 0; /* Normal spacing for readability */
-        margin-top: 10px; /* Space between title and subtitle */
+                        letter-spacing: 0; /* Normal spacing for readability */
+                        margin-top: 10px; /* Space between title and subtitle */
 
-        /* Override the parent gradient to make this solid color */
-        background: none; 
-        -webkit-text-fill-color: #999999; /* Solid Light Gray */
-        color: #999999;
-    }
+                        /* Override the parent gradient to make this solid color */
+                        background: none; 
+                        -webkit-text-fill-color: #999999; /* Solid Light Gray */
+                        color: #999999;
+                    }
 
-    /* --- Mobile Tweak --- */
-    @media (max-width: 768px) {
-        .premium-title {
-            font-size: clamp(2rem, 10vw, 3.5rem);
-        }
-        /* Optional: make subtitle slightly larger on mobile for readability */
-        .premium-title .line-2 {
-            font-size: 0.6em; 
-        }
-    }
-</style>
+                    /* --- Mobile Tweak --- */
+                    @media (max-width: 768px) {
+                        .premium-title {
+                            font-size: clamp(2rem, 10vw, 3.5rem);
+                        }
+                        /* Optional: make subtitle slightly larger on mobile for readability */
+                        .premium-title .line-2 {
+                            font-size: 0.6em; 
+                        }
+                    }
+                </style>
 
-<h1 class="premium-title">
-    <span class="line-1">Fulfillment</span>
-    <span class="line-2">not the feed</span>
-</h1>
-            <p class="premium-subtitle"><b>1.5 Billion Daily Listeners</b></p>
-<h2></h2>
+                <h1 class="premium-title">
+                    <span class="line-1">Fulfillment</span>
+                    <span class="line-2">not the feed</span>
+                </h1>
+                <p class="premium-subtitle"><b>1.5 Billion Daily Listeners</b></p>
+                <h2></h2>
+            </div>
+        </div>
 
+        <div class="slide" id="slide-2">
+            <div class="loader-content" style="display: flex; flex-direction: column; align-items: center;">
+                <div class="hero-shadow-overlay"></div>
+                
+                <h2 class="heroz-title-text" id="doors-hero-title">The Cleaving</h2>
+                
+                <div class="loader-spinner" style="display: none;"></div>
+                <div class="loader-text" id="loader-text" style="display: none;"></div>
 
+                <div id="seek-indicator-left" class="cinema-seek-indicator left">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"></path></svg>
+                    <span>-10s</span>
+                </div>
+                <div id="seek-indicator-right" class="cinema-seek-indicator right">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6-8.5-6z"></path></svg>
+                    <span>+10s</span>
+                </div>
+            </div>
+        </div>
 
+        <div class="slide" id="slide-3">
+             <div class="loader-content" style="display: flex; flex-direction: column; align-items: center;">
+                <div class="hero-shadow-overlay"></div>
+                
+                <h2 class="heroz-title-text" id="doors-hero-title-moon">The Moon</h2>
+                
+                <div class="loader-spinner" style="display: none;"></div>
+                <div class="loader-text" id="loader-text-moon" style="display: none;"></div>
 
-
-
-
-    <div style="display: flex; flex-direction: column; gap: 8px; width: 100%; align-items: center;">
-<button id="premium-start-btn" class="premium-btn">
-    <span>Start watching now</span>
-    <svg 
-        class="btn-icon" 
-        aria-hidden="true" 
-        xmlns="http://www.w3.org/2000/svg" 
-        width="24" 
-        height="24" 
-        fill="none" 
-        viewBox="0 0 24 24"
-    >
-        <path 
-            stroke="currentColor" 
-            stroke-linecap="round" 
-            stroke-linejoin="round" 
-            stroke-width="2" 
-            d="m10 16 4-4-4-4"
-        />
-    </svg>
-</button>
-</div>
+                <div id="seek-indicator-left" class="cinema-seek-indicator left">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"></path></svg>
+                    <span>-10s</span>
+                </div>
+                <div id="seek-indicator-right" class="cinema-seek-indicator right">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6-8.5-6z"></path></svg>
+                    <span>+10s</span>
+                </div>
+            </div>
+        </div>
 
     </div>
-</div>
-</div>
+
 <style>
 .premium-btn {
     /* 1. LAYOUT ESSENTIALS */
@@ -198,6 +320,7 @@
     /* 2. SIZING */
     padding: 12px 24px;
     width: 400px;
+    max-width: 90vw; /* Safety for mobile */
     
     /* 3. VISUALS & POSITIONING */
     background: #fff;
@@ -213,8 +336,8 @@
     position: relative;
     overflow: hidden;
 
-    /* MOVE DOWN 10% OF ITS OWN HEIGHT */
-    transform: translateY(10%); 
+    /* MOVE DOWN 10% OF ITS OWN HEIGHT - Adjusted because it's now in overlay */
+    /* transform: translateY(10%);  */
 
     /* TRANSITION: Includes transform for smooth hover return */
     transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -307,8 +430,6 @@ display: block;
 }
 </style>
 
-        </div>
-
         <div class="premium-processing">
             <div class="premium-loader"></div>
             <div class="premium-status-text" id="premium-status">Confirming availability</div>
@@ -327,7 +448,7 @@ display: block;
                 <div id="legal-content-area" class="legal-scroll-content"></div>
             </div>
         </div>
-    </div>
+    
 
 
     <style>
@@ -636,7 +757,7 @@ color: #000; }
 
         const startBtn = document.getElementById('premium-start-btn');
         const authModal = document.getElementById('hybrid-auth-modal');
-        const premiumContent = document.querySelector('.premium-content');
+        const premiumContent = document.querySelector('.premium-content'); // Keeping reference for legacy logic
         const premiumProcessing = document.querySelector('.premium-processing');
         const statusText = document.getElementById('premium-status');
 
@@ -661,11 +782,12 @@ color: #000; }
         }
 
 function initializeGuest() {
-            if (premiumContent) premiumContent.classList.add('visible');
+            // Updated: premiumContent is now inside a slide, visibility handled by CSS transition of slide
+            // if (premiumContent) premiumContent.classList.add('visible');
             
             if (startBtn) {
                 // CHANGED: Use innerHTML so the browser renders the SVG
-                startBtn.innerHTML = `Start watching<svg 
+                startBtn.innerHTML = `<span>Start watching now</span><svg 
                     class="btn-icon" 
                     aria-hidden="true" 
                     xmlns="http://www.w3.org/2000/svg" 
@@ -712,7 +834,7 @@ function initializeGuest() {
                 
                 // STOP THE LOOP: Show the content instead of the loader
                 premiumProcessing.classList.remove('active');
-                premiumContent.classList.add('visible');
+                if (premiumContent) premiumContent.classList.add('visible');
                 
                 // Change the button to a "Manual Retry" state
                 if (startBtn) {
@@ -940,25 +1062,8 @@ function initializeGuest() {
             }
         });
     } else {
-        console.error("Critical: #loginButton not found in HTML. Login will not work.");
-    }
-</script>
-<script>
-    const loginBtn = document.getElementById('loginButton');
-    
-    if (loginBtn) {
-        loginBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            // Just tell Android to start. 
-            // Android will handle the cookie injection and reload when it finishes.
-            if (window.Android && window.Android.startGoogleLogin) {
-                loginBtn.innerText = "Please wait...";
-                window.Android.startGoogleLogin();
-            } else {
-                alert("Use this on Android TV.");
-            }
-        });
+        // console.error("Critical: #loginButton not found in HTML. Login will not work.");
+        // Suppressed error since we are on the landing page primarily
     }
 </script>
 <script>
@@ -979,5 +1084,82 @@ function initializeGuest() {
     });
   })();
 </script>
+
+<script>
+(function() {
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.slide');
+    const totalSlides = slides.length;
+    let isTransitioning = false;
+    let touchStartY = 0;
+    let touchEndY = 0;
+
+    // Core function to switch slides
+    function goToSlide(index) {
+        if (isTransitioning) return;
+        
+        // Loop logic
+        let nextIndex = index;
+        if (index >= totalSlides) nextIndex = 0;
+        if (index < 0) nextIndex = totalSlides - 1;
+
+        if (nextIndex === currentSlide) return;
+
+        isTransitioning = true;
+        
+        // Remove active class from all
+        slides.forEach(s => s.classList.remove('active'));
+        
+        // Add active to next
+        slides[nextIndex].classList.add('active');
+        
+        currentSlide = nextIndex;
+
+        // Reset lock after transition time (1.2s matches CSS)
+        setTimeout(() => {
+            isTransitioning = false;
+        }, 1200);
+    }
+
+    // 1. Mouse Wheel Handler
+    window.addEventListener('wheel', (e) => {
+        if (isTransitioning) return;
+        // Threshold to prevent accidental jitters
+        if (Math.abs(e.deltaY) > 20) {
+            if (e.deltaY > 0) {
+                goToSlide(currentSlide + 1);
+            } else {
+                goToSlide(currentSlide - 1);
+            }
+        }
+    }, { passive: true });
+
+    // 2. Touch Event Handlers (Swipe)
+    window.addEventListener('touchstart', (e) => {
+        touchStartY = e.changedTouches[0].screenY;
+    }, { passive: true });
+
+    window.addEventListener('touchend', (e) => {
+        if (isTransitioning) return;
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+    }, { passive: true });
+
+    function handleSwipe() {
+        const diff = touchStartY - touchEndY;
+        // Threshold for swipe
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) {
+                // Swiped Up -> Next
+                goToSlide(currentSlide + 1);
+            } else {
+                // Swiped Down -> Prev
+                goToSlide(currentSlide - 1);
+            }
+        }
+    }
+})();
+</script>
+
 </body>
 </html>
