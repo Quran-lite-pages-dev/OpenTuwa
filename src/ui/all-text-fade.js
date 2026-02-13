@@ -68,5 +68,5 @@
         characterData: true
     });
 
-    console.log("Fade Active (Excluding #chapter-title)");
+    console.log("");
 })();
