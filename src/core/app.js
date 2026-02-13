@@ -76,6 +76,99 @@ const elements = {
     subtitle: document.getElementById('hero-subtitle-overlay')
 };
 
+// Global storage for cinema caption timers
+window.cinemaCaptionTimers = window.cinemaCaptionTimers || [];
+
+/**
+ * Splits translation text into chunks that end only on punctuation.
+ * Target ~25 words per chunk. If 25 words reached without punctuation,
+ * extends until the next punctuation from the specified regex.
+ */
+function getSmartChunks(text) {
+    if (!text || typeof text !== 'string') return [];
+    const PUNCT_RE = /[.,;?!:\"”’‘)\]،؛۔؟]/;
+    const TARGET = 25;
+
+    const words = text.trim().split(/\s+/);
+    const chunks = [];
+    let start = 0;
+
+    while (start < words.length) {
+        // If remaining words are less than or equal to TARGET, try to end at punctuation within remainder
+        if (start + TARGET >= words.length) {
+            chunks.push(words.slice(start).join(' '));
+            break;
+        }
+
+        let desired = start + TARGET;
+
+        // Search forward from desired-1 for the next word that contains punctuation
+        let end = -1;
+        for (let j = desired - 1; j < words.length; j++) {
+            if (PUNCT_RE.test(words[j])) {
+                end = j + 1; // slice end is exclusive
+                break;
+            }
+        }
+
+        if (end === -1) {
+            // No punctuation found ahead; include rest as one chunk
+            chunks.push(words.slice(start).join(' '));
+            break;
+        }
+
+        chunks.push(words.slice(start, end).join(' '));
+        start = end;
+    }
+
+    return chunks;
+}
+
+/**
+ * Clear any pending cinema caption timeouts.
+ */
+function clearCinemaTimers() {
+    if (window.cinemaCaptionTimers && window.cinemaCaptionTimers.length) {
+        window.cinemaCaptionTimers.forEach(id => clearTimeout(id));
+        window.cinemaCaptionTimers = [];
+    }
+}
+
+/**
+ * Play captions in 'cinema' mode by splitting `text` into smart chunks and
+ * scheduling updates to `elements.display.trans.textContent` according to
+ * chunk durations computed from `totalDuration`.
+ * `totalDuration` is expected in seconds; function will convert to ms.
+ */
+function playCinemaCaptions(text, totalDuration) {
+    clearCinemaTimers();
+    if (!text || typeof text !== 'string') return;
+
+    const chunks = getSmartChunks(text);
+    if (!chunks.length) return;
+
+    // Count words
+    const totalWords = text.trim().split(/\s+/).length || 1;
+
+    const totalMs = (typeof totalDuration === 'number' && !isNaN(totalDuration) && totalDuration > 0)
+        ? totalDuration * 1000
+        : 7000; // fallback 7s
+
+    let elapsed = 0;
+    chunks.forEach(chunk => {
+        const chunkWords = chunk.trim().split(/\s+/).length || 1;
+        const dur = (chunkWords / totalWords) * totalMs;
+
+        const id = setTimeout(() => {
+            elements.display.trans.textContent = chunk;
+            try { adjustFontSize(); } catch (e) {}
+        }, Math.round(elapsed));
+
+        window.cinemaCaptionTimers.push(id);
+        elapsed += dur;
+    });
+}
+
 let quranData = []; 
 let translationCache = {}; 
 let ttsCache = {}; 
@@ -1062,8 +1155,20 @@ function updateTranslationText(chNum, vNum) {
     const sura = translationCache[tid].querySelector(`sura[index="${chNum}"]`);
     const aya = sura ? sura.querySelector(`aya[index="${vNum}"]`) : null;
     const unavailableText = window.t ? window.t('errors.translationUnavailable') : "Translation unavailable";
-    elements.display.trans.textContent = aya ? aya.getAttribute('text') : unavailableText;
-    adjustFontSize();
+    const fullText = aya ? aya.getAttribute('text') : unavailableText;
+
+    // If cinema view is active, play smart-chunked captions over audio duration
+    if (elements.views.cinema && elements.views.cinema.classList.contains('active')) {
+        // Prefer Quran audio duration; fallback to translation audio; else 7s
+        const qdur = Number(elements.quranAudio && elements.quranAudio.duration) || 0;
+        const tdur = Number(elements.transAudio && elements.transAudio.duration) || 0;
+        const totalDuration = (qdur > 0) ? qdur : (tdur > 0 ? tdur : 7);
+        playCinemaCaptions(fullText, totalDuration);
+    } else {
+        clearCinemaTimers();
+        elements.display.trans.textContent = fullText;
+        adjustFontSize();
+    }
 }
 
 async function updateQuranAudio(chNum, vNum, play) {
@@ -1133,6 +1238,12 @@ function setupEventListeners() {
 
     elements.quranAudio.addEventListener('ended', handleQuranEnd);
     elements.transAudio.addEventListener('ended', nextVerse);
+
+    // Clear cinema caption timers when audio is paused or ends
+    elements.quranAudio.addEventListener('pause', clearCinemaTimers);
+    elements.transAudio.addEventListener('pause', clearCinemaTimers);
+    elements.quranAudio.addEventListener('ended', clearCinemaTimers);
+    elements.transAudio.addEventListener('ended', clearCinemaTimers);
 
     ['mousemove', 'touchstart', 'click', 'keydown'].forEach(e => 
         window.addEventListener(e, () => {
