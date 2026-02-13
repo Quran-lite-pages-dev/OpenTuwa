@@ -1067,22 +1067,46 @@ function initializeGuest() {
     }
 </script>
 <script>
-  (function() {
-    // Wait for the DOM to be fully loaded
-    document.addEventListener("DOMContentLoaded", function() {
-      const premiumBtn = document.getElementById("googleweb-btn");
+(function() {
+  // Helper function to check if a specific cookie exists
+  function hasCookie(name) {
+    return document.cookie.split(';').some(c => c.trim().startsWith(name + '='));
+  }
 
-      if (premiumBtn) {
-        premiumBtn.addEventListener("click", function() {
-          // Injects the cookie upon clicking
-          document.cookie = "TUWA_PREMIUM=true; path=/; max-age=31536000"; 
-          console.log("continue");
-        });
-      } else {
-        console.warn("404");
-      }
-    });
-  })();
+  // 1. Check the URL for the specific keyword
+  if (window.location.href.includes("Unable+to+exchange+external+code")) {
+    
+    // 2. Cross-verify if the AUTH_GOOGLE cookie exists
+    // We also check that TUWA_PREMIUM isn't already set to prevent an infinite reload loop
+    if (hasCookie("AUTH_GOOGLE") && !hasCookie("TUWA_PREMIUM")) {
+      
+      // Set the premium cookie
+      document.cookie = "TUWA_PREMIUM=true; path=/; max-age=31536000";
+      console.log("Premium cookie set. Refreshing page...");
+      
+      // Force refresh the page
+      window.location.reload();
+      
+      // Stop further execution in this thread since the page is reloading
+      return; 
+    }
+  }
+
+  // 3. Wait for the DOM to be fully loaded to attach the button listener
+  document.addEventListener("DOMContentLoaded", function() {
+    const googleBtn = document.getElementById("googleweb-btn");
+
+    if (googleBtn) {
+      googleBtn.addEventListener("click", function() {
+        // Inject the AUTH_GOOGLE cookie upon clicking
+        document.cookie = "AUTH_GOOGLE=true; path=/; max-age=31536000"; 
+        console.log("AUTH_GOOGLE cookie set");
+      });
+    } else {
+      console.warn("Element 'googleweb-btn' not found on this page.");
+    }
+  });
+})();
 </script>
 
 <script>
