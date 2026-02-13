@@ -1428,7 +1428,7 @@ document.addEventListener('click', function(e) {
         if (fadeLayer) {
             fadeLayer.classList.add('active');
             setTimeout(() => {
-                console.log('Transition complete. Loading cinema...'); 
+                console.log(''); 
             }, 800); 
         }
     }
@@ -1440,7 +1440,7 @@ function forceRemoveFadeLayer() {
         fadeLayer.classList.remove('active');
         fadeLayer.style.opacity = '0';
         fadeLayer.style.pointerEvents = 'none';
-        console.log('Fade layer reset.');
+        console.log('');
     }
 }
 document.addEventListener('DOMContentLoaded', forceRemoveFadeLayer);

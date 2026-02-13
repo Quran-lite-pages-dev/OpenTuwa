@@ -10,10 +10,10 @@
 
 
 (function() {
-    console.log("AI Search Injector: Initializing...");
+    console.log("");
 
     const WORKER_URL = '/search'; 
-    const SFX_BUBBLES = 'assets/sound/bubbles-popping-sfx-425024.mp3';
+    const SFX_BUBBLES = '';
     const SFX_SUCCESS = '';
 
     // --- DYNAMIC STYLES FOR BUTTON EXPANSION ---
