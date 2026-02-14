@@ -31,19 +31,19 @@ const CORE_FILES_TO_CACHE = [
   BASE_PATH + '/src/core/app_5f6e7dxjs.js',
   BASE_PATH + '/src/components/nav_7c6b5axjs.js',
   BASE_PATH + '/src/components/rec_1a2b3cxjs.js',
-  BASE_PATH + '/src/components/arabic_modal_h_9a8b7c.js',
+  BASE_PATH + '/src/components/armod_9smsk2xjs.js',
   BASE_PATH + '/src/components/off_4d5e6fxjs.js',
   BASE_PATH + '/src/utils/res_2a3b4cxjs.js',
   BASE_PATH + '/src/utils/ga_9c8b7axjs.js',
   BASE_PATH + '/src/utils/gh_6b5a4cxjs.js',
   BASE_PATH + '/src/utils/swreg_8e7f6axjs.js',
   BASE_PATH + '/src/utils/cp_3c4d5exjs.js',
-  BASE_PATH + '/src/components/search/voice_bridge_111aaa.js',
-  BASE_PATH + '/src/components/search/grid_nav_222bbb.js',
   
   // Local Icons/Favicons
-  BASE_PATH + '/favicon.ico',
-  BASE_PATH + '/favicon.png',
+  BASE_PATH + '/assets/ui/web.ico',
+  BASE_PATH + '/assets/ui/web.png',
+  BASE_PATH + '/assets/ui/web_512.png',
+  BASE_PATH + '/assets/ui/logo.png',
   
   // Add any other local images (e.g., BASE_PATH + '/images/hero.jpg') here
 ];
