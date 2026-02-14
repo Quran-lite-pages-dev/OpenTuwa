@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<quran>
+<Quran>
 	<sura index="1" name="">
 		<aya index="1" text="בשם אללה הרחמן הרחום,"/>
 		<aya index="2" text="השבח לאללה, ריבון העולמים,"/>
@@ -6464,4 +6464,4 @@
 		<aya index="5" text="זה המלחש בלבבות של האנשים"/>
 		<aya index="6" text="מפני השדים והאנשים."/>
 	</sura>
-</quran>
+</Quran>

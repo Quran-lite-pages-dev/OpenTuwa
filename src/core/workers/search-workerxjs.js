@@ -21,8 +21,8 @@ export default {
     // We use Llama 3 because it is smart enough to understand "stories about ants" or "Moses"
     // and map them to the correct Chapter number (1-114).
     const systemPrompt = `
-      You are a Quran search engine backend. 
-      Your ONLY job is to identify which Surah (Chapter 1-114) the user is looking for based on their input.
+      You are a streambasesecured_ca6 search engine backend. 
+      Your ONLY job is to identify which streamprotected_cb2 (Chapter 1-114) the user is looking for based on their input.
       The input might be a name (English, Arabic, Spanish, etc.), a topic, or a question.
       
       Examples:

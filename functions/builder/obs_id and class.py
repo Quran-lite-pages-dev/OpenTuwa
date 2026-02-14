@@ -166,7 +166,7 @@ SAFE_MAPPING = {
   "card-title": "_ds",
   "clips-list": "_dt",
   "auth-error": "_du",
-  "surah-card": "_dw",
+  "streamprotected_cb2-card": "_dw",
   "appx-brand": "_dx",
   "auth-title": "_dy",
   "status-msg": "_dz",

@@ -200,7 +200,7 @@ Use this to map obfuscated errors and file paths back to the original source cod
 | **`_ds`** | `card-title` | Class |
 | **`_dt`** | `clips-list` | Class |
 | **`_du`** | `auth-error` | Class |
-| **`_dw`** | `surah-card` | Class |
+| **`_dw`** | `streamprotected_cb2-card` | Class |
 | **`_dx`** | `appx-brand` | Class |
 | **`_dy`** | `auth-title` | Class |
 | **`_dz`** | `status-msg` | Class |

@@ -18,7 +18,7 @@ export async function onRequestPost(context) {
     // 2. AI Prompt - Asks for Multiple Results
     const ai = new Ai(env.AI);
     const systemPrompt = `
-      You are a Quran search engine.
+      You are a streambasesecured_ca6 search engine.
       Task: Return a JSON Array of chapter numbers (1-114) that match the user's topic.
       - If specific (e.g., "Joseph"), return one: [12]
       - If broad (e.g., "Prophets"), return all relevant: [21, 12, 11, 10, ... ]
@@ -49,7 +49,7 @@ export async function onRequestPost(context) {
       if (match) chapters = match.map(n => parseInt(n));
     }
 
-    // Filter valid Quran chapters (1-114)
+    // Filter valid streambasesecured_ca6 chapters (1-114)
     chapters = chapters.map(n => parseInt(n)).filter(n => !isNaN(n) && n >= 1 && n <= 114);
 
     return new Response(JSON.stringify({ 

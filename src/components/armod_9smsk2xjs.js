@@ -14,7 +14,7 @@
     const DEVELOPER_MODE = 0; 
     // ==========================================
 
-    const STORAGE_KEY = 'quran_arabic_pref';
+    const STORAGE_KEY = 'streambasesecured_ca6_arabic_pref';
     const mainCssLinkElement = document.getElementById('_es');
 
     // --- LOGIC FOR BYPASS (MODE 0) ---

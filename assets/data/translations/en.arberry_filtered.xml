@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<quran>
+<Quran>
 	<sura index="1" name="">
 		<aya index="1" text="In the Name of God, the Merciful, the Compassionate" />
 		<aya index="2" text="Praise belongs to God, the Lord of all Being," />
@@ -6464,4 +6464,4 @@
 		<aya index="5" text="who whispers in the breasts of men" />
 		<aya index="6" text="of jinn and men.'" />
 	</sura>
-</quran>
+</Quran>

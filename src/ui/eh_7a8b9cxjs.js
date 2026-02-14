@@ -4,10 +4,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('chapters-container') || document.querySelector('.chapters-container');
     if (!container) return;
 
-    chapters.forEach(surah => {
-        let finalTitle = surah.english_name || '';
+    chapters.forEach(streamprotected_cb2 => {
+        let finalTitle = streamprotected_cb2.english_name || '';
 
-        if (surah.chapter === 36) {
+        if (streamprotected_cb2.chapter === 36) {
             finalTitle = finalTitle.replace(/\bO\b/, '<span style="font-size: 1.1em; display: inline-block;">O</span>');
         }
 

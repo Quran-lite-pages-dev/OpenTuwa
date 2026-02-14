@@ -16,7 +16,7 @@ window.LyricsEngine = {
                 htmlContent += `<div class="_bb next-${index + 1}">${line}</div>`;
             });
         } else {
-            // Keep layout stable if no next verses (End of Surah)
+            // Keep layout stable if no next verses (End of streamprotected_cb2)
             htmlContent += `<div class="_bb" style="opacity:0">&nbsp;</div>`;
         }
 
