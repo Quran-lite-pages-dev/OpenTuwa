@@ -46,7 +46,7 @@ html { box-sizing: border-box; font-size: 62.5%; }
 *, *::before, *::after { box-sizing: inherit; margin: 0; padding: 0; }
 
 body {
-    font-family: 'Inter', sans-serif;
+    font-family: "Plus Jakarta Sans", sans-serif;
     background-color: var(--bg);
     background-image: radial-gradient(circle at 50% 10%, #1a1a1a 0%, #000 70%);
     color: var(--text);
@@ -57,7 +57,7 @@ body {
     display: flex; flex-direction: column;
 }
 /* --- APP BRANDING (Standard Alignment + Flat Top Axis) --- */
-.app-brand {
+._el {
     position: fixed;
     top: 40px; 
     
@@ -78,20 +78,20 @@ body {
 }
 
 /* RTL Flip */
-html[dir="rtl"] .app-brand {
+html[dir="rtl"] ._el {
     transform-origin: center right;
 }
 
-.app-brand:hover {
+._el:hover {
     opacity: 0.8;
     transform: scale(1.02);
 }
 
 /* BRAND ICON */
-.brand-icon img {
+._d0 img {
     width: 108px; 
     height: 58px;
-    opacity: 0;
+    opacity: 0.5;
     display: block;
     object-fit: contain;
     transform: translate(18%, 14%);
@@ -99,7 +99,7 @@ html[dir="rtl"] .app-brand {
 }
 
 /* BRAND TEXT - THE FLAT TOP FIX */
-.brand-text {
+._d6 {
     font-family: "Plus Jakarta Sans", sans-serif;
     font-weight: 900; 
     font-size: 29.8px; 
@@ -119,20 +119,20 @@ html[dir="rtl"] .app-brand {
 
 /* MOBILE RESPONSIVENESS */
 @media screen and (max-width: 1024px) {
-    .brand-text {
+    ._d6 {
         display: none; 
     }
     
-    .app-brand {
+    ._el {
         inset-inline-end: 20px; 
         top: 25px;
     }
 }
 
 /* --- ISLAND SEARCH BOX --- */
-#island-search-wrapper {
+#_j {
     position: fixed;
-    bottom: 40px;
+    bottom: 30px;
     left: 0;
     width: 100%;
 display: flex;
@@ -148,7 +148,7 @@ display: flex;
 }
 
 
-.island-search-box {
+._ak {
     pointer-events: auto; /* Re-enable clicks for the box */
 position: relative;
 z-index: 10;
@@ -173,17 +173,34 @@ z-index: 10;
     width: 240px; /* Base width */
     transform: translateY(0);
 }
-/* 1. The Container - Clean & Deep */
-.island-search-box.ai-thinking {
+/* --- SLIM THINKING STATE --- */
+
+._ak._df {
+    /* Keep it the same width as the idle state (240px) */
+    width: 240px !important; 
+    
+    /* Ensure it doesn't jump or lift if you hover during thinking */
+    transform: translateY(0) !important;
+    
     border-color: rgba(255, 255, 255, 0.1) !important;
-    background: rgba(10, 10, 10, 0.8); /* Darker base feels more premium */
+    background: rgba(10, 10, 10, 0.8);
     backdrop-filter: blur(10px);
     overflow: visible;
     position: relative;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 2. The Sophisticated Border Trace */
-.island-search-box.ai-thinking::before {
+/* 1. Ensure the button fades out in place first */
+#_j:has(._df) ._b0 {
+    opacity: 0;
+    filter: blur(6px);
+    transform: scale(0.9); /* Slight shrink without moving */
+    pointer-events: none;
+    transition: opacity 0.4s ease-out, filter 0.4s ease-out, transform 0.4s ease-out;
+}
+
+/* 2. The Sophisticated Border Trace - Adjusted for the slimmer box */
+._ak._df::before {
     content: '';
     position: absolute;
     inset: -1.5px;
@@ -192,25 +209,20 @@ z-index: 10;
         from 0deg at 50% 50%,
         transparent 0deg,
         transparent 160deg,
-#f5f5f7 220deg, 
-#d1d1d6 300deg,
+        #f5f5f7 220deg, 
+        #d1d1d6 300deg,
         transparent 360deg
     );
     border-radius: inherit;
-    /* Use a "breathing" easing instead of linear */
     animation: ai-rotate 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-    -webkit-mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
-    mask: 
-        linear-gradient(#fff 0 0) content-box, 
-        linear-gradient(#fff 0 0);
+    animation-delay: 0.4s; /* Waits for button to fade */
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
 }
-
 /* 2. Updated Glow Effect */
-.island-search-box.ai-thinking::after {
+._ak._df::after {
     content: '';
     position: absolute;
     inset: 0;           /* Changed from -10px to 0 to stay inside */
@@ -223,6 +235,7 @@ z-index: 10;
     border-radius: inherit;
     opacity: 0;
     animation: ai-glow-fade 2s ease-in-out infinite alternate;
+animation-delay: 1s;
     pointer-events: none; /* Prevents the glow from interfering with clicks */
 }
 
@@ -234,21 +247,29 @@ z-index: 10;
 }
 
 /* Interaction States */
-.island-search-box:focus-within,
-.island-search-box:hover {
+._ak:focus-within,
+._ak:hover {
     width: 340px; /* Expand smoothly */
     background: rgba(25, 25, 25, 0.85);
     border-color: rgba(255, 255, 255, 0.3);
     transform: translateY(-5px);
 }
+/* Use a comma to separate the two distinct conditions ._ak:focus-within + ._b0 */
+._ak:hover + ._b0 {
+    opacity: 0;
+    filter: blur(6px);
+    transform: scale(0.9);
+    pointer-events: none;
+    transition: opacity 0.4s ease-out, filter 0.4s ease-out, transform 0.4s ease-out;
+}
 
-.search-icon-wrapper {
+._2 {
     color: rgba(255,255,255,0.6);
     display: flex;
     align-items: center;
 }
 
-#island-input {
+#_cz {
     background: transparent;
     border: none;
     color: #fff;
@@ -260,13 +281,13 @@ z-index: 10;
     font-weight: 500;
 }
 
-#island-input::placeholder {
+#_cz::placeholder {
     color: rgba(255,255,255,0.3);
     font-size: 1.95rem;
 }
 
 /* Trigger Button */
-.enter-trigger {
+._b0 {
 /* Give it the same Glassmorphism as the search box so they match */
     background: #050505; 
     backdrop-filter: blur(25px) saturate(180%);
@@ -287,19 +308,26 @@ z-index: 10;
     justify-content: center;
     flex-shrink: 0;
     pointer-events: auto; /* Important: wrapper has pointer-events: none */
-    transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
+/* Smooth, linear-to-ease fade out */
+    transition: 
+        opacity 0.5s ease-out, 
+        transform 0.5s ease-out,
+        filter 0.5s ease-out;
+    will-change: opacity, filter;
 }
 
-.enter-trigger:hover, .enter-trigger:focus {
+
+
+._b0:hover, ._b0:focus {
     border-color: rgba(255, 255, 255, 0.4);
     transform: scale(1.05);
 }
 
-.enter-trigger:hover .key-hint, .enter-trigger:focus .key-hint {
+._b0:hover ._et, ._b0:focus ._et {
     
 }
 
-.key-hint {
+._et {
     color: rgba(255,255,255,0.7);
     font-size: 4rem;
     font-weight: 900;
@@ -313,11 +341,11 @@ z-index: 10;
     25% { transform: translateX(-6px); }
     75% { transform: translateX(6px); }
 }
-.island-error {
+._cv {
     animation: island-shake 0.3s ease-in-out;
     border-color: rgba(255, 80, 80, 0.5);
 }
-#transition-fade-layer {
+#_m {
     position: fixed;
     top: 0;
     left: 0;
@@ -330,13 +358,13 @@ z-index: 10;
     transition: opacity 0.8s cubic-bezier(0.2, 0, 0, 1);
 }
 
-#transition-fade-layer.active {
+#_m.active {
     opacity: 1;
     pointer-events: all;
 }
 
 /* --- 2. DASHBOARD STYLES (SINGLE FISH MODS) --- */
-#dashboard-view {
+#_bq {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 2000;
     background: #050505;
@@ -350,18 +378,18 @@ z-index: 10;
     transition: justify-content 0.6s cubic-bezier(0.2, 0, 0, 1);
 
 }
-#dashboard-view::-webkit-scrollbar { display: none !important; }
+#_bq::-webkit-scrollbar { display: none !important; }
 
-#dashboard-view.active { display: flex; animation: fadeIn 0.5s ease; }
+#_bq.active { display: flex; animation: fadeIn 0.5s ease; }
 
 /* THE MAGIC: If Title is Empty, Center Content Vertically */
-#dashboard-view:has(#door-hero-title:empty) {
+#_bq:has(#_bg:empty) {
     justify-content: center;
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.hero-banner {
+._c3 {
     /* Adjusted Height for "Single Fish" (55vh fits perfectly without scrolling) */
     height: 55vh; 
     width: 100%; position: relative;
@@ -377,7 +405,7 @@ z-index: 10;
 }
 
 /* COLLAPSED STATE: If Title is Empty */
-#dashboard-view:has(#door-hero-title:empty) .hero-banner {
+#_bq:has(#_bg:empty) ._c3 {
     height: 0vh !important;
     min-height: 0 !important;
     padding: 0 5% !important;
@@ -385,14 +413,14 @@ z-index: 10;
     pointer-events: none;
 }
 
-.hero-preview-layer {
+._af {
     display: none;
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 1; opacity: 0; transition: opacity 0.8s ease; pointer-events: none;
 }
-.hero-preview-layer.active { opacity: 1; }
+._af.active { opacity: 1; }
 
-.preview-img {
+._c7 {
     width: 100%; height: 100%; 
     object-fit: contain; object-position: center right;
     filter: invert(1) drop-shadow(0 0 20px rgba(255,255,255,0.2));
@@ -403,7 +431,7 @@ img:not([src]), img[src=""], img[src="#"] { visibility: hidden !important; }
 img { color: transparent; text-indent: -10000px; }
 img:-moz-broken { display: none !important; }
 
-.hero-shadow-overlay {
+._1 {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     z-index: 2;
     background: linear-gradient(
@@ -414,22 +442,22 @@ img:-moz-broken { display: none !important; }
         transparent 100%
     );
 }
-.hero-shadow-overlay::after {
+._1::after {
     content: '';
     position: absolute; bottom: 0; left: 0; width: 100%; height: 30%;
     background: linear-gradient(to top, #000 10%, transparent 100%);
 }
 
-.hero-content { max-width: 650px; z-index: 5; position: relative; margin-top: 5vh; }
+._cm { max-width: 650px; z-index: 5; position: relative; margin-top: 5vh; }
 
-.hero-super { 
+._d1 { 
     display: flex; align-items: center; gap: 1rem; margin-bottom: 0.5rem;
     font-weight: 700; color: #aaa; letter-spacing: 1px;
     text-transform: uppercase; font-size: 1.1rem; align-items: baseline;
 }
-.hero-super span.text-content { position: relative; top: -2px; }
+._d1 span._cs { position: relative; top: -2px; }
 
-.hero-super span.badge, .hero-super span.badges { 
+._d1 span.badge, ._d1 span.badges { 
     background: transparent; 
     color: var(--accent); 
     padding: 2px 8px; 
@@ -442,14 +470,14 @@ img:-moz-broken { display: none !important; }
     opacity: 0.8;
     transform: none;
 }
-.heroz-title-text { 
+._av { 
     /* VERIFIED: 'clamp' ensures titles don't explode on laptop but stay big on TV */
     font-size: clamp(7rem, 5vw, 14rem); font-weight: 910; line-height: 1; 
     margin-bottom: 22rem; text-shadow: 0 4px 30px rgba(0,0,0,1); color: #fff; opacity: 0.7;
 }
 /* Target mobile devices (typically below 768px) */
 @media (max-width: 768px) {
-    .heroz-title-text {
+    ._av {
 font-size: clamp(4rem, 5vw, 8rem);
 text-align: left;    /* Keeps text aligned to the left of its box */
 margin-left: 0;      /* Removes the negative offset that caused the overflow */
@@ -460,7 +488,7 @@ transform: none;
     }
 }
 
-.hero-title-text { 
+._bf { 
     font-size: clamp(7rem, 5vw, 14rem); 
     font-weight: 900; 
     line-height: 1; 
@@ -469,20 +497,20 @@ transform: none;
     color: #fff; 
     opacity: 0.7;
 }
-.hero-subtitle {
+._b4 {
     display: none;
     font-size: clamp(1.2rem, 5vw, 2.4rem);  color: var(--accent);
 font-weight: 900;
     margin-bottom: 1.5rem; font-weight: 400; text-shadow: 0 4px 30px rgba(0,0,0,1);  padding-left: 1%; opacity: 0.5;
 }
-.hero-desc { 
+._ei { 
     display: none;
     color: #ccc; font-size: 1.5rem; margin-bottom: 2.5rem; line-height: 1.5;
     text-shadow: 0 2px 4px rgba(0,0,0,0.8); max-width: 600px;
     display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
 }
 
-.dash-btn {
+._eq {
     background: var(--glass-surface); color: white; border: none; 
     backdrop-filter: blur(24px) saturate(180%);
     -webkit-backdrop-filter: blur(24px) saturate(180%);
@@ -498,7 +526,7 @@ font-weight: 900;
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
     will-change: transform, opacity;
 }
-.dash-btn:focus, .dash-btn:hover { 
+._eq:focus, ._eq:hover { 
     transform: translateY(-4px) scale(1.03); 
     background: rgba(255,255,255,0.1);
     border-color: var(--accent);
@@ -506,7 +534,7 @@ font-weight: 900;
     outline: none; 
 }
 
-.row-section { 
+._c6 { 
     padding: 0 0 2rem 0; 
     position: relative; z-index: 5; 
     background: linear-gradient(to bottom, transparent, #050505 20%); 
@@ -514,22 +542,22 @@ font-weight: 900;
 }
 
 /* OVERLAP MODE: Only when Hero exists (Title NOT empty) */
-#dashboard-view:not(:has(#door-hero-title:empty)) .row-section {
+#_bq:not(:has(#_bg:empty)) ._c6 {
     margin-top: -12vh; /* Overlap the hero slightly */
 }
 
 /* CENTER MODE: No overlap when hero is gone */
-#dashboard-view:has(#door-hero-title:empty) .row-section {
+#_bq:has(#_bg:empty) ._c6 {
     margin-top: 0;
 }
 
-.row-section:has(.surah-card:hover),
-.row-section:has(.surah-card:focus),
-.row-section:focus-within {
+._c6:has(._dw:hover),
+._c6:has(._dw:focus),
+._c6:focus-within {
     z-index: 100;
 }
 
-.row-header {
+._dp {
     width: fit-content;
     display: flex; align-items: center;
     margin-left: 5%; margin-bottom: 1.5rem;
@@ -539,7 +567,7 @@ font-weight: 900;
 }
 
 /* FIXED SCROLLER: Removed scaling on the container itself */
-.card-scroller { 
+._cb { 
     display: flex; 
     gap: 1rem; 
     overflow-x: auto; 
@@ -555,7 +583,7 @@ font-weight: 900;
 
 }
 
-.surah-card {
+._dw {
     flex: 0 0 280px; 
     aspect-ratio: 16 / 9;
     height: auto;
@@ -573,7 +601,7 @@ font-weight: 900;
 
 /* Pro Active State - Individual Card Scaling */
 /* VERIFIED: 'border-width: 2px' is added for TV Visibility (10ft viewing) */
-.surah-card:focus, .surah-card:hover { 
+._dw:focus, ._dw:hover { 
     transform: scale(1.05); 
     z-index: 10;
     background: rgba(30, 30, 30, 0.9);
@@ -583,13 +611,13 @@ font-weight: 900;
     outline: none; 
 }
 
-.card-bg-num { position: absolute; top: -15px; right: 5px; font-size: 7rem; font-weight: 900; color: rgba(255,255,255,0.05); line-height: 1; }
-.card-title { font-size: 1.9rem; font-weight: 700; color: #fff; z-index: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.card-sub { display: none; font-size: 1.1rem; color: #aaa; z-index: 2; margin-top: 0.2rem; }
+._c5 { position: absolute; top: -15px; right: 5px; font-size: 7rem; font-weight: 900; color: rgba(255,255,255,0.05); line-height: 1; }
+._ds { font-size: 1.9rem; font-weight: 700; color: #fff; z-index: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+._er { display: none; font-size: 1.1rem; color: #aaa; z-index: 2; margin-top: 0.2rem; }
 
 /* --- 3. EXTRAS & OVERLAYS --- */
 /* Preview Subtitles */
-#hero-subtitle-overlay {
+#_o {
     position: fixed !important; bottom: 120px; right: 5%; max-width: 600px;
     color: #fff; font-size: 1.4rem; font-weight: 500;
     text-shadow: 0 2px 4px rgba(0,0,0,0.9);
@@ -600,26 +628,26 @@ font-weight: 900;
     border: 1px solid var(--glass-border);
     border-radius: var(--radius-lg);
 }
-#hero-subtitle-overlay.active { opacity: 1; }
+#_o.active { opacity: 1; }
 
 /* Search Overlay */
-#search-overlay {
+#_bj {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: #141414; z-index: 2500; 
     padding-left: 0 !important; 
     display: none; grid-template-columns: 350px 1fr;
 }
-#search-overlay.active { display: grid; }
+#_bj.active { display: grid; }
 
-.keyboard-section {
+._a0 {
     background: #000; padding: 4rem 2rem; display: flex; flex-direction: column;
     border-right: 1px solid #333;
 }
-#search-input-display {
+#_t {
     background: #333; color: #fff; padding: 1rem; font-size: 2rem;
     border: 1px solid #fff; margin-bottom: 2rem; min-height: 50px; display: flex; align-items: center;
 }
-.keyboard-grid {
+._cc {
     display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
 }
 .key {
@@ -631,12 +659,12 @@ font-weight: 900;
 .key.wide { grid-column: span 2; aspect-ratio: auto; height: 50px; }
 
 /* Search Performance Patch */
-.results-section {
+._a5 {
     padding: 4rem;
     overflow: hidden !important;
 }
 
-.results-grid {
+._cx {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 2rem;
@@ -646,7 +674,7 @@ font-weight: 900;
     padding-bottom: 300px;
 }
 
-.no-results {
+._dq {
     font-size: 2.2rem;
     color: rgba(255,255,255,0.3);
     text-align: center;
@@ -659,7 +687,7 @@ font-weight: 900;
     50% { color: var(--accent); text-shadow: 0 0 10px var(--accent); }
     100% { color: #888; }
 }
-.ai-thinking {
+._df {
     grid-column: 1 / -1;
     display: flex; gap: 10px; align-items: center; justify-content: center;
     padding: 2rem;
@@ -668,25 +696,25 @@ font-weight: 900;
 }
 
 /* --- 4. CINEMA VIEW STYLES --- */
-#cinema-view {
+#_dd {
     width: 100%; height: 100%; position: absolute; top: 0; left: 0;
     display: flex; flex-direction: column;
     transition: opacity 0.5s;
     opacity: 0; pointer-events: none;
 }
-#cinema-view.active { opacity: 1; pointer-events: all; z-index: 1000; }
+#_dd.active { opacity: 1; pointer-events: all; z-index: 1000; }
 
-#loading-overlay {
+#_a6 {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: #000; z-index: 9999;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     transition: opacity 0.5s ease; padding: 2rem;
 }
-.loader-spinner {
+._bl {
     width: 50px; height: 50px; border: 2px solid rgba(255,255,255,0.1); border-radius: 50%;
     border-top-color: var(--accent); animation: spin 0.8s ease-in-out infinite; margin-bottom: 2rem;
 }
-.start-btn {
+._ek {
     /* 1. Layout & Sizing */
     position: relative; 
     left: 50%;
@@ -724,7 +752,7 @@ font-weight: 900;
                 box-shadow 0.3s;
 }
 
-.start-btn:focus, .start-btn:hover { 
+._ek:focus, ._ek:hover { 
     /* Keep translate values consistent to avoid "jumping" */
     transform: translate(-50%, -280%) scale(1.05); 
 
@@ -738,7 +766,7 @@ font-weight: 900;
 
 /* --- MOBILE RESPONSIVE STYLES --- */
 @media (max-width: 768px) {
-    .start-btn {
+    ._ek {
         width: 100%;       /* Full width on mobile */
         font-size: 1.1rem;  /* Slightly larger than 1rem for better touch readability */
         padding: 12px 24px; /* Slightly smaller padding for small screens */
@@ -747,7 +775,7 @@ font-weight: 900;
         transform: translate(-150%, -450%); 
     }
 
-    .start-btn:focus, .start-btn:hover { 
+    ._ek:focus, ._ek:hover { 
         /* Match the X-axis centering for mobile hover states */
         transform: translate(-150%, -500%) scale(1.02); 
     }
@@ -779,7 +807,7 @@ font-weight: 900;
   pointer-events: none; 
 }
 
-#content-display {
+#_bd {
     text-align: center; width: 100%; max-width: 1200px; margin: 0 auto;
     flex-grow: 1; display: flex; flex-direction: column; justify-content: center; position: relative;
     
@@ -791,7 +819,9 @@ font-weight: 900;
 
 /* --- The rest of your CSS remains unchanged below --- */
 
-#chapter-title {
+#_ch {
+display: none;
+font-family: 'Inter', sans-serif;
     position: fixed; top: 2rem; left: 2rem; 
     color: #F5F5F7;
     font-weight: 600; 
@@ -805,13 +835,13 @@ font-weight: 900;
     pointer-events: auto; 
 }
 
-body.idle #chapter-title { transform: translateX(100%); opacity: 0; pointer-events: none; }
+body.idle #_ch { transform: translateX(100%); opacity: 0; pointer-events: none; }
 
-#verse-container {
+#_be {
     position: relative; width: 100%; height: 50vh; margin-bottom: 3rem; display: flex; justify-content: center; align-items: center;
 }
 
-#verse-text, #verse-text-next { 
+#_do, #_bh { 
     filter: invert(1) drop-shadow(0 0 10px rgba(255,255,255,0.1)); 
     width: 100%; height: 100%; object-fit: contain;
     position: absolute; top: 0; left: 0; opacity: 0;
@@ -824,10 +854,10 @@ body.idle #chapter-title { transform: translateX(100%); opacity: 0; pointer-even
     -webkit-font-smoothing: antialiased;
 }
 
-.active-verse-img { opacity: 1 !important; z-index: 2; }
+._at { opacity: 1 !important; z-index: 2; }
 
-#translation-text {
-    font-family: 'Inter', sans-serif;  
+#_au {
+    font-family: 'Inter', sans-serif;
     line-height: 1.7; flex-grow: 0; flex-shrink: 1; max-height: 30%;
     overflow-y: auto; white-space: pre-wrap; text-align: center;
     padding: 0 2rem; 
@@ -840,7 +870,7 @@ body.idle #chapter-title { transform: translateX(100%); opacity: 0; pointer-even
     -webkit-font-smoothing: antialiased;
 }
 
-#control-panel {
+#_b2 {
     position: fixed; bottom: 0; left: 0; right: 0;
     display: flex; justify-content: center; align-items: center;
     flex-wrap: wrap; gap: 0.5rem; 
@@ -852,7 +882,7 @@ body.idle #chapter-title { transform: translateX(100%); opacity: 0; pointer-even
     pointer-events: auto; 
 }
 
-body.idle #control-panel { transform: translateY(100%); opacity: 0; pointer-events: none; }
+body.idle #_b2 { transform: translateY(100%); opacity: 0; pointer-events: none; }
 
 select {
     font-family: 'Inter', sans-serif;
@@ -884,10 +914,10 @@ select:focus {
 }
 
 @media (max-width: 768px) {
-    #dashboard-view { padding-left: 0 !important; }
-    #chapter-title { display: none;}
-    .container { padding: 0; padding-bottom: 230px; }
-    #control-panel { display: grid; grid-template-columns: 1fr 1fr; }
+    #_bq { padding-left: 0 !important; }
+    #_ch { display: none;}
+    .container { padding: 0; padding-bottom: 100px; }
+    #_b2 { display: grid; grid-template-columns: 1fr 1fr; }
 }
 
 /* --- 5. VERIFIED: RAW 4K SAFETY NET --- */
@@ -902,10 +932,63 @@ select:focus {
     html {
         font-size: 100%; /* Boost base font for Raw 4K inputs */
     }
-    .surah-card {
+    ._dw {
         flex: 0 0 350px; /* Wider cards for huge screens */
     }
-    .hero-banner {
+    ._c3 {
         padding: 0 10%;
     }
+}
+
+/* --- 6. RUG PROTECTION ARMOR (ANTI-GLITCH OVERLAYS) --- */
+/* * This section adds invisible 'hit-boxes' around interactive elements 
+ * to prevent them from flickering (glitch loops) when the mouse 
+ * is on the edge during a transform/move animation.
+ */
+
+/* 1. Start Button Armor */
+._ek::before {
+    content: '';
+    position: absolute;
+    top: -50px; bottom: -50px; left: -50px; right: -50px; /* Generous safety margin */
+    z-index: -1;
+    border-radius: inherit;
+    background: transparent;
+}
+
+/* 2. Island Search Armor */
+/* We use ::after here on the idle state to expand the hit area */
+._ak:not(._df)::after {
+    content: '';
+    position: absolute;
+    inset: -30px; /* Catches rapid mouse exits */
+    z-index: -1;
+    border-radius: 60px;
+    background: transparent;
+}
+
+/* 3. Dashboard Button Armor */
+._eq {
+    position: relative; /* Ensure pseudo aligns to button */
+}
+._eq::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    z-index: -1;
+    border-radius: inherit;
+    background: transparent;
+}
+
+/* 4. Surah Card Armor */
+._dw {
+    position: relative; /* Ensure pseudo aligns to card */
+}
+._dw::before {
+    content: '';
+    position: absolute;
+    inset: -20px;
+    z-index: -1;
+    border-radius: inherit;
+    background: transparent;
 }

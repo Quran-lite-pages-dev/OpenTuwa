@@ -8,7 +8,7 @@
     'use strict';
 
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+        navigator.serviceWorker.register('/swxjs.js', { scope: '/' })
             .then(function(registration) {
                 // Service worker registered successfully
             })

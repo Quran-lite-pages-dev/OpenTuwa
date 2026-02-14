@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const card = document.createElement('div');
         card.className = 'card';
-        card.innerHTML = `<div class="card-title">${finalTitle}</div>`;
+        card.innerHTML = `<div class="_ds">${finalTitle}</div>`;
         container.appendChild(card);
     });
 });

@@ -1,7 +1,7 @@
-/* styles/c1d2e3f4a5b.css */
+/* styles/c1d2e3f4a5bxa.css */
 
 /* 1. The "Mom" (Wrapper) */
-.custom-select-wrapper {
+._k {
     position: relative;
     user-select: none;
     width: 200px;
@@ -9,7 +9,7 @@
 }
 
 /* The Trigger:  Cinematic Style */
-.custom-select-trigger {
+._q {
     position: relative;
     display: flex;
     align-items: center;
@@ -32,7 +32,7 @@
 }
 
 /* Text Magic */
-.custom-select-trigger span {
+._q span {
     margin: 0 auto; 
     max-width: 100%;
     white-space: nowrap;
@@ -42,8 +42,8 @@
 }
 
 /*  Hover & Focus (The Vibrant Glow) */
-.custom-select-trigger:hover,
-.custom-select-wrapper.open .custom-select-trigger {
+._q:hover,
+._k.open ._q {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.8); /* Becomes bright on hover */
     transform: scale(1.02);
@@ -51,7 +51,7 @@
 }
 
 /* 2. The Options (Dropdown) */
-.custom-options {
+._br {
     position: absolute;
     bottom: 115%; /* Slight gap for depth */
     
@@ -79,16 +79,16 @@
 }
 
 /* Custom Scrollbar for Dropdown */
-.custom-options::-webkit-scrollbar {
+._br::-webkit-scrollbar {
     width: 6px;
 }
-.custom-options::-webkit-scrollbar-thumb {
+._br::-webkit-scrollbar-thumb {
     background: rgba(255, 255, 255, 0.2);
     border-radius: 10px;
 }
 
 /* Open State */
-.custom-select-wrapper.open .custom-options {
+._k.open ._br {
     opacity: 1;
     visibility: visible;
     pointer-events: all;
@@ -96,7 +96,7 @@
 }
 
 /* Individual Options */
-.custom-option {
+._b5 {
     position: relative;
     display: block;
     padding: 14px 20px;
@@ -112,20 +112,20 @@
     text-overflow: ellipsis;
 }
 
-.custom-option:last-child {
+._b5:last-child {
     border-bottom: none;
 }
 
 /*  Active Item Highlight */
-.custom-option:hover,
-.custom-option.selected {
+._b5:hover,
+._b5.selected {
     background: rgba(255, 255, 255, 0.06);
     color: #ffffff;
     padding-left: 25px; /* Subtle indent on hover */
 }
 
 /* Selected Accent Bar */
-.custom-option.selected::before {
+._b5.selected::before {
     content: '';
     position: absolute;
     left: 0;
@@ -138,32 +138,32 @@
 
 /* Mobile Adjustments */
 @media (max-width: 768px) {
-    .custom-select-wrapper {
+    ._k {
         width: 100%; 
     }
 }
 
 /* --- MODE 0: HIDING LOGIC --- */
-body.simple-mode #chapterSelectWrapper,
-body.simple-mode #verseSelectWrapper,
-body.simple-mode #translationAudioSelectWrapper,
-body.simple-mode #reciterSelectWrapper {
+body._de #chapterSelectWrapper,
+body._de #verseSelectWrapper,
+body._de #translationAudioSelectWrapper,
+body._de #reciterSelectWrapper {
     display: none !important;
 }
 /* */
 
 /* Premium Focus Style for Transport Buttons */
-.transport-control-btn {
+._i {
     transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.2s ease;
     opacity: 0.7;
 }
 
-.transport-control-btn:hover {
+._i:hover {
     opacity: 1;
 }
 
 /* When focused via Keyboard */
-.transport-control-btn:focus-visible {
+._i:focus-visible {
     opacity: 1;
     transform: scale(1.15); /* Pop effect */
     outline: none;
@@ -172,7 +172,7 @@ body.simple-mode #reciterSelectWrapper {
 }
 
 /* Ensure the Translation Select matches */
-.custom-select-trigger:focus-visible {
+._q:focus-visible {
     border-color: rgba(255, 255, 255, 0.8);
     box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
     background: rgba(255, 255, 255, 0.1);
@@ -180,7 +180,7 @@ body.simple-mode #reciterSelectWrapper {
 /* --- MODE 0: FIXED ICON TRANSLATION --- */
 
 /* 1. Position the Wrapper Fixed at Bottom Right */
-body.simple-mode #translationSelectWrapper {
+body._de #translationSelectWrapper {
     position: fixed !important;
     bottom: 30px !important;
     right: 5% !important;
@@ -191,7 +191,7 @@ body.simple-mode #translationSelectWrapper {
 }
 
 /* 2. Style the Button: JUST THE SVG (No Circle/Border) */
-body.simple-mode #translationSelectWrapper .custom-select-trigger {
+body._de #translationSelectWrapper ._q {
     /* Remove fixed width/height so it fits the icon */
     width: auto;
     height: auto;
@@ -211,14 +211,14 @@ body.simple-mode #translationSelectWrapper .custom-select-trigger {
 }
 
 /* Hover Effect: Simple Scale, No Background */
-body.simple-mode #translationSelectWrapper .custom-select-trigger:hover {
+body._de #translationSelectWrapper ._q:hover {
     background: transparent !important;
     transform: scale(1.2); /* Slightly larger zoom on hover */
     opacity: 0.8;
 }
 
 /* 3. Dropdown Position */
-body.simple-mode #translationSelectWrapper .custom-options {
+body._de #translationSelectWrapper ._br {
     bottom: 100%;
     right: 0;
     left: auto;

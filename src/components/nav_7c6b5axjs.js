@@ -3,18 +3,18 @@
     /**
      * 1. CONFIGURATION
      */
-    const SELECTOR = 'button, a:not(.app-brand):not(.appx-brand), input, select, textarea, [tabindex]:not([tabindex="-1"]), .focusable, .surah-card, .nav-item, .custom-select-trigger, .custom-option, .premium-btn, .social-btn';
+    const SELECTOR = 'button, a:not(._el):not(._dx), input, select, textarea, [tabindex]:not([tabindex="-1"]), .focusable, ._dw, ._eu, ._q, ._b5, ._c2, ._dl';
     
     // 2. VIEW CONTROLLERS
     const VIEWS = {
-        AUTH_MODAL: 'hybrid-auth-modal',
-        PREMIUM: 'premium-landing',
-        ARABIC_MODAL: 'arabic-modal', 
-        SEARCH: 'search-overlay',
-        ISLAND_SEARCH: 'island-search-wrapper',
-        CINEMA: 'cinema-view',
-        DASHBOARD: 'dashboard-view',
-        SIDEBAR: 'tv-sidebar'
+        AUTH_MODAL: '_ah',
+        PREMIUM: '_a7',
+        ARABIC_MODAL: '_cy', 
+        SEARCH: '_bj',
+        ISLAND_SEARCH: '_j',
+        CINEMA: '_dd',
+        DASHBOARD: '_bq',
+        SIDEBAR: '_d8'
     };
 
     let currentFocus = null;
@@ -25,9 +25,9 @@
      */
     function getFocusableCandidates() {
         // PRIORITY -1: Custom Select Dropdown (Focus Trap)
-        const openSelect = document.querySelector('.custom-select-wrapper.open');
+        const openSelect = document.querySelector('._k.open');
         if (openSelect) {
-            return Array.from(openSelect.querySelectorAll('.custom-option'));
+            return Array.from(openSelect.querySelectorAll('._b5'));
         }
 
         // PRIORITY 0: Auth & Premium Layers
@@ -172,7 +172,7 @@
                  return;
             }
 
-            const islandInput = document.getElementById('island-input');
+            const islandInput = document.getElementById('_cz');
             if (islandInput && isVisible(islandInput)) {
                 focusElement(islandInput);
             } else if (all.length > 0) {
@@ -238,7 +238,7 @@
             if (isCinemaActive) {
                 const active = document.activeElement;
                 const isFocusedOnControl = (cinemaView.contains(active) && active !== document.body);
-                const isDropdownOpen = !!document.querySelector('.custom-select-wrapper.open');
+                const isDropdownOpen = !!document.querySelector('._k.open');
                 const isInControlMode = isFocusedOnControl || isDropdownOpen;
 
                 // SCENARIO A: User presses DOWN (Enter Control Mode)
@@ -302,7 +302,7 @@
                             if (!el) {
                                 el = document.createElement('div');
                                 el.id = id;
-                                el.className = `cinema-seek-indicator ${isLeft ? 'left' : 'right'}`;
+                                el.className = `_s ${isLeft ? 'left' : 'right'}`;
                                 el.innerHTML = isLeft 
                                     ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/></svg><span>-10s</span>'
                                     : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6-8.5-6z"/></svg><span>+10s</span>';
@@ -312,7 +312,7 @@
                         };
 
                         const isLeft = e.key === 'ArrowLeft';
-                        const indicatorId = isLeft ? 'seek-indicator-left' : 'seek-indicator-right';
+                        const indicatorId = isLeft ? '_4' : '_v';
                         const indicator = ensureIndicator(indicatorId, isLeft);
                         
                         // 3. Trigger Animation
@@ -347,9 +347,9 @@
 
         // --- 2.5 SEARCH EXECUTION ---
         if (e.key === 'Enter') {
-            const islandInput = document.getElementById('island-input');
+            const islandInput = document.getElementById('_cz');
             if (document.activeElement === islandInput) {
-                const trigger = document.querySelector('.enter-trigger');
+                const trigger = document.querySelector('._b0');
                 if (trigger) {
                     trigger.click(); 
                     return;
@@ -364,10 +364,10 @@
         
         // --- 3. BACK/ESCAPE ---
         if (e.key === 'Escape' || e.key === 'Backspace') {
-            const openSelect = document.querySelector('.custom-select-wrapper.open');
+            const openSelect = document.querySelector('._k.open');
             if (openSelect) {
                 openSelect.classList.remove('open');
-                const trigger = openSelect.querySelector('.custom-select-trigger');
+                const trigger = openSelect.querySelector('._q');
                 if(trigger) trigger.focus();
                 return;
             }
@@ -412,7 +412,7 @@
         setTimeout(() => {
             const premiumLanding = document.getElementById(VIEWS.PREMIUM);
             if (premiumLanding && isVisible(premiumLanding)) {
-                 const startBtn = document.getElementById('premium-start-btn');
+                 const startBtn = document.getElementById('_ao');
                  if (startBtn) focusElement(startBtn);
                  return;
             }

@@ -1,4 +1,4 @@
-// functions/login-google.js
+// functions/login-googlexjs.js
 export async function onRequestPost(context) {
   // "Untightened" Logic:
   // We don't check the token. We don't check Google.

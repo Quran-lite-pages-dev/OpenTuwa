@@ -2,7 +2,7 @@
 /**
  * Arabic Modal Handler Component
  * Intercepts player launch to show Arabic reading capability modal
- * @module components/arabic-modal-handler
+ * @module components/_cy-handler
  */
 (function() {
     'use strict';
@@ -15,13 +15,13 @@
     // ==========================================
 
     const STORAGE_KEY = 'quran_arabic_pref';
-    const mainCssLinkElement = document.getElementById('main-css');
+    const mainCssLinkElement = document.getElementById('_es');
 
     // --- LOGIC FOR BYPASS (MODE 0) ---
     if (DEVELOPER_MODE === 0) {
         // Force the default specific CSS
         if (mainCssLinkElement) {
-            mainCssLinkElement.href = 'styles/a1b2c3d4e5f.css';
+            mainCssLinkElement.href = 'styles/a1b2c3d4e5fxa.css';
         }
         // We return early here. This prevents the event listener 
         // from overwriting 'launchPlayer', allowing the app to 
@@ -37,9 +37,9 @@
             // 'no' (cannot read) -> uses index1.css
             // 'yes' (can read) -> uses index.css
             if (pref === 'no') {
-                mainCssLinkElement.href = 'styles/a1b2c3d4e5f.css';
+                mainCssLinkElement.href = 'styles/a1b2c3d4e5fxa.css';
             } else if (pref === 'yes') {
-                mainCssLinkElement.href = 'styles/b1c2d3e4f5a.css';
+                mainCssLinkElement.href = 'styles/b1c2d3e4f5axa.css';
             }
         }
     }
@@ -73,12 +73,12 @@
                 return;
             }
 
-            const modalElement = document.getElementById('arabic-modal');
+            const modalElement = document.getElementById('_cy');
             // Note: Variables naming preserved from original file logic
-            // yesButtonElement was linked to 'btn-arabic-no' in your code
-            const yesButtonElement = document.getElementById('btn-arabic-no'); 
-            // noButtonElement was linked to 'btn-arabic-yes' in your code
-            const noButtonElement = document.getElementById('btn-arabic-yes'); 
+            // yesButtonElement was linked to '_b3' in your code
+            const yesButtonElement = document.getElementById('_b3'); 
+            // noButtonElement was linked to '_bw' in your code
+            const noButtonElement = document.getElementById('_bw'); 
 
             if (!modalElement || !yesButtonElement || !noButtonElement) {
                 originalLaunchPlayerFunction(chapterNumber, verseNumber);

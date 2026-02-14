@@ -18,7 +18,7 @@ Quran for Every Soul is a progressive web application (PWA) that provides an ele
 ```
 quran-lite.pages.dev/
 ├── index.html                  # Main HTML entry point
-├── sw.js                       # Service worker for offline functionality
+├── swxjs.js                       # Service worker for offline functionality
 ├── LICENSE                       # License
 ├── CREDITS.MD                      # Credits
 ├── README.md                   # This file
@@ -59,7 +59,7 @@ quran-lite.pages.dev/
 ├── functions/                  # Serverless functions (if applicable)
 │   └── api/                    # API endpoints
 │       ├── recommend.js        # Recommendation API
-│       ├── search.js           # Search API
+│       ├── searchxjs.js           # Search API
 │       └── transcribe.js       # Transcription API
 │
 └── [other directories]         # Additional project files
@@ -122,15 +122,15 @@ The application is designed to be deployed to static hosting services such as:
 
 ### Service Worker
 
-The application includes a service worker (`sw.js`) for offline functionality. The service worker will automatically register when the application loads. To update the service worker cache version, modify the `CACHE_VERSION` constant in `sw.js`.
+The application includes a service worker (`swxjs.js`) for offline functionality. The service worker will automatically register when the application loads. To update the service worker cache version, modify the `CACHE_VERSION` constant in `swxjs.js`.
 
 ### Configuration
 
 Key configuration files:
 
-- **Service Worker**: `sw.js` - Cache configuration and offline strategies
-- **Main Application**: `src/core/app_5f6e7d.js` - Core application configuration
-- **Analytics**: `src/utils/ga_9c8b7a.js` - Google Analytics tracking ID
+- **Service Worker**: `swxjs.js` - Cache configuration and offline strategies
+- **Main Application**: `src/core/app_5f6e7dxjs.js` - Core application configuration
+- **Analytics**: `src/utils/ga_9c8b7axjs.js` - Google Analytics tracking ID
 
 ### Browser Support
 

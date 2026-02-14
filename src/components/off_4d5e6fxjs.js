@@ -31,7 +31,7 @@
         #status-hub.visible { transform: translateX(0); }
 
         /* Industrial Loading/Status Ring */
-        .status-indicator {
+        ._aw {
             width: 8px;
             height: 8px;
             background: var(--accent);
@@ -46,13 +46,13 @@
             100% { opacity: 1; transform: scale(1); }
         }
 
-        .status-content { flex: 1; }
-        .status-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; display: block; }
-        .status-msg { font-size: 14px; font-weight: 500; display: block; }
+        ._bu { flex: 1; }
+        ._c0 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.5; display: block; }
+        ._dz { font-size: 14px; font-weight: 500; display: block; }
 
         /* Micro-Interaction Buttons */
-        .hub-actions { display: flex; gap: 4px; }
-        .hub-btn {
+        ._di { display: flex; gap: 4px; }
+        ._e2 {
             background: rgba(255, 255, 255, 0.05);
             border: none;
             padding: 8px;
@@ -61,31 +61,31 @@
             cursor: pointer;
             transition: all 0.2s ease;
         }
-        .hub-btn:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-1px); }
+        ._e2:hover { background: rgba(255, 255, 255, 0.15); transform: translateY(-1px); }
 
-        #hub-close { opacity: 0.4; font-size: 18px; }
-        #hub-close:hover { opacity: 1; color: #ff4d4d; }
+        #_ef { opacity: 0.4; font-size: 18px; }
+        #_ef:hover { opacity: 1; color: #ff4d4d; }
     `;
     document.head.appendChild(style);
 
     const hub = document.createElement('div');
     hub.id = 'status-hub';
     hub.innerHTML = `
-        <div class="status-indicator"></div>
-        <div class="status-content">
-            <span class="status-label">System State</span>
-            <span class="status-msg">Localized: Offline Mode</span>
+        <div class="_aw"></div>
+        <div class="_bu">
+            <span class="_c0">System State</span>
+            <span class="_dz">Localized: Offline Mode</span>
         </div>
-        <div class="hub-actions">
-            <button class="hub-btn" onclick="location.reload()" aria-label="Sync">
+        <div class="_di">
+            <button class="_e2" onclick="location.reload()" aria-label="Sync">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
             </button>
-            <button id="hub-close" class="hub-btn">×</button>
+            <button id="_ef" class="_e2">×</button>
         </div>
     `;
     document.body.appendChild(hub);
 
-    document.getElementById('hub-close').addEventListener('click', () => hub.classList.remove('visible'));
+    document.getElementById('_ef').addEventListener('click', () => hub.classList.remove('visible'));
 
     function updateStatus() {
         if (!navigator.onLine) {

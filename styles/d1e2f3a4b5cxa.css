@@ -2,7 +2,7 @@
 /* Arabic Modal Styles */
 
 /* 1. Base Overlay - STABILIZED */
-#arabic-modal {
+#_cy {
     display: none;
     position: fixed;
     inset: 0;
@@ -18,7 +18,7 @@
 }
 
 /* 2. The Card - FLAT & SOLID */
-.arabic-modal-card {
+._aj {
     position: relative;
     /* Industrial: Solid dark grey. No weird linear angles. */
     background: #1a1a1a;
@@ -36,7 +36,7 @@
 }
 
 /* 3. Typography - HIERARCHY */
-.arabic-modal-card h2 {
+._aj h2 {
     margin: 0 0 12px 0;
     font-size: 1.8rem;
     color: #F5F5F7; /* UPDATED: Apple White */
@@ -46,11 +46,11 @@
 }
 
 /* Target the <b> tag to ensure it doesn't look weird */
-.arabic-modal-card h2 b {
+._aj h2 b {
     font-weight: 600;
 }
 
-.arabic-modal-card h3 {
+._aj h3 {
     margin: 0 0 40px 0;
     font-size: 1.1rem;
     /* Standardized secondary text color */
@@ -60,7 +60,7 @@
 }
 
 /* 4. Button Layout */
-.arabic-btn-group {
+._ay {
     display: flex;
     gap: 16px;
     justify-content: center;
@@ -68,7 +68,7 @@
 }
 
 /* 5. Buttons - DE-SAKAIED */
-.arabic-btn {
+._d9 {
     flex: 1; /* Make them equal width */
     padding: 16px 24px;
     font-size: 1rem;
@@ -81,35 +81,35 @@
 }
 
 /* Primary Action (Yes) - Pure White */
-#btn-arabic-yes {
+#_bw {
     background: #F5F5F7; /* UPDATED: Apple White */
     color: #000000;
     border: none;
 }
 
-#btn-arabic-yes:hover,
-#btn-arabic-yes:focus {
+#_bw:hover,
+#_bw:focus {
     transform: translateY(-2px);
     background: #ffffff;
     box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
 }
 
 /* Secondary Action (No) - Dark/Ghost */
-#btn-arabic-no {
+#_b3 {
     background: transparent;
     color: #a1a1aa;
     border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-#btn-arabic-no:hover,
-#btn-arabic-no:focus {
+#_b3:hover,
+#_b3:focus {
     transform: translateY(-2px);
     border-color: #ffffff;
     color: #ffffff;
 }
 
 /* --- INJECTED: APPLE TV DYNAMIC STYLES --- */
-.apple-text {
+._d2 {
     color: #F5F5F7;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     font-weight: 600;
@@ -117,7 +117,7 @@
     -webkit-font-smoothing: antialiased;
 }
 
-.glass-panel {
+._dc {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);

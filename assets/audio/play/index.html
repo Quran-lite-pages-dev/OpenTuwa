@@ -32,9 +32,9 @@
         }
 
         header { grid-area: header; }
-        #player-controls { grid-area: player; }
-        #clips-section { grid-area: clips; display: flex; flex-direction: column; min-height: 200px; }
-        #io-section { grid-area: io; }
+        #_bc { grid-area: player; }
+        #_cj { grid-area: clips; display: flex; flex-direction: column; min-height: 200px; }
+        #_d7 { grid-area: io; }
 
         h1, h2 {
             margin: 0 0 10px 0;
@@ -43,9 +43,9 @@
         }
 
         /* Card/Section Styles */
-        #player-controls,
-        #clips-section,
-        #io-section > div {
+        #_bc,
+        #_cj,
+        #_d7 > div {
             background: #2a2a2a; /* Slightly lighter surface */
             padding: 15px;
             border-radius: 8px;
@@ -53,7 +53,7 @@
         }
 
         /* Form Elements */
-        #chapter-select {
+        #_bn {
             font-size: 1.2em;
             padding: 5px;
             margin-right: 10px;
@@ -64,7 +64,7 @@
         }
 
         /* Status Indicator */
-        #tag-status {
+        #_d4 {
             padding: 10px 15px;
             font-size: 1.1em;
             font-weight: bold;
@@ -76,7 +76,7 @@
         }
 
         /* Time Display (Low Blue Light) */
-        #time-display {
+        #_cn {
             font-family: "Courier New", Courier, monospace;
             font-size: 1.5em;
             font-weight: bold;
@@ -92,18 +92,18 @@
             filter: invert(1) brightness(0.8) hue-rotate(180deg);
         }
 
-        #clips-section {
+        #_cj {
             overflow-y: auto;
         }
 
-        #clips-list {
+        #_dt {
             list-style: none;
             padding: 0;
             margin: 0;
             overflow-y: auto;
             flex-grow: 1;
         }
-        #clips-list li {
+        #_dt li {
             font-family: "Courier New", Courier, monospace;
             padding: 8px 12px;
             border-bottom: 1px solid #3a3a3a; /* Darker divider */
@@ -111,10 +111,10 @@
             justify-content: space-between;
             align-items: center;
         }
-        #clips-list li:nth-child(odd) { background-color: #303030; } /* Subtle striping */
+        #_dt li:nth-child(odd) { background-color: #303030; } /* Subtle striping */
         
         /* List Buttons */
-        #clips-list li button {
+        #_dt li button {
             margin-left: 10px;
             cursor: pointer;
             background-color: #444;
@@ -124,40 +124,40 @@
             padding: 4px 8px;
             font-size: 0.9em;
         }
-        #clips-list li button:hover {
+        #_dt li button:hover {
             background-color: #555;
         }
         
         /* Specific Delete Button Style */
-        #clips-list li button.delete-btn {
+        #_dt li button.delete-btn {
             color: #FF6B6B; /* More readable red */
             border-color: #FF6B6B;
             background-color: transparent;
         }
-        #clips-list li button.delete-btn:hover {
+        #_dt li button.delete-btn:hover {
             background-color: #FF6B6B;
             color: #000;
             font-weight: bold;
         }
         
         /* Separate content from buttons */
-        #clips-list li span.clip-text {
+        #_dt li span.clip-text {
             flex-grow: 1;
         }
 
 
-        #io-section {
+        #_d7 {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 15px;
         }
-        #io-section > div {
+        #_d7 > div {
             display: flex;
             flex-direction: column;
         }
         
         /* Text Areas */
-        #io-section textarea {
+        #_d7 textarea {
             width: 100%;
             height: 150px;
             font-family: "Courier New", Courier, monospace;
@@ -170,7 +170,7 @@
         }
         
         /* Import Button (Low Blue Light Action) */
-        #import-button {
+        #_cg {
             background-color: #D9822B; /* Warm amber/orange */
             color: #000; /* Black text for high contrast */
             font-weight: bold;
@@ -181,7 +181,7 @@
             font-size: 1em;
             margin-top: 5px;
         }
-        #import-button:hover { background-color: #E69500; } /* Brighter hover */
+        #_cg:hover { background-color: #E69500; } /* Brighter hover */
     </style>
 </head>
 <body>
@@ -190,14 +190,14 @@
         <h1>🎧 Offline Audio Tagger</h1>
     </header>
 
-    <section id="player-controls">
-        <label for="chapter-select">Chapter:</label>
-        <select id="chapter-select"></select>
+    <section id="_bc">
+        <label for="_bn">Chapter:</label>
+        <select id="_bn"></select>
 
-        <span id="tag-status"></span>
-        <span id="time-display">00:00:00.000</span>
+        <span id="_d4"></span>
+        <span id="_cn">00:00:00.000</span>
         
-        <audio id="audio-player" controls></audio>
+        <audio id="_cq" controls></audio>
         
         <div>
             <strong>Shortcuts:</strong> 
@@ -209,35 +209,35 @@
         </div>
     </section>
 
-    <section id="clips-section">
-        <h2>Marked Clips for <span id="current-chapter-title">...</span></h2>
-        <ul id="clips-list">
+    <section id="_cj">
+        <h2>Marked Clips for <span id="_r">...</span></h2>
+        <ul id="_dt">
             </ul>
     </section>
 
-    <section id="io-section">
+    <section id="_d7">
         <div>
             <h2>Import JSON</h2>
-            <textarea id="import-json" placeholder="Paste your timestamps.json content here..."></textarea>
-            <button id="import-button">Import and Overwrite</button>
+            <textarea id="_dj" placeholder="Paste your timestamps.json content here..."></textarea>
+            <button id="_cg">Import and Overwrite</button>
         </div>
         <div>
             <h2>Live JSON Export</h2>
-            <textarea id="export-json" readonly placeholder="Your timestamp JSON will appear here..."></textarea>
+            <textarea id="_db" readonly placeholder="Your timestamp JSON will appear here..."></textarea>
         </div>
     </section>
 
     <script>
         // --- GLOBALS ---
-        const audioPlayer = document.getElementById('audio-player');
-        const chapterSelect = document.getElementById('chapter-select');
-        const tagStatus = document.getElementById('tag-status');
-        const timeDisplay = document.getElementById('time-display');
-        const clipsList = document.getElementById('clips-list');
-        const currentChapterTitle = document.getElementById('current-chapter-title');
-        const importJsonText = document.getElementById('import-json');
-        const exportJsonText = document.getElementById('export-json');
-        const importButton = document.getElementById('import-button');
+        const audioPlayer = document.getElementById('_cq');
+        const chapterSelect = document.getElementById('_bn');
+        const tagStatus = document.getElementById('_d4');
+        const timeDisplay = document.getElementById('_cn');
+        const clipsList = document.getElementById('_dt');
+        const currentChapterTitle = document.getElementById('_r');
+        const importJsonText = document.getElementById('_dj');
+        const exportJsonText = document.getElementById('_db');
+        const importButton = document.getElementById('_cg');
 
         let db = {}; // Master database for all timestamps
         let playerState = { currentFile: null, currentTime: 0 }; // Last known state

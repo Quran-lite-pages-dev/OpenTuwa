@@ -1,5 +1,5 @@
 /**
- * - Excludes: #chapter-title (as requested)
+ * - Excludes: #_ch (as requested)
  * - Preserves ALL your existing colors, fonts, and CSS filters.
  */
 (function applyCleanEyeFade() {
@@ -45,7 +45,7 @@
 
                 // EXCLUSION 2: Specific User Request
                 // We strictly ignore the chapter title.
-                if (idElement.id === 'chapter-title') return;
+                if (idElement.id === '_ch') return;
 
                 // --- ANIMATION TRIGGER (UNTOUCHED) ---
                 idElement.classList.remove('eye-fade-active');

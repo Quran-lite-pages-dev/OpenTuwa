@@ -12,14 +12,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/a1b2c3d4e5f.css">
-    <link rel="stylesheet" href="styles/f1a2b3c4d5e.css">
+    <link rel="stylesheet" href="styles/a1b2c3d4e5fxa.css">
+    <link rel="stylesheet" href="styles/f1a2b3c4d5exa.css">
     
     <style>
         body { background: #000; overflow: hidden; margin: 0; padding: 0; height: 100vh; width: 100vw; }
         
         /* Slider Logic */
-        #slider-container {
+        #_aq {
             position: relative;
             width: 100vw;
             height: 100vh;
@@ -51,7 +51,7 @@
         }
 
         /* Fixed Overlay for Button and Brand so they stay in place */
-        #fixed-overlay {
+        #_ci {
             position: fixed;
             top: 0;
             left: 0;
@@ -65,25 +65,25 @@
             padding-bottom: 8vh; /* Lift button from bottom */
         }
 
-        #fixed-overlay .interactive-element {
+        #_ci ._6 {
             pointer-events: auto; /* Re-enable clicks for buttons */
         }
 
         /* Center the button at bottom */
-        .bottom-actions {
+        ._bm {
             display: flex;
             justify-content: center;
             width: 100%;
         }
 
         /* CRITICAL FIX: Hide content initially to prevent flashing the button */
-        .premium-content { 
+        ._a9 { 
             /* opacity managed by slide now, but keeping for legacy script compatibility */
             transition: opacity 0.8s ease; 
         }
 
         /* Styling updates for the snippets provided */
-        .heroz-title-text {
+        ._av {
             font-family: var(--font-heading, "Plus Jakarta Sans", sans-serif);
             font-size: clamp(3rem, 6vw, 6rem);
             font-weight: 900;
@@ -92,7 +92,7 @@
             text-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .cinema-seek-indicator {
+        ._s {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
@@ -102,9 +102,9 @@
             align-items: center;
             gap: 5px;
         }
-        .cinema-seek-indicator svg { width: 30px; height: 30px; }
-        .cinema-seek-indicator.left { left: 40px; }
-        .cinema-seek-indicator.right { right: 40px; }
+        ._s svg { width: 30px; height: 30px; }
+        ._s.left { left: 40px; }
+        ._s.right { right: 40px; }
 
     </style>
 <script>
@@ -134,7 +134,7 @@
     }
   })();
 </script>
-<script src="functions/login-client.js"></script>
+<script src="functions/login-clientxjs.js"></script>
 <script>
 (function() {
   const style = document.createElement('style');
@@ -167,7 +167,7 @@
 <body>
 <script>
     const toggleBrandVisibility = () => {
-        const brandLink = document.getElementById('brand-link');
+        const brandLink = document.getElementById('_d3');
         if (!brandLink) return;
 
         // Set your threshold (e.g., 768px for mobile/tablet)
@@ -184,27 +184,27 @@
     window.addEventListener('resize', toggleBrandVisibility);
 </script>
 
-    <div id="fixed-overlay">
+    <div id="_ci">
         <div style="padding: 20px; display: flex;">
-             <div class="premium-brand-replica" style="position: absolute; top: 20px; left: 20px;">
+             <div class="_p" style="position: absolute; top: 20px; left: 20px;">
                 <img src="https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/ui/logo.png" alt="Tuwa Logo" class="lazyload">
                 <span>Tuwa</span>
             </div>
 
-            <div class="appx-brand" id="brand-link" aria-label="Tuwa Home" style="margin: 0 auto;">
-                <div class="brand-icon">
+            <div class="_dx" id="_d3" aria-label="Tuwa Home" style="margin: 0 auto;">
+                <div class="_d0">
                     <img src="https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/ui/logo.png" alt="Tuwa Logo">
                 </div>
-                <span class="brand-text">Tuwa</span>
+                <span class="_d6">Tuwa</span>
             </div>
         </div>
 
-        <div class="bottom-actions">
-            <div class="interactive-element">
-                <button id="premium-start-btn" class="premium-btn">
+        <div class="_bm">
+            <div class="_6">
+                <button id="_ao" class="_c2">
                     <span>Start watching now</span>
                     <svg 
-                        class="btn-icon" 
+                        class="_ep" 
                         aria-hidden="true" 
                         xmlns="http://www.w3.org/2000/svg" 
                         width="24" 
@@ -226,13 +226,13 @@
     </div>
 
 
-    <div id="slider-container">
+    <div id="_aq">
         
         <div class="slide active" id="slide-1">
-            <div class="premium-content visible" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
+            <div class="_a9 visible" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%;">
                 
                 <style>
-                    .premium-title {
+                    ._cd {
                         /* --- Base Text Styles --- */
                         font-family: var(--font-heading);
                         font-size: clamp(4.5rem, 8vw, 7.5rem);
@@ -248,7 +248,7 @@
                     }
 
                     /* --- LINE 1: The Main Title (Keeps the Gradient) --- */
-                    .premium-title .line-1 {
+                    ._cd .line-1 {
                         display: block; /* Forces own line */
                         
                         /* The Gradient Logic */
@@ -259,7 +259,7 @@
                     }
 
                     /* --- LINE 2: The Subtitle (Solid Color & Smaller) --- */
-                    .premium-title .line-2 {
+                    ._cd .line-2 {
                         display: block; /* Forces own line */
                         
                         /* Visual Hierarchy */
@@ -275,39 +275,39 @@
 
                     /* --- Mobile Tweak --- */
                     @media (max-width: 768px) {
-                        .premium-title {
+                        ._cd {
                             font-size: clamp(2rem, 10vw, 3.5rem);
                         }
                         /* Optional: make subtitle slightly larger on mobile for readability */
-                        .premium-title .line-2 {
+                        ._cd .line-2 {
                             font-size: 0.6em; 
                         }
                     }
                 </style>
 
-                <h1 class="premium-title">
+                <h1 class="_cd">
                     <span class="line-1">Fulfillment</span>
                     <span class="line-2">not the feed</span>
                 </h1>
-                <p class="premium-subtitle"><b>1.5 Billion Daily Listeners</b></p>
+                <p class="_as"><b>1.5 Billion Daily Listeners</b></p>
                 <h2></h2>
             </div>
         </div>
 
         <div class="slide" id="slide-2">
-            <div class="loader-content" style="display: flex; flex-direction: column; align-items: center;">
-                <div class="hero-shadow-overlay"></div>
+            <div class="_by" style="display: flex; flex-direction: column; align-items: center;">
+                <div class="_1"></div>
                 
-                <h2 class="heroz-title-text" id="doors-hero-title">The Cleaving</h2>
+                <h2 class="_av" id="_az">The Cleaving</h2>
                 
-                <div class="loader-spinner" style="display: none;"></div>
-                <div class="loader-text" id="loader-text" style="display: none;"></div>
+                <div class="_bl" style="display: none;"></div>
+                <div class="_dk" id="_dk" style="display: none;"></div>
 
-                <div id="seek-indicator-left" class="cinema-seek-indicator left">
+                <div id="_4" class="_s left">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"></path></svg>
                     <span>-10s</span>
                 </div>
-                <div id="seek-indicator-right" class="cinema-seek-indicator right">
+                <div id="_v" class="_s right">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6-8.5-6z"></path></svg>
                     <span>+10s</span>
                 </div>
@@ -315,19 +315,19 @@
         </div>
 
         <div class="slide" id="slide-3">
-             <div class="loader-content" style="display: flex; flex-direction: column; align-items: center;">
-                <div class="hero-shadow-overlay"></div>
+             <div class="_by" style="display: flex; flex-direction: column; align-items: center;">
+                <div class="_1"></div>
                 
-                <h2 class="heroz-title-text" id="doors-hero-title-moon">The Moon</h2>
+                <h2 class="_av" id="_n">The Moon</h2>
                 
-                <div class="loader-spinner" style="display: none;"></div>
-                <div class="loader-text" id="loader-text-moon" style="display: none;"></div>
+                <div class="_bl" style="display: none;"></div>
+                <div class="_dk" id="_ap" style="display: none;"></div>
 
-                <div id="seek-indicator-left" class="cinema-seek-indicator left">
+                <div id="_4" class="_s left">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"></path></svg>
                     <span>-10s</span>
                 </div>
-                <div id="seek-indicator-right" class="cinema-seek-indicator right">
+                <div id="_v" class="_s right">
                     <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6-8.5-6z"></path></svg>
                     <span>+10s</span>
                 </div>
@@ -337,7 +337,7 @@
     </div>
 
 <style>
-.premium-btn {
+._c2 {
     /* 1. LAYOUT ESSENTIALS */
     display: inline-flex;
     align-items: center;
@@ -371,13 +371,13 @@
 }
 
 /* 4. PREVENT ICON SQUISHING */
-.premium-btn svg {
+._c2 svg {
     flex-shrink: 0;
     transition: transform 0.3s ease;
 }
 
 /* 5. HOVER EFFECTS */
-.premium-btn:hover {
+._c2:hover {
     /* We override the 10% move on hover to lift it up slightly */
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
@@ -392,7 +392,7 @@
     opacity: 0.9;
 }
 
-.premium-btn:hover svg {
+._c2:hover svg {
     transform: translateX(4px);
 }
 
@@ -401,14 +401,14 @@
 
 /* 4. Extra Safety for very small screens (iPhone Mini / SE) */
 @media (max-width: 320px) {
-    .auth-card-title {
+    ._ba {
         font-size: 2.2rem;
         letter-spacing: -0.01em; /* Tight tracking looks messy on tiny screens */
     }
 }
 
 
-    .premium-subtitle {
+    ._as {
     /* 1. Basic Fallbacks for Ancient Devices (Android 5/Legacy iOS) */
     font-family: var(--font-heading), sans-serif;
     color: #FFFFFF;    /* Fallback for when text-fill-color isn't understood */
@@ -432,7 +432,7 @@
 }
 
 @media (max-width: 768px) {
-.premium-subtitle {
+._as {
 display: block;
     font-family: var(--font-body);
     font-size: 2.15rem;
@@ -450,16 +450,16 @@ display: block;
 }
 /* 4. Extra Safety for very small screens (iPhone Mini / SE) */
 @media (max-width: 320px) {
-    .premium-subtitle {
+    ._as {
         font-size: 2.2rem;
         letter-spacing: -0.01em; /* Tight tracking looks messy on tiny screens */
     }
 }
 </style>
 
-        <div class="premium-processing">
-            <div class="premium-loader"></div>
-            <div class="premium-status-text" id="premium-status">Confirming availability</div>
+        <div class="_9">
+            <div class="_bi"></div>
+            <div class="_7" id="_bk">Confirming availability</div>
         </div>
             
 
@@ -467,12 +467,12 @@ display: block;
 
 
 
-        <div id="legal-overlay" class="legal-backdrop">
-            <div class="legal-glass-panel">
-                <button class="legal-close" onclick="closeLegal()">
+        <div id="_b8" class="_bp">
+            <div class="_ag">
+                <button class="_c8" onclick="closeLegal()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"></path></svg>
                 </button>
-                <div id="legal-content-area" class="legal-scroll-content"></div>
+                <div id="_ae" class="_x"></div>
             </div>
         </div>
     
@@ -484,20 +484,20 @@ display: block;
 
         
         /* Standardized SVG sizing */
-        .social-btn svg {
+        ._dl svg {
             width: 20px;
             height: 20px;
             flex-shrink: 0;
         }
     </style>
 
-    <div id="hybrid-auth-modal" style="background: rgba(0,0,0,0.8); padding: 40px; text-align: center;">
-    <div class="auth-card">
-        <h2 class="auth-card-title">Your bespoke premium content is on its way.</h2>
-        <div id="auth-error"></div>
+    <div id="_ah" style="background: rgba(0,0,0,0.8); padding: 40px; text-align: center;">
+    <div class="_ed">
+        <h2 class="_ba">Your bespoke premium content is on its way.</h2>
+        <div id="_du"></div>
 
-        <div id="auth-group-web" style="display: none; width: 100%; flex-direction: column; gap: 16px;">
-            <button onclick="handleSocialLogin('google')" id="googleweb-btn" class="social-btn btn-google" style="font-size: 2rem; font-weight: 700;">
+        <div id="_bo" style="display: none; width: 100%; flex-direction: column; gap: 16px;">
+            <button onclick="handleSocialLogin('google')" id="_b6" class="_dl _dm" style="font-size: 2rem; font-weight: 700;">
                 <svg viewBox="0 0 18 18">
                     <path d="M17.64 9.2c0-.637-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
                     <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.715H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
@@ -507,14 +507,14 @@ display: block;
                 Continue with Google
             </button>
 
-            <button onclick="handleSocialLogin('spotify')" class="social-btn btn-google" style="font-size: 2rem; font-weight: 700;">
+            <button onclick="handleSocialLogin('spotify')" class="_dl _dm" style="font-size: 2rem; font-weight: 700;">
 <svg viewBox="0 0 512 512">
   <path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm113.8 354.6c-4.5 7.4-13.8 9.9-21.3 5.4-58.3-33.5-131.7-41.1-218.3-22.5-8.5 2-17.1-3.3-19.1-11.8-2-8.5 3.3-17.1 11.8-19.1 94.6-20.3 175.7-11.4 241.6 26.3 7.4 4.5 9.9 13.8 5.4 21.3zm29.8-66.2c-5.6 9.2-17.3 12.1-26.4 6.5-66.9-41.1-168.9-53-248-29-10.2 3.1-21.2-2.5-24.2-12.7-3.1-10.2 2.5-21.2 12.7-24.2 90.6-27.4 204.6-13.7 282.1 33.9 9.1 5.6 12 17.3 6.5 26.4zM408.6 186c-80.4-47.8-213.1-52.2-290-28.8-12.4 3.8-25.5-3.1-29.3-15.5-3.8-12.4 3.1-25.5 15.5-29.3 89-27.1 235.4-21.9 328.6 33.5 11.2 6.6 14.9 21.2 8.3 32.4-6.6 11.2-21.2 14.9-32.4 8.3z"/>
 </svg>
                 Continue with Spotify
             </button>
 
-            <button onclick="handleSocialLogin('discord')" class="social-btn btn-google" style="font-size: 2rem; font-weight: 700;">
+            <button onclick="handleSocialLogin('discord')" class="_dl _dm" style="font-size: 2rem; font-weight: 700;">
                 <svg viewBox="0 0 512 365">
                     <path fill="currentColor" d="M378.186 365.028s-15.794-18.865-28.956-35.099c57.473-16.232 79.41-51.77 79.41-51.77-17.989 11.846-35.099 20.182-50.454 25.885-21.938 9.213-42.997 14.917-63.617 18.866-42.118 7.898-80.726 5.703-113.631-.438-25.008-4.827-46.506-11.407-64.494-18.867-10.091-3.947-21.059-8.774-32.027-14.917-1.316-.877-2.633-1.316-3.948-2.193-.877-.438-1.316-.878-1.755-.878-7.898-4.388-12.285-7.458-12.285-7.458s21.06 34.659 76.779 51.331c-13.163 16.673-29.395 35.977-29.395 35.977C36.854 362.395 0 299.218 0 299.218 0 159.263 63.177 45.633 63.177 45.633 126.354-1.311 186.022.005 186.022.005l4.388 5.264C111.439 27.645 75.461 62.305 75.461 62.305s9.653-5.265 25.886-12.285c46.945-20.621 84.236-25.885 99.592-27.64 2.633-.439 4.827-.878 7.458-.878 26.763-3.51 57.036-4.387 88.624-.878 41.68 4.826 86.43 17.111 132.058 41.68 0 0-34.66-32.906-109.244-55.281l6.143-7.019s60.105-1.317 122.844 45.628c0 0 63.178 113.631 63.178 253.585 0-.438-36.854 62.739-133.813 65.81l-.001.001zm-43.874-203.133c-25.006 0-44.75 21.498-44.75 48.262 0 26.763 20.182 48.26 44.75 48.26 25.008 0 44.752-21.497 44.752-48.26 0-26.764-20.182-48.262-44.752-48.262zm-160.135 0c-25.008 0-44.751 21.498-44.751 48.262 0 26.763 20.182 48.26 44.751 48.26 25.007 0 44.75-21.497 44.75-48.26.439-26.763-19.742-48.262-44.75-48.262z"/>
                 </svg>
@@ -522,8 +522,8 @@ display: block;
             </button>
         </div>
 
-        <div id="auth-group-tv" style="display: none; width: 100%;">
-            <button onclick="Android.startGoogleLogin()" class="social-btn btn-google" style="font-size: 2rem; font-weight: 700;">
+        <div id="_b9" style="display: none; width: 100%;">
+            <button onclick="Android.startGoogleLogin()" class="_dl _dm" style="font-size: 2rem; font-weight: 700;">
                 <svg viewBox="0 0 18 18">
                     <path d="M17.64 9.2c0-.637-.057-1.252-.164-1.841H9v3.481h4.844a4.14 4.14 0 0 1-1.796 2.716v2.259h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4"/>
                     <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.715H.957v2.332A8.997 8.997 0 0 0 9 18z" fill="#34A853"/>
@@ -544,8 +544,8 @@ display: block;
         const search = window.location.search;
         const isTvMode = search.includes('tv');
 
-        const webGroup = document.getElementById('auth-group-web');
-        const tvGroup = document.getElementById('auth-group-tv');
+        const webGroup = document.getElementById('_bo');
+        const tvGroup = document.getElementById('_b9');
 
         if (isTvMode) {
             // Case: URL contains "tv" -> Show Android/TV Button only
@@ -560,7 +560,7 @@ display: block;
 </script>
 <style>
 /* Target the SVGs inside your buttons */
-.social-btn svg {
+._dl svg {
     width: 18px; /* Adjust size as needed */
     height: 18px;
     vertical-align: middle;
@@ -577,16 +577,16 @@ display: block;
 
 
     <style>
-        .legal-backdrop { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9995; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); opacity: 0; pointer-events: none; transition: opacity 0.4s; display: flex; align-items: center; justify-content: center; }
-        .legal-backdrop.active { opacity: 1; pointer-events: all; }
-        .legal-glass-panel { width: 90%; max-width: 600px; height: 80vh; background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 40px 80px rgba(0,0,0,0.8); transform: scale(0.95) translateY(20px); transition: transform 0.5s; position: relative; overflow: hidden; display: flex; flex-direction: column; }
-        .legal-backdrop.active .legal-glass-panel { transform: scale(1) translateY(0); }
-        .legal-scroll-content { padding: 40px; overflow-y: auto; color: #f0f0f0; font-family: "Plus Jakarta Sans", sans-serif; font-size: 1.4rem; line-height: 1.8; }
-        .legal-close { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 36px; height: 36px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; z-index: 10; }
+        ._bp { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9995; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); opacity: 0; pointer-events: none; transition: opacity 0.4s; display: flex; align-items: center; justify-content: center; }
+        ._bp.active { opacity: 1; pointer-events: all; }
+        ._ag { width: 90%; max-width: 600px; height: 80vh; background: rgba(20, 20, 20, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 24px; box-shadow: 0 40px 80px rgba(0,0,0,0.8); transform: scale(0.95) translateY(20px); transition: transform 0.5s; position: relative; overflow: hidden; display: flex; flex-direction: column; }
+        ._bp.active ._ag { transform: scale(1) translateY(0); }
+        ._x { padding: 40px; overflow-y: auto; color: #f0f0f0; font-family: "Plus Jakarta Sans", sans-serif; font-size: 1.4rem; line-height: 1.8; }
+        ._c8 { position: absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.1); border: none; border-radius: 50%; width: 36px; height: 36px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; z-index: 10; }
         
-        #hybrid-auth-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2147483647; display: none; justify-content: center; align-items: center; backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease; }
-        #hybrid-auth-modal.visible { opacity: 1; pointer-events: all; }
-.auth-card {
+        #_ah { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2147483647; display: none; justify-content: center; align-items: center; backdrop-filter: blur(15px); opacity: 0; transition: opacity 0.4s ease; }
+        #_ah.visible { opacity: 1; pointer-events: all; }
+._ed {
   /* 1. FORCE Full Screen (Break out of any parent containers) */
   position: fixed !important;
   top: 0 !important;
@@ -622,26 +622,26 @@ display: block;
 }
 
 /* 5. VITAL: Prevent the inner content from breaking mobile screens */
-.auth-card > * {
+._ed > * {
   max-width: 100% !important; /* Prevents buttons/text from being wider than the phone screen */
   flex-shrink: 1; /* Allows content to shrink if needed */
 }
-        #hybrid-auth-modal.visible .auth-card { transform: scale(1); }
-        .social-btn { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-size: 2rem; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s, background 0.2s; color: #fff; font-family: 'Inter', sans-serif; }
-        .social-btn:hover { transform: scale(1.02); }
-        .btn-google { background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: #000; }
+        #_ah.visible ._ed { transform: scale(1); }
+        ._dl { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-size: 2rem; font-weight: 900; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s, background 0.2s; color: #fff; font-family: 'Inter', sans-serif; }
+        ._dl:hover { transform: scale(1.02); }
+        ._dm { background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; color: #000; }
         
-        .premium-processing { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 0.6s cubic-bezier(0.2, 0, 0, 1); background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(40px) saturate(120%); }
-        .premium-processing.active { display: flex; opacity: 1; }
+        ._9 { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; opacity: 0; transition: opacity 0.6s cubic-bezier(0.2, 0, 0, 1); background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(40px) saturate(120%); }
+        ._9.active { display: flex; opacity: 1; }
         
-        .premium-loader { width: 50px; height: 50px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.1) 50%, #fff 100%); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px + 0.5px)); mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px + 0.5px)); animation: cinema-spin 1s linear infinite; margin-bottom: 24px; box-shadow: 0 0 30px rgba(255,255,255,0.05); }
+        ._bi { width: 50px; height: 50px; border-radius: 50%; background: conic-gradient(from 0deg, transparent 0%, rgba(255,255,255,0.1) 50%, #fff 100%); -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px + 0.5px)); mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #fff calc(100% - 2px + 0.5px)); animation: cinema-spin 1s linear infinite; margin-bottom: 24px; box-shadow: 0 0 30px rgba(255,255,255,0.05); }
         @keyframes cinema-spin { to { transform: rotate(360deg); } }
-        .premium-status-text { animation: text-pulse 2s ease-in-out infinite; transition: opacity 0.3s ease; font-family: "Plus Jakarta Sans", "Inter", sans-serif; font-size: 1.2rem; font-weight: 500; letter-spacing: 0.15em; color: rgba(255, 255, 255, 0.9); text-transform: uppercase; text-align: center; }
+        ._7 { animation: text-pulse 2s ease-in-out infinite; transition: opacity 0.3s ease; font-family: "Plus Jakarta Sans", "Inter", sans-serif; font-size: 1.2rem; font-weight: 500; letter-spacing: 0.15em; color: rgba(255, 255, 255, 0.9); text-transform: uppercase; text-align: center; }
         @keyframes text-pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; text-shadow: 0 0 15px rgba(255,255,255,0.3); } }
     </style>
 <style>
 
-    #hybrid-auth-modal {
+    #_ah {
 
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
 
@@ -655,11 +655,11 @@ display: block;
 
     }
 
-    #hybrid-auth-modal.visible { opacity: 1; pointer-events: all; }
+    #_ah.visible { opacity: 1; pointer-events: all; }
 
     
 
-    .auth-card {
+    ._ed {
 
         background: rgba(20, 20, 20, 0.8);
 
@@ -675,9 +675,9 @@ display: block;
 
     }
 
-    #hybrid-auth-modal.visible .auth-card { transform: scale(1); }
+    #_ah.visible ._ed { transform: scale(1); }
 
-    .auth-card-title {
+    ._ba {
     /* 1. Basic Fallbacks for Ancient Devices (Android 5/Legacy iOS) */
     font-family: var(--font-heading), sans-serif;
     font-size: 3.5rem; /* Fallback for when clamp() isn't understood */
@@ -703,7 +703,7 @@ display: block;
 
 /* 4. Extra Safety for very small screens (iPhone Mini / SE) */
 @media (max-width: 320px) {
-    .auth-card-title {
+    ._ba {
         font-size: 2.2rem;
         letter-spacing: -0.01em; /* Tight tracking looks messy on tiny screens */
     }
@@ -714,7 +714,7 @@ display: block;
 
 
 
-    .social-btn {
+    ._dl {
 
         width: 100%; padding: 14px; border-radius: 12px;
 
@@ -730,13 +730,13 @@ display: block;
 
     }
 
-    .social-btn:hover { transform: scale(1.02); }
+    ._dl:hover { transform: scale(1.02); }
 
     
 
     /* Brand Colors */
 
-    .btn-google { background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%); 
+    ._dm { background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%); 
 
 -webkit-background-clip: text; 
 
@@ -744,11 +744,11 @@ display: block;
 
 color: #000; }
 
-    .btn-spotify { display: none; background: #1DB954; color: #fff; }
+    ._c9 { display: none; background: #1DB954; color: #fff; }
 
-    .btn-facebook { display: none; background: #1877F2; color: #fff; }
+    ._cl { display: none; background: #1877F2; color: #fff; }
 
-    .btn-discord { background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%); 
+    ._da { background: linear-gradient(180deg, #FFFFFF 10%, #888888 100%); 
 
 -webkit-background-clip: text; 
 
@@ -756,11 +756,11 @@ color: #000; }
 
 color: #000; }
 
-    .btn-x { display: none; background: #000; border-color: #333; color: #fff; }
+    ._fl { display: none; background: #000; border-color: #333; color: #fff; }
 
 
 
-    #auth-error { color: #ff4444; font-size: 0.9rem; margin-top: 10px; min-height: 1.2em; display:none;}
+    #_du { color: #ff4444; font-size: 0.9rem; margin-top: 10px; min-height: 1.2em; display:none;}
 
     .divider { display: flex; align-items: center; color: #555; margin: 10px 0; font-size: 0.8rem; }
 
@@ -789,11 +789,11 @@ color: #000; }
             }
         } catch (e) { console.error("Supabase Init Error", e); }
 
-        const startBtn = document.getElementById('premium-start-btn');
-        const authModal = document.getElementById('hybrid-auth-modal');
-        const premiumContent = document.querySelector('.premium-content'); // Keeping reference for legacy logic
-        const premiumProcessing = document.querySelector('.premium-processing');
-        const statusText = document.getElementById('premium-status');
+        const startBtn = document.getElementById('_ao');
+        const authModal = document.getElementById('_ah');
+        const premiumContent = document.querySelector('._a9'); // Keeping reference for legacy logic
+        const premiumProcessing = document.querySelector('._9');
+        const statusText = document.getElementById('_bk');
 
         // --- LOOP PREVENTION MECHANISM ---
         // We check sessionStorage to see if we recently tried to activate.
@@ -822,7 +822,7 @@ function initializeGuest() {
             if (startBtn) {
                 // CHANGED: Use innerHTML so the browser renders the SVG
                 startBtn.innerHTML = `<span>Start watching now</span><svg 
-                    class="btn-icon" 
+                    class="_ep" 
                     aria-hidden="true" 
                     xmlns="http://www.w3.org/2000/svg" 
                     width="24" 
@@ -951,16 +951,16 @@ function initializeGuest() {
         };
         
         window.openLegal = (type) => { };
-        window.closeLegal = () => document.getElementById('legal-overlay').classList.remove('active');
+        window.closeLegal = () => document.getElementById('_b8').classList.remove('active');
     })();
     </script>
-<script src="src/components/nav_7c6b5a.js"></script> 
+<script src="src/components/nav_7c6b5axjs.js"></script> 
 <script>
 (function() {
     'use strict';
 
     // CONFIGURATION
-    const TARGET_CLASS = 'brand-icon';
+    const TARGET_CLASS = '_d0';
 
     // 1. Inject CSS for the "Invisible Shield"
     // This creates a layer on top of the image that intercepts all clicks/drags.
@@ -1128,7 +1128,7 @@ function initializeGuest() {
 
   // 3. Wait for the DOM to be fully loaded to attach the button listener
   document.addEventListener("DOMContentLoaded", function() {
-    const googleBtn = document.getElementById("googleweb-btn");
+    const googleBtn = document.getElementById("_b6");
 
     if (googleBtn) {
       googleBtn.addEventListener("click", function() {
@@ -1137,7 +1137,7 @@ function initializeGuest() {
         console.log("AUTH_GOOGLE cookie set");
       });
     } else {
-      console.warn("Element 'googleweb-btn' not found on this page.");
+      console.warn("Element '_b6' not found on this page.");
     }
   });
 })();

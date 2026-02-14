@@ -1,15 +1,15 @@
 /* Copyright (c) Haykal M. Zaidi 2024-2026. All rights reserved. PROPRIETARY AND CONFIDENTIAL. */
 /* Inline Styles - Extracted from HTML */
 
-.row-header-top-results {
+._h {
     margin-top: 0;
 }
 
-.row-section-hidden {
+._ab {
     display: none;
 }
 
-.ai-recommendation-badge {
+._g {
     font-size: 0.8rem;
     background: var(--accent);
     color: #F5F5F7; /* UPDATED:  White */
@@ -20,11 +20,11 @@
     font-weight: 900;
 }
 
-.row-section-padding-bottom {
+._b {
     padding-bottom: 100px;
 }
 
-.splash-footer-description {
+._c {
     margin-top: 1rem;
     font-size: 0.9rem;
     color: #333;
@@ -39,7 +39,7 @@
     -webkit-font-smoothing: antialiased;
 }
 
-.glass-panel {
+._dc {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);

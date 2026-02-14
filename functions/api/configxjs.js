@@ -1,4 +1,4 @@
-// functions/api/config.js
+// functions/api/configxjs.js
 
 export async function onRequest(context) {
     // 1. SURAH METADATA (Hidden from client initial load)

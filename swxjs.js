@@ -1,4 +1,4 @@
-/* sw.js - Comprehensive Offline Caching Strategy - FIXED FOR /reading/ SUBDIRECTORY */
+/* swxjs.js - Comprehensive Offline Caching Strategy - FIXED FOR /reading/ SUBDIRECTORY */
 
 // 1. VERSION CONTROL & CACHE NAMES
 // *** IMPORTANT: Change this version number (v5) every time you update any cached file. ***
@@ -22,22 +22,22 @@ const CORE_FILES_TO_CACHE = [
   BASE_PATH + '/',
   BASE_PATH + '/index.html',
   // CSS files (organized in styles/ directory)
-  BASE_PATH + '/styles/b1c2d3e4f5a.css',
-  BASE_PATH + '/styles/a1b2c3d4e5f.css',
-  BASE_PATH + '/styles/d1e2f3a4b5c.css',
-  BASE_PATH + '/styles/e1f2a3b4c5d.css',
-  BASE_PATH + '/styles/f1a2b3c4d5e.css',
+  BASE_PATH + '/styles/b1c2d3e4f5axa.css',
+  BASE_PATH + '/styles/a1b2c3d4e5fxa.css',
+  BASE_PATH + '/styles/d1e2f3a4b5cxa.css',
+  BASE_PATH + '/styles/e1f2a3b4c5dxa.css',
+  BASE_PATH + '/styles/f1a2b3c4d5exa.css',
   // JavaScript files (organized in src/ directory)
-  BASE_PATH + '/src/core/app_5f6e7d.js',
-  BASE_PATH + '/src/components/nav_7c6b5a.js',
-  BASE_PATH + '/src/components/rec_1a2b3c.js',
+  BASE_PATH + '/src/core/app_5f6e7dxjs.js',
+  BASE_PATH + '/src/components/nav_7c6b5axjs.js',
+  BASE_PATH + '/src/components/rec_1a2b3cxjs.js',
   BASE_PATH + '/src/components/arabic_modal_h_9a8b7c.js',
-  BASE_PATH + '/src/components/off_4d5e6f.js',
-  BASE_PATH + '/src/utils/res_2a3b4c.js',
-  BASE_PATH + '/src/utils/ga_9c8b7a.js',
-  BASE_PATH + '/src/utils/gh_6b5a4c.js',
-  BASE_PATH + '/src/utils/swreg_8e7f6a.js',
-  BASE_PATH + '/src/utils/cp_3c4d5e.js',
+  BASE_PATH + '/src/components/off_4d5e6fxjs.js',
+  BASE_PATH + '/src/utils/res_2a3b4cxjs.js',
+  BASE_PATH + '/src/utils/ga_9c8b7axjs.js',
+  BASE_PATH + '/src/utils/gh_6b5a4cxjs.js',
+  BASE_PATH + '/src/utils/swreg_8e7f6axjs.js',
+  BASE_PATH + '/src/utils/cp_3c4d5exjs.js',
   BASE_PATH + '/src/components/search/voice_bridge_111aaa.js',
   BASE_PATH + '/src/components/search/grid_nav_222bbb.js',
   

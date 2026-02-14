@@ -21,14 +21,14 @@
     // --- DYNAMIC STYLES FOR BUTTON EXPANSION ---
     const style = document.createElement('style');
     style.innerHTML = `
-        .enter-trigger {
+        ._b0 {
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy expansion */
             overflow: hidden;
             white-space: nowrap;
         }
         
         /* The button expands independently now */
-        .enter-trigger.expanded-btn {
+        ._b0.expanded-btn {
             width: auto !important;
             padding: 0 20px !important; /* More padding for text */
             border-radius: 50px !important; /* Pill shape */
@@ -36,13 +36,13 @@
             border-color: rgba(255, 255, 255, 0.3) !important;
         }
 
-        .enter-trigger.expanded-btn .key-hint {
+        ._b0.expanded-btn ._et {
             font-size: 1.3rem;
             font-weight: 500;
             color: #fff;
         }
 
-        /* REMOVED: .island-search-box.has-results { width: auto ... }
+        /* REMOVED: ._ak.has-results { width: auto ... }
            Reason: The box no longer needs to grow to fit the button. 
            The wrapper (flex) will automatically adjust the centering 
            as the button grows next to it.
@@ -73,7 +73,7 @@
         // 1. HIDE ON READING MODE
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('stream')) {
-            const islandWrapper = document.getElementById('island-search-wrapper');
+            const islandWrapper = document.getElementById('_j');
             if (islandWrapper) {
                 islandWrapper.style.display = 'none'; 
                 islandWrapper.innerHTML = '';         
@@ -81,10 +81,10 @@
             return; 
         }
 
-        const islandInput = document.getElementById('island-input');
-        const islandBox = document.querySelector('.island-search-box');
-        const triggerBtn = document.getElementById('island-trigger');
-        const triggerHint = triggerBtn ? triggerBtn.querySelector('.key-hint') : null;
+        const islandInput = document.getElementById('_cz');
+        const islandBox = document.querySelector('._ak');
+        const triggerBtn = document.getElementById('_bx');
+        const triggerHint = triggerBtn ? triggerBtn.querySelector('._et') : null;
 
         if (!islandInput || !islandBox || !triggerBtn) return;
 
@@ -233,7 +233,7 @@
                 
                 playSuccess(); 
                 highlightChapter(results[0]); 
-                if (islandBox) islandBox.classList.remove('island-error');
+                if (islandBox) islandBox.classList.remove('_cv');
 
                 // CHANGE BUTTON IF MULTIPLE RESULTS
                 if (results.length > 1) {
@@ -262,26 +262,26 @@
     function startVisuals(box) {
         if (!box) return;
         box.style.borderColor = ''; 
-        box.classList.add('ai-thinking');
+        box.classList.add('_df');
     }
 
     function stopVisuals(box) {
         if (!box) return;
-        box.classList.remove('ai-thinking');
+        box.classList.remove('_df');
         box.style.borderColor = ''; 
     }
 
     function highlightChapter(chapterNum) {
-        document.querySelectorAll('.surah-card').forEach(c => {
+        document.querySelectorAll('._dw').forEach(c => {
             c.style.transform = 'scale(1)';
             c.style.filter = 'none';
             c.style.boxShadow = 'none';
             c.style.zIndex = 'auto';
         });
 
-        const cards = Array.from(document.querySelectorAll('.surah-card'));
+        const cards = Array.from(document.querySelectorAll('._dw'));
         const targetCard = cards.find(card => {
-            const numDiv = card.querySelector('.card-bg-num');
+            const numDiv = card.querySelector('._c5');
             return numDiv && numDiv.textContent.trim() == chapterNum;
         });
 

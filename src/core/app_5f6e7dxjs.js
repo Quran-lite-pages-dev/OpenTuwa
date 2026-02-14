@@ -35,14 +35,14 @@ const RTL_CODES = new Set(['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ur', 'ug']
 
 // Elements Reference
 const elements = {
-    overlay: document.getElementById('loading-overlay'),
-    spinner: document.querySelector('.loader-spinner'),
-    loaderText: document.getElementById('loader-text'),
-    startBtn: document.getElementById('start-btn'),
-    quranAudio: document.getElementById('audio-player'),
-    transAudio: document.getElementById('translation-audio-player'),
-    previewAudio: document.getElementById('preview-audio'),
-    bufferInd: document.getElementById('buffering-indicator'),
+    overlay: document.getElementById('_a6'),
+    spinner: document.querySelector('._bl'),
+    loaderText: document.getElementById('_dk'),
+    startBtn: document.getElementById('_ek'),
+    quranAudio: document.getElementById('_cq'),
+    transAudio: document.getElementById('_e'),
+    previewAudio: document.getElementById('_ca'),
+    bufferInd: document.getElementById('_0'),
     selects: {
         chapter: document.getElementById('chapterSelectWrapper'),
         verse: document.getElementById('verseSelectWrapper'),
@@ -51,29 +51,29 @@ const elements = {
         transAudio: document.getElementById('translationAudioSelectWrapper')
     },
     display: {
-        title: document.getElementById('chapter-title'),
-        verse: document.getElementById('verse-text'),
-        verseNext: document.getElementById('verse-text-next'),
-        trans: document.getElementById('translation-text'),
-        container: document.getElementById('content-display')
+        title: document.getElementById('_ch'),
+        verse: document.getElementById('_do'),
+        verseNext: document.getElementById('_bh'),
+        trans: document.getElementById('_au'),
+        container: document.getElementById('_bd')
     },
     views: {
-        dashboard: document.getElementById('dashboard-view'),
-        cinema: document.getElementById('cinema-view')
+        dashboard: document.getElementById('_bq'),
+        cinema: document.getElementById('_dd')
     },
     sidebar: {
-        container: document.getElementById('tv-sidebar'),
-        home: document.getElementById('nav-home'),
-        search: document.getElementById('nav-search'),
-        profile: document.getElementById('nav-profile')
+        container: document.getElementById('_d8'),
+        home: document.getElementById('_en'),
+        search: document.getElementById('_dn'),
+        profile: document.getElementById('_dg')
     },
     search: {
-        overlay: document.getElementById('search-overlay'),
-        inputDisplay: document.getElementById('search-input-display'),
-        keyboardGrid: document.getElementById('keyboard-grid'),
-        resultsGrid: document.getElementById('search-results-grid')
+        overlay: document.getElementById('_bj'),
+        inputDisplay: document.getElementById('_t'),
+        keyboardGrid: document.getElementById('_cc'),
+        resultsGrid: document.getElementById('_5')
     },
-    subtitle: document.getElementById('hero-subtitle-overlay')
+    subtitle: document.getElementById('_o')
 };
 
 // Global storage for cinema caption timers
@@ -199,13 +199,13 @@ window.wipeUserData = function() {
 // mode: 1 = Show All (Default), 0 = Hide Chapter and Reciter
 function initCustomSelects(mode = 0) {
     if (mode === 0) {
-        document.body.classList.add('simple-mode');
+        document.body.classList.add('_de');
     } else {
-        document.body.classList.remove('simple-mode');
+        document.body.classList.remove('_de');
     }
 
-    document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
-        const trigger = wrapper.querySelector('.custom-select-trigger');
+    document.querySelectorAll('._k').forEach(wrapper => {
+        const trigger = wrapper.querySelector('._q');
         
         trigger.addEventListener('click', (e) => {
             e.stopPropagation(); 
@@ -219,17 +219,17 @@ function initCustomSelects(mode = 0) {
 
             const isOpen = wrapper.classList.contains('open');
 
-            document.querySelectorAll('.custom-select-wrapper.open').forEach(other => {
+            document.querySelectorAll('._k.open').forEach(other => {
                 other.classList.remove('open');
             });
             
             if (!isOpen) {
                 wrapper.classList.add('open');
-                const selected = wrapper.querySelector('.custom-option.selected');
+                const selected = wrapper.querySelector('._b5.selected');
                 if (selected) {
                     setTimeout(() => selected.scrollIntoView({ block: 'center' }), 10);
                 } else {
-                    const list = wrapper.querySelector('.custom-options');
+                    const list = wrapper.querySelector('._br');
                     if(list) list.scrollTop = 0;
                 }
             } else {
@@ -246,8 +246,8 @@ function initCustomSelects(mode = 0) {
     });
 
     window.addEventListener('click', (e) => {
-        if (!e.target.closest('.custom-select-wrapper')) {
-            document.querySelectorAll('.custom-select-wrapper.open').forEach(el => {
+        if (!e.target.closest('._k')) {
+            document.querySelectorAll('._k.open').forEach(el => {
                 el.classList.remove('open');
             });
         }
@@ -255,14 +255,14 @@ function initCustomSelects(mode = 0) {
 }
 
 function populateCustomSelect(wrapper, items, onChange) {
-    const optionsContainer = wrapper.querySelector('.custom-options');
+    const optionsContainer = wrapper.querySelector('._br');
     optionsContainer.innerHTML = '';
     
     const fragment = document.createDocumentFragment();
 
     items.forEach(item => {
         const opt = document.createElement('div');
-        opt.className = 'custom-option';
+        opt.className = '_b5';
         opt.dataset.value = item.value;
         opt.textContent = item.text;
         opt.tabIndex = 0; 
@@ -275,7 +275,7 @@ function populateCustomSelect(wrapper, items, onChange) {
             wrapper.classList.remove('open'); 
             
             setTimeout(() => {
-                const trigger = wrapper.querySelector('.custom-select-trigger');
+                const trigger = wrapper.querySelector('._q');
                 if(trigger) trigger.focus();
             }, 100); 
 
@@ -296,7 +296,7 @@ function populateCustomSelect(wrapper, items, onChange) {
 }
 
 function setSelectValue(wrapper, value) {
-    const options = wrapper.querySelectorAll('.custom-option');
+    const options = wrapper.querySelectorAll('._b5');
     let foundText = null;
 
     options.forEach(opt => {
@@ -322,7 +322,7 @@ function setSelectValue(wrapper, value) {
 
         // Only update the trigger text if the wrapper ID is NOT in the static list
         if (!staticLabelIds.includes(wrapper.id)) {
-            const trigger = wrapper.querySelector('.custom-select-trigger');
+            const trigger = wrapper.querySelector('._q');
             if(trigger) trigger.textContent = foundText;
         }
     }
@@ -403,7 +403,7 @@ function switchView(viewName) {
         elements.sidebar.container.style.display = 'none';
         
         setTimeout(() => {
-            const chapterTrigger = elements.selects.chapter.querySelector('.custom-select-trigger');
+            const chapterTrigger = elements.selects.chapter.querySelector('._q');
             if(chapterTrigger) chapterTrigger.focus();
         }, 150);
     } else {
@@ -518,7 +518,7 @@ function refreshDashboard() {
     const trendingIndices = [81, 82, 85, 54, 104, 81, 86, 69, 56, 88, 53].map(id => id - 1);
 
     const combinedIndices = [...trendingIndices, ...shortRowIndices, ...allIndices];
-    fillRow('all-row', combinedIndices);
+    fillRow('_ex', combinedIndices);
 
     if(saved.chapter !== undefined && quranData[saved.chapter]) {
         const chNum = quranData[saved.chapter].chapterNumber;
@@ -542,7 +542,7 @@ function fillRow(elementId, indexArray) {
         if(!quranData[idx]) return;
         const surah = quranData[idx];
         const card = document.createElement('div');
-        card.className = 'surah-card';
+        card.className = '_dw';
         card.tabIndex = 0;
         
         let cardTitle = surah.english_name;
@@ -555,9 +555,9 @@ function fillRow(elementId, indexArray) {
         }
         
         card.innerHTML = `
-            <div class="card-bg-num">${surah.chapterNumber}</div>
-            <div class="card-title">${cardTitle}</div>
-            <div class="card-sub">${surah.title || ''}</div>
+            <div class="_c5">${surah.chapterNumber}</div>
+            <div class="_ds">${cardTitle}</div>
+            <div class="_er">${surah.title || ''}</div>
         `;
         card.onclick = () => launchPlayer(surah.chapterNumber, 1);
         card.onfocus = () => { schedulePreview(surah.chapterNumber); };
@@ -577,7 +577,7 @@ function initInfiniteRowNavigation(container) {
     container.addEventListener('keydown', (e) => {
         if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
 
-        const cards = Array.from(container.querySelectorAll('.surah-card'));
+        const cards = Array.from(container.querySelectorAll('._dw'));
         if (cards.length === 0) return;
 
         const current = document.activeElement;
@@ -629,12 +629,12 @@ function schedulePreview(chapterNum) {
         doorz.textContent = heroTitle;
     }
     
-    const doorHero = document.getElementById('door-hero-title');
+    const doorHero = document.getElementById('_bg');
     if (doorHero) {
         doorHero.textContent = heroTitle;
     }
 
-    document.getElementById('door-hero-subtitle').textContent = surah.title;
+    document.getElementById('_aa').textContent = surah.title;
     document.getElementById('door-play-btn').onclick = () => launchPlayer(chapterNum, 1);
 
     previewTimeout = setTimeout(() => {
@@ -695,8 +695,8 @@ function playPreviewStep(chapterNum, reciterId) {
             const padCh = String(chapterNum).padStart(3, '0');
             const padV = String(verseNum).padStart(3, '0');
             
-            const imgLayer = document.getElementById('hero-preview-layer');
-            const previewImg = document.getElementById('preview-img');
+            const imgLayer = document.getElementById('_af');
+            const previewImg = document.getElementById('_c7');
 
             // SECURE FIX: Use the tunnel
             const newSrcFilename = `${chapterNum}_${verseNum}.png`;
@@ -917,7 +917,7 @@ function saveState() {
 
     window.history.replaceState({path: newUrl, view: 'cinema'}, '', newUrl);
 
-    const canonicalLink = document.getElementById('dynamic-canonical');
+    const canonicalLink = document.getElementById('_al');
     const fullUrl = `https://Quran-lite.pages.dev/reading/${newUrl}`;
     if (canonicalLink) canonicalLink.href = fullUrl;
 
@@ -1060,7 +1060,7 @@ async function loadVerse(autoplay = true) {
     const verseKey = `${chNum}-${vNum}`;
     const isForbidden = forbiddenToTranslateSet.has(verseKey);
 
-    elements.display.title.innerHTML = `${currentChapterData.title} <span class="chapter-subtitle">(${chNum}:${vNum})</span>`;
+    elements.display.title.innerHTML = `${currentChapterData.title} <span class="_ar">(${chNum}:${vNum})</span>`;
     
     const newSrcFilename = `${chNum}_${vNum}.png`;
     const newSrc = await getTunneledUrl('image', newSrcFilename);
@@ -1070,7 +1070,7 @@ async function loadVerse(autoplay = true) {
     let imgReady = false;
     if(img1.src === newSrc || img2.src === newSrc) imgReady = true;
 
-    const isImg1Active = img1.classList.contains('active-verse-img');
+    const isImg1Active = img1.classList.contains('_at');
     const activeImg = isImg1Active ? img1 : img2;
     const nextImg = isImg1Active ? img2 : img1;
 
@@ -1078,14 +1078,14 @@ async function loadVerse(autoplay = true) {
 
     if (newSrc) nextImg.src = newSrc;
     nextImg.onload = () => {
-        activeImg.classList.remove('active-verse-img');
-        nextImg.classList.add('active-verse-img');
+        activeImg.classList.remove('_at');
+        nextImg.classList.add('_at');
         toggleBuffering(false); 
     };
     
     if (nextImg.complete && nextImg.naturalHeight !== 0) {
-        activeImg.classList.remove('active-verse-img');
-        nextImg.classList.add('active-verse-img');
+        activeImg.classList.remove('_at');
+        nextImg.classList.add('_at');
         toggleBuffering(false);
     }
 
@@ -1195,7 +1195,7 @@ function handleQuranEnd() {
 
 function nextVerse() {
     const verseWrapper = elements.selects.verse;
-    const totalV = verseWrapper.querySelectorAll('.custom-option').length;
+    const totalV = verseWrapper.querySelectorAll('._b5').length;
     let cV = parseInt(getSelectValue(verseWrapper));
     
     if (cV + 1 < totalV) {
@@ -1204,7 +1204,7 @@ function nextVerse() {
     } else {
         const chapterWrapper = elements.selects.chapter;
         let cC = parseInt(getSelectValue(chapterWrapper));
-        const totalC = chapterWrapper.querySelectorAll('.custom-option').length;
+        const totalC = chapterWrapper.querySelectorAll('._b5').length;
         
         if (cC + 1 < totalC) {
             setSelectValue(chapterWrapper, cC + 1);
@@ -1251,7 +1251,7 @@ function setupEventListeners() {
             clearTimeout(inactivityTimer);
             
             inactivityTimer = setTimeout(() => {
-                if (!document.querySelector('.custom-select-wrapper.open')) {
+                if (!document.querySelector('._k.open')) {
                     document.body.classList.add('idle');
                 }
             }, 4000);
@@ -1313,7 +1313,7 @@ function updateMediaSession(surah, verse, artist) {
 function initSearchInterface() {
     renderKeyboard();
     elements.search.resultsGrid.addEventListener('click', (e) => {
-        const card = e.target.closest('.surah-card');
+        const card = e.target.closest('._dw');
         if(card) {
             const ch = parseInt(card.dataset.chapter);
             closeSearch();
@@ -1360,7 +1360,7 @@ function handleKeyPress(key) {
     
     if (searchString.length > 2) {
         const searchingText = window.t ? window.t('dashboard.searching') : "Searching...";
-        elements.search.resultsGrid.innerHTML = `<div class="no-results">${searchingText}</div>`;
+        elements.search.resultsGrid.innerHTML = `<div class="_dq">${searchingText}</div>`;
     }
 }
 
@@ -1383,7 +1383,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (window.location.href.includes("chapter") || window.location.href.includes("stream")) {
         return; 
     }
-    const row = document.getElementById("all-row");
+    const row = document.getElementById("_ex");
     
     if (row) {
         window.addEventListener("wheel", (e) => {
@@ -1417,7 +1417,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 (function() {
-    const targetId = 'island-search-wrapper';
+    const targetId = '_j';
     const keywords = ['stream', 'chapter'];
 
     const hideElement = () => {
@@ -1444,10 +1444,10 @@ document.addEventListener("DOMContentLoaded", () => {
 })();
 
 document.addEventListener('click', function(e) {
-    const startBtn = e.target.closest('#start-btn');
+    const startBtn = e.target.closest('#_ek');
     if (startBtn) {
         e.preventDefault();
-        const fadeLayer = document.getElementById('transition-fade-layer');
+        const fadeLayer = document.getElementById('_m');
         if (fadeLayer) {
             fadeLayer.classList.add('active');
             setTimeout(() => {
@@ -1458,7 +1458,7 @@ document.addEventListener('click', function(e) {
 });
 
 function forceRemoveFadeLayer() {
-    const fadeLayer = document.getElementById('transition-fade-layer');
+    const fadeLayer = document.getElementById('_m');
     if (fadeLayer) {
         fadeLayer.classList.remove('active');
         fadeLayer.style.opacity = '0';
