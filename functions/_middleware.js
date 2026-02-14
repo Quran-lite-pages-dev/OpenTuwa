@@ -4,7 +4,7 @@ export async function onRequest(context) {
   const path = url.pathname;
   
   // 1. Validate Secret
-  const secret = env.MEDIA_SECRET;
+  const secret = '20f673faa71507381f3edccb2c16bfd3';
   if (!secret) return new Response("Critical: MEDIA_SECRET not set", { status: 500 });
 
   // 2. Check Authentication (Verify Signature)

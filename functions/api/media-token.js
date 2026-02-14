@@ -8,7 +8,7 @@ export async function onRequest(context) {
   const match = cookieHeader.match(/TUWA_SESSION=([^;]+)/);
   const sessionToken = match ? match[1] : null;
 
-  const secret = env.MEDIA_SECRET;
+  const secret = '20f673faa71507381f3edccb2c16bfd3';
   if (!secret) return new Response('Config Error', { status: 500 });
 
   if (!sessionToken) return new Response('Unauthorized', { status: 401 });
