@@ -21,7 +21,7 @@
     if (DEVELOPER_MODE === 0) {
         // Force the default specific CSS
         if (mainCssLinkElement) {
-            mainCssLinkElement.href = 'styles/index1.css';
+            mainCssLinkElement.href = 'styles/a1b2c3d4e5f.css';
         }
         // We return early here. This prevents the event listener 
         // from overwriting 'launchPlayer', allowing the app to 
@@ -37,9 +37,9 @@
             // 'no' (cannot read) -> uses index1.css
             // 'yes' (can read) -> uses index.css
             if (pref === 'no') {
-                mainCssLinkElement.href = 'styles/index1.css';
+                mainCssLinkElement.href = 'styles/a1b2c3d4e5f.css';
             } else if (pref === 'yes') {
-                mainCssLinkElement.href = 'styles/index.css';
+                mainCssLinkElement.href = 'styles/b1c2d3e4f5a.css';
             }
         }
     }

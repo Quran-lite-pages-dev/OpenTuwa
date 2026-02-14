@@ -129,8 +129,8 @@ The application includes a service worker (`sw.js`) for offline functionality. T
 Key configuration files:
 
 - **Service Worker**: `sw.js` - Cache configuration and offline strategies
-- **Main Application**: `src/core/app.js` - Core application configuration
-- **Analytics**: `src/utils/analytics.js` - Google Analytics tracking ID
+- **Main Application**: `src/core/app_5f6e7d.js` - Core application configuration
+- **Analytics**: `src/utils/ga_9c8b7a.js` - Google Analytics tracking ID
 
 ### Browser Support
 

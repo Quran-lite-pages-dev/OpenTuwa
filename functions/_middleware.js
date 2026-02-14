@@ -205,10 +205,10 @@ export async function onRequest(context) {
       '/assets/ui/web.ico',
       '/assets/ui/apple-touch-icon.png',
       '/assets/ui/logo.png',
-      '/styles/index1.css',
-      '/styles/inline-styles.css',
+      '/styles/a1b2c3d4e5f.css',
+      '/styles/f1a2b3c4d5e.css',
       '/functions/login-client.js',
-      '/src/components/navigation.js', // As seen in your landing.html
+      '/src/components/nav_7c6b5a.js', // As seen in your landing.html
       '/favicon.ico',
       '/manifest.json'
     ];
