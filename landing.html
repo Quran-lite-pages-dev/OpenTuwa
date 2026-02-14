@@ -107,6 +107,33 @@
         .cinema-seek-indicator.right { right: 40px; }
 
     </style>
+<script>
+  (function() {
+    // 1. Create a no-op function (does nothing)
+    var noOp = function() {};
+
+    // 2. Lock down console.log
+    // writable: false -> cannot be reassigned (e.g., console.log = func)
+    // configurable: false -> cannot be redefined or deleted
+    Object.defineProperty(window.console, 'log', {
+      value: noOp,
+      writable: false,
+      configurable: false
+    });
+
+    // Optional: Repeat for other console methods if you want total silence
+    var methods = ['debug', 'info', 'warn', 'error', 'table', 'trace'];
+    for (var i = 0; i < methods.length; i++) {
+      if (window.console[methods[i]]) {
+        Object.defineProperty(window.console, methods[i], {
+          value: noOp,
+          writable: false,
+          configurable: false
+        });
+      }
+    }
+  })();
+</script>
 <script src="functions/login-client.js"></script>
 <script>
 (function() {
@@ -478,6 +505,13 @@ display: block;
                     <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335"/>
                 </svg>
                 Continue with Google
+            </button>
+
+            <button onclick="handleSocialLogin('spotify')" class="social-btn btn-google" style="font-size: 2rem; font-weight: 700;">
+<svg viewBox="0 0 512 512">
+  <path fill="currentColor" d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zm113.8 354.6c-4.5 7.4-13.8 9.9-21.3 5.4-58.3-33.5-131.7-41.1-218.3-22.5-8.5 2-17.1-3.3-19.1-11.8-2-8.5 3.3-17.1 11.8-19.1 94.6-20.3 175.7-11.4 241.6 26.3 7.4 4.5 9.9 13.8 5.4 21.3zm29.8-66.2c-5.6 9.2-17.3 12.1-26.4 6.5-66.9-41.1-168.9-53-248-29-10.2 3.1-21.2-2.5-24.2-12.7-3.1-10.2 2.5-21.2 12.7-24.2 90.6-27.4 204.6-13.7 282.1 33.9 9.1 5.6 12 17.3 6.5 26.4zM408.6 186c-80.4-47.8-213.1-52.2-290-28.8-12.4 3.8-25.5-3.1-29.3-15.5-3.8-12.4 3.1-25.5 15.5-29.3 89-27.1 235.4-21.9 328.6 33.5 11.2 6.6 14.9 21.2 8.3 32.4-6.6 11.2-21.2 14.9-32.4 8.3z"/>
+</svg>
+                Continue with Spotify
             </button>
 
             <button onclick="handleSocialLogin('discord')" class="social-btn btn-google" style="font-size: 2rem; font-weight: 700;">

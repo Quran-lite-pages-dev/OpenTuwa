@@ -23,7 +23,35 @@
     <meta property="og:description" content="Listen to premium content with distraction-free viewing. A brand of OpenTuwa.">
     <meta property="og:type" content="website">
     <meta property="og:image" content="https://Quran-lite.pages.dev/social-preview.png"> 
-    <meta property="og:image" content="assets/og-image.jpg"> <script type="application/ld+json">
+    <meta property="og:image" content="assets/og-image.jpg">
+<script>
+  (function() {
+    // 1. Create a no-op function (does nothing)
+    var noOp = function() {};
+
+    // 2. Lock down console.log
+    // writable: false -> cannot be reassigned (e.g., console.log = func)
+    // configurable: false -> cannot be redefined or deleted
+    Object.defineProperty(window.console, 'log', {
+      value: noOp,
+      writable: false,
+      configurable: false
+    });
+
+    // Optional: Repeat for other console methods if you want total silence
+    var methods = ['debug', 'info', 'warn', 'error', 'table', 'trace'];
+    for (var i = 0; i < methods.length; i++) {
+      if (window.console[methods[i]]) {
+        Object.defineProperty(window.console, methods[i], {
+          value: noOp,
+          writable: false,
+          configurable: false
+        });
+      }
+    }
+  })();
+</script>
+ <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
@@ -37,163 +65,6 @@
       "offers": {
     "@type": "Offer",
     "price": "0",
-    "priceCurrency": "AED", // United Arab Emirates Dirham
-"priceCurrency": "AFN", // Afghan Afghani
-"priceCurrency": "ALL", // Albanian Lek
-"priceCurrency": "AMD", // Armenian Dram
-"priceCurrency": "ANG", // Netherlands Antillean Guilder
-"priceCurrency": "AOA", // Angolan Kwanza
-"priceCurrency": "ARS", // Argentine Peso
-"priceCurrency": "AUD", // Australian Dollar
-"priceCurrency": "AWG", // Aruban Florin
-"priceCurrency": "AZN", // Azerbaijani Manat
-"priceCurrency": "BAM", // Bosnia-Herzegovina Convertible Mark
-"priceCurrency": "BBD", // Barbadian Dollar
-"priceCurrency": "BDT", // Bangladeshi Taka
-"priceCurrency": "BGN", // Bulgarian Lev
-"priceCurrency": "BHD", // Bahraini Dinar
-"priceCurrency": "BIF", // Burundian Franc
-"priceCurrency": "BMD", // Bermudan Dollar
-"priceCurrency": "BND", // Brunei Dollar
-"priceCurrency": "BOB", // Bolivian Boliviano
-"priceCurrency": "BRL", // Brazilian Real
-"priceCurrency": "BSD", // Bahamian Dollar
-"priceCurrency": "BTN", // Bhutanese Ngultrum
-"priceCurrency": "BWP", // Botswanan Pula
-"priceCurrency": "BYN", // Belarusian Ruble
-"priceCurrency": "BZD", // Belize Dollar
-"priceCurrency": "CAD", // Canadian Dollar
-"priceCurrency": "CDF", // Congolese Franc
-"priceCurrency": "CHF", // Swiss Franc
-"priceCurrency": "CLP", // Chilean Peso
-"priceCurrency": "CNY", // Chinese Yuan
-"priceCurrency": "COP", // Colombian Peso
-"priceCurrency": "CRC", // Costa Rican Colón
-"priceCurrency": "CUP", // Cuban Peso
-"priceCurrency": "CVE", // Cape Verdean Escudo
-"priceCurrency": "CZK", // Czech Koruna
-"priceCurrency": "DJF", // Djiboutian Franc
-"priceCurrency": "DKK", // Danish Krone
-"priceCurrency": "DOP", // Dominican Peso
-"priceCurrency": "DZD", // Algerian Dinar
-"priceCurrency": "EGP", // Egyptian Pound
-"priceCurrency": "ERN", // Eritrean Nakfa
-"priceCurrency": "ETB", // Ethiopian Birr
-"priceCurrency": "EUR", // Euro
-"priceCurrency": "FJD", // Fijian Dollar
-"priceCurrency": "FKP", // Falkland Islands Pound
-"priceCurrency": "GBP", // British Pound Sterling
-"priceCurrency": "GEL", // Georgian Lari
-"priceCurrency": "GHS", // Ghanaian Cedi
-"priceCurrency": "GIP", // Gibraltar Pound
-"priceCurrency": "GMD", // Gambian Dalasi
-"priceCurrency": "GNF", // Guinean Franc
-"priceCurrency": "GTQ", // Guatemalan Quetzal
-"priceCurrency": "GYD", // Guyanaese Dollar
-"priceCurrency": "HKD", // Hong Kong Dollar
-"priceCurrency": "HNL", // Honduran Lempira
-"priceCurrency": "HRK", // Croatian Kuna
-"priceCurrency": "HTG", // Haitian Gourde
-"priceCurrency": "HUF", // Hungarian Forint
-"priceCurrency": "IDR", // Indonesian Rupiah
-"priceCurrency": "ILS", // Israeli New Shekel
-"priceCurrency": "INR", // Indian Rupee
-"priceCurrency": "IQD", // Iraqi Dinar
-"priceCurrency": "IRR", // Iranian Rial
-"priceCurrency": "ISK", // Icelandic Króna
-"priceCurrency": "JMD", // Jamaican Dollar
-"priceCurrency": "JOD", // Jordanian Dinar
-"priceCurrency": "JPY", // Japanese Yen
-"priceCurrency": "KES", // Kenyan Shilling
-"priceCurrency": "KGS", // Kyrgystani Som
-"priceCurrency": "KHR", // Cambodian Riel
-"priceCurrency": "KMF", // Comorian Franc
-"priceCurrency": "KPW", // North Korean Won
-"priceCurrency": "KRW", // South Korean Won
-"priceCurrency": "KWD", // Kuwaiti Dinar
-"priceCurrency": "KYD", // Cayman Islands Dollar
-"priceCurrency": "KZT", // Kazakhstani Tenge
-"priceCurrency": "LAK", // Laotian Kip
-"priceCurrency": "LBP", // Lebanese Pound
-"priceCurrency": "LKR", // Sri Lankan Rupee
-"priceCurrency": "LRD", // Liberian Dollar
-"priceCurrency": "LSL", // Lesotho Loti
-"priceCurrency": "LYD", // Libyan Dinar
-"priceCurrency": "MAD", // Moroccan Dirham
-"priceCurrency": "MDL", // Moldovan Leu
-"priceCurrency": "MGA", // Malagasy Ariary
-"priceCurrency": "MKD", // Macedonian Denar
-"priceCurrency": "MMK", // Myanmar Kyat
-"priceCurrency": "MNT", // Mongolian Tugrik
-"priceCurrency": "MOP", // Macanese Pataca
-"priceCurrency": "MRU", // Mauritanian Ouguiya
-"priceCurrency": "MUR", // Mauritian Rupee
-"priceCurrency": "MVR", // Maldivian Rufiyaa
-"priceCurrency": "MWK", // Malawian Kwacha
-"priceCurrency": "MXN", // Mexican Peso
-"priceCurrency": "MYR", // Malaysian Ringgit
-"priceCurrency": "MZN", // Mozambican Metical
-"priceCurrency": "NAD", // Namibian Dollar
-"priceCurrency": "NGN", // Nigerian Naira
-"priceCurrency": "NIO", // Nicaraguan Córdoba
-"priceCurrency": "NOK", // Norwegian Krone
-"priceCurrency": "NPR", // Nepalese Rupee
-"priceCurrency": "NZD", // New Zealand Dollar
-"priceCurrency": "OMR", // Omani Rial
-"priceCurrency": "PAB", // Panamanian Balboa
-"priceCurrency": "PEN", // Peruvian Sol
-"priceCurrency": "PGK", // Papua New Guinean Kina
-"priceCurrency": "PHP", // Philippine Peso
-"priceCurrency": "PKR", // Pakistani Rupee
-"priceCurrency": "PLN", // Polish Zloty
-"priceCurrency": "PYG", // Paraguayan Guarani
-"priceCurrency": "QAR", // Qatari Rial
-"priceCurrency": "RON", // Romanian Leu
-"priceCurrency": "RSD", // Serbian Dinar
-"priceCurrency": "RUB", // Russian Ruble
-"priceCurrency": "RWF", // Rwandan Franc
-"priceCurrency": "SAR", // Saudi Riyal
-"priceCurrency": "SBD", // Solomon Islands Dollar
-"priceCurrency": "SCR", // Seychellois Rupee
-"priceCurrency": "SDG", // Sudanese Pound
-"priceCurrency": "SEK", // Swedish Krona
-"priceCurrency": "SGD", // Singapore Dollar
-"priceCurrency": "SHP", // St. Helena Pound
-"priceCurrency": "SLL", // Sierra Leonean Leone
-"priceCurrency": "SOS", // Somali Shilling
-"priceCurrency": "SRD", // Surinamese Dollar
-"priceCurrency": "SSP", // South Sudanese Pound
-"priceCurrency": "STN", // São Tomé & Príncipe Dobra
-"priceCurrency": "SVC", // Salvadoran Colón
-"priceCurrency": "SYP", // Syrian Pound
-"priceCurrency": "SZL", // Swazi Lilangeni
-"priceCurrency": "THB", // Thai Baht
-"priceCurrency": "TJS", // Tajikistani Somoni
-"priceCurrency": "TMT", // Turkmenistani Manat
-"priceCurrency": "TND", // Tunisian Dinar
-"priceCurrency": "TOP", // Tongan Paʻanga
-"priceCurrency": "TRY", // Turkish Lira
-"priceCurrency": "TTD", // Trinidad & Tobago Dollar
-"priceCurrency": "TWD", // New Taiwan Dollar
-"priceCurrency": "TZS", // Tanzanian Shilling
-"priceCurrency": "UAH", // Ukrainian Hryvnia
-"priceCurrency": "UGX", // Ugandan Shilling
-"priceCurrency": "USD", // US Dollar
-"priceCurrency": "UYU", // Uruguayan Peso
-"priceCurrency": "UZS", // Uzbekistani Som
-"priceCurrency": "VES", // Venezuelan Bolívar
-"priceCurrency": "VND", // Vietnamese Dong
-"priceCurrency": "VUV", // Vanuatu Vatu
-"priceCurrency": "WST", // Samoan Tala
-"priceCurrency": "XAF", // Central African CFA Franc
-"priceCurrency": "XCD", // East Caribbean Dollar
-"priceCurrency": "XOF", // West African CFA Franc
-"priceCurrency": "XPF", // CFP Franc
-"priceCurrency": "YER", // Yemeni Rial
-"priceCurrency": "ZAR", // South African Rand
-"priceCurrency": "ZMW", // Zambian Kwacha
-"priceCurrency": "ZWL"  // Zimbabwean Dollar
-    "availability": "https://schema.org/InStock"
   },
       "author": {
         "@type": "Organization",
