@@ -18,6 +18,10 @@ let SURAH_METADATA = [];
 let TRANSLATIONS_CONFIG = {};
 let RECITERS_CONFIG = {};
 
+// --- GLOBAL CACHE TO PREVENT BLINKING GAP ---
+window.preloadedAudioCache = {};
+window.preloadedImageCache = {};
+
 // --- 2. MULTI-PROFILE & LOGIC ---
 const ACTIVE_PROFILE_ID = "1";
 const STORAGE_KEY = `quranState_${ACTIVE_PROFILE_ID}`;
@@ -79,11 +83,6 @@ const elements = {
 // Global storage for cinema caption timers
 window.cinemaCaptionTimers = window.cinemaCaptionTimers || [];
 
-/**
- * Splits translation text into chunks that end only on punctuation.
- * Target ~25 words per chunk. If 25 words reached without punctuation,
- * extends until the next punctuation from the specified regex.
- */
 function getSmartChunks(text) {
     if (!text || typeof text !== 'string') return [];
     const PUNCT_RE = /[.,;?!:\"”’‘)\]،؛۔؟]/;
@@ -94,25 +93,21 @@ function getSmartChunks(text) {
     let start = 0;
 
     while (start < words.length) {
-        // If remaining words are less than or equal to TARGET, try to end at punctuation within remainder
         if (start + TARGET >= words.length) {
             chunks.push(words.slice(start).join(' '));
             break;
         }
 
         let desired = start + TARGET;
-
-        // Search forward from desired-1 for the next word that contains punctuation
         let end = -1;
         for (let j = desired - 1; j < words.length; j++) {
             if (PUNCT_RE.test(words[j])) {
-                end = j + 1; // slice end is exclusive
+                end = j + 1; 
                 break;
             }
         }
 
         if (end === -1) {
-            // No punctuation found ahead; include rest as one chunk
             chunks.push(words.slice(start).join(' '));
             break;
         }
@@ -124,9 +119,6 @@ function getSmartChunks(text) {
     return chunks;
 }
 
-/**
- * Clear any pending cinema caption timeouts.
- */
 function clearCinemaTimers() {
     if (window.cinemaCaptionTimers && window.cinemaCaptionTimers.length) {
         window.cinemaCaptionTimers.forEach(id => clearTimeout(id));
@@ -134,12 +126,6 @@ function clearCinemaTimers() {
     }
 }
 
-/**
- * Play captions in 'cinema' mode by splitting `text` into smart chunks and
- * scheduling updates to `elements.display.trans.textContent` according to
- * chunk durations computed from `totalDuration`.
- * `totalDuration` is expected in seconds; function will convert to ms.
- */
 function playCinemaCaptions(text, totalDuration) {
     clearCinemaTimers();
     if (!text || typeof text !== 'string') return;
@@ -147,12 +133,10 @@ function playCinemaCaptions(text, totalDuration) {
     const chunks = getSmartChunks(text);
     if (!chunks.length) return;
 
-    // Count words
     const totalWords = text.trim().split(/\s+/).length || 1;
-
     const totalMs = (typeof totalDuration === 'number' && !isNaN(totalDuration) && totalDuration > 0)
         ? totalDuration * 1000
-        : 7000; // fallback 7s
+        : 7000; 
 
     let elapsed = 0;
     chunks.forEach(chunk => {
@@ -196,7 +180,6 @@ window.wipeUserData = function() {
     location.reload();
 };
 
-// mode: 1 = Show All (Default), 0 = Hide Chapter and Reciter
 function initCustomSelects(mode = 0) {
     if (mode === 0) {
         document.body.classList.add('_de');
@@ -310,17 +293,12 @@ function setSelectValue(wrapper, value) {
 
     if (foundText) {
         wrapper.dataset.value = value;
-
-        // IDs of wrappers that should keep their static label (e.g. "Reciter")
-        // instead of showing the selected value.
         const staticLabelIds = [
             'reciterSelectWrapper', 
             'translationSelectWrapper', 
             'translationAudioSelectWrapper'
-            // Add 'chapterSelectWrapper' or 'verseSelectWrapper' here if you want those to be static too
         ];
 
-        // Only update the trigger text if the wrapper ID is NOT in the static list
         if (!staticLabelIds.includes(wrapper.id)) {
             const trigger = wrapper.querySelector('._q');
             if(trigger) trigger.textContent = foundText;
@@ -366,7 +344,6 @@ function decodeStream(token) {
     }
 }
 
-// Request a single-use tunneled URL from the server
 async function getTunneledUrl(type, filename) {
     try {
         const res = await fetch('/api/media-token', {
@@ -433,7 +410,6 @@ async function initializeApp() {
     try {
         initCustomSelects();
 
-        // 1. SECURE CONFIG FETCH (REPLACES HARDCODED DATA)
         try {
             const configResponse = await fetch('/api/config');
             if(configResponse.ok) {
@@ -446,14 +422,12 @@ async function initializeApp() {
             }
         } catch(e) {
             console.error("Config Load Failed", e);
-            // Fallback could go here if needed
         }
 
         const jsonResponse = await fetch('https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/2TM3TM.json');
         if (!jsonResponse.ok) throw new Error("Failed to load Quran JSON");
         const jsonData = await jsonResponse.json();
         
-        // Now it's safe to use mergeMetadata because SURAH_METADATA is loaded
         quranData = mergeMetadata(jsonData.chapters);
 
         try {
@@ -508,7 +482,6 @@ async function initializeApp() {
     }
 }
 
-// --- UPDATED: DASHBOARD LOGIC (SINGLE FISH MODE & INFINITE SCROLL) ---
 function refreshDashboard() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const heroBtn = document.getElementById('door-play-btn');
@@ -637,17 +610,16 @@ function schedulePreview(chapterNum) {
     const titleEl = document.getElementById('_aa');
     if (titleEl) titleEl.textContent = surah.title;
 
-    // --- FIX START: Add null check for the play button ---
     const playBtn = document.getElementById('door-play-btn');
     if (playBtn) {
         playBtn.onclick = () => launchPlayer(chapterNum, 1);
     }
-    // --- FIX END ---
 
     previewTimeout = setTimeout(() => {
         updateHeroPreview(chapterNum, 1, 'alafasy', true); 
     }, PREVIEW_DELAY);
 }
+
 function stopPreview() {
     elements.previewAudio.pause();
     elements.previewAudio.onended = null;
@@ -670,7 +642,6 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
 
     const verseNum = previewSequence[0];
     
-    // SECURE FIX: Use the tunnel
     const filename = `${chapterNum}_${verseNum}.png`;
     const tempImg = new Image();
     (async () => {
@@ -694,7 +665,6 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
 }
 
 function playPreviewStep(chapterNum, reciterId) {
-    // make async so we can request tokens
     return (async function _play() {
         try {
             if (previewSeqIndex >= previewSequence.length) return;
@@ -705,7 +675,6 @@ function playPreviewStep(chapterNum, reciterId) {
             const imgLayer = document.getElementById('_af');
             const previewImg = document.getElementById('_c7');
 
-            // SECURE FIX: Use the tunnel
             const newSrcFilename = `${chapterNum}_${verseNum}.png`;
             const newSrc = await getTunneledUrl('image', newSrcFilename);
 
@@ -721,7 +690,7 @@ function playPreviewStep(chapterNum, reciterId) {
             const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
             const transId = saved.trans || 'en';
             const cache = translationCache[transId];
-            /* --- START BRIDGE TO LYRICS ENGINE --- */
+            
             if (cache) {
                 const sura = cache.querySelector(`sura[index="${chapterNum}"]`);
                 const aya = sura ? sura.querySelector(`aya[index="${verseNum}"]`) : null;
@@ -750,7 +719,7 @@ function playPreviewStep(chapterNum, reciterId) {
                     adjustFontSize(elements.display.trans);
                 }
             }
-            /* --- END BRIDGE --- */
+            
             const rPath = RECITERS_CONFIG[reciterId]?.path || RECITERS_CONFIG['alafasy'].path;
             const audioFilename = `${padCh}${padV}.mp3`;
             const audioUrl = await getTunneledUrl('audio', audioFilename);
@@ -804,7 +773,6 @@ async function loadTranslationData(id) {
     try {
         toggleBuffering(true);
         let url = TRANSLATIONS_CONFIG[id].url;
-        // If URL uses the /media/data tunnel, request a token first
         if (url.startsWith('/media/data/')) {
             const filename = url.split('/media/data/')[1];
             const tunneled = await getTunneledUrl('data', filename);
@@ -1069,8 +1037,13 @@ async function loadVerse(autoplay = true) {
 
     elements.display.title.innerHTML = `${currentChapterData.title} <span class="_ar">(${chNum}:${vNum})</span>`;
     
-    const newSrcFilename = `${chNum}_${vNum}.png`;
-    const newSrc = await getTunneledUrl('image', newSrcFilename);
+    // --- LOAD FROM CACHE FIRST TO PREVENT BLINK ---
+    let newSrc = window.preloadedImageCache[verseKey];
+    if (!newSrc) {
+        const newSrcFilename = `${chNum}_${vNum}.png`;
+        newSrc = await getTunneledUrl('image', newSrcFilename);
+    }
+    
     const img1 = elements.display.verse;
     const img2 = elements.display.verseNext;
 
@@ -1134,21 +1107,28 @@ function bufferNextResources(currentChIdx, currentVIdx) {
 
         const nextCh = quranData[nextChIdx].chapterNumber;
         const nextV = quranData[nextChIdx].verses[nextVIdx].verseNumber;
+        const nextKey = `${nextCh}-${nextV}`;
 
-        // SECURE FIX: Use the tunnel
-        const img = new Image();
+        // CACHE THE IMAGE URL
         const imgFile = `${nextCh}_${nextV}.png`;
         const imgUrl = await getTunneledUrl('image', imgFile);
-        if (imgUrl) img.src = imgUrl;
+        if (imgUrl) {
+            window.preloadedImageCache[nextKey] = imgUrl;
+            const img = new Image();
+            img.src = imgUrl; // Force browser to cache binary
+        }
 
-        const rId = getSelectValue(elements.selects.reciter);
+        // CACHE THE AUDIO URL
         const padCh = String(nextCh).padStart(3, '0');
         const padV = String(nextV).padStart(3, '0');
-        const aud = new Audio();
         const audFile = `${padCh}${padV}.mp3`;
         const audUrl = await getTunneledUrl('audio', audFile);
-        if (audUrl) aud.src = audUrl;
-        aud.preload = 'auto';
+        if (audUrl) {
+            window.preloadedAudioCache[nextKey] = audUrl;
+            const aud = new Audio();
+            aud.src = audUrl;
+            aud.preload = 'auto'; // Force browser to cache bytes
+        }
     })();
 }
 
@@ -1164,9 +1144,7 @@ function updateTranslationText(chNum, vNum) {
     const unavailableText = window.t ? window.t('errors.translationUnavailable') : "Translation unavailable";
     const fullText = aya ? aya.getAttribute('text') : unavailableText;
 
-    // If cinema view is active, play smart-chunked captions over audio duration
     if (elements.views.cinema && elements.views.cinema.classList.contains('active')) {
-        // Prefer Quran audio duration; fallback to translation audio; else 7s
         const qdur = Number(elements.quranAudio && elements.quranAudio.duration) || 0;
         const tdur = Number(elements.transAudio && elements.transAudio.duration) || 0;
         const totalDuration = (qdur > 0) ? qdur : (tdur > 0 ? tdur : 7);
@@ -1180,13 +1158,25 @@ function updateTranslationText(chNum, vNum) {
 
 async function updateQuranAudio(chNum, vNum, play) {
     try {
-        const rId = getSelectValue(elements.selects.reciter);
-        const padCh = String(chNum).padStart(3, '0');
-        const padV = String(vNum).padStart(3, '0');
-        const filename = `${padCh}${padV}.mp3`;
-        const url = await getTunneledUrl('audio', filename);
-        if (url) elements.quranAudio.src = url;
-        if (play) elements.quranAudio.play().catch(e => console.log('Waiting for user interaction'));
+        const verseKey = `${chNum}-${vNum}`;
+        let url = window.preloadedAudioCache[verseKey];
+        
+        // If not cached, fetch it normally
+        if (!url) {
+            const padCh = String(chNum).padStart(3, '0');
+            const padV = String(vNum).padStart(3, '0');
+            const filename = `${padCh}${padV}.mp3`;
+            url = await getTunneledUrl('audio', filename);
+        }
+
+        if (url) {
+            elements.quranAudio.src = url;
+            // Clean up cache memory
+            delete window.preloadedAudioCache[verseKey];
+            delete window.preloadedImageCache[verseKey];
+            
+            if (play) elements.quranAudio.play().catch(e => console.log('Waiting for user interaction'));
+        }
     } catch (e) {
         console.error('Failed to set quran audio', e);
     }
@@ -1246,8 +1236,6 @@ function setupEventListeners() {
     elements.quranAudio.addEventListener('ended', handleQuranEnd);
     elements.transAudio.addEventListener('ended', nextVerse);
 
-    // --- ADD THIS NEW BLOCK HERE ---
-    // The Live Radio Illusion: Nuke the OS progress bar so it can't jump
     elements.quranAudio.addEventListener('playing', () => {
         if ('mediaSession' in navigator) {
             try {
@@ -1261,7 +1249,7 @@ function setupEventListeners() {
             }
         }
     });
-    // Clear cinema caption timers when audio is paused or ends
+
     elements.quranAudio.addEventListener('pause', clearCinemaTimers);
     elements.transAudio.addEventListener('pause', clearCinemaTimers);
     elements.quranAudio.addEventListener('ended', clearCinemaTimers);
@@ -1301,7 +1289,6 @@ function updateMediaSession(surah, verse, artist) {
         if ('mediaSession' in navigator) {
             try {
                 navigator.mediaSession.metadata = null;
-                // Clear common handlers to prevent OS media controls from reacting
                 const handlers = ['play','pause','previoustrack','nexttrack','seekbackward','seekforward','seekto'];
                 handlers.forEach(h => {
                     try { navigator.mediaSession.setActionHandler(h, null); } catch (e) {}
@@ -1325,7 +1312,6 @@ function updateMediaSession(surah, verse, artist) {
         });
 
         navigator.mediaSession.setActionHandler('nexttrack', () => {
-            // Logic handled by app state
         });
 
         currentSurahTitle = surah;
@@ -1589,16 +1575,10 @@ window.smartSeek = function(seconds) {
 function triggerVerseChange() {
     loadVerse(true); 
 }
-// --- SMART INTERACTION FEEDBACK LOGIC ---
 
 let lastKnownSrc = null;
 
-/**
- * Triggers the visual "pop" for a specific action
- * @param {string} type - 'play', 'pause', 'forward', 'backward'
- */
 function showInteractionFeedback(type) {
-    // Optional: Only show if Cinema View is active
     if (!elements.views.cinema.classList.contains('active')) return;
 
     const iconId = `icon-${type}`;
@@ -1606,53 +1586,36 @@ function showInteractionFeedback(type) {
     
     if (icon) {
         icon.classList.remove('animate');
-        void icon.offsetWidth; // Force Reflow to restart animation
+        void icon.offsetWidth; 
         icon.classList.add('animate');
     }
 }
 
-// 1. SETUP AUDIO LISTENERS (The Robust Way)
 if (elements.quranAudio) {
-    
-    // PLAY EVENT: Fires when playback is requested (by user OR system)
     elements.quranAudio.addEventListener('play', () => {
         const currentSrc = elements.quranAudio.src;
 
-        // If the SRC is the same as before, it means we are RESUMING.
-        // This implies a User Action (Toggle).
         if (currentSrc === lastKnownSrc) {
             showInteractionFeedback('play');
         } 
         
-        // If SRC is different, it's a System Action (New Verse).
-        // We do NOT show feedback, but we update the tracker.
         lastKnownSrc = currentSrc;
     });
 
-    // PAUSE EVENT: Fires when playback stops
     elements.quranAudio.addEventListener('pause', () => {
-        // We check !ended because we don't want a "Pause" icon when the verse simply finishes.
-        // We check readyState > 2 to ensure it's not just buffering/loading.
         if (!elements.quranAudio.ended && elements.quranAudio.readyState > 2) {
              showInteractionFeedback('pause');
         }
     });
 }
 
-// 2. SETUP SEEK LISTENERS (Directional)
-// We still use keys for Seek because 'seeking' event doesn't tell us direction (Left/Right) easily.
 document.addEventListener('keydown', (e) => {
     if (document.activeElement.tagName === 'INPUT') return;
 
     if (e.key === 'ArrowRight') {
         showInteractionFeedback('forward');
-        // smartSeek is already handled in your existing code
     } 
     else if (e.key === 'ArrowLeft') {
         showInteractionFeedback('backward');
-        // smartSeek is already handled in your existing code
     }
-    // Note: We REMOVED the 'Space' handler here because the 
-    // audio 'play'/'pause' listeners above will handle it automatically 
-    // (and more accurately).
 });
