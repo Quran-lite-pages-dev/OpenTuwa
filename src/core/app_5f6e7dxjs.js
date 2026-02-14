@@ -634,8 +634,15 @@ function schedulePreview(chapterNum) {
         doorHero.textContent = heroTitle;
     }
 
-    document.getElementById('_aa').textContent = surah.title;
-    document.getElementById('door-play-btn').onclick = () => launchPlayer(chapterNum, 1);
+    const titleEl = document.getElementById('_aa');
+    if (titleEl) titleEl.textContent = surah.title;
+
+    // --- FIX START: Add null check for the play button ---
+    const playBtn = document.getElementById('door-play-btn');
+    if (playBtn) {
+        playBtn.onclick = () => launchPlayer(chapterNum, 1);
+    }
+    // --- FIX END ---
 
     previewTimeout = setTimeout(() => {
         updateHeroPreview(chapterNum, 1, 'alafasy', true); 
