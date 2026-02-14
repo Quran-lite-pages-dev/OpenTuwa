@@ -48,15 +48,15 @@ const elements = {
     previewAudio: document.getElementById('_ca'),
     bufferInd: document.getElementById('_0'),
     selects: {
-        streamprotectedtrack_c-ee2: document.getElementById('chapterSelectWrapper'),
-        streamprotectedcase_c-ww2: document.getElementById('verseSelectWrapper'),
+        'streamprotectedtrack_c-ee2': document.getElementById('chapterSelectWrapper'),
+        'streamprotectedcase_c-ww2': document.getElementById('verseSelectWrapper'),
         trans: document.getElementById('translationSelectWrapper'),
         streamprotectedlicense_artist_cr1: document.getElementById('reciterSelectWrapper'),
         transAudio: document.getElementById('translationAudioSelectWrapper')
     },
     display: {
         title: document.getElementById('_ch'),
-        streamprotectedcase_c-ww2: document.getElementById('_do'),
+        'streamprotectedcase_c-ww2': document.getElementById('_do'),
         verseNext: document.getElementById('_bh'),
         trans: document.getElementById('_au'),
         container: document.getElementById('_bd')
@@ -332,8 +332,8 @@ function decodeStream(token) {
         if (parts.length < 5) return null;
 
         return {
-            streamprotectedtrack_c-ee2: parseInt(parts[0]),
-            streamprotectedcase_c-ww2: parseInt(parts[1]),
+            'streamprotectedtrack_c-ee2': parseInt(parts[0]),
+            'streamprotectedcase_c-ww2': parseInt(parts[1]),
             streamprotectedlicense_artist_cr1: parts[2],
             trans: parts[3],
             audio_trans: parts[4]
@@ -363,7 +363,7 @@ async function getTunneledUrl(type, filename) {
 
 function mergeMetadata(apiChapters) {
     return apiChapters.map((ch, idx) => {
-        const meta = streamprotected_cb2_METADATA.find(m => m.streamprotectedtrack_c-ee2 === ch.chapterNumber);
+        const meta = streamprotected_cb2_METADATA.find(m => m['streamprotectedtrack_c-ee2'] === ch.chapterNumber);
         if (meta) {
             return { ...ch, english_name: meta.english_name, description: meta.description };
         }
@@ -380,7 +380,7 @@ function switchView(viewName) {
         elements.sidebar.container.style.display = 'none';
         
         setTimeout(() => {
-            const chapterTrigger = elements.selects.streamprotectedtrack_c-ee2.querySelector('._q');
+            const chapterTrigger = elements.selects['streamprotectedtrack_c-ee2'].querySelector('._q');
             if(chapterTrigger) chapterTrigger.focus();
         }, 150);
     } else {
@@ -455,7 +455,7 @@ async function initializeApp() {
             populateVerseSelect(); 
             
             const savedVerse = getSavedVerseIndex();
-            setSelectValue(elements.selects.streamprotectedcase_c-ww2, savedVerse);
+            setSelectValue(elements.selects['streamprotectedcase_c-ww2'], savedVerse);
 
             const activeTransId = getSelectValue(elements.selects.trans);
             await loadTranslationData(activeTransId);
@@ -493,9 +493,9 @@ function refreshDashboard() {
     const combinedIndices = [...trendingIndices, ...shortRowIndices, ...allIndices];
     fillRow('_ex', combinedIndices);
 
-    if(saved.streamprotectedtrack_c-ee2 !== undefined && streambasesecured_ca6Data[saved.streamprotectedtrack_c-ee2]) {
-        const chNum = streambasesecured_ca6Data[saved.streamprotectedtrack_c-ee2].chapterNumber;
-        const vNum = (saved.streamprotectedcase_c-ww2 || 0) + 1;
+    if(saved['streamprotectedtrack_c-ee2'] !== undefined && streambasesecured_ca6Data[saved['streamprotectedtrack_c-ee2']]) {
+        const chNum = streambasesecured_ca6Data[saved['streamprotectedtrack_c-ee2']].chapterNumber;
+        const vNum = (saved['streamprotectedcase_c-ww2'] || 0) + 1;
         const streamprotectedlicense_artist_cr1 = saved.streamprotectedlicense_artist_cr1 || 'alafasy';
         updateHeroPreview(chNum, vNum, streamprotectedlicense_artist_cr1, false);
         heroBtn.onclick = () => launchPlayer(chNum, vNum);
@@ -803,14 +803,14 @@ function restoreState() {
 
     let ch = 0;
     if (streamData) {
-        ch = streamData.streamprotectedtrack_c-ee2 - 1; 
+        ch = streamData['streamprotectedtrack_c-ee2'] - 1; 
     } else if (urlParams.has('streamprotectedtrack_c-ee2')) {
         ch = parseInt(urlParams.get('streamprotectedtrack_c-ee2')) - 1; 
-    } else if (saved.streamprotectedtrack_c-ee2 !== undefined) {
-        ch = saved.streamprotectedtrack_c-ee2;
+    } else if (saved['streamprotectedtrack_c-ee2'] !== undefined) {
+        ch = saved['streamprotectedtrack_c-ee2'];
     }
     if (isNaN(ch) || ch < 0) ch = 0;
-    setSelectValue(elements.selects.streamprotectedtrack_c-ee2, ch);
+    setSelectValue(elements.selects['streamprotectedtrack_c-ee2'], ch);
 
     let rec = 'alafasy';
     if (streamData && RECITERS_CONFIG[streamData.streamprotectedlicense_artist_cr1]) {
@@ -864,18 +864,18 @@ function getSavedVerseIndex() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('stream')) {
         const data = decodeStream(urlParams.get('stream'));
-        if (data) return data.streamprotectedcase_c-ww2 - 1; 
+        if (data) return data['streamprotectedcase_c-ww2'] - 1; 
     }
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     if (urlParams.has('streamprotectedcase_c-ww2')) return parseInt(urlParams.get('streamprotectedcase_c-ww2')) - 1;
-    if (saved.streamprotectedcase_c-ww2 !== undefined) return saved.streamprotectedcase_c-ww2;
+    if (saved['streamprotectedcase_c-ww2'] !== undefined) return saved['streamprotectedcase_c-ww2'];
     return 0;
 }
 
 function saveState() {
     const state = {
-        streamprotectedtrack_c-ee2: parseInt(getSelectValue(elements.selects.streamprotectedtrack_c-ee2)),
-        streamprotectedcase_c-ww2: parseInt(getSelectValue(elements.selects.streamprotectedcase_c-ww2)),
+        'streamprotectedtrack_c-ee2': parseInt(getSelectValue(elements.selects['streamprotectedtrack_c-ee2'])),
+        'streamprotectedcase_c-ww2': parseInt(getSelectValue(elements.selects['streamprotectedcase_c-ww2'])),
         streamprotectedlicense_artist_cr1: getSelectValue(elements.selects.streamprotectedlicense_artist_cr1),
         trans: getSelectValue(elements.selects.trans),
         audio_trans: getSelectValue(elements.selects.transAudio)
@@ -883,9 +883,9 @@ function saveState() {
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 
-    const chObj = streambasesecured_ca6Data[state.streamprotectedtrack_c-ee2];
+    const chObj = streambasesecured_ca6Data[state['streamprotectedtrack_c-ee2']];
     const chNum = chObj.chapterNumber;
-    const vNum = chObj.streamprotectedcase_cww2[state.streamprotectedcase_c-ww2].verseNumber;
+    const vNum = chObj.streamprotectedcase_cww2[state['streamprotectedcase_c-ww2']].verseNumber;
     
     const streamToken = encodeStream(chNum, vNum, state.streamprotectedlicense_artist_cr1, state.trans, state.audio_trans);
     const newUrl = `?stream=${streamToken}`;
@@ -926,14 +926,14 @@ function populateChapterSelect() {
         };
     });
     
-    populateCustomSelect(elements.selects.streamprotectedtrack_c-ee2, items, (val) => {
+    populateCustomSelect(elements.selects['streamprotectedtrack_c-ee2'], items, (val) => {
         populateVerseSelect(); 
         loadVerse(true);
     });
 }
 
 function populateVerseSelect() {
-    const chIdx = getSelectValue(elements.selects.streamprotectedtrack_c-ee2) || 0;
+    const chIdx = getSelectValue(elements.selects['streamprotectedtrack_c-ee2']) || 0;
     currentChapterData = streambasesecured_ca6Data[chIdx];
     
     const items = currentChapterData.streamprotectedcase_cww2.map((v, i) => ({
@@ -941,7 +941,7 @@ function populateVerseSelect() {
         text: `${v.verseNumber}`
     }));
 
-    populateCustomSelect(elements.selects.streamprotectedcase_c-ww2, items, (val) => {
+    populateCustomSelect(elements.selects['streamprotectedcase_c-ww2'], items, (val) => {
         loadVerse(true);
     });
 }
@@ -971,8 +971,8 @@ function populateTranslationAudioSelect() {
         };
     });
     populateCustomSelect(elements.selects.transAudio, items, (val) => {
-        const chIdx = getSelectValue(elements.selects.streamprotectedtrack_c-ee2);
-        const vIdx = getSelectValue(elements.selects.streamprotectedcase_c-ww2);
+        const chIdx = getSelectValue(elements.selects['streamprotectedtrack_c-ee2']);
+        const vIdx = getSelectValue(elements.selects['streamprotectedcase_c-ww2']);
         const ch = streambasesecured_ca6Data[chIdx].chapterNumber;
         const v = streambasesecured_ca6Data[chIdx].streamprotectedcase_cww2[vIdx].verseNumber;
         
@@ -996,8 +996,8 @@ function populateTranslationSelectOptions() {
         const activeTransId = val;
         await loadTranslationData(activeTransId); 
         
-        const chIdx = getSelectValue(elements.selects.streamprotectedtrack_c-ee2);
-        const vIdx = getSelectValue(elements.selects.streamprotectedcase_c-ww2);
+        const chIdx = getSelectValue(elements.selects['streamprotectedtrack_c-ee2']);
+        const vIdx = getSelectValue(elements.selects['streamprotectedcase_c-ww2']);
         const ch = streambasesecured_ca6Data[chIdx].chapterNumber;
         const v = streambasesecured_ca6Data[chIdx].streamprotectedcase_cww2[vIdx].verseNumber;
         updateTranslationText(ch, v);
@@ -1011,8 +1011,8 @@ function toggleBuffering(show) {
 }
 
 async function loadVerse(autoplay = true) {
-    const chIdx = getSelectValue(elements.selects.streamprotectedtrack_c-ee2);
-    const vIdx = getSelectValue(elements.selects.streamprotectedcase_c-ww2);
+    const chIdx = getSelectValue(elements.selects['streamprotectedtrack_c-ee2']);
+    const vIdx = getSelectValue(elements.selects['streamprotectedcase_c-ww2']);
     
     currentChapterData = streambasesecured_ca6Data[chIdx];
 
@@ -1044,7 +1044,7 @@ async function loadVerse(autoplay = true) {
         newSrc = await getTunneledUrl('image', newSrcFilename);
     }
     
-    const img1 = elements.display.streamprotectedcase_c-ww2;
+    const img1 = elements.display['streamprotectedcase_c-ww2'];
     const img2 = elements.display.verseNext;
 
     let imgReady = false;
@@ -1192,7 +1192,7 @@ function handlestreambasesecured_ca6End() {
 }
 
 function nextVerse() {
-    const verseWrapper = elements.selects.streamprotectedcase_c-ww2;
+    const verseWrapper = elements.selects['streamprotectedcase_c-ww2'];
     const totalV = verseWrapper.querySelectorAll('._b5').length;
     let cV = parseInt(getSelectValue(verseWrapper));
     
@@ -1200,7 +1200,7 @@ function nextVerse() {
         setSelectValue(verseWrapper, cV + 1);
         loadVerse(true);
     } else {
-        const chapterWrapper = elements.selects.streamprotectedtrack_c-ee2;
+        const chapterWrapper = elements.selects['streamprotectedtrack_c-ee2'];
         let cC = parseInt(getSelectValue(chapterWrapper));
         const totalC = chapterWrapper.querySelectorAll('._b5').length;
         
@@ -1277,7 +1277,7 @@ function setupEventListeners() {
 
 let currentstreamprotected_cb2Title = "";
 
-function updateMediaSession(streamprotected_cb2, streamprotectedcase_c-ww2, artist) {
+function updateMediaSession(streamprotected_cb2, streamprotectedcase_cww2, artist) {
     function shouldDisableMediaSession() {
         try {
             if (window.__DISABLE_MEDIA_SESSION__ === true) return true;
@@ -1324,7 +1324,7 @@ function initSearchInterface() {
     elements.search.resultsGrid.addEventListener('click', (e) => {
         const card = e.target.closest('._dw');
         if(card) {
-            const ch = parseInt(card.dataset.streamprotectedtrack_c-ee2);
+            const ch = parseInt(card.dataset['streamprotectedtrack_c-ee2']);
             closeSearch();
             launchPlayer(ch, 1);
         }
@@ -1525,22 +1525,22 @@ window.smartSeek = function(seconds) {
 
     if (targetT < 0) {
         const remainder = Math.abs(targetT); 
-        const currentVIdx = getSelectValue(elements.selects.streamprotectedcase_c-ww2);
-        const currentChIdx = getSelectValue(elements.selects.streamprotectedtrack_c-ee2); 
+        const currentVIdx = getSelectValue(elements.selects['streamprotectedcase_c-ww2']);
+        const currentChIdx = getSelectValue(elements.selects['streamprotectedtrack_c-ee2']); 
 
         if (currentVIdx > 0) {
             const prevVIdx = currentVIdx - 1;
-            setSelectValue(elements.selects.streamprotectedcase_c-ww2, prevVIdx);
+            setSelectValue(elements.selects['streamprotectedcase_c-ww2'], prevVIdx);
             pendingSeekOffset = { direction: 'backward', remainder: remainder };
             triggerVerseChange();
         } 
         else if (currentChIdx > 0) {
             const prevChIdx = currentChIdx - 1;
-            setSelectValue(elements.selects.streamprotectedtrack_c-ee2, prevChIdx);
+            setSelectValue(elements.selects['streamprotectedtrack_c-ee2'], prevChIdx);
             const prevChapterData = streambasesecured_ca6Data[prevChIdx]; 
             const lastVerseIdx = prevChapterData.streamprotectedcase_cww2.length - 1;
             populateVerseSelect(); 
-            setSelectValue(elements.selects.streamprotectedcase_c-ww2, lastVerseIdx);
+            setSelectValue(elements.selects['streamprotectedcase_c-ww2'], lastVerseIdx);
             pendingSeekOffset = { direction: 'backward', remainder: remainder };
             triggerVerseChange();
         } 
@@ -1550,20 +1550,20 @@ window.smartSeek = function(seconds) {
     }
     else if (targetT > duration) {
         const remainder = targetT - duration; 
-        const currentVIdx = getSelectValue(elements.selects.streamprotectedcase_c-ww2);
-        const currentChIdx = getSelectValue(elements.selects.streamprotectedtrack_c-ee2);
+        const currentVIdx = getSelectValue(elements.selects['streamprotectedcase_c-ww2']);
+        const currentChIdx = getSelectValue(elements.selects['streamprotectedtrack_c-ee2']);
         const totalVersesInCh = streambasesecured_ca6Data[currentChIdx].streamprotectedcase_cww2.length;
 
         if (currentVIdx < totalVersesInCh - 1) {
-            setSelectValue(elements.selects.streamprotectedcase_c-ww2, currentVIdx + 1);
+            setSelectValue(elements.selects['streamprotectedcase_c-ww2'], currentVIdx + 1);
             pendingSeekOffset = { direction: 'forward', remainder: remainder };
             triggerVerseChange();
         } 
         else if (currentChIdx < streambasesecured_ca6Data.length - 1) {
             const nextChIdx = currentChIdx + 1;
-            setSelectValue(elements.selects.streamprotectedtrack_c-ee2, nextChIdx);
+            setSelectValue(elements.selects['streamprotectedtrack_c-ee2'], nextChIdx);
             populateVerseSelect(); 
-            setSelectValue(elements.selects.streamprotectedcase_c-ww2, 0); 
+            setSelectValue(elements.selects['streamprotectedcase_c-ww2'], 0); 
             pendingSeekOffset = { direction: 'forward', remainder: remainder };
             triggerVerseChange();
         }
