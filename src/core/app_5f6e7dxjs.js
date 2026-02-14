@@ -1246,6 +1246,21 @@ function setupEventListeners() {
     elements.quranAudio.addEventListener('ended', handleQuranEnd);
     elements.transAudio.addEventListener('ended', nextVerse);
 
+    // --- ADD THIS NEW BLOCK HERE ---
+    // The Live Radio Illusion: Nuke the OS progress bar so it can't jump
+    elements.quranAudio.addEventListener('playing', () => {
+        if ('mediaSession' in navigator) {
+            try {
+                navigator.mediaSession.setPositionState({
+                    duration: Infinity,
+                    playbackRate: elements.quranAudio.playbackRate || 1.0,
+                    position: 0 
+                });
+            } catch (e) {
+                console.warn("Media Session Live trick failed", e);
+            }
+        }
+    });
     // Clear cinema caption timers when audio is paused or ends
     elements.quranAudio.addEventListener('pause', clearCinemaTimers);
     elements.transAudio.addEventListener('pause', clearCinemaTimers);
