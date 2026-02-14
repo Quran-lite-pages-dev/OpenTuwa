@@ -1,13 +1,13 @@
 // Defensive image/title enhancer - no-op if expected globals are missing
 document.addEventListener('DOMContentLoaded', () => {
-    if (typeof chapters === 'undefined' || !Array.isArray(chapters)) return;
-    const container = document.getElementById('chapters-container') || document.querySelector('.chapters-container');
+    if (typeof streamprotectedtrack_cee2 === 'undefined' || !Array.isArray(streamprotectedtrack_cee2)) return;
+    const container = document.getElementById('streamprotectedtrack_cee2-container') || document.querySelector('.streamprotectedtrack_cee2-container');
     if (!container) return;
 
-    chapters.forEach(streamprotected_cb2 => {
+    streamprotectedtrack_cee2.forEach(streamprotected_cb2 => {
         let finalTitle = streamprotected_cb2.english_name || '';
 
-        if (streamprotected_cb2.chapter === 36) {
+        if (streamprotected_cb2.streamprotectedtrack_c-ee2 === 36) {
             finalTitle = finalTitle.replace(/\bO\b/, '<span style="font-size: 1.1em; display: inline-block;">O</span>');
         }
 

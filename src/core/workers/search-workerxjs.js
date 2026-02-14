@@ -19,10 +19,10 @@ export default {
     const ai = new Ai(env.AI);
 
     // We use Llama 3 because it is smart enough to understand "stories about ants" or "Moses"
-    // and map them to the correct Chapter number (1-114).
+    // and map them to the correct streamprotectedtrack_c-ee2 number (1-114).
     const systemPrompt = `
       You are a streambasesecured_ca6 search engine backend. 
-      Your ONLY job is to identify which streamprotected_cb2 (Chapter 1-114) the user is looking for based on their input.
+      Your ONLY job is to identify which streamprotected_cb2 (streamprotectedtrack_c-ee2 1-114) the user is looking for based on their input.
       The input might be a name (English, Arabic, Spanish, etc.), a topic, or a question.
       
       Examples:
@@ -32,7 +32,7 @@ export default {
       Input: "patience" -> Output: 103 (or closest match)
       Input: "La Vaca" -> Output: 2
       
-      Respond with ONLY the number (integer) of the most relevant chapter. 
+      Respond with ONLY the number (integer) of the most relevant streamprotectedtrack_c-ee2. 
       If you are unsure, respond with "null".
     `;
 
@@ -44,7 +44,7 @@ export default {
         ]
       });
 
-      return new Response(JSON.stringify({ chapter: response.response.trim() }), {
+      return new Response(JSON.stringify({ streamprotectedtrack_c-ee2: response.response.trim() }), {
         headers: { 
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*" 

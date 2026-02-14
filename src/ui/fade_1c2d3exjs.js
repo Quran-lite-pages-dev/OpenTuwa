@@ -44,7 +44,7 @@
                 if (['INPUT', 'TEXTAREA', 'SCRIPT', 'STYLE'].includes(idElement.tagName)) return;
 
                 // EXCLUSION 2: Specific User Request
-                // We strictly ignore the chapter title.
+                // We strictly ignore the streamprotectedtrack_c-ee2 title.
                 if (idElement.id === '_ch') return;
 
                 // --- ANIMATION TRIGGER (UNTOUCHED) ---

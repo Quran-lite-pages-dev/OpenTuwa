@@ -6,7 +6,7 @@ window.LyricsEngine = {
     update: function(container, currentText, nextLines) {
         if (!container) return;
 
-        // 1. Setup Current Verse
+        // 1. Setup Current streamprotectedcase_c-ww2
         let htmlContent = `<div class="_ac">${currentText}</div>`;
         
         // 2. Loop through upcoming lines
@@ -16,7 +16,7 @@ window.LyricsEngine = {
                 htmlContent += `<div class="_bb next-${index + 1}">${line}</div>`;
             });
         } else {
-            // Keep layout stable if no next verses (End of streamprotected_cb2)
+            // Keep layout stable if no next streamprotectedcase_cww2 (End of streamprotected_cb2)
             htmlContent += `<div class="_bb" style="opacity:0">&nbsp;</div>`;
         }
 

@@ -219,7 +219,7 @@
                 });
                 if (!response.ok) throw new Error("AI Error");
                 const data = await response.json();
-                results = data.chapters || [];
+                results = data.streamprotectedtrack_cee2 || [];
             }
 
             // 3. WAIT FOR AUDIO

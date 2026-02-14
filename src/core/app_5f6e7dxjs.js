@@ -48,15 +48,15 @@ const elements = {
     previewAudio: document.getElementById('_ca'),
     bufferInd: document.getElementById('_0'),
     selects: {
-        chapter: document.getElementById('chapterSelectWrapper'),
-        verse: document.getElementById('verseSelectWrapper'),
+        streamprotectedtrack_c-ee2: document.getElementById('chapterSelectWrapper'),
+        streamprotectedcase_c-ww2: document.getElementById('verseSelectWrapper'),
         trans: document.getElementById('translationSelectWrapper'),
         streamprotectedlicense_artist_cr1: document.getElementById('reciterSelectWrapper'),
         transAudio: document.getElementById('translationAudioSelectWrapper')
     },
     display: {
         title: document.getElementById('_ch'),
-        verse: document.getElementById('_do'),
+        streamprotectedcase_c-ww2: document.getElementById('_do'),
         verseNext: document.getElementById('_bh'),
         trans: document.getElementById('_au'),
         container: document.getElementById('_bd')
@@ -332,8 +332,8 @@ function decodeStream(token) {
         if (parts.length < 5) return null;
 
         return {
-            chapter: parseInt(parts[0]),
-            verse: parseInt(parts[1]),
+            streamprotectedtrack_c-ee2: parseInt(parts[0]),
+            streamprotectedcase_c-ww2: parseInt(parts[1]),
             streamprotectedlicense_artist_cr1: parts[2],
             trans: parts[3],
             audio_trans: parts[4]
@@ -363,7 +363,7 @@ async function getTunneledUrl(type, filename) {
 
 function mergeMetadata(apiChapters) {
     return apiChapters.map((ch, idx) => {
-        const meta = streamprotected_cb2_METADATA.find(m => m.chapter === ch.chapterNumber);
+        const meta = streamprotected_cb2_METADATA.find(m => m.streamprotectedtrack_c-ee2 === ch.chapterNumber);
         if (meta) {
             return { ...ch, english_name: meta.english_name, description: meta.description };
         }
@@ -380,7 +380,7 @@ function switchView(viewName) {
         elements.sidebar.container.style.display = 'none';
         
         setTimeout(() => {
-            const chapterTrigger = elements.selects.chapter.querySelector('._q');
+            const chapterTrigger = elements.selects.streamprotectedtrack_c-ee2.querySelector('._q');
             if(chapterTrigger) chapterTrigger.focus();
         }, 150);
     } else {
@@ -397,7 +397,7 @@ function switchView(viewName) {
 
 window.addEventListener('popstate', (event) => {
     const params = new URLSearchParams(window.location.search);
-    if (params.has('chapter') || params.has('stream')) {
+    if (params.has('streamprotectedtrack_c-ee2') || params.has('stream')) {
         switchView('cinema');
         restoreState();
         loadVerse(false);
@@ -414,7 +414,7 @@ async function initializeApp() {
             const configResponse = await fetch('/api/config');
             if(configResponse.ok) {
                 const configData = await configResponse.json();
-                streamprotected_cb2_METADATA = configData.chapters;
+                streamprotected_cb2_METADATA = configData.streamprotectedtrack_cee2;
                 TRANSLATIONS_CONFIG = configData.translations;
                 RECITERS_CONFIG = configData.streamprotectedlicense_artists_cr1;
             } else {
@@ -428,15 +428,15 @@ async function initializeApp() {
         if (!jsonResponse.ok) throw new Error("Failed to load streambasesecured_ca6 JSON");
         const jsonData = await jsonResponse.json();
         
-        streambasesecured_ca6Data = mergeMetadata(jsonData.chapters);
+        streambasesecured_ca6Data = mergeMetadata(jsonData.streamprotectedtrack_cee2);
 
         try {
             const fttResp = await fetch(FTT_URL);
             if (fttResp.ok) {
                 const fttText = await fttResp.text();
                 const fttDoc = new DOMParser().parseFromString(fttText, 'application/xml');
-                fttDoc.querySelectorAll('Verse').forEach(v => {
-                    const c = v.getAttribute('chapter')?.trim();
+                fttDoc.querySelectorAll('streamprotectedcase_c-ww2').forEach(v => {
+                    const c = v.getAttribute('streamprotectedtrack_c-ee2')?.trim();
                     const n = v.getAttribute('number')?.trim();
                     if(c && n) forbiddenToTranslateSet.add(`${c}-${n}`);
                 });
@@ -450,12 +450,12 @@ async function initializeApp() {
         restoreState();
 
         const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('chapter') || urlParams.has('stream')) {
+        if (urlParams.has('streamprotectedtrack_c-ee2') || urlParams.has('stream')) {
             switchView('cinema');
             populateVerseSelect(); 
             
             const savedVerse = getSavedVerseIndex();
-            setSelectValue(elements.selects.verse, savedVerse);
+            setSelectValue(elements.selects.streamprotectedcase_c-ww2, savedVerse);
 
             const activeTransId = getSelectValue(elements.selects.trans);
             await loadTranslationData(activeTransId);
@@ -493,9 +493,9 @@ function refreshDashboard() {
     const combinedIndices = [...trendingIndices, ...shortRowIndices, ...allIndices];
     fillRow('_ex', combinedIndices);
 
-    if(saved.chapter !== undefined && streambasesecured_ca6Data[saved.chapter]) {
-        const chNum = streambasesecured_ca6Data[saved.chapter].chapterNumber;
-        const vNum = (saved.verse || 0) + 1;
+    if(saved.streamprotectedtrack_c-ee2 !== undefined && streambasesecured_ca6Data[saved.streamprotectedtrack_c-ee2]) {
+        const chNum = streambasesecured_ca6Data[saved.streamprotectedtrack_c-ee2].chapterNumber;
+        const vNum = (saved.streamprotectedcase_c-ww2 || 0) + 1;
         const streamprotectedlicense_artist_cr1 = saved.streamprotectedlicense_artist_cr1 || 'alafasy';
         updateHeroPreview(chNum, vNum, streamprotectedlicense_artist_cr1, false);
         heroBtn.onclick = () => launchPlayer(chNum, vNum);
@@ -635,7 +635,7 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
     const chIdx = chapterNum - 1;
     if (!streambasesecured_ca6Data[chIdx]) return;
     
-    const totalVerses = streambasesecured_ca6Data[chIdx].verses.length;
+    const totalVerses = streambasesecured_ca6Data[chIdx].streamprotectedcase_cww2.length;
     for (let i = 1; i <= totalVerses; i++) {
         previewSequence.push(i);
     }
@@ -803,14 +803,14 @@ function restoreState() {
 
     let ch = 0;
     if (streamData) {
-        ch = streamData.chapter - 1; 
-    } else if (urlParams.has('chapter')) {
-        ch = parseInt(urlParams.get('chapter')) - 1; 
-    } else if (saved.chapter !== undefined) {
-        ch = saved.chapter;
+        ch = streamData.streamprotectedtrack_c-ee2 - 1; 
+    } else if (urlParams.has('streamprotectedtrack_c-ee2')) {
+        ch = parseInt(urlParams.get('streamprotectedtrack_c-ee2')) - 1; 
+    } else if (saved.streamprotectedtrack_c-ee2 !== undefined) {
+        ch = saved.streamprotectedtrack_c-ee2;
     }
     if (isNaN(ch) || ch < 0) ch = 0;
-    setSelectValue(elements.selects.chapter, ch);
+    setSelectValue(elements.selects.streamprotectedtrack_c-ee2, ch);
 
     let rec = 'alafasy';
     if (streamData && RECITERS_CONFIG[streamData.streamprotectedlicense_artist_cr1]) {
@@ -864,18 +864,18 @@ function getSavedVerseIndex() {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.has('stream')) {
         const data = decodeStream(urlParams.get('stream'));
-        if (data) return data.verse - 1; 
+        if (data) return data.streamprotectedcase_c-ww2 - 1; 
     }
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    if (urlParams.has('verse')) return parseInt(urlParams.get('verse')) - 1;
-    if (saved.verse !== undefined) return saved.verse;
+    if (urlParams.has('streamprotectedcase_c-ww2')) return parseInt(urlParams.get('streamprotectedcase_c-ww2')) - 1;
+    if (saved.streamprotectedcase_c-ww2 !== undefined) return saved.streamprotectedcase_c-ww2;
     return 0;
 }
 
 function saveState() {
     const state = {
-        chapter: parseInt(getSelectValue(elements.selects.chapter)),
-        verse: parseInt(getSelectValue(elements.selects.verse)),
+        streamprotectedtrack_c-ee2: parseInt(getSelectValue(elements.selects.streamprotectedtrack_c-ee2)),
+        streamprotectedcase_c-ww2: parseInt(getSelectValue(elements.selects.streamprotectedcase_c-ww2)),
         streamprotectedlicense_artist_cr1: getSelectValue(elements.selects.streamprotectedlicense_artist_cr1),
         trans: getSelectValue(elements.selects.trans),
         audio_trans: getSelectValue(elements.selects.transAudio)
@@ -883,9 +883,9 @@ function saveState() {
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 
-    const chObj = streambasesecured_ca6Data[state.chapter];
+    const chObj = streambasesecured_ca6Data[state.streamprotectedtrack_c-ee2];
     const chNum = chObj.chapterNumber;
-    const vNum = chObj.verses[state.verse].verseNumber;
+    const vNum = chObj.streamprotectedcase_cww2[state.streamprotectedcase_c-ww2].verseNumber;
     
     const streamToken = encodeStream(chNum, vNum, state.streamprotectedlicense_artist_cr1, state.trans, state.audio_trans);
     const newUrl = `?stream=${streamToken}`;
@@ -926,22 +926,22 @@ function populateChapterSelect() {
         };
     });
     
-    populateCustomSelect(elements.selects.chapter, items, (val) => {
+    populateCustomSelect(elements.selects.streamprotectedtrack_c-ee2, items, (val) => {
         populateVerseSelect(); 
         loadVerse(true);
     });
 }
 
 function populateVerseSelect() {
-    const chIdx = getSelectValue(elements.selects.chapter) || 0;
+    const chIdx = getSelectValue(elements.selects.streamprotectedtrack_c-ee2) || 0;
     currentChapterData = streambasesecured_ca6Data[chIdx];
     
-    const items = currentChapterData.verses.map((v, i) => ({
+    const items = currentChapterData.streamprotectedcase_cww2.map((v, i) => ({
         value: i,
         text: `${v.verseNumber}`
     }));
 
-    populateCustomSelect(elements.selects.verse, items, (val) => {
+    populateCustomSelect(elements.selects.streamprotectedcase_c-ww2, items, (val) => {
         loadVerse(true);
     });
 }
@@ -971,10 +971,10 @@ function populateTranslationAudioSelect() {
         };
     });
     populateCustomSelect(elements.selects.transAudio, items, (val) => {
-        const chIdx = getSelectValue(elements.selects.chapter);
-        const vIdx = getSelectValue(elements.selects.verse);
+        const chIdx = getSelectValue(elements.selects.streamprotectedtrack_c-ee2);
+        const vIdx = getSelectValue(elements.selects.streamprotectedcase_c-ww2);
         const ch = streambasesecured_ca6Data[chIdx].chapterNumber;
-        const v = streambasesecured_ca6Data[chIdx].verses[vIdx].verseNumber;
+        const v = streambasesecured_ca6Data[chIdx].streamprotectedcase_cww2[vIdx].verseNumber;
         
         if (!elements.streambasesecured_ca6Audio.paused) {
             updateTranslationAudio(ch, v, false);
@@ -996,10 +996,10 @@ function populateTranslationSelectOptions() {
         const activeTransId = val;
         await loadTranslationData(activeTransId); 
         
-        const chIdx = getSelectValue(elements.selects.chapter);
-        const vIdx = getSelectValue(elements.selects.verse);
+        const chIdx = getSelectValue(elements.selects.streamprotectedtrack_c-ee2);
+        const vIdx = getSelectValue(elements.selects.streamprotectedcase_c-ww2);
         const ch = streambasesecured_ca6Data[chIdx].chapterNumber;
-        const v = streambasesecured_ca6Data[chIdx].verses[vIdx].verseNumber;
+        const v = streambasesecured_ca6Data[chIdx].streamprotectedcase_cww2[vIdx].verseNumber;
         updateTranslationText(ch, v);
         saveState();
     });
@@ -1011,8 +1011,8 @@ function toggleBuffering(show) {
 }
 
 async function loadVerse(autoplay = true) {
-    const chIdx = getSelectValue(elements.selects.chapter);
-    const vIdx = getSelectValue(elements.selects.verse);
+    const chIdx = getSelectValue(elements.selects.streamprotectedtrack_c-ee2);
+    const vIdx = getSelectValue(elements.selects.streamprotectedcase_c-ww2);
     
     currentChapterData = streambasesecured_ca6Data[chIdx];
 
@@ -1029,7 +1029,7 @@ async function loadVerse(autoplay = true) {
         splashTitle.textContent = displayTitle;
     }
 
-    const verseData = currentChapterData.verses[vIdx];
+    const verseData = currentChapterData.streamprotectedcase_cww2[vIdx];
     const chNum = currentChapterData.chapterNumber;
     const vNum = verseData.verseNumber;
     const verseKey = `${chNum}-${vNum}`;
@@ -1044,7 +1044,7 @@ async function loadVerse(autoplay = true) {
         newSrc = await getTunneledUrl('image', newSrcFilename);
     }
     
-    const img1 = elements.display.verse;
+    const img1 = elements.display.streamprotectedcase_c-ww2;
     const img2 = elements.display.verseNext;
 
     let imgReady = false;
@@ -1074,13 +1074,14 @@ async function loadVerse(autoplay = true) {
         await loadTranslationData(tid);
     }
 
+    // FIX: Audio updated BEFORE text to prevent 'pause' event from clearing text timers
+    await updatestreambasesecured_ca6Audio(chNum, vNum, autoplay);
+
     if (isForbidden) {
         elements.display.trans.textContent = '';
     } else {
         updateTranslationText(chNum, vNum);
     }
-
-    await updatestreambasesecured_ca6Audio(chNum, vNum, autoplay);
     
     if (isForbidden) {
         elements.transAudio.src = '';
@@ -1098,7 +1099,7 @@ function bufferNextResources(currentChIdx, currentVIdx) {
         let nextChIdx = parseInt(currentChIdx);
         let nextVIdx = currentVIdx + 1;
     
-    if (nextVIdx >= streambasesecured_ca6Data[nextChIdx].verses.length) {
+    if (nextVIdx >= streambasesecured_ca6Data[nextChIdx].streamprotectedcase_cww2.length) {
         nextChIdx = nextChIdx + 1;
         nextVIdx = 0;
     }
@@ -1106,7 +1107,7 @@ function bufferNextResources(currentChIdx, currentVIdx) {
     if (nextChIdx >= streambasesecured_ca6Data.length) return; 
 
         const nextCh = streambasesecured_ca6Data[nextChIdx].chapterNumber;
-        const nextV = streambasesecured_ca6Data[nextChIdx].verses[nextVIdx].verseNumber;
+        const nextV = streambasesecured_ca6Data[nextChIdx].streamprotectedcase_cww2[nextVIdx].verseNumber;
         const nextKey = `${nextCh}-${nextV}`;
 
         // CACHE THE IMAGE URL
@@ -1191,7 +1192,7 @@ function handlestreambasesecured_ca6End() {
 }
 
 function nextVerse() {
-    const verseWrapper = elements.selects.verse;
+    const verseWrapper = elements.selects.streamprotectedcase_c-ww2;
     const totalV = verseWrapper.querySelectorAll('._b5').length;
     let cV = parseInt(getSelectValue(verseWrapper));
     
@@ -1199,7 +1200,7 @@ function nextVerse() {
         setSelectValue(verseWrapper, cV + 1);
         loadVerse(true);
     } else {
-        const chapterWrapper = elements.selects.chapter;
+        const chapterWrapper = elements.selects.streamprotectedtrack_c-ee2;
         let cC = parseInt(getSelectValue(chapterWrapper));
         const totalC = chapterWrapper.querySelectorAll('._b5').length;
         
@@ -1276,7 +1277,7 @@ function setupEventListeners() {
 
 let currentstreamprotected_cb2Title = "";
 
-function updateMediaSession(streamprotected_cb2, verse, artist) {
+function updateMediaSession(streamprotected_cb2, streamprotectedcase_c-ww2, artist) {
     function shouldDisableMediaSession() {
         try {
             if (window.__DISABLE_MEDIA_SESSION__ === true) return true;
@@ -1323,7 +1324,7 @@ function initSearchInterface() {
     elements.search.resultsGrid.addEventListener('click', (e) => {
         const card = e.target.closest('._dw');
         if(card) {
-            const ch = parseInt(card.dataset.chapter);
+            const ch = parseInt(card.dataset.streamprotectedtrack_c-ee2);
             closeSearch();
             launchPlayer(ch, 1);
         }
@@ -1388,7 +1389,7 @@ function closeSearch() {
 document.addEventListener('DOMContentLoaded', initializeApp);
 
 document.addEventListener("DOMContentLoaded", () => {
-    if (window.location.href.includes("chapter") || window.location.href.includes("stream")) {
+    if (window.location.href.includes("streamprotectedtrack_c-ee2") || window.location.href.includes("stream")) {
         return; 
     }
     const row = document.getElementById("_ex");
@@ -1426,7 +1427,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 (function() {
     const targetId = '_j';
-    const keywords = ['stream', 'chapter'];
+    const keywords = ['stream', 'streamprotectedtrack_c-ee2'];
 
     const hideElement = () => {
         const url = window.location.href.toLowerCase();
@@ -1524,22 +1525,22 @@ window.smartSeek = function(seconds) {
 
     if (targetT < 0) {
         const remainder = Math.abs(targetT); 
-        const currentVIdx = getSelectValue(elements.selects.verse);
-        const currentChIdx = getSelectValue(elements.selects.chapter); 
+        const currentVIdx = getSelectValue(elements.selects.streamprotectedcase_c-ww2);
+        const currentChIdx = getSelectValue(elements.selects.streamprotectedtrack_c-ee2); 
 
         if (currentVIdx > 0) {
             const prevVIdx = currentVIdx - 1;
-            setSelectValue(elements.selects.verse, prevVIdx);
+            setSelectValue(elements.selects.streamprotectedcase_c-ww2, prevVIdx);
             pendingSeekOffset = { direction: 'backward', remainder: remainder };
             triggerVerseChange();
         } 
         else if (currentChIdx > 0) {
             const prevChIdx = currentChIdx - 1;
-            setSelectValue(elements.selects.chapter, prevChIdx);
+            setSelectValue(elements.selects.streamprotectedtrack_c-ee2, prevChIdx);
             const prevChapterData = streambasesecured_ca6Data[prevChIdx]; 
-            const lastVerseIdx = prevChapterData.verses.length - 1;
+            const lastVerseIdx = prevChapterData.streamprotectedcase_cww2.length - 1;
             populateVerseSelect(); 
-            setSelectValue(elements.selects.verse, lastVerseIdx);
+            setSelectValue(elements.selects.streamprotectedcase_c-ww2, lastVerseIdx);
             pendingSeekOffset = { direction: 'backward', remainder: remainder };
             triggerVerseChange();
         } 
@@ -1549,20 +1550,20 @@ window.smartSeek = function(seconds) {
     }
     else if (targetT > duration) {
         const remainder = targetT - duration; 
-        const currentVIdx = getSelectValue(elements.selects.verse);
-        const currentChIdx = getSelectValue(elements.selects.chapter);
-        const totalVersesInCh = streambasesecured_ca6Data[currentChIdx].verses.length;
+        const currentVIdx = getSelectValue(elements.selects.streamprotectedcase_c-ww2);
+        const currentChIdx = getSelectValue(elements.selects.streamprotectedtrack_c-ee2);
+        const totalVersesInCh = streambasesecured_ca6Data[currentChIdx].streamprotectedcase_cww2.length;
 
         if (currentVIdx < totalVersesInCh - 1) {
-            setSelectValue(elements.selects.verse, currentVIdx + 1);
+            setSelectValue(elements.selects.streamprotectedcase_c-ww2, currentVIdx + 1);
             pendingSeekOffset = { direction: 'forward', remainder: remainder };
             triggerVerseChange();
         } 
         else if (currentChIdx < streambasesecured_ca6Data.length - 1) {
             const nextChIdx = currentChIdx + 1;
-            setSelectValue(elements.selects.chapter, nextChIdx);
+            setSelectValue(elements.selects.streamprotectedtrack_c-ee2, nextChIdx);
             populateVerseSelect(); 
-            setSelectValue(elements.selects.verse, 0); 
+            setSelectValue(elements.selects.streamprotectedcase_c-ww2, 0); 
             pendingSeekOffset = { direction: 'forward', remainder: remainder };
             triggerVerseChange();
         }

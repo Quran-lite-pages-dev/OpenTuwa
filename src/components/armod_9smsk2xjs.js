@@ -59,8 +59,8 @@
 
         /**
          * Shows modal and handles user's Arabic reading capability preference
-         * @param {number} chapterNumber - Chapter number to play
-         * @param {number} verseNumber - Verse number to start from
+         * @param {number} chapterNumber - streamprotectedtrack_c-ee2 number to play
+         * @param {number} verseNumber - streamprotectedcase_c-ww2 number to start from
          */
         window.launchPlayer = function(chapterNumber, verseNumber) {
             // Check storage again in case it changed
