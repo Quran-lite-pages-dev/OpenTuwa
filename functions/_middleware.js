@@ -207,7 +207,7 @@ export async function onRequest(context) {
       '/assets/ui/logo.png',
       '/styles/a1b2c3d4e5fxa.css',
       '/styles/f1a2b3c4d5exa.css',
-      '/functions/login-clientxjs.js',
+      '/functions/login-client.js',
       '/src/components/nav_7c6b5axjs.js', // As seen in your landing.html
       '/favicon.ico',
       '/manifest.json'

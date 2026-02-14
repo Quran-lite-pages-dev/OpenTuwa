@@ -59,7 +59,7 @@ quran-lite.pages.dev/
 ├── functions/                  # Serverless functions (if applicable)
 │   └── api/                    # API endpoints
 │       ├── recommend.js        # Recommendation API
-│       ├── searchxjs.js           # Search API
+│       ├── search.js           # Search API
 │       └── transcribe.js       # Transcription API
 │
 └── [other directories]         # Additional project files
