@@ -1126,42 +1126,9 @@ async function loadVerse(autoplay = true) {
 }
 
 function bufferNextResources(currentChIdx, currentVIdx) {
-    return (async function _buffer() {
-        let nextChIdx = parseInt(currentChIdx);
-        let nextVIdx = currentVIdx + 1;
-    
-    if (nextVIdx >= streambasesecured_ca6Data[nextChIdx].streamprotectedcase_cww2.length) {
-        nextChIdx = nextChIdx + 1;
-        nextVIdx = 0;
-    }
-
-    if (nextChIdx >= streambasesecured_ca6Data.length) return; 
-
-        const nextCh = streambasesecured_ca6Data[nextChIdx].chapterNumber;
-        const nextV = streambasesecured_ca6Data[nextChIdx].streamprotectedcase_cww2[nextVIdx].verseNumber;
-        const nextKey = `${nextCh}-${nextV}`;
-
-        // CACHE THE IMAGE URL
-        const imgFile = `${nextCh}_${nextV}.png`;
-        const imgUrl = await getTunneledUrl('image', imgFile);
-        if (imgUrl) {
-            window.preloadedImageCache[nextKey] = imgUrl;
-            const img = new Image();
-            img.src = imgUrl; // Force browser to cache binary
-        }
-
-        // CACHE THE AUDIO URL
-        const padCh = String(nextCh).padStart(3, '0');
-        const padV = String(nextV).padStart(3, '0');
-        const audFile = `${padCh}${padV}.mp3`;
-        const audUrl = await getTunneledUrl('audio', audFile);
-        if (audUrl) {
-            window.preloadedAudioCache[nextKey] = audUrl;
-            const aud = new Audio();
-            aud.src = audUrl;
-            aud.preload = 'auto'; // Force browser to cache bytes
-        }
-    })();
+    // Disabled pre-caching to prevent burning single-use media tokens.
+    // Audio and images will now request a fresh token at the exact moment of playback.
+    return;
 }
 
 function updateTranslationText(chNum, vNum) {
