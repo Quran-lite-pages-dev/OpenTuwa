@@ -59,8 +59,11 @@ export async function onRequest(context) {
   const isDirectNav = dest === "document";
 
   // =========================================================================
-  // 3. SECURE MEDIA TUNNEL (Signed)
+  // 3. SECURE MEDIA TUNNEL (Signed) - [NEW LOGIC KEPT]
   // =========================================================================
+  if (!globalThis.__USED_MEDIA_TOKENS) globalThis.__USED_MEDIA_TOKENS = new Map();
+  const usedTokens = globalThis.__USED_MEDIA_TOKENS;
+
   const fromBase64Url = (str) => {
     let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
     while (b64.length % 4) b64 += '=';
@@ -103,18 +106,21 @@ export async function onRequest(context) {
 
       if (payload.type !== type || payload.filename !== filename) return new Response("Token Mismatch", { status: 403 });
       if (Date.now() > payload.exp) return new Response("Token Expired", { status: 410 });
-      // Single-use disabled: audio/video triggers Range requests; each would consume the token and break playback
+      if (usedTokens.has(payload.nonce)) return new Response("Token Used", { status: 403 });
 
-      // IP/UA binding disabled by default - causes 403 for users on dynamic IPs, corporate proxies,
-      // or when CF-Connecting-IP differs between token request and media fetch. Token remains
-      // secure via HMAC and short expiry. Set MEDIA_STRICT_BINDING=true to re-enable.
-      const strictBinding = (env && env.MEDIA_STRICT_BINDING) === 'true';
-      if (strictBinding) {
-        const currentIp = request.headers.get('CF-Connecting-IP') || '0.0.0.0';
-        if (payload.ip !== currentIp) return new Response("IP Mismatch", { status: 403 });
-        const currentUa = request.headers.get('User-Agent') || '';
-        const currentUaHash = await computeUaHash(currentUa);
-        if (payload.ua_hash !== currentUaHash) return new Response("Device Mismatch", { status: 403 });
+      // Check IP Binding
+      const currentIp = request.headers.get('CF-Connecting-IP') || '0.0.0.0';
+      if (payload.ip !== currentIp) return new Response("IP Mismatch", { status: 403 });
+
+      // Check UA Binding
+      const currentUa = request.headers.get('User-Agent') || '';
+      const currentUaHash = await computeUaHash(currentUa);
+      if (payload.ua_hash !== currentUaHash) return new Response("Device Mismatch", { status: 403 });
+
+      // Mark Used
+      usedTokens.set(payload.nonce, Date.now());
+      for (const [n, t] of usedTokens) {
+        if (Date.now() - t > 65000) usedTokens.delete(n);
       }
 
       // Rewrite to Real Source (New GitHub Paths)
