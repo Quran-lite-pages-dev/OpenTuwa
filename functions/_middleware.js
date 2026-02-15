@@ -1,6 +1,8 @@
 // functions/_middleware.js
 
-// Duplicated Crypto Logic for Middleware (Edge context)
+// =========================================================================
+// CRYPTO HELPERS (Keep New Logic)
+// =========================================================================
 async function importDecryptKey(secret) {
   const enc = new TextEncoder();
   const rawKey = enc.encode(secret);
@@ -24,13 +26,8 @@ export async function onRequest(context) {
   const MEDIA_SECRET = (env && env.MEDIA_SECRET) || 'please-set-a-strong-secret-in-prod';
 
   // =========================================================================
-  // 0. STREAM TOKEN VALIDATION (AES-256)
+  // 0. STREAM TOKEN VALIDATION (AES-256) - [NEW LOGIC KEPT]
   // =========================================================================
-  // If the user navigates to ?stream=XXX, we strictly validate it here.
-  // We do NOT decrypt and expose the data to the browser in the URL.
-  // We only check if it is VALID. If invalid, 403.
-  // The Client JS will separately call the API to decrypt it.
-  
   const streamParam = url.searchParams.get('stream');
   if (streamParam) {
     try {
@@ -44,10 +41,7 @@ export async function onRequest(context) {
 
       // Attempt Decrypt
       await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, cipherData);
-      
-      // If no error thrown, token is valid AES-256. Proceed.
     } catch (e) {
-      // Invalid Stream Token -> Block Access
       return new Response("Forbidden: Invalid or Tampered Stream Token", { status: 403 });
     }
   }
@@ -59,19 +53,17 @@ export async function onRequest(context) {
   const hasPremium = cookieHeader && cookieHeader.includes("TUWA_PREMIUM=true");
 
   // =========================================================================
-  // 2. REQUEST TYPE DETECTION (For Anti-Scraping)
+  // 2. REQUEST TYPE DETECTION
   // =========================================================================
   const dest = request.headers.get("Sec-Fetch-Dest");
-  const referer = request.headers.get("Referer");
   const isDirectNav = dest === "document";
 
   // =========================================================================
-  // 3. SECURE MEDIA TUNNEL (Signed, single-use tokens)
+  // 3. SECURE MEDIA TUNNEL (Signed) - [NEW LOGIC KEPT]
   // =========================================================================
   if (!globalThis.__USED_MEDIA_TOKENS) globalThis.__USED_MEDIA_TOKENS = new Map();
   const usedTokens = globalThis.__USED_MEDIA_TOKENS;
 
-  // Helpers for base64url
   const fromBase64Url = (str) => {
     let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
     while (b64.length % 4) b64 += '=';
@@ -87,7 +79,6 @@ export async function onRequest(context) {
 
   if (path.startsWith('/media/')) {
     const parts = path.split('/'); 
-    // Expect: /media/{type}/{token}/{filename}
     if (parts.length >= 5) {
       const type = parts[2];
       const tokenStr = parts[3];
@@ -128,17 +119,11 @@ export async function onRequest(context) {
 
       // Mark Used
       usedTokens.set(payload.nonce, Date.now());
-      // Cleanup
       for (const [n, t] of usedTokens) {
         if (Date.now() - t > 65000) usedTokens.delete(n);
       }
 
-      // Rewrite to Real Source
-      // MAPPING:
-      // audio -> https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/master/assets/audio/play/{filename}
-      // image -> https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/master/assets/ui/{filename}
-      // data  -> https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/master/assets/data/{filename}
-
+      // Rewrite to Real Source (New GitHub Paths)
       let targetUrl = '';
       const BASE = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/master/assets';
       
@@ -152,16 +137,48 @@ export async function onRequest(context) {
   }
 
   // =========================================================================
-  // 4. GUEST & PREMIUM ROUTING
+  // 4. ROOT ROUTING (The "Door") - [RESTORED FROM BACKUP]
+  // =========================================================================
+  // This is what the contractor forgot. Without this, "/" does nothing.
+  if (lowerPath === '/' || lowerPath === '/index.html' || lowerPath === '') {
+    const targetPage = hasPremium ? '/app.html' : '/landing.html';
+    // We use env.ASSETS.fetch to serve the HTML file internally
+    return env.ASSETS.fetch(new URL(targetPage, request.url));
+  }
+
+  // =========================================================================
+  // 5. HIDE HTML FILES - [RESTORED FROM BACKUP]
+  // =========================================================================
+  // Forces users to use clean URLs (tuwa.com/) instead of tuwa.com/app.html
+  if (lowerPath === '/app.html' || lowerPath === '/landing.html' || lowerPath === '/app') {
+    return Response.redirect(new URL('/', request.url), 302);
+  }
+
+  // =========================================================================
+  // 6. GUEST & PREMIUM ROUTING - [MERGED]
   // =========================================================================
   if (!hasPremium) {
+    // MERGED LIST: Includes files from OLD backup (for landing page) 
+    // AND the files the contractor added.
     const allowedGuestFiles = [
-      '/landing.html', 
+      // From Old Backup (Crucial for Landing UI):
+      '/assets/ui/web.png',
+      '/assets/ui/web.ico',
+      '/assets/ui/apple-touch-icon.png',
+      '/assets/ui/logo.png',
+      '/styles/a1b2c3d4e5fxa.css',
+      '/styles/f1a2b3c4d5exa.css',
+      '/functions/login-client.js',
+      '/src/components/nav_7c6b5axjs.js',
+      
+      // From Contractor's New Code:
+      '/landing.html', // (Though we handle this in root routing, keeping it safe)
       '/login.html', 
       '/styles/landing_a1b2c.css',
       '/styles/login_x9y8z.css',
-      '/src/ui/landing_ui.js', 
-      '/src/components/nav_7c6b5axjs.js',
+      '/src/ui/landing_ui.js',
+      
+      // Common:
       '/favicon.ico',
       '/manifest.json'
     ];
@@ -182,14 +199,15 @@ export async function onRequest(context) {
   }
 
   // =========================================================================
-  // 5. PREMIUM SOURCE PROTECTION
+  // 7. PREMIUM SOURCE PROTECTION - [RESTORED]
   // =========================================================================
   if (hasPremium) {
     const protectedFolders = ['/src', '/assets', '/functions', '/locales', '/styles'];
     const isProtected = protectedFolders.some(folder => lowerPath.startsWith(folder));
     
     if (isProtected && isDirectNav) {
-      return Response.redirect(url.origin, 302);
+      // Redirect directory browsing back to app
+      return Response.redirect(new URL('/', request.url), 302);
     }
   }
 
