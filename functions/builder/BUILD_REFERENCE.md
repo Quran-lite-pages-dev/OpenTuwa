@@ -1,21 +1,10 @@
-# 🏗️ Production Build Reference
+
 **Generated:** 2026-02-14 16:28:33
 
 This document serves as the "Rosetta Stone" for the production build. 
 Use this to map obfuscated errors and file paths back to the original source code.
 
----
 
-## 🤖 System Prompt for AI Agents
-*(Copy-paste this block into Cursor/ChatGPT if you are debugging a production error)*
-
-> "I am debugging a production build where files and CSS classes have been obfuscated. 
-> Below is the mapping logic. If I reference a file like `styles/b1c...css`, it maps to `styles/index.css`. 
-> If I reference a class `_b`, it maps to `row-section`. Use this context to explain errors."
-
----
-
-## 1. 📂 File System Mapping (Cache Busting)
 *Mapping source files to their production hash filenames.*
 
 | Original Source File | Production Filename (Hashed) |
@@ -47,7 +36,7 @@ Use this to map obfuscated errors and file paths back to the original source cod
 
 ---
 
-## 2. 🛡️ DOM Obfuscation Map (Classes & IDs)
+## 2. DOM Obfuscation Map (Classes & IDs)
 *Mapping original readable IDs/Classes to minified production codes.*
 
 | Minified Code | Original ID/Class | Type |
