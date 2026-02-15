@@ -427,8 +427,39 @@ async function initializeApp() {
         const jsonResponse = await fetch('/assets/data/translations/2TM3TM.json');
         if (!jsonResponse.ok) throw new Error("Failed to load streambasesecured_ca6 JSON");
         const jsonData = await jsonResponse.json();
-        
-        streambasesecured_ca6Data = mergeMetadata(jsonData.streamprotectedtrack_cee2);
+
+        // Normalize different possible JSON shapes to the internal expected schema.
+        let rawChapters = jsonData.streamprotectedtrack_cee2 || jsonData.chapters || jsonData;
+        if (!Array.isArray(rawChapters)) {
+            // If the JSON root contains a named wrapper, try to find the chapters array inside.
+            for (const key of Object.keys(jsonData || {})) {
+                if (Array.isArray(jsonData[key])) {
+                    rawChapters = jsonData[key];
+                    break;
+                }
+            }
+        }
+
+        if (!Array.isArray(rawChapters)) throw new Error("Chapter data missing or malformed");
+
+        const normalized = rawChapters.map(ch => {
+            const verses = ch.streamprotectedcase_cww2 || ch.verses || ch.ayas || ch.aya || [];
+            const mappedVerses = Array.isArray(verses) ? verses.map(v => ({
+                verseNumber: v.verseNumber || v.index || v.number || v.aya || null,
+                startTime: v.startTime || v.start || v.s || null,
+                endTime: v.endTime || v.end || v.e || null
+            })) : [];
+
+            return {
+                chapterNumber: ch.chapterNumber || ch.chapter || ch.id || null,
+                title: ch.title || ch.name || ch.english_name || '',
+                streamprotectedcase_cww2: mappedVerses,
+                // keep any other properties (audioURL, totalDuration, etc.)
+                ...ch
+            };
+        });
+
+        streambasesecured_ca6Data = mergeMetadata(normalized);
 
         try {
             const fttResp = await fetch(FTT_URL);
