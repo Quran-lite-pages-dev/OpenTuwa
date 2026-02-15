@@ -1502,6 +1502,7 @@ window.addEventListener('popstate', forceRemoveFadeLayer);
 forceRemoveFadeLayer();
 
 let pendingSeekOffset = null; 
+let seekCooldown = false; // Debounce flag to prevent rapid mashing crashes
 
 elements.streambasesecured_ca6Audio.addEventListener('loadedmetadata', () => {
     if (pendingSeekOffset !== null) {
@@ -1532,8 +1533,15 @@ elements.streambasesecured_ca6Audio.addEventListener('loadedmetadata', () => {
 });
 
 window.smartSeek = function(seconds) {
+    // 1. Debounce check: Exit immediately if a seek just happened
+    if (seekCooldown) return;
+    
     const audio = elements.streambasesecured_ca6Audio;
     if (!audio || isNaN(audio.duration)) return;
+
+    // 2. Lock seeking for 250ms
+    seekCooldown = true;
+    setTimeout(() => { seekCooldown = false; }, 250);
 
     const currentT = audio.currentTime;
     const duration = audio.duration;
@@ -1544,10 +1552,12 @@ window.smartSeek = function(seconds) {
         return;
     }
 
+    // THE FIX: Parse strings into integers so math (+ 1) works correctly.
+    const currentVIdx = parseInt(getSelectValue(elements.selects['streamprotectedcase_c-ww2']), 10);
+    const currentChIdx = parseInt(getSelectValue(elements.selects['streamprotectedtrack_c-ee2']), 10);
+
     if (targetT < 0) {
         const remainder = Math.abs(targetT); 
-        const currentVIdx = getSelectValue(elements.selects['streamprotectedcase_c-ww2']);
-        const currentChIdx = getSelectValue(elements.selects['streamprotectedtrack_c-ee2']); 
 
         if (currentVIdx > 0) {
             const prevVIdx = currentVIdx - 1;
@@ -1571,8 +1581,6 @@ window.smartSeek = function(seconds) {
     }
     else if (targetT > duration) {
         const remainder = targetT - duration; 
-        const currentVIdx = getSelectValue(elements.selects['streamprotectedcase_c-ww2']);
-        const currentChIdx = getSelectValue(elements.selects['streamprotectedtrack_c-ee2']);
         const totalVersesInCh = streambasesecured_ca6Data[currentChIdx].streamprotectedcase_cww2.length;
 
         if (currentVIdx < totalVersesInCh - 1) {
@@ -1589,7 +1597,7 @@ window.smartSeek = function(seconds) {
             triggerVerseChange();
         }
         else {
-            console.log("End of streambasesecured_ca6 reached via seek");
+            console.log("End of media reached via seek");
         }
     }
 };
@@ -1616,11 +1624,9 @@ function showInteractionFeedback(type) {
 if (elements.streambasesecured_ca6Audio) {
     elements.streambasesecured_ca6Audio.addEventListener('play', () => {
         const currentSrc = elements.streambasesecured_ca6Audio.src;
-
         if (currentSrc === lastKnownSrc) {
             showInteractionFeedback('play');
         } 
-        
         lastKnownSrc = currentSrc;
     });
 
@@ -1631,13 +1637,85 @@ if (elements.streambasesecured_ca6Audio) {
     });
 }
 
+// --- FIXED KEYBOARD & TV REMOTE CONTROLS ---
 document.addEventListener('keydown', (e) => {
     if (document.activeElement.tagName === 'INPUT') return;
 
-    if (e.key === 'ArrowRight') {
-        showInteractionFeedback('forward');
-    } 
-    else if (e.key === 'ArrowLeft') {
-        showInteractionFeedback('backward');
+    const isCinemaActive = elements.views.cinema && elements.views.cinema.classList.contains('active');
+    if (!isCinemaActive) return;
+
+    const audio = elements.streambasesecured_ca6Audio;
+    if (!audio) return;
+
+    // Handle Play/Pause (Spacebar or Enter/OK on TV)
+    if (e.key === ' ' || e.key === 'Enter') {
+        const isButtonFocused = document.activeElement.tagName === 'BUTTON' || document.activeElement.closest('._k');
+        
+        if (!isButtonFocused) {
+            e.preventDefault();
+            if (audio.paused) {
+                audio.play().catch(err => console.log('Play blocked', err));
+                showInteractionFeedback('play');
+            } else {
+                audio.pause();
+                showInteractionFeedback('pause');
+            }
+        }
     }
+    // NOTE: Arrow keys are handled EXCLUSIVELY by nav_7c6b5axjs.js to prevent "crazy" behavior.
+    // MediaPlayPause keys are intentionally left out to let the TV/Browser natively toggle audio without double-firing.
 });
+
+// --- FIXED MOBILE DOUBLE-TAP TO SEEK / PAUSE ---
+let tapCount = 0;
+let tapTimer = null;
+
+if (elements.views.cinema) {
+    elements.views.cinema.addEventListener('touchstart', (e) => {
+        // Ignore multi-touch (e.g., pinch to zoom)
+        if (e.touches.length > 1) return;
+        
+        // STRICT CHECK: Ignore taps on UI elements
+        if (e.target.closest('button') || e.target.closest('._k') || e.target.closest('nav')) {
+            return;
+        }
+
+        tapCount++;
+        
+        if (tapCount === 1) {
+            tapTimer = setTimeout(() => {
+                tapCount = 0; // Reset after 300ms if a second tap doesn't happen
+            }, 300);
+        } else if (tapCount === 2) {
+            clearTimeout(tapTimer);
+            tapCount = 0;
+            
+            if (e.cancelable) e.preventDefault(); // Stop screen zoom
+            
+            const touchX = e.touches[0].clientX;
+            const screenWidth = window.innerWidth;
+            const audio = elements.streambasesecured_ca6Audio;
+
+            if (touchX < screenWidth / 3) {
+                // Left 33%: Rewind
+                showInteractionFeedback('backward');
+                if (window.smartSeek) window.smartSeek(-10);
+            } else if (touchX > (screenWidth * 2) / 3) {
+                // Right 33%: Forward
+                showInteractionFeedback('forward');
+                if (window.smartSeek) window.smartSeek(10);
+            } else {
+                // Center 33%: Play/Pause
+                if (audio) {
+                    if (audio.paused) {
+                        audio.play().catch(err => console.log('Play blocked', err));
+                        showInteractionFeedback('play');
+                    } else {
+                        audio.pause();
+                        showInteractionFeedback('pause');
+                    }
+                }
+            }
+        }
+    }, { passive: false });
+}

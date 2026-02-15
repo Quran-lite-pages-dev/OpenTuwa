@@ -226,33 +226,23 @@
         // --- 2. NAVIGATION LOGIC ---
         if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
             
-            // ============================================================
-            // START CINEMA LOGIC
-            // ============================================================
             const cinemaView = document.getElementById(VIEWS.CINEMA);
-            
-            // [FIX] STRICT CHECK: Only run cinema logic if it is TRULY active and visible.
-            // This prevents it from hijacking Dashboard or other views.
             const isCinemaActive = cinemaView && cinemaView.classList.contains('active') && isVisible(cinemaView);
 
             if (isCinemaActive) {
                 const active = document.activeElement;
-                const isFocusedOnControl = (cinemaView.contains(active) && active !== document.body);
                 const isDropdownOpen = !!document.querySelector('._k.open');
-                const isInControlMode = isFocusedOnControl || isDropdownOpen;
 
-                // SCENARIO A: User presses DOWN (Enter Control Mode)
                 if (e.key === 'ArrowDown') {
-                    if (!isInControlMode) {
+                    if (!isDropdownOpen && (!active || active === document.body)) {
                         e.preventDefault();
                         e.stopImmediatePropagation();
-                        
                         const candidates = cinemaView.querySelectorAll(SELECTOR);
                         const visibleCandidates = Array.from(candidates).filter(isVisible);
 
                         if (visibleCandidates.length > 0) {
-                            const playBtn = visibleCandidates.find(el => el.classList.contains('play-btn')) || visibleCandidates[0];
-                            focusElement(playBtn);
+                            const targetBtn = visibleCandidates.find(el => el.classList.contains('_q')) || visibleCandidates[0];
+                            focusElement(targetBtn);
                             resetCinemaFailsafe(); 
                         }
                         return;
@@ -260,43 +250,32 @@
                     resetCinemaFailsafe();
                 }
 
-                // SCENARIO B: User presses UP (Exit Control Mode)
                 if (e.key === 'ArrowUp') {
-                    if (isInControlMode) {
-                        // [FIX START] Don't exit control mode if we are just scrolling inside a dropdown!
-                        if (isDropdownOpen) {
-                            // Do nothing here, let it fall through to navigate(e.key) below
-                            // which correctly handles the focus trap inside the dropdown.
-                        } else {
-                            if(active) active.blur();
-                            currentFocus = null;
-                            if(cinemaFailsafeTimer) clearTimeout(cinemaFailsafeTimer);
-                            cinemaFailsafeTimer = null;
-                            return; 
-                        }
-                        // [FIX END]
+                    if (!isDropdownOpen && active && active !== document.body) {
+                        active.blur();
+                        currentFocus = null;
+                        if(cinemaFailsafeTimer) clearTimeout(cinemaFailsafeTimer);
+                        cinemaFailsafeTimer = null;
+                        return; 
                     }
                 }
 
-// SCENARIO C: User presses LEFT / RIGHT
-                // SCENARIO C: User presses LEFT / RIGHT
+                // THE FIX: Left/Right ALWAYS seek unless a dropdown menu is actively open
                 if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-                    if (isInControlMode) {
+                    if (isDropdownOpen) {
                         resetCinemaFailsafe(); 
                         e.stopImmediatePropagation(); 
                         e.preventDefault(); 
                         navigate(e.key);
                         return; 
                     } else {
+                        // FORCE SEEK BEHAVIOR
                         e.preventDefault();
                         e.stopImmediatePropagation();
                         
-                        // 1. Perform the Smart Seek
                         const direction = e.key === 'ArrowLeft' ? -10 : 10;
                         if (window.smartSeek) window.smartSeek(direction);
 
-                        // 2. SELF-HEALING VISUAL INDICATOR
-                        // This function creates the HTML elements automatically if they are missing
                         const ensureIndicator = (id, isLeft) => {
                             let el = document.getElementById(id);
                             if (!el) {
@@ -315,30 +294,22 @@
                         const indicatorId = isLeft ? '_4' : '_v';
                         const indicator = ensureIndicator(indicatorId, isLeft);
                         
-                        // 3. Trigger Animation
                         if (indicator) {
-                            // Reset animation frame
                             indicator.classList.remove('active');
-                            void indicator.offsetWidth; // Force CSS Reflow
+                            void indicator.offsetWidth; 
                             indicator.classList.add('active');
 
-                            // Clear previous timer to prevent flickering
                             if (indicator.dataset.timer) clearTimeout(parseInt(indicator.dataset.timer));
                             
-                            // Hide after 600ms
                             const timer = setTimeout(() => {
                                 indicator.classList.remove('active');
                             }, 600);
-                            indicator.dataset.timer = timer;
+                            indicator.dataset.timer = timer.toString();
                         }
-
                         return;
                     }
                 }
             }
-            // ============================================================
-            // END CINEMA LOGIC
-            // ============================================================
 
             e.stopImmediatePropagation();
             e.preventDefault();
@@ -355,7 +326,6 @@
                     return;
                 }
             }
-            // Reset Cinema timer on Enter too
             const cinemaView = document.getElementById(VIEWS.CINEMA);
             if (cinemaView && cinemaView.classList.contains('active')) {
                 resetCinemaFailsafe();
@@ -390,7 +360,6 @@
             }
         }
     }, true);
-
     // 4. MOUSE/TOUCH LISTENERS
     document.addEventListener('focusin', (e) => {
         if (e.target.matches && e.target.matches(SELECTOR)) {
