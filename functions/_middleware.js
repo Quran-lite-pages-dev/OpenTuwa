@@ -1,50 +1,8 @@
-// functions/_middleware.js
-
-// =========================================================================
-// CRYPTO HELPERS (Keep New Logic)
-// =========================================================================
-async function importDecryptKey(secret) {
-  const enc = new TextEncoder();
-  const rawKey = enc.encode(secret);
-  let keyBytes = new Uint8Array(32);
-  keyBytes.set(rawKey.slice(0, 32));
-  return crypto.subtle.importKey("raw", keyBytes, { name: "AES-GCM" }, false, ["decrypt"]);
-}
-
-function hexToBuff(hex) {
-  const tokens = hex.match(/.{1,2}/g);
-  if (!tokens) return new Uint8Array();
-  return new Uint8Array(tokens.map(byte => parseInt(byte, 16)));
-}
-
 export async function onRequest(context) {
   const { request, next, env } = context;
   const url = new URL(request.url);
   const path = url.pathname;
   const lowerPath = path.toLowerCase();
-
-  const MEDIA_SECRET = (env && env.MEDIA_SECRET) || 'please-set-a-strong-secret-in-prod';
-
-  // =========================================================================
-  // 0. STREAM TOKEN VALIDATION (AES-256) - [NEW LOGIC KEPT]
-  // =========================================================================
-  const streamParam = url.searchParams.get('stream');
-  if (streamParam) {
-    try {
-      if (streamParam.length < 24) throw new Error("Token too short");
-      
-      const key = await importDecryptKey(MEDIA_SECRET);
-      const ivHex = streamParam.slice(0, 24);
-      const cipherHex = streamParam.slice(24);
-      const iv = hexToBuff(ivHex);
-      const cipherData = hexToBuff(cipherHex);
-
-      // Attempt Decrypt
-      await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, cipherData);
-    } catch (e) {
-      return new Response("Forbidden: Invalid or Tampered Stream Token", { status: 403 });
-    }
-  }
 
   // =========================================================================
   // 1. AUTHENTICATION
@@ -53,23 +11,41 @@ export async function onRequest(context) {
   const hasPremium = cookieHeader && cookieHeader.includes("TUWA_PREMIUM=true");
 
   // =========================================================================
-  // 2. REQUEST TYPE DETECTION
+  // 2. REQUEST TYPE DETECTION (For Anti-Scraping)
   // =========================================================================
+  // 'dest' tells us IF the browser is loading a page (document) 
+  // or a resource (image, audio, script).
   const dest = request.headers.get("Sec-Fetch-Dest");
+  const referer = request.headers.get("Referer");
+  
+  // Is the user trying to open a file directly in the address bar?
+  // (e.g. typing tuwa.com/src/app.js) -> We will block this.
   const isDirectNav = dest === "document";
 
   // =========================================================================
-  // 3. SECURE MEDIA TUNNEL (Signed) - [NEW LOGIC KEPT]
+  // 3. SECURE MEDIA TUNNEL (Signed, single-use tokens)
   // =========================================================================
+  // This extends the previous tunnel by requiring a signed token in the
+  // URL: /media/{type}/{token}/{filename}. Tokens are short-lived (1 minute)
+  // and are marked single-use. NOTE: This implementation uses an in-memory
+  // used-token store. For production use, replace with a durable store
+  // (KV/Redis) via `env` bindings.
+
+  // --- Simple in-memory used-token set (nonce => usedAt)
   if (!globalThis.__USED_MEDIA_TOKENS) globalThis.__USED_MEDIA_TOKENS = new Map();
   const usedTokens = globalThis.__USED_MEDIA_TOKENS;
 
+  // Secret for HMAC. For production, set via env var (env.MEDIA_SECRET)
+  const MEDIA_SECRET = (env && env.MEDIA_SECRET) || 'please-set-a-strong-secret-in-prod';
+
+  // Helpers for base64url
   const fromBase64Url = (str) => {
     let b64 = str.replace(/-/g, '+').replace(/_/g, '/');
     while (b64.length % 4) b64 += '=';
     return Uint8Array.from(atob(b64), c => c.charCodeAt(0));
   };
 
+  // Compute a short UA hash (SHA-256 -> first 8 hex chars)
   async function computeUaHash(ua) {
     const enc = new TextEncoder();
     const buf = await crypto.subtle.digest('SHA-256', enc.encode(ua || ''));
@@ -77,91 +53,154 @@ export async function onRequest(context) {
     return hex.slice(0, 8);
   }
 
-  if (path.startsWith('/media/')) {
-    const parts = path.split('/'); 
-    if (parts.length >= 5) {
-      const type = parts[2];
-      const tokenStr = parts[3];
-      const filename = parts.slice(4).join('/');
+  async function verifyToken(token) {
+    try {
+      const parts = token.split('.');
+      if (parts.length !== 2) return { ok: false };
+      
+      const payloadB64 = parts[0];
+      const sigB64 = parts[1];
 
-      const [payloadB64, sigB64] = tokenStr.split('.');
-      if (!payloadB64 || !sigB64) return new Response("Invalid Token Format", { status: 403 });
+      // Decode payload
+      const payloadBytes = fromBase64Url(payloadB64);
+      const payloadJson = new TextDecoder().decode(payloadBytes);
+      const payload = JSON.parse(payloadJson);
 
-      // Verify Signature
+      // Check expiry
+      if (!payload.exp || Date.now() > payload.exp) {
+        return { ok: false, reason: 'expired' };
+      }
+
+      // Check nonce not used
+      if (!payload.nonce || usedTokens.has(payload.nonce)) {
+        return { ok: false, reason: 'used' };
+      }
+
+      // Verify signature
       const enc = new TextEncoder();
       const keyData = enc.encode(MEDIA_SECRET);
       const key = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['verify']);
       
       const sig = fromBase64Url(sigB64);
-      const data = enc.encode(payloadB64);
+      const valid = await crypto.subtle.verify('HMAC', key, sig, enc.encode(payloadJson));
       
-      const isValid = await crypto.subtle.verify('HMAC', key, sig, data);
-      if (!isValid) return new Response("Invalid Signature", { status: 403 });
-
-      // Check Payload
-      let payload;
-      try {
-        payload = JSON.parse(new TextDecoder().decode(fromBase64Url(payloadB64)));
-      } catch (e) { return new Response("Bad Payload", { status: 400 }); }
-
-      if (payload.type !== type || payload.filename !== filename) return new Response("Token Mismatch", { status: 403 });
-      if (Date.now() > payload.exp) return new Response("Token Expired", { status: 410 });
-      if (usedTokens.has(payload.nonce)) return new Response("Token Used", { status: 403 });
-
-      // Check IP Binding
-      const currentIp = request.headers.get('CF-Connecting-IP') || '0.0.0.0';
-      if (payload.ip !== currentIp) return new Response("IP Mismatch", { status: 403 });
-
-      // Check UA Binding
-      const currentUa = request.headers.get('User-Agent') || '';
-      const currentUaHash = await computeUaHash(currentUa);
-      if (payload.ua_hash !== currentUaHash) return new Response("Device Mismatch", { status: 403 });
-
-      // Mark Used
-      usedTokens.set(payload.nonce, Date.now());
-      for (const [n, t] of usedTokens) {
-        if (Date.now() - t > 65000) usedTokens.delete(n);
+      if (!valid) {
+        console.error('[TOKEN] Signature verification failed for nonce:', payload.nonce);
+        return { ok: false, reason: 'bad-signature' };
       }
 
-      // Rewrite to Real Source (New GitHub Paths)
-      let targetUrl = '';
-      const BASE = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/master/assets';
-      
-      if (type === 'audio') targetUrl = `${BASE}/audio/play/${filename}`;
-      else if (type === 'image') targetUrl = `${BASE}/ui/${filename}`;
-      else if (type === 'data') targetUrl = `${BASE}/data/${filename}`;
-      else return new Response("Unknown Type", { status: 404 });
+      return { ok: true, payload };
+    } catch (e) {
+      console.error('[TOKEN] Verification error:', e.message);
+      return { ok: false };
+    }
+  }
 
-      return fetch(targetUrl, request);
+  if (lowerPath.startsWith('/media/')) {
+
+    // RULE 1: Only Premium users allowed.
+    if (!hasPremium) return new Response('Not Found', { status: 404 });
+
+    // RULE 2: Anti-Scrape. Block direct navigations.
+    if (isDirectNav) return new Response('Access Denied', { status: 403 });
+
+    // Expect path: /media/{type}/{token}/{filename}
+    // NOTE: do NOT lowercase the token segment — tokens are case-sensitive.
+    const parts = path.split('/').filter(Boolean);
+    if (parts.length < 4) return new Response('Invalid Request', { status: 400 });
+
+    const [, rawType, tokenPart, ...rest] = parts;
+    const type = (rawType || '').toLowerCase();
+    const filename = rest.join('/');
+
+    // Validate token
+    const verification = await verifyToken(tokenPart);
+    if (!verification.ok) {
+      return new Response(`Invalid token (${verification.reason || 'unknown'})`, { status: 403 });
+    }
+
+    const payload = verification.payload;
+    // Token Binding: verify IP and UA fingerprint match
+    const currentIp = request.headers.get('CF-Connecting-IP') || request.headers.get('X-Forwarded-For') || '';
+    const currentUa = request.headers.get('User-Agent') || '';
+    const currentUaHash = await computeUaHash(currentUa);
+    if ((payload.ip || '') !== currentIp || (payload.ua_hash || '') !== currentUaHash) {
+      return new Response('Link Stolen/Device Mismatch', { status: 403 });
+    }
+    // Ensure token matches request
+    if (payload.type !== type || payload.filename !== filename) {
+      return new Response('Token mismatch', { status: 403 });
+    }
+
+    // Mark nonce as used (single-use)
+    usedTokens.set(payload.nonce, Date.now());
+
+    // Prune old tokens (keep memory small)
+    const now = Date.now();
+    for (const [k, v] of usedTokens.entries()) {
+      if (now - v > 1000 * 60 * 10) usedTokens.delete(k);
+    }
+
+    // Resolve real source based on type
+    let realSource = null;
+    if (type === 'audio') {
+      // incoming filename like 001001.mp3
+      realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@master/assets/cdn/${filename}`;
+    } else if (type === 'image') {
+      realSource = `https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/images/img/web.png`;
+    } else if (type === 'data') {
+      const dataBase = 'https://cdn.jsdelivr.net/gh/Quran-lite-pages-dev/Quran-lite.pages.dev@refs/heads/master/assets/data/translations/';
+      if (filename.endsWith('.json') || filename.endsWith('.xml')) {
+        realSource = `${dataBase}${filename}`;
+      }
+    }
+
+    if (realSource) {
+      try {
+        const originalResponse = await fetch(realSource);
+        if (!originalResponse.ok) return new Response('Media Error', { status: 404 });
+
+        const newHeaders = new Headers(originalResponse.headers);
+        newHeaders.delete('x-github-request-id');
+        newHeaders.delete('access-control-allow-origin');
+        newHeaders.delete('server');
+        newHeaders.delete('x-cache');
+        newHeaders.delete('x-served-by');
+        newHeaders.set('Content-Disposition', 'inline');
+        newHeaders.set('Cache-Control', 'private, max-age=86400');
+
+        return new Response(originalResponse.body, {
+          status: originalResponse.status,
+          headers: newHeaders
+        });
+      } catch (e) {
+        return new Response('Upstream Error', { status: 502 });
+      }
     }
   }
 
   // =========================================================================
-  // 4. ROOT ROUTING (The "Door") - [RESTORED FROM BACKUP]
+  // 4. ROOT ROUTING (The "Door")
   // =========================================================================
-  // This is what the contractor forgot. Without this, "/" does nothing.
   if (lowerPath === '/' || lowerPath === '/index.html' || lowerPath === '') {
     const targetPage = hasPremium ? '/app.html' : '/landing.html';
-    // We use env.ASSETS.fetch to serve the HTML file internally
     return env.ASSETS.fetch(new URL(targetPage, request.url));
   }
 
   // =========================================================================
-  // 5. HIDE HTML FILES - [RESTORED FROM BACKUP]
+  // 5. HIDE HTML FILES
   // =========================================================================
-  // Forces users to use clean URLs (tuwa.com/) instead of tuwa.com/app.html
+  // Prevent users from bypassing the logic by typing /app.html
   if (lowerPath === '/app.html' || lowerPath === '/landing.html' || lowerPath === '/app') {
     return Response.redirect(new URL('/', request.url), 302);
   }
 
   // =========================================================================
-  // 6. GUEST & PREMIUM ROUTING - [MERGED]
+  // 6. GUEST LOCKDOWN (Strict Allowlist)
   // =========================================================================
+  // If NOT Premium, block EVERYTHING except what landing.html needs.
   if (!hasPremium) {
-    // MERGED LIST: Includes files from OLD backup (for landing page) 
-    // AND the files the contractor added.
     const allowedGuestFiles = [
-      // From Old Backup (Crucial for Landing UI):
       '/assets/ui/web.png',
       '/assets/ui/web.ico',
       '/assets/ui/apple-touch-icon.png',
@@ -169,16 +208,7 @@ export async function onRequest(context) {
       '/styles/a1b2c3d4e5fxa.css',
       '/styles/f1a2b3c4d5exa.css',
       '/functions/login-client.js',
-      '/src/components/nav_7c6b5axjs.js',
-      
-      // From Contractor's New Code:
-      '/landing.html', // (Though we handle this in root routing, keeping it safe)
-      '/login.html', 
-      '/styles/landing_a1b2c.css',
-      '/styles/login_x9y8z.css',
-      '/src/ui/landing_ui.js',
-      
-      // Common:
+      '/src/components/nav_7c6b5axjs.js', // As seen in your landing.html
       '/favicon.ico',
       '/manifest.json'
     ];
@@ -187,29 +217,34 @@ export async function onRequest(context) {
       '/login',       
       '/login-google',
       '/auth/',
-      '/api/config'
+      '/api/config' // Allow config if needed for guest previews (optional)
     ];
 
     const isAllowed = allowedGuestFiles.includes(lowerPath) || 
                       allowedGuestStarts.some(prefix => lowerPath.startsWith(prefix));
 
     if (!isAllowed) {
+      // 404 makes it look like the files literally don't exist
       return new Response("Not Found", { status: 404 });
     }
   }
 
   // =========================================================================
-  // 7. PREMIUM SOURCE PROTECTION - [RESTORED]
+  // 7. PREMIUM SOURCE PROTECTION
   // =========================================================================
+  // If Premium user tries to "Browse" folders via address bar -> Redirect Home.
+  // This allows the App to fetch the files (script src="...") but blocks the User.
   if (hasPremium) {
+    // Folders found in your file tree
     const protectedFolders = ['/src', '/assets', '/functions', '/locales', '/styles'];
     const isProtected = protectedFolders.some(folder => lowerPath.startsWith(folder));
     
     if (isProtected && isDirectNav) {
-      // Redirect directory browsing back to app
+      // If they type "tuwa.com/src/app.js" in the address bar -> BOOM, back to home.
       return Response.redirect(new URL('/', request.url), 302);
     }
   }
 
+  // Pass through to static assets or other Functions
   return next();
 }

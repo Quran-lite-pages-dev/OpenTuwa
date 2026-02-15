@@ -18,18 +18,15 @@ let streamprotected_cb2_METADATA = [];
 let TRANSLATIONS_CONFIG = {};
 let RECITERS_CONFIG = {};
 
-// --- GLOBAL CACHE ---
+// --- GLOBAL CACHE TO PREVENT BLINKING GAP ---
 window.preloadedAudioCache = {};
 window.preloadedImageCache = {};
-
-// Global buffer for decrypted stream state (since we can't decode sync anymore)
-window.decodedStreamState = null;
 
 // --- 2. MULTI-PROFILE & LOGIC ---
 const ACTIVE_PROFILE_ID = "1";
 const STORAGE_KEY = `streambasesecured_ca6State_${ACTIVE_PROFILE_ID}`;
 
-// Audio Config
+// Keep Audio Config here as it contains no secrets
 const TRANSLATION_AUDIO_CONFIG = {
     'none': { name: 'No Audio Translation' }, 
     'en_walk': { name: 'English', path: 'English/Sahih_Intnl_Ibrahim_Walk_192kbps' },
@@ -313,45 +310,36 @@ function getSelectValue(wrapper) {
     return wrapper.dataset.value;
 }
 
-// --- CORE APP (ASYNC UPDATES) ---
+// --- CORE APP ---
 
-async function encodeStream(ch, v, rec, trans, aud) {
-    const data = { ch, v, rec, trans, aud };
+function encodeStream(ch, v, rec, trans, aud) {
     try {
-        const res = await fetch('/api/media-token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type: 'stream_crypto', action: 'encrypt', data })
-        });
-        if (!res.ok) throw new Error('Encryption failed');
-        const j = await res.json();
-        return j.token;
+        const raw = `${ch}|${v}|${rec}|${trans}|${aud}`;
+        return btoa(raw).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     } catch (e) {
-        console.error("Encryption failed", e);
+        console.error("Encoding failed", e);
         return null;
     }
 }
 
-async function decodeStream(token) {
+function decodeStream(token) {
     try {
-        const res = await fetch('/api/media-token', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type: 'stream_crypto', action: 'decrypt', token })
-        });
-        if (!res.ok) throw new Error('Decryption failed');
-        const data = await res.json();
+        let base64 = token.replace(/-/g, '+').replace(/_/g, '/');
+        while (base64.length % 4) base64 += '=';
+        const raw = atob(base64);
+        const parts = raw.split('|');
         
-        // Map back to internal property names
+        if (parts.length < 5) return null;
+
         return {
-            'streamprotectedtrack_c-ee2': parseInt(data.ch),
-            'streamprotectedcase_c-ww2': parseInt(data.v),
-            streamprotectedlicense_artist_cr1: data.rec,
-            trans: data.trans,
-            audio_trans: data.aud
+            'streamprotectedtrack_c-ee2': parseInt(parts[0]),
+            'streamprotectedcase_c-ww2': parseInt(parts[1]),
+            streamprotectedlicense_artist_cr1: parts[2],
+            trans: parts[3],
+            audio_trans: parts[4]
         };
     } catch (e) {
-        console.error("Decryption failed", e);
+        console.error("Decoding failed", e);
         return null;
     }
 }
@@ -407,11 +395,11 @@ function switchView(viewName) {
     }
 }
 
-window.addEventListener('popstate', async (event) => {
+window.addEventListener('popstate', (event) => {
     const params = new URLSearchParams(window.location.search);
     if (params.has('streamprotectedtrack_c-ee2') || params.has('stream')) {
         switchView('cinema');
-        await restoreState();
+        restoreState();
         loadVerse(false);
     } else {
         switchView('dashboard');
@@ -440,8 +428,10 @@ async function initializeApp() {
         if (!jsonResponse.ok) throw new Error("Failed to load streambasesecured_ca6 JSON");
         const jsonData = await jsonResponse.json();
 
+        // Normalize different possible JSON shapes to the internal expected schema.
         let rawChapters = jsonData.streamprotectedtrack_cee2 || jsonData.chapters || jsonData;
         if (!Array.isArray(rawChapters)) {
+            // If the JSON root contains a named wrapper, try to find the chapters array inside.
             for (const key of Object.keys(jsonData || {})) {
                 if (Array.isArray(jsonData[key])) {
                     rawChapters = jsonData[key];
@@ -464,6 +454,7 @@ async function initializeApp() {
                 chapterNumber: ch.chapterNumber || ch.chapter || ch.id || null,
                 title: ch.title || ch.name || ch.english_name || '',
                 streamprotectedcase_cww2: mappedVerses,
+                // keep any other properties (audioURL, totalDuration, etc.)
                 ...ch
             };
         });
@@ -486,10 +477,8 @@ async function initializeApp() {
         populateChapterSelect();
         populateReciterSelect();
         populateTranslationSelectOptions();
-        populateTranslationAudioSelect();
         
-        // Wait for async decryption
-        await restoreState();
+        restoreState();
 
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('streamprotectedtrack_c-ee2') || urlParams.has('stream')) {
@@ -683,9 +672,9 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
     }
 
     const verseNum = previewSequence[0];
+    
     const filename = `${chapterNum}_${verseNum}.png`;
     const tempImg = new Image();
-    
     (async () => {
         const imgUrl = await getTunneledUrl('image', filename);
         if (!imgUrl) return;
@@ -741,8 +730,21 @@ function playPreviewStep(chapterNum, reciterId) {
                     ? aya.getAttribute('text') 
                     : (window.t ? window.t('errors.translationUnavailable') : "Translation unavailable");
 
+                const nextLines = [];
+                const currentInt = parseInt(verseNum);
+                
+                for (let i = 1; i <= 4; i++) { 
+                    const targetIndex = currentInt + i;
+                    const nextAya = sura ? sura.querySelector(`aya[index="${targetIndex}"]`) : null;
+                    if (nextAya) {
+                        nextLines.push(nextAya.getAttribute('text'));
+                    } else {
+                        break; 
+                    }
+                }
+
                 if (window.LyricsEngine) {
-                    window.LyricsEngine.update(elements.display.trans, currentText, []);
+                    window.LyricsEngine.update(elements.display.trans, currentText, nextLines);
                 } else {
                     elements.display.trans.textContent = currentText;
                     adjustFontSize(elements.display.trans);
@@ -765,7 +767,7 @@ function playPreviewStep(chapterNum, reciterId) {
     })();
 }
 
-async function launchPlayer(chapterNum, verseNum = 1) {
+function launchPlayer(chapterNum, verseNum = 1) {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const browserLang = navigator.language.split('-')[0];
 
@@ -790,17 +792,12 @@ async function launchPlayer(chapterNum, verseNum = 1) {
         }
     }
 
-    const streamToken = await encodeStream(chapterNum, verseNum, currentReciter, currentTrans, currentAudioTrans);
-    if (streamToken) {
-        const newUrl = `?stream=${streamToken}`;
-        window.location.assign(newUrl);
-    } else {
-        alert("Unable to generate secure stream token.");
-    }
+    const streamToken = encodeStream(chapterNum, verseNum, currentReciter, currentTrans, currentAudioTrans);
+    const newUrl = `?stream=${streamToken}`;
+    window.location.assign(newUrl);
 }
 
 // --- PLAYER HELPERS ---
-
 async function loadTranslationData(id) {
     if (translationCache[id]) return; 
     if (!TRANSLATIONS_CONFIG[id]) return;
@@ -825,18 +822,15 @@ async function loadTranslationData(id) {
     }
 }
 
-async function restoreState() {
+function restoreState() {
     const urlParams = new URLSearchParams(window.location.search);
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const browserLang = navigator.language.split('-')[0];
 
-    // Decode token if present
+    let streamData = null;
     if (urlParams.has('stream')) {
-        const token = urlParams.get('stream');
-        window.decodedStreamState = await decodeStream(token);
+        streamData = decodeStream(urlParams.get('stream'));
     }
-
-    const streamData = window.decodedStreamState;
 
     let ch = 0;
     if (streamData) {
@@ -898,22 +892,18 @@ async function restoreState() {
 }
 
 function getSavedVerseIndex() {
-    // If we have decrypted state from restoreState(), use it
-    if (window.decodedStreamState) {
-        return window.decodedStreamState['streamprotectedcase_c-ww2'] - 1;
-    }
-    
-    // Fallback to legacy URL params or local storage
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.has('streamprotectedcase_c-ww2')) return parseInt(urlParams.get('streamprotectedcase_c-ww2')) - 1;
-    
+    if (urlParams.has('stream')) {
+        const data = decodeStream(urlParams.get('stream'));
+        if (data) return data['streamprotectedcase_c-ww2'] - 1; 
+    }
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    if (urlParams.has('streamprotectedcase_c-ww2')) return parseInt(urlParams.get('streamprotectedcase_c-ww2')) - 1;
     if (saved['streamprotectedcase_c-ww2'] !== undefined) return saved['streamprotectedcase_c-ww2'];
-    
     return 0;
 }
 
-async function saveState() {
+function saveState() {
     const state = {
         'streamprotectedtrack_c-ee2': parseInt(getSelectValue(elements.selects['streamprotectedtrack_c-ee2'])),
         'streamprotectedcase_c-ww2': parseInt(getSelectValue(elements.selects['streamprotectedcase_c-ww2'])),
@@ -928,25 +918,14 @@ async function saveState() {
     const chNum = chObj.chapterNumber;
     const vNum = chObj.streamprotectedcase_cww2[state['streamprotectedcase_c-ww2']].verseNumber;
     
-    const streamToken = await encodeStream(chNum, vNum, state.streamprotectedlicense_artist_cr1, state.trans, state.audio_trans);
-    
-    if (streamToken) {
-        const newUrl = `?stream=${streamToken}`;
-        window.history.replaceState({path: newUrl, view: 'cinema'}, '', newUrl);
+    const streamToken = encodeStream(chNum, vNum, state.streamprotectedlicense_artist_cr1, state.trans, state.audio_trans);
+    const newUrl = `?stream=${streamToken}`;
 
-        // Update Global State so synchronous helpers don't fail immediately
-        window.decodedStreamState = {
-            'streamprotectedtrack_c-ee2': chNum,
-            'streamprotectedcase_c-ww2': vNum,
-            streamprotectedlicense_artist_cr1: state.streamprotectedlicense_artist_cr1,
-            trans: state.trans,
-            audio_trans: state.audio_trans
-        };
+    window.history.replaceState({path: newUrl, view: 'cinema'}, '', newUrl);
 
-        const canonicalLink = document.getElementById('_al');
-        const fullUrl = `https://Quran-lite.pages.dev/reading/${newUrl}`;
-        if (canonicalLink) canonicalLink.href = fullUrl;
-    }
+    const canonicalLink = document.getElementById('_al');
+    const fullUrl = `https://Quran-lite.pages.dev/reading/${newUrl}`;
+    if (canonicalLink) canonicalLink.href = fullUrl;
 
     const observer = new MutationObserver((mutations, obs) => {
         const h1 = document.querySelector('h1');
@@ -1089,7 +1068,7 @@ async function loadVerse(autoplay = true) {
 
     elements.display.title.innerHTML = `${currentChapterData.title} <span class="_ar">(${chNum}:${vNum})</span>`;
     
-    // --- LOAD FROM CACHE FIRST ---
+    // --- LOAD FROM CACHE FIRST TO PREVENT BLINK ---
     let newSrc = window.preloadedImageCache[verseKey];
     if (!newSrc) {
         const newSrcFilename = `${chNum}_${vNum}.png`;
@@ -1126,6 +1105,7 @@ async function loadVerse(autoplay = true) {
         await loadTranslationData(tid);
     }
 
+    // FIX: Audio updated BEFORE text to prevent 'pause' event from clearing text timers
     await updatestreambasesecured_ca6Audio(chNum, vNum, autoplay);
 
     if (isForbidden) {
@@ -1140,14 +1120,14 @@ async function loadVerse(autoplay = true) {
         updateTranslationAudio(chNum, vNum, false);
     }
 
-    // Call saveState (which is async) but do NOT await it here to prevent blocking playback
-    saveState().catch(console.error); 
+    saveState(); 
     updateMediaSession(currentChapterData.title, vNum, RECITERS_CONFIG[getSelectValue(elements.selects.streamprotectedlicense_artist_cr1)].name);
     bufferNextResources(chIdx, parseInt(vIdx));
 }
 
 function bufferNextResources(currentChIdx, currentVIdx) {
     // Disabled pre-caching to prevent burning single-use media tokens.
+    // Audio and images will now request a fresh token at the exact moment of playback.
     return;
 }
 
@@ -1180,6 +1160,7 @@ async function updatestreambasesecured_ca6Audio(chNum, vNum, play) {
         const verseKey = `${chNum}-${vNum}`;
         let url = window.preloadedAudioCache[verseKey];
         
+        // If not cached, fetch it normally
         if (!url) {
             const padCh = String(chNum).padStart(3, '0');
             const padV = String(vNum).padStart(3, '0');
@@ -1190,6 +1171,7 @@ async function updatestreambasesecured_ca6Audio(chNum, vNum, play) {
         if (url) {
             const audioEl = elements.streambasesecured_ca6Audio;
             audioEl.src = url;
+            // Clean up cache memory
             delete window.preloadedAudioCache[verseKey];
             delete window.preloadedImageCache[verseKey];
 
@@ -1197,15 +1179,22 @@ async function updatestreambasesecured_ca6Audio(chNum, vNum, play) {
                 try {
                     await audioEl.play();
                 } catch (e) {
-                    console.log('Initial play failed, retrying...', e);
-                    const tryPlay = () => audioEl.play().catch(() => {});
+                    console.log('Initial play failed, will retry on canplay/canplaythrough', e);
+
+                    const tryPlay = () => {
+                        audioEl.play().catch(() => {});
+                    };
+
                     const onCanPlay = () => {
                         tryPlay();
                         audioEl.removeEventListener('canplay', onCanPlay);
                         audioEl.removeEventListener('canplaythrough', onCanPlay);
                     };
+
                     audioEl.addEventListener('canplay', onCanPlay);
                     audioEl.addEventListener('canplaythrough', onCanPlay);
+
+                    // Fallback retry after a short delay
                     setTimeout(() => tryPlay(), 700);
                 }
             }
@@ -1513,7 +1502,7 @@ window.addEventListener('popstate', forceRemoveFadeLayer);
 forceRemoveFadeLayer();
 
 let pendingSeekOffset = null; 
-let seekCooldown = false; 
+let seekCooldown = false; // Debounce flag to prevent rapid mashing crashes
 
 elements.streambasesecured_ca6Audio.addEventListener('loadedmetadata', () => {
     if (pendingSeekOffset !== null) {
@@ -1544,11 +1533,13 @@ elements.streambasesecured_ca6Audio.addEventListener('loadedmetadata', () => {
 });
 
 window.smartSeek = function(seconds) {
+    // 1. Debounce check: Exit immediately if a seek just happened
     if (seekCooldown) return;
     
     const audio = elements.streambasesecured_ca6Audio;
     if (!audio || isNaN(audio.duration)) return;
 
+    // 2. Lock seeking for 250ms
     seekCooldown = true;
     setTimeout(() => { seekCooldown = false; }, 250);
 
@@ -1561,6 +1552,7 @@ window.smartSeek = function(seconds) {
         return;
     }
 
+    // THE FIX: Parse strings into integers so math (+ 1) works correctly.
     const currentVIdx = parseInt(getSelectValue(elements.selects['streamprotectedcase_c-ww2']), 10);
     const currentChIdx = parseInt(getSelectValue(elements.selects['streamprotectedtrack_c-ee2']), 10);
 
@@ -1670,6 +1662,8 @@ document.addEventListener('keydown', (e) => {
             }
         }
     }
+    // NOTE: Arrow keys are handled EXCLUSIVELY by nav_7c6b5axjs.js to prevent "crazy" behavior.
+    // MediaPlayPause keys are intentionally left out to let the TV/Browser natively toggle audio without double-firing.
 });
 
 // --- FIXED MOBILE DOUBLE-TAP TO SEEK / PAUSE ---
