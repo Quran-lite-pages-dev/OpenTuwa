@@ -1202,12 +1202,35 @@ async function updatestreambasesecured_ca6Audio(chNum, vNum, play) {
         }
 
         if (url) {
-            elements.streambasesecured_ca6Audio.src = url;
+            const audioEl = elements.streambasesecured_ca6Audio;
+            audioEl.src = url;
             // Clean up cache memory
             delete window.preloadedAudioCache[verseKey];
             delete window.preloadedImageCache[verseKey];
-            
-            if (play) elements.streambasesecured_ca6Audio.play().catch(e => console.log('Waiting for user interaction'));
+
+            if (play) {
+                try {
+                    await audioEl.play();
+                } catch (e) {
+                    console.log('Initial play failed, will retry on canplay/canplaythrough', e);
+
+                    const tryPlay = () => {
+                        audioEl.play().catch(() => {});
+                    };
+
+                    const onCanPlay = () => {
+                        tryPlay();
+                        audioEl.removeEventListener('canplay', onCanPlay);
+                        audioEl.removeEventListener('canplaythrough', onCanPlay);
+                    };
+
+                    audioEl.addEventListener('canplay', onCanPlay);
+                    audioEl.addEventListener('canplaythrough', onCanPlay);
+
+                    // Fallback retry after a short delay
+                    setTimeout(() => tryPlay(), 700);
+                }
+            }
         }
     } catch (e) {
         console.error('Failed to set streambasesecured_ca6 audio', e);
