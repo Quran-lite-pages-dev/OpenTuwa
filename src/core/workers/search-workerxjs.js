@@ -44,7 +44,7 @@ export default {
         ]
       });
 
-      return new Response(JSON.stringify({ streamprotectedtrack_c-ee2: response.response.trim() }), {
+      return new Response(JSON.stringify({ "streamprotectedtrack_c-ee2": response.response.trim() }), {
         headers: { 
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*" 
