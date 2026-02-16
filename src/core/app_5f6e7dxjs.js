@@ -1719,3 +1719,84 @@ if (elements.views.cinema) {
         }
     }, { passive: false });
 }
+/**
+ * SYSTEM: CINEMA NAVIGATION & IDLE CONTROL
+ * Verifies Cinema DOM, Injects Controls, and Handles 5s Auto-Fade.
+ */
+(function initCinemaSystem() {
+    // 1. CONFIGURATION
+    const IDLE_TIMEOUT_MS = 5000;
+    const CINEMA_ID = '_dd';
+    
+    // 2. INJECTION ROUTINE
+    function injectControls() {
+        const cinemaView = document.getElementById(CINEMA_ID);
+        if (!cinemaView) return;
+
+        // Prevent Duplicate Injection
+        if (document.getElementById('cinema-nav-container')) return;
+
+        const navContainer = document.createElement('div');
+        navContainer.id = 'cinema-nav-container';
+
+        // Polished Standard Arrowheads (Material/Spotify Geometry)
+        navContainer.innerHTML = `
+            <button class="cinema-nav-btn" id="cinema-back" aria-label="Go Back">
+                <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            </button>
+            <button class="cinema-nav-btn" id="cinema-forward" aria-label="Go Forward">
+                <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            </button>
+        `;
+
+        cinemaView.appendChild(navContainer);
+
+        // Event Binding (Stop Propagation to prevent triggering Video Play/Pause)
+        document.getElementById('cinema-back').addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.history.back();
+        });
+
+        document.getElementById('cinema-forward').addEventListener('click', (e) => {
+            e.stopPropagation();
+            window.history.forward();
+        });
+    }
+
+    // 3. IDLE TIMER LOGIC (The "Plumbing")
+    let idleTimer = null;
+
+    function resetIdleTimer() {
+        // If we were idle, wake up
+        if (document.body.classList.contains('idle')) {
+            document.body.classList.remove('idle');
+        }
+
+        // Clear existing timer
+        if (idleTimer) clearTimeout(idleTimer);
+
+        // Set new timer to fade out after 5 seconds
+        idleTimer = setTimeout(() => {
+            // Only add idle class if we are actually in the app (optional check, but safer)
+            document.body.classList.add('idle');
+        }, IDLE_TIMEOUT_MS);
+    }
+
+    // 4. GLOBAL LISTENERS
+    // Detects any movement/interaction to reset the timer
+    const events = ['mousemove', 'mousedown', 'touchstart', 'click', 'keydown', 'scroll'];
+    events.forEach(evt => window.addEventListener(evt, resetIdleTimer, { passive: true }));
+
+    // 5. INITIALIZE
+    // Run immediately and also wait for DOM if script loads early
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            injectControls();
+            resetIdleTimer();
+        });
+    } else {
+        injectControls();
+        resetIdleTimer();
+    }
+
+})();

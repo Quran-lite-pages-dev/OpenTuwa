@@ -1,0 +1,81 @@
+/* --- SPOTIFY-STYLE CINEMA NAVIGATION & IDLE SYSTEM --- */
+
+/* 1. Container: Fixed Top-Left Placement */
+#cinema-nav-container {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    z-index: 2147483647; /* Maximum Layer */
+    display: flex;
+    gap: 16px;
+    pointer-events: none; /* Allows clicks to pass through when hidden */
+    opacity: 0; 
+    transform: translateY(-10px);
+    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.2, 0, 0, 1);
+    will-change: opacity, transform;
+}
+
+/* 2. Visibility Logic */
+/* Only show when Cinema (#_dd) is ACTIVE and User is NOT Idle */
+#_dd.active ~ #cinema-nav-container,
+#_dd.active #cinema-nav-container {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+/* 3. The 5-Second Idle Fade */
+/* If body has .idle, force hide even if in Cinema mode */
+body.idle #_dd.active ~ #cinema-nav-container,
+body.idle #cinema-nav-container {
+    opacity: 0 !important;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition-delay: 0s;
+}
+
+/* 4. Polished Buttons (Spotify Standard) */
+.cinema-nav-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.7); /* Deep Dark */
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b3b3b3; /* Inactive Grey */
+    transition: all 0.2s ease;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    outline: none;
+}
+
+/* Hover State */
+.cinema-nav-btn:hover {
+    background-color: rgba(0, 0, 0, 1); /* Pure Black */
+    color: #ffffff; /* Pure White */
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+}
+
+/* Active State */
+.cinema-nav-btn:active {
+    transform: scale(0.95);
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+/* Icons */
+.cinema-nav-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    display: block;
+}
+
+/* RTL Support */
+html[dir="rtl"] .cinema-nav-btn svg {
+    transform: scaleX(-1);
+}
