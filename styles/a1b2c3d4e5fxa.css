@@ -1908,3 +1908,26 @@ color: #000; }
         backdrop-filter: blur(20px);
     }
 </style>
+<style>
+/* --- WINDOW DRAG CONTROLS --- */
+
+/* 1. Creates an invisible "Handle" at the top 30px of the screen */
+body::after {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px; /* Same height as the buttons in main.js */
+    z-index: 9999;
+    -webkit-app-region: drag; /* THIS MAKES IT DRAGGABLE */
+}
+
+/* 2. Important: Makes sure any buttons/links at the top are still clickable */
+/* If you have a search button or menu at the top, this ensures it works */
+button, a, input, [role="button"], .clickable {
+    -webkit-app-region: no-drag !important;
+    position: relative;
+    z-index: 10000; /* Sit above the drag handle */
+}
+</style>
