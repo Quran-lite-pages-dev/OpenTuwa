@@ -210,6 +210,8 @@ export async function onRequest(context) {
       '/functions/login-client.js',
       '/src/components/nav_7c6b5axjs.js', // As seen in your landing.html
       '/favicon.ico',
+      '/swxjs.js',
+      '/assets/ui/err_9391za.html',
       '/manifest.json'
     ];
 
