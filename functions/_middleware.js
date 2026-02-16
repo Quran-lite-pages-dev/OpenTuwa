@@ -210,8 +210,9 @@ export async function onRequest(context) {
       '/functions/login-client.js',
       '/src/components/nav_7c6b5axjs.js', // As seen in your landing.html
       '/favicon.ico',
-      '/swxjs.js',
+      '/sw.js',
       '/assets/ui/err_9391za.html',
+      '/assets/js/tuwa-hibernate.js',
       '/manifest.json'
     ];
 
