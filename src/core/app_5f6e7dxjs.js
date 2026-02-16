@@ -1720,15 +1720,15 @@ if (elements.views.cinema) {
     }, { passive: false });
 }
 /**
- * SYSTEM: CINEMA NAVIGATION & IDLE CONTROL
- * Verifies Cinema DOM, Injects Controls, and Handles 5s Auto-Fade.
+ * SYSTEM: CINEMA NAVIGATION & IDLE CONTROL (NATIVE ECOSYSTEM BLEND)
+ * Verifies Cinema DOM, Injects Controls, Handles History States, and Auto-Fade.
  */
 (function initCinemaSystem() {
     // 1. CONFIGURATION
     const IDLE_TIMEOUT_MS = 5000;
     const CINEMA_ID = '_dd';
     
-    // 2. INJECTION ROUTINE
+    // 2. INJECTION & NAVIGATION LOGIC
     function injectControls() {
         const cinemaView = document.getElementById(CINEMA_ID);
         if (!cinemaView) return;
@@ -1739,28 +1739,75 @@ if (elements.views.cinema) {
         const navContainer = document.createElement('div');
         navContainer.id = 'cinema-nav-container';
 
-        // Polished Standard Arrowheads (Material/Spotify Geometry)
+        // Polished Standard Arrowheads (Native Ecosystem Blend)
         navContainer.innerHTML = `
-            <button class="cinema-nav-btn" id="cinema-back" aria-label="Go Back">
-                <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+            <button class="cinema-nav-btn" id="cinema-back-btn" aria-label="Go Back">
+                <svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg>
             </button>
-            <button class="cinema-nav-btn" id="cinema-forward" aria-label="Go Forward">
-                <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+            <button class="cinema-nav-btn" id="cinema-forward-btn" aria-label="Go Forward">
+                <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
             </button>
         `;
 
         cinemaView.appendChild(navContainer);
 
+        const backBtn = document.getElementById('cinema-back-btn');
+        const fwdBtn = document.getElementById('cinema-forward-btn');
+
         // Event Binding (Stop Propagation to prevent triggering Video Play/Pause)
-        document.getElementById('cinema-back').addEventListener('click', (e) => {
+        backBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             window.history.back();
         });
 
-        document.getElementById('cinema-forward').addEventListener('click', (e) => {
+        fwdBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             window.history.forward();
         });
+
+        // --- STATE EVALUATION LOGIC ---
+        const evaluateNavState = () => {
+            if (window.navigation) {
+                // Modern browsers
+                const canGoBack = window.navigation.canGoBack;
+                const canGoForward = window.navigation.canGoForward;
+
+                backBtn.disabled = !canGoBack;
+                backBtn.classList.toggle('disabled', !canGoBack);
+                
+                fwdBtn.disabled = !canGoForward;
+                fwdBtn.classList.toggle('disabled', !canGoForward);
+            } else {
+                // Safari/Legacy Fallback
+                const hasHistory = window.history.length > 1;
+                backBtn.disabled = !hasHistory;
+                backBtn.classList.toggle('disabled', !hasHistory);
+                
+                fwdBtn.disabled = true; 
+                fwdBtn.classList.add('disabled');
+            }
+        };
+
+        // Listeners for Native Browser Navigation
+        window.addEventListener('popstate', evaluateNavState);
+
+        // --- THE SPA PATCH ---
+        // Crucial for OpenTuwa router changes to update buttons instantly
+        const originalPushState = history.pushState;
+        const originalReplaceState = history.replaceState;
+
+        history.pushState = function() {
+            originalPushState.apply(this, arguments);
+            evaluateNavState();
+        };
+
+        history.replaceState = function() {
+            originalReplaceState.apply(this, arguments);
+            evaluateNavState(); 
+        };
+
+        // Initial Assessment on Load
+        evaluateNavState();
     }
 
     // 3. IDLE TIMER LOGIC (The "Plumbing")
@@ -1777,8 +1824,10 @@ if (elements.views.cinema) {
 
         // Set new timer to fade out after 5 seconds
         idleTimer = setTimeout(() => {
-            // Only add idle class if we are actually in the app (optional check, but safer)
-            document.body.classList.add('idle');
+            // Safety Check: Don't go idle if a custom select dropdown is open
+            if (!document.querySelector('._k.open')) {
+                document.body.classList.add('idle');
+            }
         }, IDLE_TIMEOUT_MS);
     }
 

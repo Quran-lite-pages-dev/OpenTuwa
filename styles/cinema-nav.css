@@ -1,22 +1,22 @@
-/* --- SPOTIFY-STYLE CINEMA NAVIGATION & IDLE SYSTEM --- */
+/* --- SPOTIFY-STYLE CINEMA NAVIGATION & IDLE SYSTEM (ECOSYSTEM BLEND) --- */
 
-/* 1. Container: Fixed Top-Left Placement */
+/* 1. Container: Aligned with your Global App Branding */
 #cinema-nav-container {
     position: fixed;
-    top: 30px;
-    left: 30px;
-    z-index: 2147483647; /* Maximum Layer */
+    top: 40px; /* Aligned with your ._dx / ._el brand axis */
+    left: 5%;  /* Matched to your global 5% side padding */
+    z-index: 2147483647; 
     display: flex;
-    gap: 16px;
-    pointer-events: none; /* Allows clicks to pass through when hidden */
+    gap: 12px; /* Tighter, more refined gap */
+    pointer-events: none; 
     opacity: 0; 
     transform: translateY(-10px);
-    transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.2, 0, 0, 1);
+    transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     will-change: opacity, transform;
 }
 
 /* 2. Visibility Logic */
-/* Only show when Cinema (#_dd) is ACTIVE and User is NOT Idle */
 #_dd.active ~ #cinema-nav-container,
 #_dd.active #cinema-nav-container {
     opacity: 1;
@@ -24,8 +24,7 @@
     pointer-events: auto;
 }
 
-/* 3. The 5-Second Idle Fade */
-/* If body has .idle, force hide even if in Cinema mode */
+/* 3. The Cinematic Idle Fade */
 body.idle #_dd.active ~ #cinema-nav-container,
 body.idle #cinema-nav-container {
     opacity: 0 !important;
@@ -34,48 +33,86 @@ body.idle #cinema-nav-container {
     transition-delay: 0s;
 }
 
-/* 4. Polished Buttons (Spotify Standard) */
+/* 4. Polished Buttons (Native Ecosystem Blend) */
 .cinema-nav-btn {
-    width: 32px;
-    height: 32px;
+    width: 42px;  /* Matched to your ._b0 Island Trigger Button */
+    height: 42px;
     border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0.7); /* Deep Dark */
-    border: none;
+    
+    /* The OpenTuwa Signature Glassmorphism */
+    background: rgba(10, 10, 10, 0.6);
+    backdrop-filter: blur(25px) saturate(180%);
+    -webkit-backdrop-filter: blur(25px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle premium edge */
+    
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #b3b3b3; /* Inactive Grey */
-    transition: all 0.2s ease;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    
+    color: rgba(255, 255, 255, 0.6); /* Ecosystem muted text */
+    
+    /* Using your signature ease-out-expo physics */
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
     outline: none;
 }
 
 /* Hover State */
 .cinema-nav-btn:hover {
-    background-color: rgba(0, 0, 0, 1); /* Pure Black */
-    color: #ffffff; /* Pure White */
-    transform: scale(1.1);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.5);
+    background: rgba(30, 30, 30, 0.85);
+    border-color: rgba(255, 255, 255, 0.3); /* Ring glows up slightly */
+    color: #ffffff; 
+    transform: scale(1.05); /* Gentle ecosystem scale */
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
 }
 
-/* Active State */
+/* Active / Tap State */
 .cinema-nav-btn:active {
     transform: scale(0.95);
-    background-color: rgba(0, 0, 0, 0.9);
+    border-color: rgba(255, 255, 255, 0.1);
 }
 
-/* Icons */
+/* 5. Disabled State (CRITICAL for Back/Forward UX) */
+.cinema-nav-btn:disabled,
+.cinema-nav-btn[disabled],
+.cinema-nav-btn.disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none !important;
+    background: rgba(10, 10, 10, 0.3);
+    border-color: transparent;
+    box-shadow: none;
+}
+
+/* 6. Icons */
 .cinema-nav-btn svg {
-    width: 20px;
+    width: 20px; 
     height: 20px;
     fill: currentColor;
     display: block;
+    transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* RTL Support */
 html[dir="rtl"] .cinema-nav-btn svg {
     transform: scaleX(-1);
+}
+
+/* 7. Mobile Responsiveness (Matches your media queries) */
+@media (max-width: 768px) {
+    #cinema-nav-container {
+        top: 25px; /* Matches your mobile brand top margin */
+        left: 15px;
+    }
+    
+    .cinema-nav-btn {
+        width: 38px;
+        height: 38px;
+    }
+    
+    .cinema-nav-btn svg {
+        width: 18px;
+        height: 18px;
+    }
 }
