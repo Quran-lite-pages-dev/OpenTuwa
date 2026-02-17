@@ -109,6 +109,38 @@ function softFadeAudio(audioEl, duration = 800) {
     }, stepTime);
 }
 
+// --- AUDIO ENHANCEMENT: SOFT ATTACK (Micro-Fade In) ---
+// Prevents digital "pops" between verses by rapidly ramping volume from 0 to target
+function smoothAudioEntry(audioEl, targetVol = 1.0, duration = 250) {
+    if (!audioEl) return;
+    
+    audioEl.volume = 0; // Start silent
+    
+    const stepTime = 15; // update every 15ms
+    const steps = duration / stepTime;
+    const volStep = targetVol / steps;
+    let currentVol = 0;
+
+    const fadeInterval = setInterval(() => {
+        // If user paused or audio ended during fade, stop
+        if (audioEl.paused || audioEl.ended) {
+            clearInterval(fadeInterval);
+            // Ensure we restore volume for next time if it was just a pause
+            if (audioEl.paused) audioEl.volume = targetVol; 
+            return;
+        }
+
+        currentVol += volStep;
+        
+        if (currentVol >= targetVol) {
+            audioEl.volume = targetVol;
+            clearInterval(fadeInterval);
+        } else {
+            audioEl.volume = currentVol;
+        }
+    }, stepTime);
+}
+
 function getSmartChunks(text) {
     if (!text || typeof text !== 'string') return [];
     const PUNCT_RE = /[.,;?!:\"”’‘)\]،؛۔؟]/;
@@ -1199,18 +1231,34 @@ async function updatestreambasesecured_ca6Audio(chNum, vNum, play) {
 
         if (url) {
             const audioEl = elements.streambasesecured_ca6Audio;
+            
+            // 1. Capture user's current volume preference before we mess with it
+            // Default to 1.0 if for some reason it's 0 or null
+            const userVolume = (audioEl.volume > 0.05) ? audioEl.volume : 1.0;
+
             audioEl.src = url;
+            
             // Clean up cache memory
             delete window.preloadedAudioCache[verseKey];
             delete window.preloadedImageCache[verseKey];
 
             if (play) {
                 try {
+                    // 2. Prepare for Soft Attack
+                    audioEl.volume = 0; 
+                    
                     await audioEl.play();
+                    
+                    // 3. Execute the smooth fade-in to the user's volume
+                    // 200ms is subtle enough to not miss content, but removes the "pop"
+                    smoothAudioEntry(audioEl, userVolume, 200);
+
                 } catch (e) {
                     console.log('Initial play failed, will retry on canplay/canplaythrough', e);
 
                     const tryPlay = () => {
+                        // Fallback: Restore volume immediately if play is delayed/retried
+                        audioEl.volume = userVolume; 
                         audioEl.play().catch(() => {});
                     };
 
@@ -1223,7 +1271,6 @@ async function updatestreambasesecured_ca6Audio(chNum, vNum, play) {
                     audioEl.addEventListener('canplay', onCanPlay);
                     audioEl.addEventListener('canplaythrough', onCanPlay);
 
-                    // Fallback retry after a short delay
                     setTimeout(() => tryPlay(), 700);
                 }
             }
