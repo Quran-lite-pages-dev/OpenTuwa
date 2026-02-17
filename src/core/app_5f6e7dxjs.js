@@ -402,36 +402,53 @@ function switchView(viewName) {
         elements.views.dashboard.classList.remove('active');
         elements.views.cinema.classList.add('active');
         elements.views.cinema.style.opacity = '1';
-        stopPreview();
+        
+        stopPreview(); // Stop dashboard preview audio immediately
         elements.sidebar.container.style.display = 'none';
         
+        // Focus for accessibility
         setTimeout(() => {
             const chapterTrigger = elements.selects['streamprotectedtrack_c-ee2'].querySelector('._q');
             if(chapterTrigger) chapterTrigger.focus();
         }, 150);
+
     } else {
-    elements.views.cinema.classList.remove('active');
-    elements.views.cinema.style.opacity = '0';
-    elements.views.dashboard.classList.add('active');
-    elements.sidebar.container.style.display = 'none';
-    
-    // ENHANCEMENT: Soft fade out (Premium feel)
-    softFadeAudio(elements.streambasesecured_ca6Audio);
-    softFadeAudio(elements.transAudio);
-    
-    refreshDashboard();
-    document.getElementById('door-play-btn').focus();
-}
+        // --- GOING TO DASHBOARD ---
+        elements.views.cinema.classList.remove('active');
+        elements.views.cinema.style.opacity = '0';
+        elements.views.dashboard.classList.add('active');
+        elements.sidebar.container.style.display = 'none'; // Or 'block' if you want sidebar back
+        
+        // 1. Soft Fade Out (Spotify Effect)
+        // Since the page didn't reload, these functions will run beautifully
+        softFadeAudio(elements.streambasesecured_ca6Audio, 1500); // 1.5s fade
+        softFadeAudio(elements.transAudio, 1500);
+        
+        // 2. Refresh Dashboard State
+        refreshDashboard();
+        
+        // 3. Clean up Cinema internals
+        clearCinemaTimers();
+        
+        // 4. Focus
+        const heroBtn = document.getElementById('door-play-btn');
+        if(heroBtn) heroBtn.focus();
+    }
 }
 
 window.addEventListener('popstate', (event) => {
     const params = new URLSearchParams(window.location.search);
+    
+    // If URL has stream data, we are going FORWARD into Cinema
     if (params.has('streamprotectedtrack_c-ee2') || params.has('stream')) {
         switchView('cinema');
         restoreState();
-        loadVerse(false);
-    } else {
+        loadVerse(false); // Don't autoplay if just navigating history
+    } 
+    // If URL is empty/root, we are going BACK to Dashboard
+    else {
         switchView('dashboard');
+        // This will trigger your softFadeAudio inside switchView
     }
 });
 
@@ -800,6 +817,7 @@ function launchPlayer(chapterNum, verseNum = 1) {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const browserLang = navigator.language.split('-')[0];
 
+    // 1. Get Settings
     let currentReciter = getSelectValue(elements.selects.streamprotectedlicense_artist_cr1) || saved.streamprotectedlicense_artist_cr1 || 'alafasy';
     
     let currentTrans = getSelectValue(elements.selects.trans) || saved.trans || browserLang;
@@ -807,6 +825,7 @@ function launchPlayer(chapterNum, verseNum = 1) {
 
     let currentAudioTrans = getSelectValue(elements.selects.transAudio);
     
+    // Logic to determine audio translation (same as before)
     if (!currentAudioTrans || currentAudioTrans === 'none') {
         if (saved.audio_trans && saved.audio_trans !== 'none') {
             currentAudioTrans = saved.audio_trans;
@@ -821,9 +840,24 @@ function launchPlayer(chapterNum, verseNum = 1) {
         }
     }
 
+    // 2. Encode Stream Token
     const streamToken = encodeStream(chapterNum, verseNum, currentReciter, currentTrans, currentAudioTrans);
     const newUrl = `?stream=${streamToken}`;
-    window.location.assign(newUrl);
+
+    // 3. THE FIX: Use pushState (SPA Mode) instead of location.assign (Reload Mode)
+    window.history.pushState({ path: newUrl, view: 'cinema' }, '', newUrl);
+
+    // 4. Manually trigger the View Switch and Load
+    // Since we aren't reloading, we must call the functions that initializeApp would have called.
+    switchView('cinema');
+    
+    // Update internal state based on the new URL params we just pushed
+    restoreState(); 
+    
+    // Load the specific verse data
+    populateVerseSelect(); // Ensure verse dropdown matches new chapter
+    setSelectValue(elements.selects['streamprotectedcase_c-ww2'], verseNum - 1); // Set visual selector
+    loadVerse(true); // Load audio/images and autoplay
 }
 
 // --- PLAYER HELPERS ---
