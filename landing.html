@@ -103,4 +103,19 @@ input:focus,
     z-index: 999; /* Ensures the white ring isn't hidden by other elements */
     position: relative; 
 }
-</style></body></html>
+</style><script>
+(function() {
+  // Check if the URL contains "?tv"
+  // We use window.location.href to catch it anywhere, or specifically search for query params
+  if (window.location.href.indexOf("?tv") > -1) {
+    
+    // Set the cookie
+    // path=/ ensures it is available on all pages of the domain
+    // max-age=31536000 keeps it alive for 1 year (optional, remove if you want it to expire on browser close)
+    document.cookie = "TV_ENV=true; path=/; max-age=31536000";
+    
+    console.log("TV Environment detected. Cookie set.");
+  }
+})();
+</script>
+</body></html>
