@@ -52,8 +52,7 @@ const elements = {
         'streamprotectedcase_c-ww2': document.getElementById('verseSelectWrapper'),
         trans: document.getElementById('translationSelectWrapper'),
         streamprotectedlicense_artist_cr1: document.getElementById('reciterSelectWrapper'),
-        transAudio: document.getElementById('translationAudioSelectWrapper'),
-        audioOutput: document.getElementById('audioOutputWrapper')
+        transAudio: document.getElementById('translationAudioSelectWrapper')
     },
     display: {
         title: document.getElementById('_ch'),
@@ -278,7 +277,67 @@ function populateCustomSelect(wrapper, items, onChange) {
 
     optionsContainer.appendChild(fragment);
 }
+/* --- TUWA OS BRIDGE INTEGRATION --- */
+async function initAudioPipeline() {
+    // 1. Find the wrapper we added to HTML
+    const wrapper = document.getElementById('audioOutputSelectWrapper');
+    if (!wrapper) return;
 
+    // 2. Check if we are running in the Tuwa Electron Shell
+    const isNative = window.TuwaSystem && window.TuwaSystem.isNative;
+
+    // 3. If NOT native, you might want to hide it (or keep for future web support)
+    if (!isNative) return; 
+
+    // 4. Access the Bridge
+    const bridge = window.TuwaSystem ? window.TuwaSystem.audio : null;
+    if (!bridge) return;
+
+    try {
+        // 5. Fetch Devices from Windows OS Pipeline
+        const devices = await bridge.getDevices();
+        
+        // If no external speakers found, keep hidden
+        if (devices.length <= 1) return;
+
+        wrapper.style.display = 'flex'; // Reveal the UI
+
+        // 6. Format for your Custom Select System
+        const options = devices.map(d => ({
+            value: d.deviceId,
+            text: d.label || 'External Speaker'
+        }));
+        
+        // Add Default Option
+        options.unshift({ value: 'default', text: 'System Default' });
+
+        // 7. Use YOUR existing UI generator
+        populateCustomSelect(wrapper, options, async (deviceId) => {
+            console.log("[Tuwa Pipeline] Switching Audio Output to:", deviceId);
+
+            // IDs of your audio players: _cq (Main), _e (Translation), _ca (Preview)
+            const targetIds = ['_cq', '_e', '_ca'];
+            
+            if (isNative) {
+                // Use the Native Bridge
+                await window.TuwaSystem.audio.setSinkId(targetIds, deviceId);
+            } else {
+                // Web Fallback (if browser supports it)
+                targetIds.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el && typeof el.setSinkId === 'function') el.setSinkId(deviceId);
+                });
+            }
+        });
+
+        // Set initial value
+        setSelectValue(wrapper, 'default');
+
+    } catch (err) {
+        console.error("[Tuwa Pipeline] Bridge error:", err);
+    }
+}
+/* ---------------------------------- */
 function setSelectValue(wrapper, value) {
     const options = wrapper.querySelectorAll('._b5');
     let foundText = null;
@@ -410,6 +469,7 @@ window.addEventListener('popstate', (event) => {
 async function initializeApp() {
     try {
         initCustomSelects();
+        initAudioPipeline(); 
 
         try {
             const configResponse = await fetch('/api/config');
@@ -1843,7 +1903,6 @@ if (elements.views.cinema) {
         document.addEventListener('DOMContentLoaded', () => {
             injectControls();
             resetIdleTimer();
-            initAudioBridge();
         });
     } else {
         injectControls();
@@ -1851,74 +1910,3 @@ if (elements.views.cinema) {
     }
 
 })();
-/**
- * --- AUDIO OUTPUT BRIDGE ---
- * Connects UI directly to Electron/OS Hardware Pipeline
- */
-async function initAudioBridge() {
-    // 1. Check if Electron/Browser supports sink selection
-    if (!HTMLMediaElement.prototype.setSinkId) {
-        console.warn('System Audio Bridge: Not supported in this environment.');
-        return;
-    }
-
-    // 2. Fetch OS Audio Pipelines (Speakers, Headphones, Virtual Cables)
-    try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const audioOutputs = devices.filter(device => device.kind === 'audiooutput');
-        
-        // Map to your dropdown format
-        const formattedDevices = audioOutputs.map(device => ({
-            value: device.deviceId,
-            text: device.label || `Speaker ${audioOutputs.indexOf(device) + 1}` // Fallback name
-        }));
-
-        // 3. Populate the UI using your existing "populateCustomSelect" system
-        if (elements.selects.audioOutput) {
-            populateCustomSelect(elements.selects.audioOutput, formattedDevices, (deviceId) => {
-                applyAudioOutput(deviceId);
-            });
-            
-            // Auto-select stored preference
-            const savedId = localStorage.getItem('tuwa_active_audio_output');
-            if (savedId) {
-                // Validate if device still exists
-                const exists = formattedDevices.find(d => d.value === savedId);
-                if (exists) applyAudioOutput(savedId);
-            }
-        }
-        
-    } catch (err) {
-        console.error('Audio Bridge Error:', err);
-    }
-}
-
-// 4. The Pipeline Injector
-function applyAudioOutput(deviceId) {
-    console.log(`[Audio Bridge] Rerouting pipeline to: ${deviceId}`);
-    
-    // Target your main audio elements
-    const audioElements = [
-        elements.streambasesecured_ca6Audio, // Main Reciter
-        elements.transAudio,                 // Audio Translation
-        elements.previewAudio                // Preview Player
-    ];
-
-    audioElements.forEach(el => {
-        if (el && typeof el.setSinkId === 'function') {
-            el.setSinkId(deviceId)
-                .then(() => {
-                    // Success styling (Optional: flash the icon)
-                    console.log(`Pipeline injected successfully for ${el.id}`);
-                })
-                .catch(err => console.warn('Pipeline injection failed:', err));
-        }
-    });
-
-    // Save user preference
-    localStorage.setItem('tuwa_active_audio_output', deviceId);
-}
-
-// 5. Initialize on Load
-// Add this inside your existing DOMContentLoaded listener or init() function
-// initAudioBridge();
