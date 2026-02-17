@@ -3,7 +3,7 @@
     /**
      * 1. CONFIGURATION
      */
-    const SELECTOR = 'button, a:not(._el):not(._dx), input, select, textarea, [tabindex]:not([tabindex="-1"]), .focusable, ._dw, ._eu, ._q, ._b5, ._c2, ._dl';
+    const SELECTOR = 'button, a:not(._el):not(._dx), input, select, textarea, [tabindex]:not([tabindex="-1"]), .focusable, ._dw, ._eu, ._q, ._b5, ._c2, ._dl, .cinema-nav-btn';
     
     // 2. VIEW CONTROLLERS
     const VIEWS = {
@@ -63,7 +63,15 @@
 
         // PRIORITY 3: Cinema Mode
         if (cinemaView && cinemaView.classList.contains('active')) {
-            const candidates = Array.from(cinemaView.querySelectorAll(SELECTOR));
+            let candidates = Array.from(cinemaView.querySelectorAll(SELECTOR));
+            
+            // Add external cinema navigation (Back/Forward buttons) if present
+            const cinemaNavContainer = document.getElementById('cinema-nav-container');
+            if (cinemaNavContainer) {
+                const navButtons = Array.from(cinemaNavContainer.querySelectorAll(SELECTOR));
+                candidates = candidates.concat(navButtons);
+            }
+
             return candidates.filter(isVisible);
         }
 
@@ -237,10 +245,18 @@
                     if (!isDropdownOpen && (!active || active === document.body)) {
                         e.preventDefault();
                         e.stopImmediatePropagation();
-                        const candidates = cinemaView.querySelectorAll(SELECTOR);
-                        const visibleCandidates = Array.from(candidates).filter(isVisible);
+                        
+                        let candidates = Array.from(cinemaView.querySelectorAll(SELECTOR));
+                        // Include external nav candidates for wake-up
+                        const cinemaNavContainer = document.getElementById('cinema-nav-container');
+                        if (cinemaNavContainer) {
+                            candidates = candidates.concat(Array.from(cinemaNavContainer.querySelectorAll(SELECTOR)));
+                        }
+
+                        const visibleCandidates = candidates.filter(isVisible);
 
                         if (visibleCandidates.length > 0) {
+                            // Prefer _q (play button usually) or fall back to first available (Back btn)
                             const targetBtn = visibleCandidates.find(el => el.classList.contains('_q')) || visibleCandidates[0];
                             focusElement(targetBtn);
                             resetCinemaFailsafe(); 
@@ -260,9 +276,12 @@
                     }
                 }
 
-                // THE FIX: Left/Right ALWAYS seek unless a dropdown menu is actively open
+                // THE FIX: Left/Right ALWAYS seek unless a dropdown menu OR nav buttons are focused
                 if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-                    if (isDropdownOpen) {
+                    // Check if a specific control is currently focused
+                    const isControlFocused = active && active !== document.body && (active.matches(SELECTOR) || active.classList.contains('cinema-nav-btn'));
+
+                    if (isDropdownOpen || isControlFocused) {
                         resetCinemaFailsafe(); 
                         e.stopImmediatePropagation(); 
                         e.preventDefault(); 

@@ -67,4 +67,40 @@ if (loginBtn) {
                 .catch(err => console.error('SW Failed:', err));
         });
     }
-</script></body></html>
+</script><style>
+/* 1. Global Reset */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* 2. Unified Focus State */
+button:focus, 
+a:focus, 
+input:focus, 
+[tabindex]:focus,
+*:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 4px white !important; /* Slightly thicker looks better on 4K TVs */
+    transition: box-shadow 0.2s ease-in-out; /* Makes the focus "glow" on */
+    z-index: 999; /* Ensures the white ring isn't hidden by other elements */
+    position: relative; 
+}
+</style><style>
+/* 1. Global Reset */
+* {
+    -webkit-tap-highlight-color: transparent !important;
+}
+
+/* 2. Unified Focus State */
+button:focus, 
+a:focus, 
+input:focus, 
+[tabindex]:focus,
+*:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 4px white !important; /* Slightly thicker looks better on 4K TVs */
+    transition: box-shadow 0.2s ease-in-out; /* Makes the focus "glow" on */
+    z-index: 999; /* Ensures the white ring isn't hidden by other elements */
+    position: relative; 
+}
+</style></body></html>
