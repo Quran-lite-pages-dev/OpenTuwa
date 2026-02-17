@@ -216,11 +216,7 @@ function initCustomSelects(mode = 0) {
     document.querySelectorAll('._k').forEach(wrapper => {
         const trigger = wrapper.querySelector('._q');
         
-        // Remove existing listener to prevent duplicate firing if re-initialized
-        const newTrigger = trigger.cloneNode(true);
-        trigger.parentNode.replaceChild(newTrigger, trigger);
-
-        newTrigger.addEventListener('click', (e) => {
+        trigger.addEventListener('click', (e) => {
             e.stopPropagation(); 
             e.preventDefault();
 
@@ -250,25 +246,21 @@ function initCustomSelects(mode = 0) {
             }
         });
         
-        newTrigger.addEventListener('keydown', (e) => {
+        trigger.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
-                newTrigger.click();
+                trigger.click();
             }
         });
     });
 
-    // Global click listener for closing selects
-    // Remove old one if exists to be safe
-    if(window._closeSelectsHandler) window.removeEventListener('click', window._closeSelectsHandler);
-    window._closeSelectsHandler = (e) => {
+    window.addEventListener('click', (e) => {
         if (!e.target.closest('._k')) {
             document.querySelectorAll('._k.open').forEach(el => {
                 el.classList.remove('open');
             });
         }
-    };
-    window.addEventListener('click', window._closeSelectsHandler);
+    });
 }
 
 function populateCustomSelect(wrapper, items, onChange) {
@@ -405,77 +397,40 @@ function mergeMetadata(apiChapters) {
     });
 }
 
-/**
- * PURE SPA SWITCH VIEW
- * Handles visual toggling and state cleanup without reload
- */
 function switchView(viewName) {
     if(viewName === 'cinema') {
-        // 1. Hide Dashboard
         elements.views.dashboard.classList.remove('active');
-        
-        // 2. Show Cinema
         elements.views.cinema.classList.add('active');
         elements.views.cinema.style.opacity = '1';
-        elements.views.cinema.style.visibility = 'visible'; // Ensure visibility
-        
-        // 3. Stop Dashboard Preview Audio
         stopPreview();
+        elements.sidebar.container.style.display = 'none';
         
-        // 4. Hide Sidebar
-        if(elements.sidebar.container) elements.sidebar.container.style.display = 'none';
-        
-        // 5. Focus handling for accessibility
         setTimeout(() => {
             const chapterTrigger = elements.selects['streamprotectedtrack_c-ee2'].querySelector('._q');
             if(chapterTrigger) chapterTrigger.focus();
         }, 150);
-
     } else {
-        // 1. Hide Cinema
-        elements.views.cinema.classList.remove('active');
-        elements.views.cinema.style.opacity = '0';
-        elements.views.cinema.style.visibility = 'hidden';
-
-        // 2. Show Dashboard
-        elements.views.dashboard.classList.add('active');
-        
-        // 3. Show Sidebar
-        if(elements.sidebar.container) elements.sidebar.container.style.display = 'flex'; // or block based on CSS
-        
-        // 4. Soft Fade Out Player Audio
-        softFadeAudio(elements.streambasesecured_ca6Audio);
-        softFadeAudio(elements.transAudio);
-        
-        // 5. Refresh Dashboard Data (hero, etc)
-        refreshDashboard();
-        
-        // 6. Focus
-        const heroBtn = document.getElementById('door-play-btn');
-        if(heroBtn) heroBtn.focus();
-    }
+    elements.views.cinema.classList.remove('active');
+    elements.views.cinema.style.opacity = '0';
+    elements.views.dashboard.classList.add('active');
+    elements.sidebar.container.style.display = 'none';
+    
+    // ENHANCEMENT: Soft fade out (Premium feel)
+    softFadeAudio(elements.streambasesecured_ca6Audio);
+    softFadeAudio(elements.transAudio);
+    
+    refreshDashboard();
+    document.getElementById('door-play-btn').focus();
+}
 }
 
-/**
- * PURE SPA ROUTER (POPSTATE)
- * Handles Back/Forward buttons without reload
- */
 window.addEventListener('popstate', (event) => {
-    // If we have state data (from pushState), use it
     const params = new URLSearchParams(window.location.search);
-    
-    // Check if URL indicates cinema mode
     if (params.has('streamprotectedtrack_c-ee2') || params.has('stream')) {
         switchView('cinema');
-        // Re-read parameters from URL and load the correct verse
         restoreState();
-        // Force update selects in case they are out of sync
-        const ch = getSelectValue(elements.selects['streamprotectedtrack_c-ee2']);
-        populateVerseSelect();
-        // Load verse (false = don't auto-play immediately on back nav, optional preference)
         loadVerse(false);
     } else {
-        // Default to dashboard
         switchView('dashboard');
     }
 });
@@ -551,13 +506,10 @@ async function initializeApp() {
         populateChapterSelect();
         populateReciterSelect();
         populateTranslationSelectOptions();
-        populateTranslationAudioSelect(); // Ensure this is called
         
         restoreState();
 
         const urlParams = new URLSearchParams(window.location.search);
-        
-        // Initial Load Logic (Deep Linking)
         if (urlParams.has('streamprotectedtrack_c-ee2') || urlParams.has('stream')) {
             switchView('cinema');
             populateVerseSelect(); 
@@ -567,7 +519,7 @@ async function initializeApp() {
 
             const activeTransId = getSelectValue(elements.selects.trans);
             await loadTranslationData(activeTransId);
-            loadVerse(false); // Don't auto-play on load, wait for user interaction
+            loadVerse(false); 
             
             elements.spinner.style.display = 'none';
             elements.loaderText.style.display = 'none';
@@ -617,9 +569,6 @@ function fillRow(elementId, indexArray) {
     const container = document.getElementById(elementId);
     if(!container) return; 
     
-    // Check if we already populated this row to avoid DOM trashing
-    // if (container.children.length > 0) return; 
-
     const fragment = document.createDocumentFragment();
     
     indexArray.forEach(idx => {
@@ -627,7 +576,6 @@ function fillRow(elementId, indexArray) {
         const streamprotected_cb2 = streambasesecured_ca6Data[idx];
         const card = document.createElement('div');
         card.className = '_dw';
-        card.dataset['streamprotectedtrack_c-ee2'] = streamprotected_cb2.chapterNumber - 1; // Save index
         card.tabIndex = 0;
         
         let cardTitle = streamprotected_cb2.english_name;
@@ -646,12 +594,6 @@ function fillRow(elementId, indexArray) {
         `;
         card.onclick = () => launchPlayer(streamprotected_cb2.chapterNumber, 1);
         card.onfocus = () => { schedulePreview(streamprotected_cb2.chapterNumber); };
-        
-        // Add Enter key support
-        card.addEventListener('keydown', (e) => {
-            if(e.key === 'Enter') launchPlayer(streamprotected_cb2.chapterNumber, 1);
-        });
-
         fragment.appendChild(card);
     });
     
@@ -705,7 +647,6 @@ function schedulePreview(chapterNum) {
     if (previewTimeout) clearTimeout(previewTimeout);
     stopPreview();
     const streamprotected_cb2 = streambasesecured_ca6Data[chapterNum - 1];
-    if(!streamprotected_cb2) return;
     
     let heroTitle = streamprotected_cb2.english_name;
     if (window.t) {
@@ -748,9 +689,6 @@ function stopPreview() {
 }
 
 async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
-    // If we've switched to cinema, don't run dashboard preview logic
-    if (elements.views.cinema.classList.contains('active')) return;
-
     previewSequence = [];
     previewSeqIndex = 0;
     
@@ -788,8 +726,6 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
 
 function playPreviewStep(chapterNum, reciterId) {
     return (async function _play() {
-        if (elements.views.cinema.classList.contains('active')) return;
-
         try {
             if (previewSeqIndex >= previewSequence.length) return;
             const verseNum = previewSequence[previewSeqIndex];
@@ -860,15 +796,10 @@ function playPreviewStep(chapterNum, reciterId) {
     })();
 }
 
-/**
- * PURE SPA PLAYER LAUNCH
- * Replaces window.location.assign with history.pushState and internal routing
- */
 function launchPlayer(chapterNum, verseNum = 1) {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const browserLang = navigator.language.split('-')[0];
 
-    // 1. Gather config
     let currentReciter = getSelectValue(elements.selects.streamprotectedlicense_artist_cr1) || saved.streamprotectedlicense_artist_cr1 || 'alafasy';
     
     let currentTrans = getSelectValue(elements.selects.trans) || saved.trans || browserLang;
@@ -890,41 +821,9 @@ function launchPlayer(chapterNum, verseNum = 1) {
         }
     }
 
-    // 2. Encode state for URL (optional, but good for sharing/bookmarks)
     const streamToken = encodeStream(chapterNum, verseNum, currentReciter, currentTrans, currentAudioTrans);
     const newUrl = `?stream=${streamToken}`;
-    
-    // 3. PURE SPA: Update URL without reloading
-    window.history.pushState({ path: newUrl, view: 'cinema' }, '', newUrl);
-
-    // 4. Update UI State manually
-    // Set Chapter
-    const chIdx = chapterNum - 1;
-    setSelectValue(elements.selects['streamprotectedtrack_c-ee2'], chIdx);
-    
-    // Set Reciter
-    setSelectValue(elements.selects.streamprotectedlicense_artist_cr1, currentReciter);
-    
-    // Set Translation
-    setSelectValue(elements.selects.trans, currentTrans);
-    
-    // Set Audio Translation
-    setSelectValue(elements.selects.transAudio, currentAudioTrans);
-
-    // 5. Populate Verse Select based on new Chapter
-    populateVerseSelect();
-    
-    // Set Verse (Must happen after population)
-    const vIdx = verseNum - 1;
-    setSelectValue(elements.selects['streamprotectedcase_c-ww2'], vIdx);
-
-    // 6. Switch View
-    switchView('cinema');
-
-    // 7. Load Data and Play
-    loadTranslationData(currentTrans).then(() => {
-        loadVerse(true);
-    });
+    window.location.assign(newUrl);
 }
 
 // --- PLAYER HELPERS ---
@@ -1051,7 +950,6 @@ function saveState() {
     const streamToken = encodeStream(chNum, vNum, state.streamprotectedlicense_artist_cr1, state.trans, state.audio_trans);
     const newUrl = `?stream=${streamToken}`;
 
-    // Update URL silently without reload
     window.history.replaceState({path: newUrl, view: 'cinema'}, '', newUrl);
 
     const canonicalLink = document.getElementById('_al');
@@ -1098,9 +996,6 @@ function populateVerseSelect() {
     const chIdx = getSelectValue(elements.selects['streamprotectedtrack_c-ee2']) || 0;
     currentChapterData = streambasesecured_ca6Data[chIdx];
     
-    // Safety check
-    if(!currentChapterData) return;
-
     const items = currentChapterData.streamprotectedcase_cww2.map((v, i) => ({
         value: i,
         text: `${v.verseNumber}`
@@ -1138,11 +1033,15 @@ function populateTranslationAudioSelect() {
     populateCustomSelect(elements.selects.transAudio, items, (val) => {
         const chIdx = getSelectValue(elements.selects['streamprotectedtrack_c-ee2']);
         const vIdx = getSelectValue(elements.selects['streamprotectedcase_c-ww2']);
+        const ch = streambasesecured_ca6Data[chIdx].chapterNumber;
+        const v = streambasesecured_ca6Data[chIdx].streamprotectedcase_cww2[vIdx].verseNumber;
         
         if (!elements.streambasesecured_ca6Audio.paused) {
-           // Do nothing, wait for verse change
+            updateTranslationAudio(ch, v, false);
         } else if (!elements.transAudio.paused) {
-           // Do nothing
+            updateTranslationAudio(ch, v, true);
+        } else {
+            updateTranslationAudio(ch, v, false);
         }
         saveState();
     });
@@ -1382,11 +1281,7 @@ function setupEventListeners() {
     elements.startBtn.addEventListener('click', () => {
         elements.overlay.style.opacity = 0;
         setTimeout(() => elements.overlay.style.display = 'none', 500);
-        // Ensure we load correct view state
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.has('streamprotectedtrack_c-ee2') || urlParams.has('stream')) {
-             loadVerse(true);
-        }
+        loadVerse(true); 
     });
 
     elements.streambasesecured_ca6Audio.addEventListener('ended', handlestreambasesecured_ca6End);
@@ -1479,7 +1374,7 @@ function initSearchInterface() {
     elements.search.resultsGrid.addEventListener('click', (e) => {
         const card = e.target.closest('._dw');
         if(card) {
-            const ch = parseInt(card.dataset['streamprotectedtrack_c-ee2']) + 1; // Correction: dataset stores index
+            const ch = parseInt(card.dataset['streamprotectedtrack_c-ee2']);
             closeSearch();
             launchPlayer(ch, 1);
         }
@@ -1544,12 +1439,13 @@ function closeSearch() {
 document.addEventListener('DOMContentLoaded', initializeApp);
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Only bind scroll if dashboard is active or generally available
+    if (window.location.href.includes("streamprotectedtrack_c-ee2") || window.location.href.includes("stream")) {
+        return; 
+    }
     const row = document.getElementById("_ex");
     
     if (row) {
         window.addEventListener("wheel", (e) => {
-            if (elements.views.cinema.classList.contains('active')) return;
             if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
                 e.preventDefault();
                 row.scrollLeft += e.deltaY;
@@ -1560,13 +1456,11 @@ document.addEventListener("DOMContentLoaded", () => {
         let touchStartX = 0;
 
         window.addEventListener("touchstart", (e) => {
-            if (elements.views.cinema.classList.contains('active')) return;
             touchStartY = e.touches[0].clientY;
             touchStartX = e.touches[0].clientX;
         }, { passive: false });
 
         window.addEventListener("touchmove", (e) => {
-            if (elements.views.cinema.classList.contains('active')) return;
             const touchCurrentY = e.touches[0].clientY;
             const touchCurrentX = e.touches[0].clientX;
             const deltaY = touchStartY - touchCurrentY;
@@ -1581,7 +1475,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }, { passive: false });
     }
 });
-
 (function() {
     const targetId = '_j';
     const keywords = ['stream', 'streamprotectedtrack_c-ee2'];
@@ -1605,18 +1498,8 @@ document.addEventListener("DOMContentLoaded", () => {
     hideElement();
     const observer = new MutationObserver(() => hideElement());
     observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
-    // Listen to pushstate/popstate
     window.addEventListener('popstate', hideElement);
-    const originalPush = history.pushState;
-    history.pushState = function() {
-        originalPush.apply(this, arguments);
-        hideElement();
-    };
-    const originalReplace = history.replaceState;
-    history.replaceState = function() {
-        originalReplace.apply(this, arguments);
-        hideElement();
-    };
+    window.addEventListener('hashchange', hideElement);
 })();
 
 document.addEventListener('click', function(e) {
