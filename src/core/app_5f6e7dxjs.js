@@ -277,67 +277,7 @@ function populateCustomSelect(wrapper, items, onChange) {
 
     optionsContainer.appendChild(fragment);
 }
-/* --- TUWA OS BRIDGE INTEGRATION --- */
-async function initAudioPipeline() {
-    // 1. Find the wrapper we added to HTML
-    const wrapper = document.getElementById('audioOutputSelectWrapper');
-    if (!wrapper) return;
 
-    // 2. Check if we are running in the Tuwa Electron Shell
-    const isNative = window.TuwaSystem && window.TuwaSystem.isNative;
-
-    // 3. If NOT native, you might want to hide it (or keep for future web support)
-    if (!isNative) return; 
-
-    // 4. Access the Bridge
-    const bridge = window.TuwaSystem ? window.TuwaSystem.audio : null;
-    if (!bridge) return;
-
-    try {
-        // 5. Fetch Devices from Windows OS Pipeline
-        const devices = await bridge.getDevices();
-        
-        // If no external speakers found, keep hidden
-        if (devices.length <= 1) return;
-
-        wrapper.style.display = 'flex'; // Reveal the UI
-
-        // 6. Format for your Custom Select System
-        const options = devices.map(d => ({
-            value: d.deviceId,
-            text: d.label || 'External Speaker'
-        }));
-        
-        // Add Default Option
-        options.unshift({ value: 'default', text: 'System Default' });
-
-        // 7. Use YOUR existing UI generator
-        populateCustomSelect(wrapper, options, async (deviceId) => {
-            console.log("[Tuwa Pipeline] Switching Audio Output to:", deviceId);
-
-            // IDs of your audio players: _cq (Main), _e (Translation), _ca (Preview)
-            const targetIds = ['_cq', '_e', '_ca'];
-            
-            if (isNative) {
-                // Use the Native Bridge
-                await window.TuwaSystem.audio.setSinkId(targetIds, deviceId);
-            } else {
-                // Web Fallback (if browser supports it)
-                targetIds.forEach(id => {
-                    const el = document.getElementById(id);
-                    if (el && typeof el.setSinkId === 'function') el.setSinkId(deviceId);
-                });
-            }
-        });
-
-        // Set initial value
-        setSelectValue(wrapper, 'default');
-
-    } catch (err) {
-        console.error("[Tuwa Pipeline] Bridge error:", err);
-    }
-}
-/* ---------------------------------- */
 function setSelectValue(wrapper, value) {
     const options = wrapper.querySelectorAll('._b5');
     let foundText = null;
@@ -469,7 +409,6 @@ window.addEventListener('popstate', (event) => {
 async function initializeApp() {
     try {
         initCustomSelects();
-        initAudioPipeline(); 
 
         try {
             const configResponse = await fetch('/api/config');
