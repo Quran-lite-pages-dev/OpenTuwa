@@ -66,7 +66,9 @@ html { box-sizing: border-box; font-size: 62.5%; }
 body {
     font-family: "Plus Jakarta Sans", sans-serif;
     background-color: var(--bg);
-    background-image: radial-gradient(circle at 50% 10%, #1a1a1a 0%, #121212 70%);
+    /* ENHANCEMENT: Deep Space Cinema Gradient (Apple TV Style) */
+    background-image: radial-gradient(circle at 50% 0%, #1f2125 0%, #050505 60%, #000000 90%);
+    background-attachment: fixed; /* Parallax feel */
     color: var(--text);
     line-height: 1.6;
     font-size: 1.6rem;
@@ -260,24 +262,31 @@ html[dir="rtl"] ._el {
 ._ak {
     pointer-events: auto;
     position: relative;
-    /* Reset any old bottom-centric transforms */
     margin-bottom: 0 !important; 
     margin-top: 0 !important;
     
-    /* Keep your existing styles below */
-    background: #050505;
-    backdrop-filter: blur(25px);
+    /* ENHANCEMENT: Apple TV "Platter" Material */
+    background: rgba(15, 15, 15, 0.65); /* More transparency for immersion */
+    backdrop-filter: blur(50px) saturate(180%); /* High blur + Vibrancy */
+    -webkit-backdrop-filter: blur(50px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08); /* Subtle premium rim */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5); /* Deep depth */
+    
     border-radius: 50px;
     width: 240px;
     padding: 6px 14px;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.5s cubic-bezier(0.32, 0.72, 0, 1); /* "Spring" easing */
 }
 
 /* Interaction States - Ensuring they don't break the top position */
 ._ak:focus-within,
 ._ak:hover {
     width: 340px;
-    transform: translateY(5px); /* Changed to positive to move DOWN slightly on hover */
+    /* ENHANCEMENT: Scale + Glow (tvOS Focus State) */
+    transform: translateY(5px) scale(1.02); 
+    background: rgba(25, 25, 25, 0.85);
+    border-color: rgba(255, 255, 255, 0.25); /* Brighter rim on focus */
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7); /* Lifted effect */
 }
 /* --- SLIM THINKING STATE --- */
 

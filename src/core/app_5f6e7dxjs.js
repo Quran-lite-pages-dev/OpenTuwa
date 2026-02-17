@@ -83,6 +83,32 @@ const elements = {
 // Global storage for cinema caption timers
 window.cinemaCaptionTimers = window.cinemaCaptionTimers || [];
 
+// --- AUDIO FLUIDITY ENGINE (Spotify Philosophy) ---
+// Softly fades out audio instead of a hard cut
+function softFadeAudio(audioEl, duration = 800) {
+    if (!audioEl || audioEl.paused) return;
+    
+    // Store original volume to restore later
+    const originalVolume = audioEl.volume;
+    const stepTime = 50;
+    const steps = duration / stepTime;
+    const volStep = originalVolume / steps;
+
+    const fadeInterval = setInterval(() => {
+        if (audioEl.volume > volStep) {
+            audioEl.volume -= volStep;
+        } else {
+            // Finished fading
+            audioEl.volume = 0;
+            audioEl.pause();
+            clearInterval(fadeInterval);
+            
+            // Restore volume for next play (important!)
+            setTimeout(() => { audioEl.volume = originalVolume; }, 50);
+        }
+    }, stepTime);
+}
+
 function getSmartChunks(text) {
     if (!text || typeof text !== 'string') return [];
     const PUNCT_RE = /[.,;?!:\"”’‘)\]،؛۔؟]/;
@@ -384,15 +410,18 @@ function switchView(viewName) {
             if(chapterTrigger) chapterTrigger.focus();
         }, 150);
     } else {
-        elements.views.cinema.classList.remove('active');
-        elements.views.cinema.style.opacity = '0';
-        elements.views.dashboard.classList.add('active');
-        elements.sidebar.container.style.display = 'none';
-        elements.streambasesecured_ca6Audio.pause();
-        elements.transAudio.pause();
-        refreshDashboard();
-        document.getElementById('door-play-btn').focus();
-    }
+    elements.views.cinema.classList.remove('active');
+    elements.views.cinema.style.opacity = '0';
+    elements.views.dashboard.classList.add('active');
+    elements.sidebar.container.style.display = 'none';
+    
+    // ENHANCEMENT: Soft fade out (Premium feel)
+    softFadeAudio(elements.streambasesecured_ca6Audio);
+    softFadeAudio(elements.transAudio);
+    
+    refreshDashboard();
+    document.getElementById('door-play-btn').focus();
+}
 }
 
 window.addEventListener('popstate', (event) => {
