@@ -13,6 +13,17 @@ document.addEventListener('error', function (event) {
     }
 }, true);
 
+// --- SAFE FETCH (abort previous request per resource to prevent race conditions) ---
+const fetchControllers = Object.create(null);
+function createSafeFetcher(resourceKey) {
+    if (fetchControllers[resourceKey]) {
+        fetchControllers[resourceKey].abort();
+    }
+    const controller = new AbortController();
+    fetchControllers[resourceKey] = controller;
+    return controller.signal;
+}
+
 // --- 1. PLACEHOLDERS FOR SERVER DATA ---
 let streamprotected_cb2_METADATA = [];
 let TRANSLATIONS_CONFIG = {};
@@ -408,12 +419,14 @@ async function getTunneledUrl(type, filename) {
             method: 'POST',
             credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type, filename })
+            body: JSON.stringify({ type, filename }),
+            signal: createSafeFetcher('media-token')
         });
         if (!res.ok) throw new Error('Token request failed');
         const j = await res.json();
         return `/media/${type}/${j.token}/${filename}`;
     } catch (e) {
+        if (e.name === 'AbortError') return null;
         console.error('Failed to get tunneled URL', e);
         return null;
     }
@@ -472,7 +485,7 @@ async function initializeApp() {
         initCustomSelects();
 
         try {
-            const configResponse = await fetch('/api/config');
+            const configResponse = await fetch('/api/config', { signal: createSafeFetcher('config') });
             if(configResponse.ok) {
                 const configData = await configResponse.json();
                 streamprotected_cb2_METADATA = configData.streamprotectedtrack_cee2;
@@ -482,12 +495,19 @@ async function initializeApp() {
                 throw new Error("Failed to load secure config");
             }
         } catch(e) {
+            if (e.name === 'AbortError') return;
             console.error("Config Load Failed", e);
         }
 
-        const jsonResponse = await fetch('/assets/data/translations/2TM3TM.json');
-        if (!jsonResponse.ok) throw new Error("Failed to load streambasesecured_ca6 JSON");
-        const jsonData = await jsonResponse.json();
+        let jsonData;
+        try {
+            const jsonResponse = await fetch('/assets/data/translations/2TM3TM.json', { signal: createSafeFetcher('translations-json') });
+            if (!jsonResponse.ok) throw new Error("Failed to load streambasesecured_ca6 JSON");
+            jsonData = await jsonResponse.json();
+        } catch (e) {
+            if (e.name === 'AbortError') return;
+            throw e;
+        }
 
         // Normalize different possible JSON shapes to the internal expected schema.
         let rawChapters = jsonData.streamprotectedtrack_cee2 || jsonData.chapters || jsonData;
@@ -523,7 +543,7 @@ async function initializeApp() {
         streambasesecured_ca6Data = mergeMetadata(normalized);
 
         try {
-            const fttResp = await fetch(FTT_URL);
+            const fttResp = await fetch(FTT_URL, { signal: createSafeFetcher('ftt') });
             if (fttResp.ok) {
                 const fttText = await fttResp.text();
                 const fttDoc = new DOMParser().parseFromString(fttText, 'application/xml');
@@ -533,7 +553,9 @@ async function initializeApp() {
                     if(c && n) forbiddenToTranslateSet.add(`${c}-${n}`);
                 });
             }
-        } catch (e) { console.warn("FTT load failed", e); }
+        } catch (e) {
+            if (e.name === 'AbortError') { /* ignore */ } else { console.warn("FTT load failed", e); }
+        }
 
         populateChapterSelect();
         populateReciterSelect();
@@ -569,6 +591,7 @@ async function initializeApp() {
         initSearchInterface();
 
     } catch (error) {
+        if (error.name === 'AbortError') return;
         console.error("Critical Init Error:", error);
         elements.loaderText.textContent = window.t ? window.t('errors.loadError') : "Error loading content. Please check connection.";
     }
@@ -871,12 +894,13 @@ async function loadTranslationData(id) {
             if (!tunneled) throw new Error('Failed to obtain data token');
             url = tunneled;
         }
-        const res = await fetch(url);
+        const res = await fetch(url, { signal: createSafeFetcher('translation-' + id) });
         if (res.ok) {
             const txt = await res.text();
             translationCache[id] = new DOMParser().parseFromString(txt, 'application/xml');
         }
     } catch (e) {
+        if (e.name === 'AbortError') return;
         console.error("Failed to load translation:", id);
     } finally {
         toggleBuffering(false);
@@ -1316,12 +1340,17 @@ function adjustFontSize() {
 
     el.style.fontSize = '3.5rem';
     let iter = 0;
-    while (el.scrollHeight > el.clientHeight && iter < 50) {
-        let size = parseFloat(window.getComputedStyle(el).fontSize);
-        if (size <= 16) break;
+    function step() {
+        if (iter >= 50) return;
+        const overflow = el.scrollHeight > el.clientHeight;
+        if (!overflow) return;
+        const size = parseFloat(window.getComputedStyle(el).fontSize);
+        if (size <= 16) return;
         el.style.fontSize = (size - 1) + 'px';
         iter++;
+        requestAnimationFrame(step);
     }
+    requestAnimationFrame(step);
 }
 
 function setupEventListeners() {
@@ -1543,7 +1572,11 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
     hideElement();
-    const observer = new MutationObserver(() => hideElement());
+    const observer = new MutationObserver(() => {
+        observer.disconnect();
+        hideElement();
+        observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
+    });
     observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'class'] });
     window.addEventListener('popstate', hideElement);
     window.addEventListener('hashchange', hideElement);
