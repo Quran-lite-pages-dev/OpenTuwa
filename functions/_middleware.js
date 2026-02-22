@@ -241,6 +241,10 @@ export async function onRequest(context) {
       '/sw.js',
       '/assets/ui/err_9391za.html',
       '/assets/js/tuwa-hibernate.js',
+      '/legal/index.html',
+      '/legal/locales.json',
+      '/legal/i18n.js',
+      '/legal/daun.me.png',
       '/manifest.json'
     ];
 

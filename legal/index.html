@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#030303">
+    <title data-i18n="page_title">Legal Policies - Tuwa</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link rel="shortcut icon" href="https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/ui/web.ico"><link rel="apple-touch-icon" href="assets/ui/apple-touch-icon.png">
+<meta name="application-name" content="Tuwa"><meta name="apple-mobile-web-app-title" content="Tuwa"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="description" content="Listen to premium content with distraction-free viewing. OpenTuwa"><meta name="author" content="OpenTuwa"><link rel="manifest" href="manifest.json"><link type="text/plain" rel="author" href="humans.txt" /><meta property="og:site_name" content="Tuwa"><meta property="og:title" content="Tuwa - Web Player: Sight for everyone"><meta property="og:description" content="Listen to premium content with distraction-free viewing. A brand of OpenTuwa."><meta property="og:type" content="website"><meta property="og:image" content="https://Quran-lite.pages.dev/social-preview.png"><meta property="og:image" content="assets/og-image.jpg"><script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"Tuwa","alternateName":"Tuwa Audio","headline":"Sight for everyone","operatingSystem":"Web, iOS, Android","applicationCategory":"MusicApplication","genre":"Music & Audio","description":"Premium content platform with distraction-free viewing. A brand of OpenTuwa.","offers":{"@type":"Offer","price":"0"},"author":{"@type":"Organization","name":"OpenTuwa","url":"https://www.Quran-lite.pages.dev"},"copyrightHolder":{"@type":"Organization","name":"OpenTuwa"},"downloadUrl":"https://www.Quran-lite.pages.dev/download"}</script><script async src="https://www.googletagmanager.com/gtag/js?id=G-PDWXFDCQRH"></script>
+
+    <style>
+        /* --- PLATFORM ECOSYSTEM VARIABLES --- */
+        :root { 
+            --vh: 100vh; 
+            --accent: #f5f5f7; /* Changed from green to Apple gray-white */
+            --accent-glow: rgba(245, 245, 247, 0.3); 
+            --bg: #030303; 
+            --text: #f0f0f0; 
+            --text-muted: rgba(255, 255, 255, 0.6);
+            --nav-bg: rgba(10, 10, 10, 0.85);
+            --radius-sm: 8px; 
+            --radius-md: 16px; 
+            --radius-lg: 24px; 
+            --transition-smooth: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+            
+            /* Cinematic Glass Vars */
+            --glass-surface: rgba(20, 20, 20, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1); 
+        }
+
+        /* --- BASE RESET --- */
+        html { box-sizing: border-box; font-size: 62.5%; scroll-behavior: smooth; }
+        *, *::before, *::after { box-sizing: inherit; margin: 0; padding: 0; }
+        * { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+        *::-webkit-scrollbar { display: none !important; width: 0 !important; height: 0 !important; }
+
+        body {
+            font-family: "Plus Jakarta Sans", sans-serif;
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at 50% 10%, #1a1a1a 0%, #121212 70%);
+            background-attachment: fixed;
+            color: var(--text);
+            line-height: 1.6;
+            font-size: 1.6rem;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- LANGUAGE BANNER (OVERHEAD) --- */
+        .lang-banner {
+            background-color: #1967d2;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 12px 20px;
+            position: relative;
+            font-size: 1.4rem;
+            font-weight: 500;
+            z-index: 1000;
+            transition: top 0.3s ease;
+        }
+
+        .lang-banner.hidden { display: none; }
+        .lang-link { color: #ffffff; text-decoration: underline; cursor: pointer; transition: opacity 0.2s; }
+        .lang-link:hover { opacity: 0.8; }
+        .banner-close { position: absolute; right: 20px; background: none; border: none; color: #ffffff; font-size: 2rem; cursor: pointer; line-height: 1; }
+
+        /* --- LANGUAGE SELECTOR MODAL --- */
+        .lang-modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+        .lang-modal.active { display: flex; }
+        .lang-grid {
+            background: var(--glass-surface); border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg); padding: 30px; display: grid;
+            grid-template-columns: repeat(2, 1fr); gap: 15px; max-width: 500px; width: 90%;
+        }
+        .lang-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border);
+            color: #fff; padding: 12px 20px; border-radius: var(--radius-sm);
+            cursor: pointer; font-family: inherit; font-size: 1.4rem; transition: var(--transition-smooth); text-align: left;
+        }
+        .lang-btn:hover { background: rgba(255, 255, 255, 0.15); border-color: var(--accent); }
+
+        /* --- OVERHEAD NAVIGATION --- */
+        .top-nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: var(--nav-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            padding: 15px 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        .nav-brand {
+            font-weight: 700;
+            font-size: 1.6rem;
+            color: var(--text);
+            margin-right: 20px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 1.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition-smooth);
+        }
+
+        .tab-btn:hover { color: var(--text); }
+        .tab-btn.active { background: rgba(255, 255, 255, 0.15); color: #fff; font-weight: 700; }
+
+        /* --- MAIN LAYOUT --- */
+        .page-container {
+            max-width: 1200px; margin: 40px auto; padding: 0 40px;
+            display: grid; grid-template-columns: 250px 1fr; gap: 60px;
+        }
+
+        /* --- SIDEBAR TOC --- */
+        .sidebar { position: sticky; top: 100px; height: max-content; }
+        .toc-list { list-style: none; display: flex; flex-direction: column; gap: 15px; }
+        .toc-list a {
+            text-decoration: none; color: var(--accent);
+            text-shadow: 0 2px 5px rgba(255, 255, 255, 0.4); font-weight: 500;
+            font-size: 1.5rem; transition: var(--transition-smooth); display: block;
+        }
+        .toc-list a:hover { color: #fff; text-shadow: 0 2px 10px rgba(255, 255, 255, 0.7); transform: translateX(5px); }
+
+        /* --- CONTENT AREA --- */
+        .content-area { animation: fadeIn 0.5s ease-out; }
+        .policy-section { display: none; }
+        .policy-section.active { display: block; animation: fadeIn 0.4s ease-out; }
+        .doc-title { font-size: clamp(3rem, 4vw, 4.5rem); font-weight: 900; letter-spacing: -1px; margin-bottom: 10px; color: #fff; }
+        .doc-meta { font-size: 1.4rem; color: var(--text-muted); margin-bottom: 40px; }
+        
+        .glass-panel { background: var(--glass-surface); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 40px; margin-bottom: 30px; }
+        .doc-section { margin-bottom: 35px; scroll-margin-top: 100px; }
+        .doc-section h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 15px; color: #fff; border-bottom: 1px solid var(--glass-border); padding-bottom: 10px; }
+        .doc-text { color: rgba(255, 255, 255, 0.85); margin-bottom: 15px; font-size: 1.6rem; }
+        .doc-list { list-style: none; margin-bottom: 20px; }
+        .doc-list li { position: relative; padding-left: 20px; margin-bottom: 12px; color: rgba(255, 255, 255, 0.85); }
+        .doc-list li::before {
+            content: "•"; position: absolute; left: 0; color: var(--accent);
+            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.4); font-weight: bold;
+        }
+        strong { color: #fff; }
+
+        .footer-note { margin-top: 50px; padding-top: 20px; border-top: 1px solid var(--glass-border); color: var(--text-muted); font-size: 1.4rem; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media screen and (max-width: 900px) {
+            .page-container { grid-template-columns: 1fr; padding: 0 20px; }
+            .sidebar { display: none; }
+            .top-nav { padding: 15px 20px; }
+            .glass-panel { padding: 25px; }
+        }
+/* --- SOCIAL LINKS --- */
+        .footer-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .social-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text);
+            text-decoration: none;
+            transition: var(--transition-smooth);
+        }
+
+        .social-icon:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: var(--accent);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+        }
+
+        .social-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        .social-icon img {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
+            /* Optional: Add a slight filter if your uploaded icon needs to blend better with dark mode */
+            /* filter: brightness(0) invert(1); */ 
+        }
+
+        /* Mobile Adjustments for Footer */
+        @media screen and (max-width: 900px) {
+            .footer-wrapper {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="lang-banner" id="langBanner">
+        <span class="lang-link" id="currentLangDisplay" onclick="openLangModal()">English (US)</span>
+        <button class="banner-close" onclick="closeBanner()">✕</button>
+    </div>
+
+    <div class="lang-modal" id="langModal">
+        <div class="lang-grid">
+            <div class="modal-close-wrapper" style="grid-column: 1 / -1; text-align: right; margin-bottom: -10px;">
+                <button class="banner-close" style="position:static; color: var(--text);" onclick="closeLangModal()">✕</button>
+            </div>
+            <button class="lang-btn" onclick="setLanguage('en')">English</button>
+            <button class="lang-btn" onclick="setLanguage('zh')">中文 (Chinese)</button>
+            <button class="lang-btn" onclick="setLanguage('hi')">हिन्दी (Hindi)</button>
+            <button class="lang-btn" onclick="setLanguage('es')">Español (Spanish)</button>
+            <button class="lang-btn" onclick="setLanguage('fr')">Français (French)</button>
+            <button class="lang-btn" onclick="setLanguage('ar')">العربية (Arabic)</button>
+            <button class="lang-btn" onclick="setLanguage('bn')">বাংলা (Bengali)</button>
+            <button class="lang-btn" onclick="setLanguage('ru')">Русский (Russian)</button>
+            <button class="lang-btn" onclick="setLanguage('pt')">Português (Portuguese)</button>
+            <button class="lang-btn" onclick="setLanguage('ur')">اردو (Urdu)</button>
+        </div>
+    </div>
+
+    <nav class="top-nav">
+        <span class="nav-brand" data-i18n="header_title">OpenTuwa&reg; Legal</span>
+        <button class="tab-btn active" onclick="switchTab('eua', this)" data-i18n="eua_title">End User Agreement</button>
+        <button class="tab-btn" onclick="switchTab('privacy', this)" data-i18n="priv_title">Privacy Policy</button>
+        <button class="tab-btn" onclick="switchTab('cookie', this)" data-i18n="cookie_title">Cookie Policy</button>
+    </nav>
+
+    <main class="page-container">
+        
+        <aside class="sidebar">
+            <ul class="toc-list" id="toc">
+                </ul>
+        </aside>
+
+        <div class="content-area">
+
+            <article id="eua" class="policy-section active">
+                <h1 class="doc-title" data-i18n="eua_title">Tuwa End User Agreement</h1>
+                <div class="doc-meta" data-i18n="eua_eff">Effective as of: August 26, 2025</div>
+
+                <div class="glass-panel">
+                    <p class="doc-text" data-i18n="eua_desc">Hello! Welcome to the Tuwa&trade; End User Agreement ("<strong>Terms</strong>") which apply when you use the Tuwa application, a brand of OpenTuwa&reg;. These Terms govern your use of our distraction-free Quran audio streaming and reading services (the "<strong>Service</strong>").</p>
+
+                    <section class="doc-section" id="eua-1">
+                        <h2 data-i18n="eua_sec1_title">1. The Service Provided by Us</h2>
+                        <p class="doc-text" data-i18n="eua_sec1_text">Tuwa&trade; provides a specialized, distraction-free environment for Quran audio streaming and text reading. The Service is provided entirely free of charge. To access the full application and maintain personalized settings securely, users must authenticate prior to use.</p>
+                    </section>
+
+                    <section class="doc-section" id="eua-2">
+                        <h2 data-i18n="eua_sec2_title">2. Your Use of the Service</h2>
+                        <p class="doc-text" data-i18n="eua_sec2_text">You agree to use the Service solely for personal, non-commercial listening and study. To protect the integrity of our platform and the rights of our content licensors, the following activities are strictly prohibited:</p>
+                        <ul class="doc-list">
+                            <li data-i18n="eua_sec2_li1">Using automated tools, scrapers, or crawlers to extract audio, text, or data from the Service.</li>
+                            <li data-i18n="eua_sec2_li2">Attempting to download, redistribute, or circumvent the security measures protecting our media streams.</li>
+                            <li data-i18n="eua_sec2_li3">Reverse-engineering, decompiling, or attempting to bypass our application architecture or access controls.</li>
+                        </ul>
+                    </section>
+
+                    <section class="doc-section" id="eua-3">
+                        <h2 data-i18n="eua_sec3_title">3. Content and Intellectual Property Rights</h2>
+                        <p class="doc-text" data-i18n="eua_sec3_text">The Tuwa&trade; platform, including its interface, design, software, and brand elements, is the proprietary intellectual property of OpenTuwa&reg;. The audio recitations and translated texts are licensed content and remain the exclusive property of their respective owners or rights holders.</p>
+                    </section>
+
+                    <section class="doc-section" id="eua-4">
+                        <h2 data-i18n="eua_sec4_title">4. Problems and Disputes</h2>
+                        <p class="doc-text" data-i18n="eua_sec4_text">The Service is provided on an "as is" and "as available" basis without warranties of any kind. To the maximum extent permitted by applicable law, OpenTuwa&reg; shall not be liable for any indirect, incidental, or consequential damages arising from your use of or inability to use the Service.</p>
+                        <p class="doc-text" data-i18n="eua_sec5_text">This Agreement shall be governed by and construed in accordance with the laws of Malaysia. Any disputes shall be subject to the exclusive jurisdiction of the courts located in Johor, Malaysia.</p>
+                    </section>
+                </div>
+            </article>
+
+            <article id="privacy" class="policy-section">
+                <h1 class="doc-title" data-i18n="priv_title">Tuwa Privacy Policy</h1>
+                <div class="doc-meta" data-i18n="priv_eff">Effective as of: August 26, 2025</div>
+
+                <div class="glass-panel">
+                    <p class="doc-text" data-i18n="priv_desc">At Tuwa&trade;, we believe in data minimization. This Privacy Policy outlines our strict practices regarding the limited information we process to keep our Service running securely.</p>
+
+                    <section class="doc-section" id="priv-1">
+                        <h2 data-i18n="priv_sec1_title">1. Personal Data We Collect</h2>
+                        <ul class="doc-list">
+                            <li data-i18n="priv_sec1_li1"><strong>Information You Provide:</strong> When you utilize our search functionality, queries are processed in real-time. We do not store these search logs on our servers.</li>
+                            <li data-i18n="priv_sec1_li2"><strong>Security & Infrastructure Data:</strong> To secure our platform, we collect standard network data (e.g., IP address, basic device identifiers). This is processed dynamically to authorize secure media streams.</li>
+                            <li data-i18n="priv_sec1_li3"><strong>Authentication Data:</strong> Upon login, we receive a secure session token. We do not read, store, or process your external personal profile data, emails, or passwords.</li>
+                        </ul>
+                    </section>
+
+                    <section class="doc-section" id="priv-2">
+                        <h2 data-i18n="priv_sec2_title">2. Our Purpose for Using Data</h2>
+                        <p class="doc-text" data-i18n="priv_sec2_text">The minimal data we interact with is strictly utilized to:</p>
+                        <ul class="doc-list">
+                            <li data-i18n="priv_sec2_li1">Authenticate your secure access to the application.</li>
+                            <li data-i18n="priv_sec2_li2">Protect licensed audio content from unauthorized distribution.</li>
+                            <li data-i18n="priv_sec2_li3">Analyze aggregate, non-identifiable usage trends to maintain server stability.</li>
+                        </ul>
+                    </section>
+
+                    <section class="doc-section" id="priv-3">
+                        <h2 data-i18n="priv_sec3_title">3. Keeping Your Data Safe</h2>
+                        <p class="doc-text" data-i18n="priv_sec3_text">We do not sell your personal data. Infrastructure data is processed solely to operate secure hosting and authentication. We utilize industry-standard encryption (HTTPS/TLS) and strict access controls to protect all data in transit.</p>
+                    </section>
+
+                    <section class="doc-section" id="priv-4">
+                        <h2 data-i18n="priv_sec4_title">4. Your Data Rights and Controls</h2>
+                        <p class="doc-text" data-i18n="priv_sec4_text">Because we do not maintain a centralized user database, your personal preferences (such as playback history and theme choices) are stored locally on your device. You maintain full control and can delete this data at any time using your browser settings or our in-app wipe feature.</p>
+                    </section>
+                </div>
+            </article>
+
+            <article id="cookie" class="policy-section">
+                <h1 class="doc-title" data-i18n="cookie_title">Tuwa Cookie Policy</h1>
+                <div class="doc-meta" data-i18n="cookie_eff">Effective as of: August 26, 2025</div>
+
+                <div class="glass-panel">
+                    <p class="doc-text" data-i18n="cookie_desc">This Cookie Policy explains how Tuwa&trade; uses cookies and local storage technologies to provide a seamless, secure experience.</p>
+
+                    <section class="doc-section" id="cook-1">
+                        <h2 data-i18n="cookie_title">1. Essential Cookies</h2>
+                        <p class="doc-text" data-i18n="cookie_li1">We use strictly necessary cookies to authenticate your access and maintain a secure session. If you disable these cookies through your browser, our security protocols will require you to log out and re-authenticate.</p>
+                    </section>
+
+                    <section class="doc-section" id="cook-2">
+                        <h2 data-i18n="cookie_title">2. Local Storage for Preferences</h2>
+                        <p class="doc-text" data-i18n="cookie_li2">Instead of tracking your settings on our servers, we use your device's <code>localStorage</code> to save your playback state, reading preferences, and interface choices. This ensures your privacy while allowing you to seamlessly resume recitations.</p>
+                    </section>
+
+                    <section class="doc-section" id="cook-3">
+                        <h2 data-i18n="cookie_title">3. Analytics and Performance</h2>
+                        <p class="doc-text" data-i18n="cookie_li3">We utilize lightweight infrastructure cookies to understand aggregate platform health and load balancing, ensuring the Service remains fast and reliable without tracking your personal identity.</p>
+                    </section>
+                </div>
+            </article>
+
+            <div class="footer-note"> 
+                <span data-i18n="footer_copy">&copy; 2026 OpenTuwa&reg; Labs. All rights reserved.</span> <br>
+                <a data-i18n="footer_contact" href="mailto:15155151ae@gmail.com" style="color: var(--accent); text-shadow: 0 1px 3px rgba(255, 255, 255, 0.4); text-decoration: none;">Contact us</a>.
+            </div>
+<br>
+<div class="social-links">
+                        <a href="https://x.com/OpenTuwa" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Follow us on X">
+                            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/>
+                            </svg>
+                        </a>
+                        
+                        <a href="https://daun.me/Tuwa" target="_blank" rel="noopener noreferrer" class="social-icon" aria-label="Follow us on Daun.me">
+                            <img src="daun.me.png" alt="Daun.me Icon">
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+    </main>
+
+    <script src="locales.js"></script>
+    <script src="i18n.js"></script>
+
+    <script>
+        // Define the Table of Contents with their i18n keys for dynamic translation
+        const tocData = {
+            'eua': [
+                { id: 'eua-1', text: '1. The Service Provided by Us', i18n: 'eua_sec1_title' },
+                { id: 'eua-2', text: '2. Your Use of the Service', i18n: 'eua_sec2_title' },
+                { id: 'eua-3', text: '3. Intellectual Property Rights', i18n: 'eua_sec3_title' },
+                { id: 'eua-4', text: '4. Problems and Disputes', i18n: 'eua_sec4_title' }
+            ],
+            'privacy': [
+                { id: 'priv-1', text: '1. Personal Data We Collect', i18n: 'priv_sec1_title' },
+                { id: 'priv-2', text: '2. Our Purpose for Using Data', i18n: 'priv_sec2_title' },
+                { id: 'priv-3', text: '3. Keeping Your Data Safe', i18n: 'priv_sec3_title' },
+                { id: 'priv-4', text: '4. Your Data Rights', i18n: 'priv_sec4_title' }
+            ],
+            'cookie': [
+                { id: 'cook-1', text: '1. Essential Cookies', i18n: 'cookie_title' },
+                { id: 'cook-2', text: '2. Local Storage', i18n: 'cookie_title' },
+                { id: 'cook-3', text: '3. Analytics and Performance', i18n: 'cookie_title' }
+            ]
+        };
+
+        function switchTab(tabId, buttonElement) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            buttonElement.classList.add('active');
+
+            document.querySelectorAll('.policy-section').forEach(sec => sec.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+
+            updateTOC(tabId);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function updateTOC(tabId) {
+            const tocContainer = document.getElementById('toc');
+            tocContainer.innerHTML = ''; 
+            
+            // Re-fetch translations dictionary if available
+            const currentLang = localStorage.getItem('tuwa_lang') || 'en';
+            
+            tocData[tabId].forEach(item => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = `#${item.id}`;
+                
+                // Add the data tag for i18n to hook into
+                a.setAttribute('data-i18n', item.i18n);
+                
+                // Set text (using translation dictionary if loaded, otherwise fallback text)
+                a.innerHTML = (typeof translations !== 'undefined' && translations[currentLang] && translations[currentLang][item.i18n]) 
+                              ? translations[currentLang][item.i18n] 
+                              : item.text;
+                
+                a.onclick = (e) => {
+                    e.preventDefault();
+                    document.getElementById(item.id).scrollIntoView({ behavior: 'smooth' });
+                };
+
+                li.appendChild(a);
+                tocContainer.appendChild(li);
+            });
+        }
+
+        window.onload = () => updateTOC('eua');
+    </script>
+</body>
+</html>
