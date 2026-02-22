@@ -1,32 +1,24 @@
-MIT License
+PROPRIETARY LICENSE & TERMS OF USE
+Copyright (c) 2024-2026 Haykal M. Zaidi (Trading as OpenTuwa). All Rights Reserved.
 
-Copyright (c) 2024-2026 Haykal M. Zaidi (Trading as OpenTuwa)
+This software and its associated platform are proprietary. You are granted a limited, non-exclusive, revocable permission to access and use the service for its intended personal or commercial use.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Under no circumstances are you permitted to:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+Copy, modify, reproduce, distribute, or sell any part of this software, its source code, or its underlying infrastructure.
 
----
-TRADEMARK & BRANDING NOTICE (THE "RUGGED" CLAUSE):
+Reverse engineer, decompile, or attempt to extract the source code of this platform.
 
-1. The name "Tuwa", "OpenTuwa", the "Sight for Everyone" tagline, and the
-   logo assets are Trademarks of the author (Haykal M. Zaidi).
-2. You MAY NOT use the name "Tuwa" for any derivative work or fork
-   of this software without express written permission.
-3. If you fork this project, you MUST rename the application (e.g., to "MyQuran")
-   and remove all references to OpenTuwa.
----
+Scrape, mirror, or host this service elsewhere.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+TRADEMARK & BRANDING NOTICE
+
+The names "Tuwa", "OpenTuwa", the "Sight for Everyone" tagline, and all associated logo assets and visual designs are the exclusive Trademarks of Haykal M. Zaidi.
+
+You MAY NOT use these trademarks, names, or branding elements in any capacity—including in domains, app names, or marketing—without express written permission.
+
+You MAY NOT copy the look and feel, user interface, or design of this platform to create a derivative or competing product.
+
+DISCLAIMER OF WARRANTY AND LIMITATION OF LIABILITY
+
+THE SERVICE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
