@@ -249,7 +249,8 @@ export async function onRequest(context) {
     ];
 
     const allowedGuestStarts = [
-      '/login',       
+      '/login',  
+      '/legal',       
       '/login-google',
       '/auth/',
       '/api/config' // Allow config if needed for guest previews (optional)
