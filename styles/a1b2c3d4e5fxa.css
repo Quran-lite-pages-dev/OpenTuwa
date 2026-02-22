@@ -239,20 +239,19 @@ html[dir="rtl"] ._el {
 /* --- ISLAND SEARCH BOX FIX --- */
 #_j {
     position: fixed !important;
-    top: 30px !important;    /* Forces it to the top */
-    bottom: auto !important; /* Explicitly disables bottom pinning */
-    left: 0 !important;
-    width: 100% !important;
-    
-    /* Crucial: height must be auto so it doesn't span the whole screen */
-    height: auto !important; 
-    
+    top: 20px !important;
+    bottom: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    width: auto !important;
+
+    height: auto !important;
+
     display: flex !important;
-    /* This was likely the culprit: align-items must be flex-start */
-    align-items: flex-start !important; 
-    justify-content: flex-start !important;
-    
-    padding-left: 5%; 
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding-left: 0;
     z-index: 9999 !important;
     pointer-events: none;
 }
@@ -277,7 +276,7 @@ html[dir="rtl"] ._el {
 ._ak:focus-within,
 ._ak:hover {
     width: 340px;
-    transform: translateY(5px); /* Changed to positive to move DOWN slightly on hover */
+    transform: translateY(5px);
 }
 /* --- SLIM THINKING STATE --- */
 
@@ -470,22 +469,18 @@ animation-delay: 1s;
 }
 @media screen and (max-width: 768px) {
     #_j {
-        /* 1. RESET the anchors */
-        bottom: auto !important; 
-        top: calc(15px + env(safe-area-inset-top)) !important; 
-        
-        /* 2. FIX FLEX ALIGNMENT (Crucial) */
-        /* Desktop was 'flex-end', which forces it back down. 
-           We need 'center' or 'flex-start' for the top. */
-        align-items: center !important; 
+        top: calc(15px + env(safe-area-inset-top)) !important;
+        bottom: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+
+        align-items: center !important;
         justify-content: center !important;
-        
-        /* 3. RESET PADDING & WIDTH */
-        padding-left: 0 !important; /* Removes the desktop 5% offset */
-        padding: 0 15px !important; /* Balanced side spacing */
-        left: 0 !important;
-        width: 100% !important;
-        height: 60px !important; /* Give the wrapper a specific height */
+
+        padding: 0 15px !important;
+        width: auto !important;
+        max-width: 90% !important;
+        height: auto !important;
     }
 
     ._ak {
@@ -520,7 +515,13 @@ animation-delay: 1s;
 }
 #_bq::-webkit-scrollbar { display: none !important; }
 
-#_bq.active { display: flex; animation: fadeIn 0.5s ease; }
+#_bq.active { display: flex; animation: _viewEnter 0.35s cubic-bezier(0.2, 0, 0, 1) both; }
+
+/* Smooth exit: scale down + fade out (like Spotify's page exit) */
+#_bq._view-exit {
+    animation: _viewExit 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+    pointer-events: none;
+}
 
 /* THE MAGIC: If Title is Empty, Center Content Vertically */
 #_bq:has(#_bg:empty) {
@@ -528,6 +529,8 @@ animation-delay: 1s;
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes _viewEnter { from { opacity: 0; transform: scale(0.97) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes _viewExit { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.96); } }
 
 ._c3 {
     /* Adjusted Height for "Single Fish" (55vh instead of 75vh) */
@@ -788,10 +791,47 @@ transform: none;
 #_dd {
     width: 100%; height: 100%; position: absolute; top: 0; left: 0;
     display: flex; flex-direction: column;
-    transition: opacity 0.5s;
+    transition: opacity 0.4s cubic-bezier(0.2, 0, 0, 1), transform 0.4s cubic-bezier(0.2, 0, 0, 1);
     opacity: 0; pointer-events: none;
+    transform: scale(1.02);
 }
-#_dd.active { opacity: 1; pointer-events: all; z-index: 1000; }
+#_dd.active { opacity: 1; pointer-events: all; z-index: 1000; transform: scale(1); }
+
+/* --- BACK BUTTON (Spotify-style) --- */
+._back-btn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 2147483646;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #fff;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: opacity 0.3s ease, transform 0.2s ease, background 0.2s ease;
+}
+._back-btn._back-visible {
+    display: flex;
+}
+._back-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.08);
+}
+._back-btn:active {
+    transform: scale(0.95);
+}
+body.idle ._back-btn {
+    opacity: 0;
+    pointer-events: none;
+}
 
 #_a6 {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -804,12 +844,11 @@ transform: none;
     border-top-color: var(--accent); animation: spin 0.8s ease-in-out infinite; margin-bottom: 2rem;
 }
 ._ek {
-   display: none;
     /* 1. Layout & Sizing */
-    position: relative; 
+    display: none;
+    position: relative;
     left: 50%;
     transform: translate(-50%, -250%); 
-    display: inline-flex; 
     align-items: center; 
     justify-content: center;
     z-index: 999;
@@ -844,40 +883,35 @@ transform: none;
                 box-shadow 0.3s;
 }
 
-._ek:focus, ._ek:hover { 
-   display: none;
+._ek:focus, ._ek:hover {
     /* Keep translate values consistent to avoid "jumping" */
-    transform: translate(-50%, -240%) scale(1.02); 
+    transform: translate(-50%, -240%) scale(1.02);
 
     background: rgba(200, 255, 255, 0.1); /* Subtle transparency */
     border-color: rgba(255, 255, 255, 0);
     /* Hover shadow: slightly deeper, but not solid black */
-    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3); 
-    outline: none; 
+    box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3);
+    outline: none;
 }
 /* --- MOBILE RESPONSIVE STYLES --- */
 @media (max-width: 768px) {
     ._ek {
-width: 50%;
-max-width: 20px;   
-display: block;   
-margin: 0 auto;     
+width: auto;
+min-width: 160px;
+max-width: 80%;
+display: block;
+margin: 0 auto;
 font-size: 1.1rem;
 padding: 12px 24px;
-box-sizing: border-box;  
-transform: translate(-50%, 220%);
-border: 1px solid rgba(255, 255, 255, 0); 
-
-
-        
-        /* Optional: adjust vertical position if -250% is too high for mobile */
-        
+box-sizing: border-box;
+left: auto;
+transform: none;
+border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
-    ._ek:focus, ._ek:hover { 
-        transform: translate(-50%, 220%) scale(1.02); 
-border-color: rgba(255, 255, 255, 0);
-       
+    ._ek:focus, ._ek:hover {
+        transform: scale(1.02);
+        border-color: rgba(255, 255, 255, 0.1);
     }
 }
 .container {
@@ -1876,35 +1910,29 @@ color: #000; }
     /* --- FORCE ISLAND SEARCH BAR VISIBILITY --- */
 /* --- ISLAND SEARCH BOX FIX --- */
 #_j {
-    /* 1. Force Positioning */
     position: fixed !important;
-    top: auto !important;    /* CRITICAL: Prevents it from sticking to top */
-    bottom: 30px !important; /* Force the bottom gap */
-    left: 0 !important;
-    
-    /* 2. Constrain Geometry */
-    width: 100% !important;
-    height: auto !important; /* CRITICAL: Prevents full-screen stretching */
-    
-    /* 3. Layout */
+    top: 20px !important;
+    bottom: auto !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+
+    width: auto !important;
+    height: auto !important;
+
     display: flex !important;
-    align-items: flex-end !important; /* Safety: Ensure alignment is bottom-biased */
-    justify-content: flex-start !important;
-    
-    /* 4. Visuals */
-    padding-left: 5%; 
+    align-items: center !important;
+    justify-content: center !important;
+
+    padding-left: 0;
     gap: 12px;
     z-index: 9999 !important;
-    pointer-events: none; /* Keep the wrapper click-through */
+    pointer-events: none;
 }
 
-    /* 4. ...BUT force the actual box and button to be clickable */
     #_j ._ak,
     #_j #_bx {
         pointer-events: auto !important;
         cursor: pointer !important;
-        
-        /* Optional: Add a subtle background if it was blending in too much */
         backdrop-filter: blur(20px);
     }
 </style>

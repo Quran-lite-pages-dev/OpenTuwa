@@ -132,18 +132,16 @@ html[dir="rtl"] ._el {
 /* --- ISLAND SEARCH BOX --- */
 #_j {
     position: fixed;
-    bottom: 30px;
-    left: 0;
-    width: 100%;
-display: flex;
-    align-items: flex-start; /* Standard left alignment */
-    justify-content: flex-start;
-    
-    /* This creates the 'safe' visual gap from the edge */
-    padding-left: 5%; 
-    gap: 12px; /* Creates the space between the Input Island and the Button Satellite */
+    top: 20px;
+    bottom: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
     pointer-events: none;
-    pointer-events: none; /* Clicks pass through the empty space */
     z-index: 9999;
 }
 
@@ -380,7 +378,12 @@ animation-delay: 1s;
 }
 #_bq::-webkit-scrollbar { display: none !important; }
 
-#_bq.active { display: flex; animation: fadeIn 0.5s ease; }
+#_bq.active { display: flex; animation: _viewEnter 0.35s cubic-bezier(0.2, 0, 0, 1) both; }
+
+#_bq._view-exit {
+    animation: _viewExit 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+    pointer-events: none;
+}
 
 /* THE MAGIC: If Title is Empty, Center Content Vertically */
 #_bq:has(#_bg:empty) {
@@ -388,6 +391,8 @@ animation-delay: 1s;
 }
 
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes _viewEnter { from { opacity: 0; transform: scale(0.97) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+@keyframes _viewExit { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.96); } }
 
 ._c3 {
     /* Adjusted Height for "Single Fish" (55vh fits perfectly without scrolling) */
@@ -699,10 +704,47 @@ font-weight: 900;
 #_dd {
     width: 100%; height: 100%; position: absolute; top: 0; left: 0;
     display: flex; flex-direction: column;
-    transition: opacity 0.5s;
+    transition: opacity 0.4s cubic-bezier(0.2, 0, 0, 1), transform 0.4s cubic-bezier(0.2, 0, 0, 1);
     opacity: 0; pointer-events: none;
+    transform: scale(1.02);
 }
-#_dd.active { opacity: 1; pointer-events: all; z-index: 1000; }
+#_dd.active { opacity: 1; pointer-events: all; z-index: 1000; transform: scale(1); }
+
+/* --- BACK BUTTON (Spotify-style) --- */
+._back-btn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 2147483646;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    color: #fff;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: opacity 0.3s ease, transform 0.2s ease, background 0.2s ease;
+}
+._back-btn._back-visible {
+    display: flex;
+}
+._back-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.08);
+}
+._back-btn:active {
+    transform: scale(0.95);
+}
+body.idle ._back-btn {
+    opacity: 0;
+    pointer-events: none;
+}
 
 #_a6 {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
