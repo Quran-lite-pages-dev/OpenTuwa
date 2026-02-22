@@ -256,8 +256,6 @@ export async function onRequest(context) {
       '/login-google',
       '/auth/',
       '/api/config' // Allow config if needed for guest previews (optional)
-      '/i18n',
-      '/locales',
     ];
 
     const isAllowed = allowedGuestFiles.includes(lowerPath) || 
