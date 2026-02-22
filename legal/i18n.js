@@ -5,12 +5,20 @@ const langDisplayNames = {
     'zh': '中文 (Chinese)',
     'hi': 'हिन्दी (Hindi)',
     'es': 'Español (Spanish)',
+    'es-MX': 'Español (Mexican Spanish)',
     'fr': 'Français (French)',
     'ar': 'العربية (Arabic)',
+    'ar-EG': 'العربية (Arabic - Egypt)',
+    'ar-MA': 'العربية (Arabic - Morocco)',
+    'ar-SA': 'العربية (Arabic - Saudi Arabia)',
     'bn': 'বাংলা (Bengali)',
     'ru': 'Русский (Russian)',
     'pt': 'Português (Portuguese)',
-    'ur': 'اردو (Urdu)'
+    'ur': 'اردو (Urdu)',
+    'ja': '日本語 (Japanese)',
+    'de': 'Deutsch (German)',
+    'id': 'Bahasa Indonesia (Indonesian)',
+    'tr': 'Türkçe (Turkish)'
 };
 
 let currentLang = localStorage.getItem('tuwa_lang') || 'en';
@@ -38,8 +46,8 @@ function setLanguage(langCode) {
     // Update the banner text
     document.getElementById('currentLangDisplay').textContent = langDisplayNames[langCode];
     
-    // Update document direction for RTL languages (Arabic, Urdu)
-    if (langCode === 'ar' || langCode === 'ur') {
+    // Update document direction for RTL languages (Arabic and all its dialects, Urdu)
+    if (langCode.startsWith('ar') || langCode === 'ur') {
         document.documentElement.setAttribute('dir', 'rtl');
     } else {
         document.documentElement.setAttribute('dir', 'ltr');

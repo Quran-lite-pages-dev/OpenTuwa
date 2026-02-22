@@ -239,6 +239,8 @@ export async function onRequest(context) {
       '/src/components/nav_7c6b5axjs.js', // As seen in your landing.html
       '/favicon.ico',
       '/sw.js',
+      '/i18n.js',
+      '/locales.js',
       '/assets/ui/err_9391za.html',
       '/assets/js/tuwa-hibernate.js',
       '/legal/index.html',
@@ -254,6 +256,8 @@ export async function onRequest(context) {
       '/login-google',
       '/auth/',
       '/api/config' // Allow config if needed for guest previews (optional)
+      '/i18n',
+      '/locales',
     ];
 
     const isAllowed = allowedGuestFiles.includes(lowerPath) || 
