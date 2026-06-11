@@ -97,6 +97,7 @@ window.addEventListener('DOMContentLoaded', () => {
     <link id="custom-select-css" rel="stylesheet" href="styles/custom-select.css" fetchpriority="high">
     <link rel="stylesheet" href="styles/user-select.css">
     <link rel="stylesheet" href="styles/inline-styles.css">
+    <link rel="stylesheet" href="styles/eq.css">
     <script src="src/utils/i18n-loader.js"></script>
     <script src="src/utils/analytics.js"></script>
     <script src="src/utils/github-redirect.js"></script>
@@ -445,11 +446,40 @@ window.addEventListener('DOMContentLoaded', () => {
                 <button class="custom-select-trigger" tabindex="0" data-i18n="player.audioTrans"><span>Audio Translation</span></button>
                 <div class="custom-options"></div>
             </div>
+
+            <button id="eq-button" class="eq-trigger-btn" aria-label="Equalizer" tabindex="0">
+                <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="4" y1="21" x2="4" y2="14"></line>
+                    <line x1="4" y1="10" x2="4" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12" y2="3"></line>
+                    <line x1="20" y1="21" x2="20" y2="16"></line>
+                    <line x1="20" y1="12" x2="20" y2="3"></line>
+                    <line x1="1" y1="14" x2="7" y2="14"></line>
+                    <line x1="9" y1="8" x2="15" y2="8"></line>
+                    <line x1="17" y1="16" x2="23" y2="16"></line>
+                </svg>
+            </button>
+        </div>
+
+        <div id="eq-sheet-overlay" class="eq-sheet-overlay">
+            <div id="eq-panel" class="eq-panel">
+                <div class="eq-grab-handle"></div>
+                <div class="eq-header">
+                    <h3 data-i18n="player.equalizer">Equalizer</h3>
+                    <button id="eq-reset-btn" class="eq-reset-btn">Reset</button>
+                </div>
+                <div class="eq-sliders-container" id="eq-sliders-container">
+                    <!-- Sliders injected by JS -->
+                </div>
+                <button id="eq-close-btn" class="eq-close-btn">Close</button>
+            </div>
         </div>
     </div>
 
     <script src="src/core/app.js"></script>
     <script src="src/core/ai-override.js"></script> 
+    <script src="src/core/eq.js"></script>
     <script src="src/components/navigation.js"></script>
     <script src="src/components/search/voice-search-bridge.js"></script>
     <script src="src/utils/content-protection.js"></script>

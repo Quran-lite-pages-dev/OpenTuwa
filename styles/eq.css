@@ -1,0 +1,249 @@
+/* EQ Styles (Apple-inspired UI/UX) */
+
+/* EQ Button */
+.eq-trigger-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: var(--glass-surface, rgba(20, 20, 20, 0.4));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.1));
+    border-radius: 50%;
+    color: #e5e5e5;
+    cursor: pointer;
+    transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), background 0.2s;
+    flex-shrink: 0;
+}
+
+.eq-trigger-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    transform: scale(1.05);
+}
+
+.eq-trigger-btn:active {
+    transform: scale(0.95);
+}
+
+.eq-trigger-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.4);
+}
+
+/* EQ Overlay & Sheet */
+.eq-sheet-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: 1000;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.4s ease;
+}
+
+.eq-sheet-overlay.open {
+    pointer-events: auto;
+    /* Optional: dim background slightly on mobile */
+}
+
+.eq-panel {
+    background: rgba(20, 20, 20, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 24px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+    padding: 24px;
+    width: 380px;
+    max-width: 90vw;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    
+    /* Spring-like transition */
+    transform: translateY(20px) scale(0.95);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+}
+
+.eq-sheet-overlay.open .eq-panel {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.eq-grab-handle {
+    display: none;
+    width: 40px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    margin: -10px auto 10px auto;
+}
+
+.eq-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.eq-header h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+}
+
+.eq-reset-btn, .eq-close-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.eq-reset-btn:hover, .eq-close-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.eq-reset-btn:active, .eq-close-btn:active {
+    transform: scale(0.95);
+}
+
+.eq-close-btn {
+    display: none; /* Hide on desktop, show on mobile if needed */
+}
+
+/* EQ Sliders */
+.eq-sliders-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 180px;
+    padding-top: 10px;
+}
+
+.eq-band {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 40px;
+}
+
+.eq-slider-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.eq-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 140px; /* Length of the slider */
+    height: 4px; /* Thin track */
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    outline: none;
+    transform: rotate(-90deg); /* Make it vertical */
+    transform-origin: center;
+    position: absolute;
+    cursor: grab;
+}
+
+.eq-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    cursor: grab;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.eq-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    cursor: grab;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Interaction state */
+.eq-slider:active::-webkit-slider-thumb {
+    transform: scale(1.5);
+    cursor: grabbing;
+}
+
+.eq-slider:active::-moz-range-thumb {
+    transform: scale(1.5);
+    cursor: grabbing;
+}
+
+.eq-band-label {
+    margin-top: 12px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.6);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    font-weight: 500;
+}
+
+/* Mobile / Tablet Adjustments */
+@media (max-width: 768px) {
+    .eq-sheet-overlay {
+        align-items: flex-end; /* Bottom sheet */
+    }
+
+    .eq-sheet-overlay.open {
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+    .eq-panel {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 24px 24px 0 0;
+        border: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        padding-bottom: env(safe-area-inset-bottom, 30px);
+        transform: translateY(100%);
+    }
+
+    .eq-sheet-overlay.open .eq-panel {
+        transform: translateY(0);
+    }
+
+    .eq-grab-handle {
+        display: block;
+    }
+
+    .eq-close-btn {
+        display: block;
+        margin-top: 10px;
+        text-align: center;
+        width: 100%;
+        padding: 12px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+    }
+}
