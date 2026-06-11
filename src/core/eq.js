@@ -1,82 +1,70 @@
-// EQ Logic (Web Audio API)
+// EQ Logic (Apple-inspired Control Center Sliders & Web Audio API)
 (function() {
     let audioCtx = null;
-    let sourceNode1 = null;
-    let sourceNode2 = null;
     let eqBands = [];
-    
-    // Frequencies for a 5-band EQ
     const frequencies = [60, 230, 910, 3600, 14000];
     const maxGain = 12; // +/- 12 dB
 
-    // UI Elements
     const eqBtn = document.getElementById('eq-button');
     const eqOverlay = document.getElementById('eq-sheet-overlay');
     const eqCloseBtn = document.getElementById('eq-close-btn');
     const eqResetBtn = document.getElementById('eq-reset-btn');
     const slidersContainer = document.getElementById('eq-sliders-container');
 
+    // Prevent attaching media elements multiple times
+    let sourceNode1 = null;
+    let sourceNode2 = null;
+
     function initWebAudio() {
-        if (audioCtx) return; // Already initialized
+        if (audioCtx) return; 
 
         const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (!AudioContext) {
-            console.warn('Web Audio API not supported in this browser.');
-            return;
-        }
+        if (!AudioContext) return;
 
         audioCtx = new AudioContext();
 
         const quranAudio = document.getElementById('audio-player');
         const transAudio = document.getElementById('translation-audio-player');
 
-        // Create filters
         let prevNode = null;
-        const firstFilter = audioCtx.createBiquadFilter();
-        firstFilter.type = 'lowshelf';
-        firstFilter.frequency.value = frequencies[0];
-        firstFilter.gain.value = 0;
-        eqBands.push(firstFilter);
-        prevNode = firstFilter;
-
-        for (let i = 1; i < frequencies.length - 1; i++) {
+        
+        // Create EQ nodes
+        frequencies.forEach((freq, i) => {
             const filter = audioCtx.createBiquadFilter();
-            filter.type = 'peaking';
-            filter.frequency.value = frequencies[i];
-            filter.Q.value = 1;
+            if (i === 0) filter.type = 'lowshelf';
+            else if (i === frequencies.length - 1) filter.type = 'highshelf';
+            else {
+                filter.type = 'peaking';
+                filter.Q.value = 1;
+            }
+            filter.frequency.value = freq;
             filter.gain.value = 0;
-            eqBands.push(filter);
             
-            prevNode.connect(filter);
+            eqBands.push(filter);
+
+            if (prevNode) {
+                prevNode.connect(filter);
+            }
             prevNode = filter;
+        });
+
+        // Connect last node to destination
+        if (eqBands.length > 0) {
+            eqBands[eqBands.length - 1].connect(audioCtx.destination);
         }
 
-        const lastFilter = audioCtx.createBiquadFilter();
-        lastFilter.type = 'highshelf';
-        lastFilter.frequency.value = frequencies[frequencies.length - 1];
-        lastFilter.gain.value = 0;
-        eqBands.push(lastFilter);
-        
-        prevNode.connect(lastFilter);
-        lastFilter.connect(audioCtx.destination);
-
-        // Connect sources to the first filter
-        if (quranAudio) {
-            try {
+        // Connect sources
+        try {
+            if (quranAudio && !sourceNode1) {
                 sourceNode1 = audioCtx.createMediaElementSource(quranAudio);
-                sourceNode1.connect(firstFilter);
-            } catch (e) {
-                console.warn("Could not connect quranAudio to EQ", e);
+                sourceNode1.connect(eqBands[0]);
             }
-        }
-        
-        if (transAudio) {
-            try {
+            if (transAudio && !sourceNode2) {
                 sourceNode2 = audioCtx.createMediaElementSource(transAudio);
-                sourceNode2.connect(firstFilter);
-            } catch (e) {
-                console.warn("Could not connect transAudio to EQ", e);
+                sourceNode2.connect(eqBands[0]);
             }
+        } catch (e) {
+            console.warn("EQ Audio Routing Error:", e);
         }
     }
 
@@ -90,88 +78,101 @@
             const bandDiv = document.createElement('div');
             bandDiv.className = 'eq-band';
 
-            const sliderWrapper = document.createElement('div');
-            sliderWrapper.className = 'eq-slider-wrapper';
+            const slider = document.createElement('div');
+            slider.className = 'apple-slider';
+            slider.dataset.index = index;
 
-            const slider = document.createElement('input');
-            slider.type = 'range';
-            slider.className = 'eq-slider';
-            slider.min = -maxGain;
-            slider.max = maxGain;
-            slider.step = 0.1;
-            slider.value = 0;
+            const track = document.createElement('div');
+            track.className = 'apple-slider-track';
 
-            // Update filter gain on change
-            slider.addEventListener('input', (e) => {
-                const val = parseFloat(e.target.value);
-                if (eqBands[index]) {
-                    eqBands[index].gain.value = val;
-                }
-                updateSliderTrack(slider, val);
-            });
+            const fill = document.createElement('div');
+            fill.className = 'apple-slider-fill';
 
-            // Haptic/Visual feedback
-            slider.addEventListener('mousedown', () => {
-                if ('vibrate' in navigator) navigator.vibrate(10);
-            });
-            slider.addEventListener('touchstart', () => {
-                if ('vibrate' in navigator) navigator.vibrate(10);
-            });
+            const centerTick = document.createElement('div');
+            centerTick.className = 'apple-slider-center';
+
+            track.appendChild(fill);
+            slider.appendChild(track);
+            slider.appendChild(centerTick);
 
             const label = document.createElement('div');
             label.className = 'eq-band-label';
             label.textContent = labels[index];
 
-            sliderWrapper.appendChild(slider);
-            bandDiv.appendChild(sliderWrapper);
+            bandDiv.appendChild(slider);
             bandDiv.appendChild(label);
             slidersContainer.appendChild(bandDiv);
 
-            // Initial track style
-            updateSliderTrack(slider, 0);
+            // Pointer Events for custom JS Dragging
+            let isDragging = false;
+
+            function updateValue(e) {
+                const rect = slider.getBoundingClientRect();
+                let y = e.clientY - rect.top;
+                y = Math.max(0, Math.min(rect.height, y));
+                
+                const percent = 1 - (y / rect.height); // 0.0 to 1.0
+                fill.style.height = `${percent * 100}%`;
+                
+                const val = (percent * (maxGain * 2)) - maxGain; // -12 to +12
+                if (eqBands[index]) {
+                    eqBands[index].gain.value = val;
+                }
+            }
+
+            slider.addEventListener('pointerdown', (e) => {
+                isDragging = true;
+                slider.classList.add('dragging');
+                slider.setPointerCapture(e.pointerId);
+                updateValue(e);
+                if (navigator.vibrate) navigator.vibrate(10);
+            });
+
+            slider.addEventListener('pointermove', (e) => {
+                if (!isDragging) return;
+                updateValue(e);
+            });
+
+            slider.addEventListener('pointerup', (e) => {
+                isDragging = false;
+                slider.classList.remove('dragging');
+                slider.releasePointerCapture(e.pointerId);
+            });
+
+            slider.addEventListener('pointercancel', (e) => {
+                isDragging = false;
+                slider.classList.remove('dragging');
+                slider.releasePointerCapture(e.pointerId);
+            });
         });
     }
 
-    function updateSliderTrack(slider, val) {
-        // Calculate percentage for background fill
-        const percent = ((val + maxGain) / (maxGain * 2)) * 100;
-        // Apply a subtle gradient to indicate fill level from center
-        // Apple style usually just has a solid color, we'll keep it simple and clean
-        slider.style.background = `linear-gradient(to right, rgba(255,255,255,0.8) ${percent}%, rgba(255,255,255,0.2) ${percent}%)`;
-    }
-
     function resetEQ() {
-        if ('vibrate' in navigator) navigator.vibrate(15);
-        const sliders = slidersContainer.querySelectorAll('.eq-slider');
-        sliders.forEach((slider, index) => {
-            slider.value = 0;
+        if (navigator.vibrate) navigator.vibrate(15);
+        const sliders = slidersContainer.querySelectorAll('.apple-slider-fill');
+        sliders.forEach((fill, index) => {
+            fill.style.height = '50%';
             if (eqBands[index]) {
-                // Animate the reset smoothly using Web Audio param automation
                 const currTime = audioCtx ? audioCtx.currentTime : 0;
                 eqBands[index].gain.cancelScheduledValues(currTime);
                 eqBands[index].gain.setTargetAtTime(0, currTime, 0.1);
             }
-            updateSliderTrack(slider, 0);
         });
     }
 
     function toggleEQ() {
         if (!eqOverlay.classList.contains('open')) {
-            // Open
             eqOverlay.classList.add('open');
-            // Init audio context on first user interaction if not done
             if (!audioCtx) {
                 initWebAudio();
             } else if (audioCtx.state === 'suspended') {
                 audioCtx.resume();
             }
         } else {
-            // Close
             eqOverlay.classList.remove('open');
         }
     }
 
-    // Event Listeners
     if (eqBtn) {
         eqBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -180,31 +181,12 @@
         });
     }
 
-    if (eqCloseBtn) {
-        eqCloseBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleEQ();
-        });
-    }
+    if (eqCloseBtn) eqCloseBtn.addEventListener('click', toggleEQ);
+    if (eqOverlay) eqOverlay.addEventListener('click', (e) => {
+        if (e.target === eqOverlay) toggleEQ();
+    });
+    if (eqResetBtn) eqResetBtn.addEventListener('click', resetEQ);
 
-    if (eqOverlay) {
-        eqOverlay.addEventListener('click', (e) => {
-            if (e.target === eqOverlay) {
-                toggleEQ();
-            }
-        });
-    }
-
-    if (eqResetBtn) {
-        eqResetBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            resetEQ();
-        });
-    }
-
-    // Initialize UI
     renderSliders();
 
 })();
