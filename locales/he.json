@@ -165,12 +165,6 @@
     "title": "גישה מהירה",
     "footerDescription": "Quran for Every Soul: נגן ללא הסחות דעת. קריאה של Mishary Alafasy."
   },
-  "arabicModal": {
-    "question": "האם אתה יודע לקרוא ערבית?",
-    "subtitle": "או שפשוט תראה רק את התרגום.",
-    "yes": "כן",
-    "no": "לא"
-  },
   "errors": {
     "loadError": "שגיאה בטעינת התוכן. אנא בדוק את החיבור.",
     "translationUnavailable": "תרגום לא זמין",

@@ -165,12 +165,6 @@
     "title": "Acceso Rápido",
     "footerDescription": "Quran for Every Soul: Reproductor Sin Distracciones. Recitación de Mishary Alafasy."
   },
-  "arabicModal": {
-    "question": "¿Sabes leer árabe?",
-    "subtitle": "O simplemente verás solo la traducción.",
-    "yes": "Sí",
-    "no": "No"
-  },
   "errors": {
     "loadError": "Error al cargar el contenido. Por favor, verifica la conexión.",
     "translationUnavailable": "Traducción no disponible",

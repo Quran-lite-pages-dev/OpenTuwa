@@ -27,12 +27,11 @@ quran-lite.pages.dev/
 │   ├── core/                   # Core application logic
 │   │   └── app.js              # Main application fileerror-handling-img.js
 │   │   └── error-handling-img.js              # error-handling-img.js
-│   ├── components/             # UI components
-│   │   ├── navigation.js       # Navigation component
-│   │   ├── recommendations.js  # AI recommendations
-│   │   ├── arabic-modal-handler.js  # Arabic reading capability modal
-│   │   ├── offline-status.js   # Offline status indicator
-│   │   └── search/             # Search-related components
+  │   ├── components/             # UI components
+  │   │   ├── navigation.js       # Navigation component
+  │   │   ├── recommendations.js  # AI recommendations
+  │   │   ├── offline-status.js   # Offline status indicator
+  │   │   └── search/             # Search-related components
 │   │       ├── grid-navigation.js      # Search grid navigation
 │   │       └── voice-search-bridge.js  # Voice search integration
 │   └── utils/                  # Utility functions
@@ -45,7 +44,6 @@ quran-lite.pages.dev/
 ├── styles/                     # Stylesheet directory
 │   ├── index.css               # Main stylesheet
 │   ├── index1.css              # Alternative stylesheet (translation-only view)
-│   ├── arabic-modal.css        # Arabic modal styles
 │   ├── user-select.css         # User selection prevention styles
 │   └── inline-styles.css       # Extracted inline styles
 │

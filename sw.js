@@ -24,14 +24,12 @@ const CORE_FILES_TO_CACHE = [
   // CSS files (organized in styles/ directory)
   BASE_PATH + '/styles/index.css',
   BASE_PATH + '/styles/index1.css',
-  BASE_PATH + '/styles/arabic-modal.css',
   BASE_PATH + '/styles/user-select.css',
   BASE_PATH + '/styles/inline-styles.css',
   // JavaScript files (organized in src/ directory)
   BASE_PATH + '/src/core/app.js',
   BASE_PATH + '/src/components/navigation.js',
   BASE_PATH + '/src/components/recommendations.js',
-  BASE_PATH + '/src/components/arabic-modal-handler.js',
   BASE_PATH + '/src/components/offline-status.js',
   BASE_PATH + '/src/utils/resolution.js',
   BASE_PATH + '/src/utils/analytics.js',

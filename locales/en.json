@@ -49,12 +49,6 @@
     "title": "Quick Access",
     "footerDescription": "Quran for Every Soul: Distraction-Free Player. Recitation by Mishary Alafasy."
   },
-  "arabicModal": {
-    "question": "Do you know how to read Arabic?",
-    "subtitle": "Or you'll simply see only the translation.",
-    "yes": "Yes",
-    "no": "No"
-  },
   "errors": {
     "loadError": "Error loading content. Please check connection.",
     "translationUnavailable": "Translation unavailable",

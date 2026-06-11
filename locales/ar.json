@@ -165,12 +165,6 @@
     "title": "الوصول السريع",
     "footerDescription": "Quran for Every Soul: مشغل بدون إلهاء. التلاوة لمشاري العفاسي."
   },
-  "arabicModal": {
-    "question": "هل تعرف كيف تقرأ العربية؟",
-    "subtitle": "أم أنك سترى الترجمة فقط.",
-    "yes": "نعم",
-    "no": "لا"
-  },
   "errors": {
     "loadError": "خطأ في تحميل المحتوى. يرجى التحقق من الاتصال.",
     "translationUnavailable": "الترجمة غير متاحة",

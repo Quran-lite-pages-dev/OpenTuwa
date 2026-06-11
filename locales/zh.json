@@ -165,12 +165,6 @@
     "title": "快速访问",
     "footerDescription": "Quran for Every Soul: 无干扰播放器。Mishary Alafasy 的诵读。"
   },
-  "arabicModal": {
-    "question": "您会读阿拉伯文吗？",
-    "subtitle": "或者您只能看到翻译。",
-    "yes": "是",
-    "no": "否"
-  },
   "errors": {
     "loadError": "加载内容时出错。请检查连接。",
     "translationUnavailable": "翻译不可用",

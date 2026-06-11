@@ -7,7 +7,6 @@
     
     // 2. VIEW CONTROLLERS
     const VIEWS = {
-        ARABIC_MODAL: 'arabic-modal', 
         SEARCH: 'search-overlay',
         ISLAND_SEARCH: 'island-search-wrapper',
         CINEMA: 'cinema-view',
@@ -27,19 +26,10 @@
             return Array.from(openSelect.querySelectorAll('.custom-option'));
         }
 
-        const arabicModal = document.getElementById(VIEWS.ARABIC_MODAL);
         const searchOverlay = document.getElementById(VIEWS.SEARCH);
         const cinemaView = document.getElementById(VIEWS.CINEMA);
         const dashboardView = document.getElementById(VIEWS.DASHBOARD);
         const sidebar = document.getElementById(VIEWS.SIDEBAR);
-
-        // PRIORITY 0: Arabic Modal
-        if (arabicModal) {
-            const style = window.getComputedStyle(arabicModal);
-            if (style.display !== 'none' && style.visibility !== 'hidden') {
-                return Array.from(arabicModal.querySelectorAll(SELECTOR)).filter(isVisible);
-            }
-        }
 
         // PRIORITY 1: Search Overlay
         if (searchOverlay && searchOverlay.classList.contains('active')) {
@@ -219,11 +209,6 @@
                 const trigger = openSelect.querySelector('.custom-select-trigger');
                 if(trigger) trigger.focus();
                 return;
-            }
-
-            const arabicModal = document.getElementById(VIEWS.ARABIC_MODAL);
-            if (arabicModal && window.getComputedStyle(arabicModal).display !== 'none') {
-                 return;
             }
 
             const activeView = document.querySelector('.active');
