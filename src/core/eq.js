@@ -14,9 +14,15 @@
     // Prevent attaching media elements multiple times
     let sourceNode1 = null;
     let sourceNode2 = null;
+    let isInitialized = false;
 
-    function initWebAudio() {
-        if (audioCtx) return; 
+    async function initWebAudio() {
+        if (audioCtx) {
+            if (audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
+            return; 
+        }
 
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (!AudioContext) return;
@@ -66,7 +72,12 @@
         } catch (e) {
             console.warn("EQ Audio Routing Error:", e);
         }
+        
+        isInitialized = true;
     }
+
+    // Public API for app.js to initialize EQ when audio starts
+    window.initEQ = initWebAudio;
 
     function renderSliders() {
         if (!slidersContainer) return;
@@ -160,28 +171,24 @@
         });
     }
 
-    function toggleEQ() {
+    async function toggleEQ() {
         if (!eqOverlay.classList.contains('open')) {
             eqOverlay.classList.add('open');
-            if (!audioCtx) {
-                initWebAudio();
-            } else if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            await initWebAudio();
         } else {
             eqOverlay.classList.remove('open');
         }
     }
 
     if (eqBtn) {
-        eqBtn.addEventListener('click', (e) => {
+        eqBtn.addEventListener('click', async (e) => {
             e.preventDefault();
             e.stopPropagation();
-            toggleEQ();
+            await toggleEQ();
         });
     }
 
-    if (eqCloseBtn) eqCloseBtn.addEventListener('click', toggleEQ);
+    if (eqCloseBtn) eqCloseBtn.addEventListener('click', () => toggleEQ());
     if (eqOverlay) eqOverlay.addEventListener('click', (e) => {
         if (e.target === eqOverlay) toggleEQ();
     });

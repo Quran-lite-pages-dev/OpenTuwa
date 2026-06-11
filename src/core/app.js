@@ -1238,7 +1238,10 @@ function updateQuranAudio(chNum, vNum, play) {
     const padV = String(vNum).padStart(3, '0');
     
     elements.quranAudio.src = `https://everyayah.com/data/${path}/${padCh}${padV}.mp3`;
-    if(play) elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
+    if (play) {
+        elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
+        if (window.initEQ) window.initEQ();
+    }
 }
 
 async function updateTranslationAudio(chNum, vNum, play) {
