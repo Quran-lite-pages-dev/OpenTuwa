@@ -1,6 +1,5 @@
-/* Apple-inspired EQ Styles */
+/* Apple Control Center Frosted Glass Equalizer Styling */
 
-/* EQ Overlay & Sheet */
 .eq-sheet-overlay {
     position: fixed;
     top: 0;
@@ -8,12 +7,12 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0);
-    z-index: 1000;
+    z-index: 9999;
     pointer-events: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.4s cubic-bezier(0.32, 0.72, 0, 1);
+    transition: background 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .eq-sheet-overlay.open {
@@ -21,29 +20,31 @@
     background: rgba(0, 0, 0, 0.4);
 }
 
+/* Glassmorphism panel styling inspired by iOS and macOS system overlays */
 .eq-panel {
-    background: rgba(30, 30, 30, 0.65);
-    backdrop-filter: blur(40px) saturate(200%);
-    -webkit-backdrop-filter: blur(40px) saturate(200%);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 32px;
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-    padding: 28px 24px;
-    width: 400px;
-    max-width: 92vw;
+    background: rgba(28, 28, 30, 0.75);
+    backdrop-filter: blur(40px) saturate(210%);
+    -webkit-backdrop-filter: blur(40px) saturate(210%);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 28px;
+    box-shadow: 
+        0 24px 64px rgba(0, 0, 0, 0.6), 
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    padding: 24px;
+    width: 380px;
+    max-width: 90vw;
     display: flex;
     flex-direction: column;
     gap: 24px;
     
-    /* Spring-like transition */
-    transform: translateY(40px) scale(0.95);
+    transform: scale(0.92) translateY(20px);
     opacity: 0;
     pointer-events: none;
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+    transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
 }
 
 .eq-sheet-overlay.open .eq-panel {
-    transform: translateY(0) scale(1);
+    transform: scale(1) translateY(0);
     opacity: 1;
     pointer-events: auto;
 }
@@ -52,9 +53,9 @@
     display: none;
     width: 36px;
     height: 5px;
-    background: rgba(255, 255, 255, 0.3);
-    border-radius: 3px;
-    margin: -14px auto 14px auto;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: var(--radius-full);
+    margin: -10px auto 10px auto;
 }
 
 .eq-header {
@@ -65,42 +66,41 @@
 
 .eq-header h3 {
     margin: 0;
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #fff;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", sans-serif;
-    letter-spacing: -0.02em;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+    letter-spacing: -0.01em;
 }
 
 .eq-reset-btn {
-    background: rgba(255, 255, 255, 0.12);
-    border: none;
-    color: #fff;
-    padding: 8px 16px;
-    border-radius: 20px;
-    font-size: 0.95rem;
-    font-weight: 500;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    color: #ffffff;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 1.3rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s, transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     font-family: inherit;
+    transition: background 0.2s, transform 0.15s;
 }
 
 .eq-reset-btn:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
+    background: rgba(255, 255, 255, 0.15);
 }
 
 .eq-reset-btn:active {
-    transform: scale(0.95);
+    transform: scale(0.96);
 }
 
-/* Apple-style Vertical Sliders */
+/* Flexbox layout for vertical pill arrays */
 .eq-sliders-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 200px;
-    padding: 0 10px;
+    height: 180px;
+    gap: 12px;
 }
 
 .eq-band {
@@ -108,74 +108,79 @@
     flex-direction: column;
     align-items: center;
     height: 100%;
+    flex: 1;
     gap: 12px;
 }
 
+/* Apple iOS-inspired volumetric Control Center slider container */
 .apple-slider {
     position: relative;
-    width: 44px;
-    flex: 1;
+    width: 100%;
+    max-width: 52px;
+    height: 100%;
     touch-action: none;
     cursor: grab;
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.apple-slider:active {
+.apple-slider.dragging {
+    transform: scale(1.04);
     cursor: grabbing;
 }
 
 .apple-slider-track {
     position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 22px;
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
     overflow: hidden;
-    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
-    /* Subtle transition for interaction */
-    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: inset 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
-.apple-slider:active .apple-slider-track {
-    transform: scale(0.96);
-}
-
+/* Active slider fill color */
 .apple-slider-fill {
     position: absolute;
-    bottom: 0; left: 0; right: 0;
+    bottom: 0; 
+    left: 0; 
+    right: 0;
     height: 50%;
     background: #ffffff;
-    border-radius: 22px;
-    /* Disable transition during drag for responsiveness, enable when resetting */
-    transition: height 0.1s ease-out;
+    border-radius: 18px;
+    transition: height 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .apple-slider.dragging .apple-slider-fill {
-    transition: none;
+    transition: none; /* Instant feedback during mouse/touch adjustments */
 }
 
+/* Center tick marker (using difference blending to guarantee dynamic contrast) */
 .apple-slider-center {
     position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 12px;
-    height: 2px;
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 1px;
-    z-index: 2;
+    top: 50%; 
+    left: 0; 
+    right: 0;
+    height: 1.5px;
+    background: rgba(255, 255, 255, 0.35);
+    mix-blend-mode: difference;
+    z-index: 5;
     pointer-events: none;
 }
 
 .eq-band-label {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.2rem;
+    color: rgba(255, 255, 255, 0.45);
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .eq-close-btn {
     display: none; 
 }
 
-/* Mobile / Tablet Adjustments */
+/* Responsive adjustment for portable devices and tablets */
 @media (max-width: 768px) {
     .eq-sheet-overlay {
         align-items: flex-end; 
@@ -184,15 +189,15 @@
     .eq-panel {
         width: 100%;
         max-width: 100%;
-        border-radius: 32px 32px 0 0;
+        border-radius: 28px 28px 0 0;
         border: none;
         border-top: 1px solid rgba(255, 255, 255, 0.15);
         padding-bottom: calc(env(safe-area-inset-bottom, 20px) + 20px);
-        transform: translateY(100%);
+        transform: translateY(100%) scale(1);
     }
 
     .eq-sheet-overlay.open .eq-panel {
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 
     .eq-grab-handle {
@@ -204,13 +209,19 @@
         margin-top: 8px;
         text-align: center;
         width: 100%;
-        padding: 16px;
-        background: rgba(255, 255, 255, 0.1);
-        border: none;
-        color: white;
-        font-size: 1.1rem;
+        padding: 14px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        color: #ffffff;
+        font-size: 1.5rem;
         font-weight: 600;
         border-radius: 16px;
         font-family: inherit;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .eq-close-btn:active {
+        background: rgba(255, 255, 255, 0.15);
     }
 }

@@ -4,6 +4,9 @@
     let eqBands = [];
     const frequencies = [60, 230, 910, 3600, 14000];
     const maxGain = 12; // +/- 12 dB
+    
+    // Persistent state container to ensure sliders never behave as dummies
+    let gainValues = [0, 0, 0, 0, 0]; 
 
     const eqBtn = document.getElementById('eq-button');
     const eqOverlay = document.getElementById('eq-sheet-overlay');
@@ -34,17 +37,21 @@
 
         let prevNode = null;
         
-        // Create EQ nodes
+        // Create and configure EQ nodes based on stored gain values
         frequencies.forEach((freq, i) => {
             const filter = audioCtx.createBiquadFilter();
-            if (i === 0) filter.type = 'lowshelf';
-            else if (i === frequencies.length - 1) filter.type = 'highshelf';
-            else {
+            if (i === 0) {
+                filter.type = 'lowshelf';
+            } else if (i === frequencies.length - 1) {
+                filter.type = 'highshelf';
+            } else {
                 filter.type = 'peaking';
-                filter.Q.value = 1;
+                filter.Q.value = 1.0;
             }
             filter.frequency.value = freq;
-            filter.gain.value = 0;
+            
+            // Connect previous slider state to the audio engine immediately
+            filter.gain.value = gainValues[i];
             
             eqBands.push(filter);
 
@@ -54,12 +61,12 @@
             prevNode = filter;
         });
 
-        // Connect last node to destination
+        // Connect the final filter node to the destination output
         if (eqBands.length > 0) {
             eqBands[eqBands.length - 1].connect(audioCtx.destination);
         }
 
-        // Connect sources
+        // Safely route HTML Media Elements into the Web Audio graph
         try {
             if (quranAudio && !sourceNode1) {
                 sourceNode1 = audioCtx.createMediaElementSource(quranAudio);
@@ -76,7 +83,7 @@
         isInitialized = true;
     }
 
-    // Public API for app.js to initialize EQ when audio starts
+    // Expose the initialization routine globally for app.js integration
     window.initEQ = initWebAudio;
 
     function renderSliders() {
@@ -99,8 +106,14 @@
             const fill = document.createElement('div');
             fill.className = 'apple-slider-fill';
 
+            // Neutral line indicator representing 0 dB
             const centerTick = document.createElement('div');
             centerTick.className = 'apple-slider-center';
+
+            // Apply current state value to visual slider fill height
+            const currentVal = gainValues[index];
+            const percent = (currentVal + maxGain) / (maxGain * 2); // Map -12dB/12dB to 0.0-1.0 range
+            fill.style.height = `${percent * 100}%`;
 
             track.appendChild(fill);
             slider.appendChild(track);
@@ -114,29 +127,35 @@
             bandDiv.appendChild(label);
             slidersContainer.appendChild(bandDiv);
 
-            // Pointer Events for custom JS Dragging
             let isDragging = false;
 
+            // Compute values and apply them interactively
             function updateValue(e) {
                 const rect = slider.getBoundingClientRect();
                 let y = e.clientY - rect.top;
                 y = Math.max(0, Math.min(rect.height, y));
                 
-                const percent = 1 - (y / rect.height); // 0.0 to 1.0
-                fill.style.height = `${percent * 100}%`;
+                const dragPercent = 1 - (y / rect.height); // 0.0 to 1.0 range
+                fill.style.height = `${dragPercent * 100}%`;
                 
-                const val = (percent * (maxGain * 2)) - maxGain; // -12 to +12
-                if (eqBands[index]) {
-                    eqBands[index].gain.value = val;
+                const calculatedGain = (dragPercent * (maxGain * 2)) - maxGain; // -12 to +12 dB
+                gainValues[index] = calculatedGain; // Store state securely
+
+                // Update physical audio node if initialized
+                if (eqBands[index] && audioCtx) {
+                    eqBands[index].gain.setValueAtTime(calculatedGain, audioCtx.currentTime);
                 }
             }
 
+            // Pointer events supporting desktop mouse, touch displays, and stylus targets
             slider.addEventListener('pointerdown', (e) => {
                 isDragging = true;
                 slider.classList.add('dragging');
                 slider.setPointerCapture(e.pointerId);
                 updateValue(e);
-                if (navigator.vibrate) navigator.vibrate(10);
+                if (navigator.vibrate) {
+                    navigator.vibrate(8);
+                }
             });
 
             slider.addEventListener('pointermove', (e) => {
@@ -144,29 +163,33 @@
                 updateValue(e);
             });
 
-            slider.addEventListener('pointerup', (e) => {
+            const stopDrag = (e) => {
+                if (!isDragging) return;
                 isDragging = false;
                 slider.classList.remove('dragging');
                 slider.releasePointerCapture(e.pointerId);
-            });
+                if (navigator.vibrate) {
+                    navigator.vibrate(12);
+                }
+            };
 
-            slider.addEventListener('pointercancel', (e) => {
-                isDragging = false;
-                slider.classList.remove('dragging');
-                slider.releasePointerCapture(e.pointerId);
-            });
+            slider.addEventListener('pointerup', stopDrag);
+            slider.addEventListener('pointercancel', stopDrag);
         });
     }
 
     function resetEQ() {
-        if (navigator.vibrate) navigator.vibrate(15);
-        const sliders = slidersContainer.querySelectorAll('.apple-slider-fill');
-        sliders.forEach((fill, index) => {
+        if (navigator.vibrate) {
+            navigator.vibrate(15);
+        }
+        gainValues = [0, 0, 0, 0, 0];
+        const fills = slidersContainer.querySelectorAll('.apple-slider-fill');
+        fills.forEach((fill, index) => {
             fill.style.height = '50%';
             if (eqBands[index]) {
                 const currTime = audioCtx ? audioCtx.currentTime : 0;
                 eqBands[index].gain.cancelScheduledValues(currTime);
-                eqBands[index].gain.setTargetAtTime(0, currTime, 0.1);
+                eqBands[index].gain.setTargetAtTime(0, currTime, 0.05);
             }
         });
     }
@@ -189,11 +212,13 @@
     }
 
     if (eqCloseBtn) eqCloseBtn.addEventListener('click', () => toggleEQ());
-    if (eqOverlay) eqOverlay.addEventListener('click', (e) => {
-        if (e.target === eqOverlay) toggleEQ();
-    });
+    if (eqOverlay) {
+        eqOverlay.addEventListener('click', (e) => {
+            if (e.target === eqOverlay) toggleEQ();
+        });
+    }
     if (eqResetBtn) eqResetBtn.addEventListener('click', resetEQ);
 
+    // Initial render of presentation layers
     renderSliders();
-
 })();
