@@ -130,57 +130,56 @@ const SURAH_METADATA = [
     { "chapter": 114, "english_name": "Mankind", "description": "A Meccan chapter seeking refuge in the Lord of mankind from the whispers of devils and men. (6 verses)" }
 ];
 
-
-// --- 2. MULTI-PROFILE & LOGIC ---
+// --- MULTI-PROFILE & LOGIC ---
 const ACTIVE_PROFILE_ID = "1";
 const STORAGE_KEY = `quranState_${ACTIVE_PROFILE_ID}`;
 
 // [KEEP FULL CONFIG OBJECTS HERE]
 const TRANSLATIONS_CONFIG = {
     'en': { name: 'English', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/en.xml' },
-            'sq': { name: 'Albanian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sq.ahmeti.xml' },
-            'ber': { name: 'Amazigh', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ber.mensur.xml' },
-            'am': { name: 'Amharic', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/am.sadiq.xml' },
-            'ar': { name: 'Arabic', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ar.muyassar.xml' },
-            'az': { name: 'Azerbaijani', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/az.musayev.xml' },
-            'bn': { name: 'Bengali', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bn.bengali.xml' },
-            'bs': { name: 'Bosnian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bs.korkut.xml' },
-            'bg': { name: 'Bulgarian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bg.theophanov.xml' },
-            'zh': { name: 'Chinese', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/zh.jian.xml' },
-            'cs': { name: 'Czech ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/cs.hrbek.xml' },
-            'dv': { name: 'Divehi', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/dv.divehi.xml' },
-            'nl': { name: 'Dutch ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/nl.siregar.xml' },
-            'fr': { name: 'French ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fr.hamidullah.xml' },
-            'de': { name: 'German ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/de.bubenheim.xml' },
-            'ha': { name: 'Hausa', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ha.gumi.xml' },
-            'he': { name: 'Hebrew', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/he.xml' },
-            'hi': { name: 'Hindi', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/hi.hindi.xml' },
-            'id': { name: 'Indonesian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/id.indonesian.xml' },
-            'it': { name: 'Italian ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/it.piccardo.xml' },
-            'ja': { name: 'Japanese', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ja.japanese.xml' },
-            'ko': { name: 'Korean', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ko.korean.xml' },
-            'ku': { name: 'Kurdish', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ku.asan.xml' },
-            'ms': { name: 'Malay', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ms.basmeih.xml' },
-            'ml': { name: 'Malayalam', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ml.abdulhameed.xml' },
-            'no': { name: 'Norwegian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/no.berg.xml' },
-            'ps': { name: 'Pashto', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ps.abdulwali.xml' },
-            'fa': { name: 'Persian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fa.khorramdel.xml' },
-            'pl': { name: 'Polish ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/pl.bielawskiego.xml' },
-            'pt': { name: 'Portuguese', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/pt.elhayek.xml' },
-            'ro': { name: 'Romanian ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ro.grigore.xml' },
-            'ru': { name: 'Russian ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ru.kuliev.xml' },
-            'sd': { name: 'Sindhi ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sd.amroti.xml' },
-            'so': { name: 'Somali ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/so.abduh.xml' },
-            'es': { name: 'Spanish', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/es.garcia.xml' },
-            'sw': { name: 'Swahili', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sw.barwani.xml' },
-            'sv': { name: 'Swedish', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sv.bernstrom.xml' },
-            'ta': { name: 'Tamil ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ta.tamil.xml' },
-            'tt': { name: 'Tatar ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/tt.nugman.xml' },
-            'th': { name: 'Thai', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/th.thai.xml' },
-            'tr': { name: 'Turkish', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/tr.diyanet.xml' },
-            'ur': { name: 'Urdu ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ur.junagarhi.xml' },
-            'ug': { name: 'Uyghur', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ug.saleh.xml' },
-            'uz': { name: 'Uzbek ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/uz.sodik.xml' }
+    'sq': { name: 'Albanian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sq.ahmeti.xml' },
+    'ber': { name: 'Amazigh', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ber.mensur.xml' },
+    'am': { name: 'Amharic', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/am.sadiq.xml' },
+    'ar': { name: 'Arabic', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ar.muyassar.xml' },
+    'az': { name: 'Azerbaijani', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/az.musayev.xml' },
+    'bn': { name: 'Bengali', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bn.bengali.xml' },
+    'bs': { name: 'Bosnian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bs.korkut.xml' },
+    'bg': { name: 'Bulgarian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/bg.theophanov.xml' },
+    'zh': { name: 'Chinese', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/zh.jian.xml' },
+    'cs': { name: 'Czech ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/cs.hrbek.xml' },
+    'dv': { name: 'Divehi', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/dv.divehi.xml' },
+    'nl': { name: 'Dutch ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/nl.siregar.xml' },
+    'fr': { name: 'French ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fr.hamidullah.xml' },
+    'de': { name: 'German ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/de.bubenheim.xml' },
+    'ha': { name: 'Hausa', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ha.gumi.xml' },
+    'he': { name: 'Hebrew', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/he.xml' },
+    'hi': { name: 'Hindi', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/hi.hindi.xml' },
+    'id': { name: 'Indonesian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/id.indonesian.xml' },
+    'it': { name: 'Italian ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/it.piccardo.xml' },
+    'ja': { name: 'Japanese', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ja.japanese.xml' },
+    'ko': { name: 'Korean', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ko.korean.xml' },
+    'ku': { name: 'Kurdish', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ku.asan.xml' },
+    'ms': { name: 'Malay', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ms.basmeih.xml' },
+    'ml': { name: 'Malayalam', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ml.abdulhameed.xml' },
+    'no': { name: 'Norwegian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/no.berg.xml' },
+    'ps': { name: 'Pashto', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ps.abdulwali.xml' },
+    'fa': { name: 'Persian', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/fa.khorramdel.xml' },
+    'pl': { name: 'Polish ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/pl.bielawskiego.xml' },
+    'pt': { name: 'Portuguese', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/pt.elhayek.xml' },
+    'ro': { name: 'Romanian ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ro.grigore.xml' },
+    'ru': { name: 'Russian ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ru.kuliev.xml' },
+    'sd': { name: 'Sindhi ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sd.amroti.xml' },
+    'so': { name: 'Somali ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/so.abduh.xml' },
+    'es': { name: 'Spanish', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/es.garcia.xml' },
+    'sw': { name: 'Swahili', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sw.barwani.xml' },
+    'sv': { name: 'Swedish', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/sv.bernstrom.xml' },
+    'ta': { name: 'Tamil ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ta.tamil.xml' },
+    'tt': { name: 'Tatar ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/tt.nugman.xml' },
+    'th': { name: 'Thai', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/th.thai.xml' },
+    'tr': { name: 'Turkish', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/tr.diyanet.xml' },
+    'ur': { name: 'Urdu ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ur.junagarhi.xml' },
+    'ug': { name: 'Uyghur', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/ug.saleh.xml' },
+    'uz': { name: 'Uzbek ', url: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/uz.sodik.xml' }
 };
 
 const RECITERS_CONFIG = {
@@ -199,7 +198,7 @@ const RECITERS_CONFIG = {
 };
 
 const TRANSLATION_AUDIO_CONFIG = {
-    'none': { name: 'No Audio Translation' }, // Will be replaced with translation
+    'none': { name: 'No Audio Translation' },
     'en_walk': { name: 'English', path: 'English/Sahih_Intnl_Ibrahim_Walk_192kbps' },
     'id_ministry': { name: 'Indonesian', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/audio/play/id' },
     'es': { name: 'Spanish', path: 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/audio/play' }
@@ -270,6 +269,11 @@ const KEYBOARD_KEYS = [
     '1','2','3','4','5','6','7','8','9','0','SPACE', 'DEL', 'CLEAR'
 ];
 
+// --- SINGLE WAV IMPLEMENTATION GLOBALS ---
+let timingCache = {}; // Cache for chapter JSON timing data
+let isSeekingManually = false; // Flag to prevent timeupdate loops during user interactions
+let currentLoadedAudioChapter = null; // Track current playing chapter in the audio element
+
 window.wipeUserData = function() {
     localStorage.removeItem(STORAGE_KEY);
     localStorage.removeItem('quran_user_analytics');
@@ -278,17 +282,12 @@ window.wipeUserData = function() {
     location.reload();
 };
 
-// mode: 1 = Show All (Default), 0 = Hide Chapter and Reciter
 function initCustomSelects(mode = 0) {
-
-    // --- VISIBILITY TOGGLE ---
-    // We toggle a class on the body. The CSS at the bottom of custom-select.css handles the hiding.
     if (mode === 0) {
         document.body.classList.add('simple-mode');
     } else {
         document.body.classList.remove('simple-mode');
     }
-    // -------------------------
 
     document.querySelectorAll('.custom-select-wrapper').forEach(wrapper => {
         const trigger = wrapper.querySelector('.custom-select-trigger');
@@ -297,7 +296,6 @@ function initCustomSelects(mode = 0) {
             e.stopPropagation(); 
             e.preventDefault();
 
-            // IDLE GUARD
             if (document.body.classList.contains('idle')) {
                 document.body.classList.remove('idle');
                 document.body.dispatchEvent(new Event('mousemove'));
@@ -306,12 +304,10 @@ function initCustomSelects(mode = 0) {
 
             const isOpen = wrapper.classList.contains('open');
 
-            // Close others
             document.querySelectorAll('.custom-select-wrapper.open').forEach(other => {
                 other.classList.remove('open');
             });
             
-            // Toggle current
             if (!isOpen) {
                 wrapper.classList.add('open');
                 const selected = wrapper.querySelector('.custom-option.selected');
@@ -363,8 +359,6 @@ function populateCustomSelect(wrapper, items, onChange) {
             setSelectValue(wrapper, item.value); 
             wrapper.classList.remove('open'); 
             
-            // FIX for "Open Back Loop":
-            // Delay focusing the trigger so the 'Enter' keyup doesn't re-click it.
             setTimeout(() => {
                 const trigger = wrapper.querySelector('.custom-select-trigger');
                 if(trigger) trigger.focus();
@@ -410,17 +404,30 @@ function getSelectValue(wrapper) {
     return wrapper.dataset.value;
 }
 
-// --- CORE APP ---
+// --- SINGLE TIMING FETCH UTILITY ---
+async function getChapterTiming(chapterNum) {
+    if (timingCache[chapterNum]) return timingCache[chapterNum];
+    const padCh = String(chapterNum).padStart(3, '0');
+    const url = `https://raw.githubusercontent.com/muslim1446/CDN-muslim.opentuwa.com/main/${padCh}.json`;
+    try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP Timing fetch error! status: ${res.status}`);
+        const data = await res.json();
+        timingCache[chapterNum] = data;
+        return data;
+    } catch (e) {
+        console.error("Failed to load timing JSON for chapter:", chapterNum, e);
+        return null;
+    }
+}
 
 /**
  * STREAM ID LOGIC
- * Compresses parameters into a single Base64 URL-safe string.
  * Format: Chapter|Verse|Reciter|Translation|AudioTranslation
  */
 function encodeStream(ch, v, rec, trans, aud) {
     try {
         const raw = `${ch}|${v}|${rec}|${trans}|${aud}`;
-        // Encode to Base64 and make it URL safe (replace +, /, =)
         return btoa(raw).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
     } catch (e) {
         console.error("Encoding failed", e);
@@ -430,9 +437,7 @@ function encodeStream(ch, v, rec, trans, aud) {
 
 function decodeStream(token) {
     try {
-        // Revert URL safety
         let base64 = token.replace(/-/g, '+').replace(/_/g, '/');
-        // Pad with '=' if needed
         while (base64.length % 4) base64 += '=';
         const raw = atob(base64);
         const parts = raw.split('|');
@@ -523,15 +528,11 @@ async function initializeApp() {
         populateReciterSelect();
         populateTranslationSelectOptions();
         
-        // --- FIX: Always restore state to set defaults based on browser ---
-        // This ensures that when dashboard loads, the hidden dropdowns 
-        // already have the correct "First Time" defaults.
         restoreState();
 
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('chapter') || urlParams.has('stream')) {
             switchView('cinema');
-            // restoreState called above already
             populateVerseSelect(); 
             
             const savedVerse = getSavedVerseIndex();
@@ -539,7 +540,7 @@ async function initializeApp() {
 
             const activeTransId = getSelectValue(elements.selects.trans);
             await loadTranslationData(activeTransId);
-            loadVerse(false); 
+            await loadVerse(false); 
             
             elements.spinner.style.display = 'none';
             elements.loaderText.style.display = 'none';
@@ -562,25 +563,17 @@ async function initializeApp() {
     }
 }
 
-// --- UPDATED: DASHBOARD LOGIC (SINGLE FISH MODE & INFINITE SCROLL) ---
 function refreshDashboard() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const heroBtn = document.getElementById('door-play-btn');
 
-    // 1. Get all lists like before
     const allIndices = Array.from({length: 114}, (_, i) => i);
     const shortRowIndices = allIndices.slice(77, 114);
     const trendingIndices = [85, 54, 104, 81, 86, 69, 56, 88, 53].map(id => id - 1);
 
-    // 2. COMBINE into one massive list for "Single Fish"
-    // This merges trending, short, and all into ONE scrolling row
     const combinedIndices = [...trendingIndices, ...shortRowIndices, ...allIndices];
 
-    // 3. Populate ONLY the 'all-row' container (Single Fish requirement)
     fillRow('all-row', combinedIndices);
-
-    // Note: We deliberately do NOT populate 'trending-row' or 'short-row' anymore
-    // because index.css hides them, and Single Fish means one continuous loop.
 
     if(saved.chapter !== undefined && quranData[saved.chapter]) {
         const chNum = quranData[saved.chapter].chapterNumber;
@@ -596,7 +589,7 @@ function refreshDashboard() {
 
 function fillRow(elementId, indexArray) {
     const container = document.getElementById(elementId);
-    if(!container) return; // Safety check
+    if(!container) return; 
     
     const fragment = document.createDocumentFragment();
     
@@ -607,7 +600,6 @@ function fillRow(elementId, indexArray) {
         card.className = 'surah-card';
         card.tabIndex = 0;
         
-        // --- Translation Title Logic ---
         let cardTitle = surah.english_name;
         if (window.t) {
             const translatedKey = 'surahNames.' + surah.english_name;
@@ -630,11 +622,9 @@ function fillRow(elementId, indexArray) {
     container.innerHTML = '';
     container.appendChild(fragment);
 
-    // --- ENABLE INFINITE SCROLL & DRIFT FOCUS ---
     initInfiniteRowNavigation(container);
 }
 
-// --- NEW FUNCTION: The Drifting & Looping Logic ---
 function initInfiniteRowNavigation(container) {
     if (container.dataset.navAttached) return;
     container.dataset.navAttached = "true";
@@ -648,28 +638,24 @@ function initInfiniteRowNavigation(container) {
         const current = document.activeElement;
         const currentIndex = cards.indexOf(current);
         
-        // Only loop if focus is actually inside this row
         if (currentIndex === -1) return;
 
-        e.preventDefault(); // Stop default scroll to prevent lag
+        e.preventDefault(); 
 
         let nextIndex;
-        // Infinite Logic
         if (e.key === 'ArrowRight') {
             nextIndex = currentIndex + 1;
-            if (nextIndex >= cards.length) nextIndex = 0; // Loop Start
+            if (nextIndex >= cards.length) nextIndex = 0; 
         } else if (e.key === 'ArrowLeft') {
             nextIndex = currentIndex - 1;
-            if (nextIndex < 0) nextIndex = cards.length - 1; // Loop End
+            if (nextIndex < 0) nextIndex = cards.length - 1; 
         }
 
         const nextCard = cards[nextIndex];
         
         if (nextCard) {
-            // Force focus immediately (Fixes "Drift Focus" issue)
             nextCard.focus({ preventScroll: true }); 
 
-            // Handle smooth vs instant camera (Instant for rapid key holds)
             const scrollBehavior = e.repeat ? 'auto' : 'smooth';
             
             nextCard.scrollIntoView({
@@ -686,7 +672,6 @@ function schedulePreview(chapterNum) {
     stopPreview();
     const surah = quranData[chapterNum - 1];
     
-    // --- START FIX: Universal Translation Logic ---
     let heroTitle = surah.english_name;
     if (window.t) {
         const translatedName = window.t(`surahNames.${surah.english_name}`);
@@ -694,11 +679,9 @@ function schedulePreview(chapterNum) {
             heroTitle = translatedName;
         }
     }
-    // --- END FIX ---
     
     const doorz = document.getElementById('doorz-hero-title');
     if(doorz) {
-        // [IMPORTANT FIX] Remove data-i18n so the translation loader doesn't overwrite this later
         doorz.removeAttribute('data-i18n'); 
         doorz.textContent = heroTitle;
     }
@@ -715,6 +698,7 @@ function schedulePreview(chapterNum) {
         updateHeroPreview(chapterNum, 1, 'alafasy', true); 
     }, PREVIEW_DELAY);
 }
+
 function stopPreview() {
     elements.previewAudio.pause();
     elements.previewAudio.onended = null;
@@ -755,11 +739,19 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
     }
 }
 
-function playPreviewStep(chapterNum, reciterId) {
+// Single WAV adaptive preview sequence
+async function playPreviewStep(chapterNum, reciterId) {
     if (previewSeqIndex >= previewSequence.length) return;
     const verseNum = previewSequence[previewSeqIndex];
+
+    const timingData = await getChapterTiming(chapterNum);
+    if (!timingData) return;
+
+    const verseTiming = timingData.verses.find(v => v.verse === verseNum);
+    if (!verseTiming) return;
+
     const padCh = String(chapterNum).padStart(3, '0');
-    const padV = String(verseNum).padStart(3, '0');
+    const targetWav = `https://github.com/muslim1446/CDN-muslim.opentuwa.com/releases/download/v1.0.0/${padCh}.wav`;
     
     const imgLayer = document.getElementById('hero-preview-layer');
     const previewImg = document.getElementById('preview-img');
@@ -791,14 +783,39 @@ function playPreviewStep(chapterNum, reciterId) {
         elements.subtitle.classList.remove('active');
     }
 
-    const rPath = RECITERS_CONFIG[reciterId]?.path || RECITERS_CONFIG['alafasy'].path;
-    const audioUrl = `https://everyayah.com/data/${rPath}/${padCh}${padV}.mp3`;
-    elements.previewAudio.src = audioUrl;
+    if (elements.previewAudio.src !== targetWav) {
+        elements.previewAudio.src = targetWav;
+        await new Promise(resolve => {
+            const onMeta = () => {
+                elements.previewAudio.removeEventListener('loadedmetadata', onMeta);
+                resolve();
+            };
+            elements.previewAudio.addEventListener('loadedmetadata', onMeta);
+        });
+    }
+
+    elements.previewAudio.currentTime = verseTiming.start_time_ms / 1000;
     elements.previewAudio.volume = 0.6;
+
+    const targetEndTimeSeconds = verseTiming.end_time_ms / 1000;
+    
+    const onTimeUpdate = () => {
+        if (elements.previewAudio.currentTime >= targetEndTimeSeconds) {
+            elements.previewAudio.removeEventListener('timeupdate', onTimeUpdate);
+            elements.previewAudio.pause();
+            previewSeqIndex++;
+            playPreviewStep(chapterNum, reciterId);
+        }
+    };
+
+    elements.previewAudio.addEventListener('timeupdate', onTimeUpdate);
+    
     elements.previewAudio.onended = () => {
+        elements.previewAudio.removeEventListener('timeupdate', onTimeUpdate);
         previewSeqIndex++;
         playPreviewStep(chapterNum, reciterId);
     };
+
     elements.previewAudio.play().catch(e => console.log("Autoplay blocked"));
 }
 
@@ -806,7 +823,6 @@ function launchPlayer(chapterNum, verseNum = 1) {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const browserLang = navigator.language.split('-')[0];
 
-    // 1. Determine Settings
     let currentReciter = getSelectValue(elements.selects.reciter) || saved.reciter || 'alafasy';
     
     let currentTrans = getSelectValue(elements.selects.trans) || saved.trans || browserLang;
@@ -828,10 +844,7 @@ function launchPlayer(chapterNum, verseNum = 1) {
         }
     }
 
-    // 2. GENERATE STREAM URL
     const streamToken = encodeStream(chapterNum, verseNum, currentReciter, currentTrans, currentAudioTrans);
-    
-    // 3. FORCE PAGE RELOAD WITH STREAM PARAM
     const newUrl = `?stream=${streamToken}`;
     window.location.assign(newUrl);
 }
@@ -859,26 +872,22 @@ function restoreState() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const browserLang = navigator.language.split('-')[0];
 
-    // --- DECODE STREAM IF PRESENT ---
     let streamData = null;
     if (urlParams.has('stream')) {
         streamData = decodeStream(urlParams.get('stream'));
     }
 
-    // --- 1. Chapter ---
     let ch = 0;
     if (streamData) {
-        ch = streamData.chapter - 1; // Stream has 1-based, app uses 0-based index
+        ch = streamData.chapter - 1; 
     } else if (urlParams.has('chapter')) {
         ch = parseInt(urlParams.get('chapter')) - 1; 
     } else if (saved.chapter !== undefined) {
         ch = saved.chapter;
     }
-    // Safety check
     if (isNaN(ch) || ch < 0) ch = 0;
     setSelectValue(elements.selects.chapter, ch);
 
-    // --- 2. Reciter ---
     let rec = 'alafasy';
     if (streamData && RECITERS_CONFIG[streamData.reciter]) {
         rec = streamData.reciter;
@@ -889,7 +898,6 @@ function restoreState() {
     }
     setSelectValue(elements.selects.reciter, rec);
 
-    // --- 3. Translation Text ---
     let trans = 'en';
     if (streamData) {
         trans = streamData.trans;
@@ -903,10 +911,8 @@ function restoreState() {
     if (!TRANSLATIONS_CONFIG[trans]) trans = 'en';
     setSelectValue(elements.selects.trans, trans);
 
-    // --- 4. Audio Translation ---
     let transAudio = 'none';
     
-    // Helper to auto-detect
     const findAudioForLang = (lang) => {
         if (TRANSLATION_AUDIO_CONFIG[lang]) return lang;
         const match = Object.keys(TRANSLATION_AUDIO_CONFIG).find(k => k.startsWith(lang + '_'));
@@ -935,13 +941,11 @@ function restoreState() {
 function getSavedVerseIndex() {
     const urlParams = new URLSearchParams(window.location.search);
     
-    // Check Stream First
     if (urlParams.has('stream')) {
         const data = decodeStream(urlParams.get('stream'));
-        if (data) return data.verse - 1; // Return 0-based index
+        if (data) return data.verse - 1; 
     }
 
-    // Legacy / Fallback
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     if (urlParams.has('verse')) return parseInt(urlParams.get('verse')) - 1;
     if (saved.verse !== undefined) return saved.verse;
@@ -963,14 +967,11 @@ function saveState() {
     const chNum = chObj.chapterNumber;
     const vNum = chObj.verses[state.verse].verseNumber;
     
-    // Generate Stream Token
     const streamToken = encodeStream(chNum, vNum, state.reciter, state.trans, state.audio_trans);
     const newUrl = `?stream=${streamToken}`;
 
-    // Update URL bar without reloading
     window.history.replaceState({path: newUrl, view: 'cinema'}, '', newUrl);
 
-    // Update Canonical
     const canonicalLink = document.getElementById('dynamic-canonical');
     const fullUrl = `https://Quran-lite.pages.dev/reading/${newUrl}`;
     if (canonicalLink) canonicalLink.href = fullUrl;
@@ -978,7 +979,6 @@ function saveState() {
     const observer = new MutationObserver((mutations, obs) => {
         const h1 = document.querySelector('h1');
         if (h1) {
-            const recordedH1 = h1.innerText;
             document.title = `${currentChapterData.english_name} | Tuwa`;
             obs.disconnect(); 
         }
@@ -991,25 +991,18 @@ function saveState() {
 }
 
 function populateChapterSelect() {
-    // We removed the "currentLocale" check here
-    const suraNameLabel = window.t ? window.t('player.suraName') : 'Sura name';
-    
     const items = quranData.map((c, i) => {
-        // --- START FIX ---
         let title = c.english_name;
         
         if (window.t) {
             const translatedKey = 'surahNames.' + c.english_name;
             const translatedName = window.t(translatedKey);
             
-            // If translation exists in ANY language, use it
             if (translatedName && translatedName !== translatedKey) {
                 title = translatedName;
             }
         }
-        // --- END FIX ---
         
-        // This will now show "1. La Apertura" instead of "1. The Opening"
         return {
             value: i,
             text: `${c.chapterNumber}. ${title} - ${c.title || ''}`
@@ -1048,14 +1041,12 @@ function populateReciterSelect() {
 }
 
 function populateTranslationAudioSelect() {
-    // Get translated name for 'none' option
     let noneName = 'No Audio Translation';
     if (window.t) {
         noneName = window.t('player.noAudioTranslation');
     }
     
     const items = Object.entries(TRANSLATION_AUDIO_CONFIG).map(([k, v]) => {
-        // Use translation for 'none' option
         const displayName = (k === 'none') ? noneName : v.name;
         return {
             value: k,
@@ -1107,35 +1098,32 @@ async function loadVerse(autoplay = true) {
     const vIdx = getSelectValue(elements.selects.verse);
     
     currentChapterData = quranData[chIdx];
+    const chNum = currentChapterData.chapterNumber;
+    const verseData = currentChapterData.verses[vIdx];
+    const vNum = verseData.verseNumber;
 
-    // --- FIX START: FORCE UPDATE SPLASH TITLE ---
+    // Load custom chapter timings beforehand
+    const timingData = await getChapterTiming(chNum);
+    if (!timingData) {
+        console.error("Could not load chapter timing configuration.");
+        return;
+    }
+
     const splashTitle = document.getElementById('doorz-hero-title');
     if (splashTitle) {
-        // 1. Start with the default English name from metadata
         let displayTitle = currentChapterData.english_name;
         
-        // 2. If translation system is ready, try to find the translated name
         if (window.t) {
-            // Check for key format: "surahNames.The Opening"
             const translatedKey = 'surahNames.' + displayTitle;
             const translatedName = window.t(translatedKey);
             
-            // Only use the result if it's not just returning the key itself
             if (translatedName && translatedName !== translatedKey) {
                 displayTitle = translatedName;
             }
         }
-        
-        // 3. Force the text content
         splashTitle.textContent = displayTitle;
     }
-    // --- FIX END ---
 
-    const verseData = currentChapterData.verses[vIdx];
-
-    const chNum = currentChapterData.chapterNumber;
-
-    const vNum = verseData.verseNumber;
     const verseKey = `${chNum}-${vNum}`;
     const isForbidden = forbiddenToTranslateSet.has(verseKey);
 
@@ -1178,7 +1166,7 @@ async function loadVerse(autoplay = true) {
         updateTranslationText(chNum, vNum);
     }
 
-    updateQuranAudio(chNum, vNum, autoplay);
+    await updateQuranAudio(chNum, vNum, autoplay);
     
     if (isForbidden) {
         elements.transAudio.src = '';
@@ -1187,7 +1175,7 @@ async function loadVerse(autoplay = true) {
     }
 
     saveState(); 
-    updateMediaSession(currentChapterData.title, vNum, RECITERS_CONFIG[getSelectValue(elements.selects.reciter)].name);
+    updateMediaSession(currentChapterData.title, vNum, RECITERS_CONFIG[getSelectValue(elements.selects.reciter)]?.name || "Tuwa Reader");
     bufferNextResources(chIdx, parseInt(vIdx));
 }
 
@@ -1208,12 +1196,13 @@ function bufferNextResources(currentChIdx, currentVIdx) {
     const img = new Image();
     img.src = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${nextCh}_${nextV}.png`;
 
-    const rId = getSelectValue(elements.selects.reciter);
-    const qPath = RECITERS_CONFIG[rId].path;
+    // Prefetch timing metadata and next WAV segment
+    getChapterTiming(nextCh);
+
     const padCh = String(nextCh).padStart(3, '0');
-    const padV = String(nextV).padStart(3, '0');
+    const audioUrl = `https://github.com/muslim1446/CDN-muslim.opentuwa.com/releases/download/v1.0.0/${padCh}.wav`;
     const aud = new Audio();
-    aud.src = `https://everyayah.com/data/${qPath}/${padCh}${padV}.mp3`;
+    aud.src = audioUrl;
     aud.preload = 'auto'; 
 }
 
@@ -1231,13 +1220,39 @@ function updateTranslationText(chNum, vNum) {
     adjustFontSize();
 }
 
-function updateQuranAudio(chNum, vNum, play) {
-    const rId = getSelectValue(elements.selects.reciter);
-    const path = RECITERS_CONFIG[rId].path;
+async function updateQuranAudio(chNum, vNum, play) {
     const padCh = String(chNum).padStart(3, '0');
-    const padV = String(vNum).padStart(3, '0');
+    const targetAudioSrc = `https://github.com/muslim1446/CDN-muslim.opentuwa.com/releases/download/v1.0.0/${padCh}.wav`;
     
-    elements.quranAudio.src = `https://everyayah.com/data/${path}/${padCh}${padV}.mp3`;
+    const timingData = await getChapterTiming(chNum);
+    if (!timingData) return;
+
+    const verseTiming = timingData.verses.find(v => v.verse === vNum);
+    if (!verseTiming) return;
+
+    const targetTimeSeconds = verseTiming.start_time_ms / 1000;
+
+    isSeekingManually = true;
+
+    if (currentLoadedAudioChapter !== chNum || elements.quranAudio.src !== targetAudioSrc) {
+        elements.quranAudio.src = targetAudioSrc;
+        currentLoadedAudioChapter = chNum;
+        
+        await new Promise((resolve) => {
+            const onMetadata = () => {
+                elements.quranAudio.removeEventListener('loadedmetadata', onMetadata);
+                resolve();
+            };
+            elements.quranAudio.addEventListener('loadedmetadata', onMetadata);
+        });
+    }
+
+    elements.quranAudio.currentTime = targetTimeSeconds;
+    
+    setTimeout(() => {
+        isSeekingManually = false;
+    }, 150);
+
     if (play) {
         elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
         if (window.initEQ) window.initEQ();
@@ -1245,12 +1260,10 @@ function updateQuranAudio(chNum, vNum, play) {
 }
 
 async function updateTranslationAudio(chNum, vNum, play) {
-    // Deprecated: Function disabled.
     return;
 }
 
 function handleQuranEnd() {
-    // Deprecated: Audio translation logic removed. Immediately go to next verse.
     nextVerse();
 }
 
@@ -1300,6 +1313,64 @@ function setupEventListeners() {
     elements.quranAudio.addEventListener('ended', handleQuranEnd);
     elements.transAudio.addEventListener('ended', nextVerse);
 
+    // --- TIMEUPDATE EVENT MONITOR FOR ACTIVE CONTINUOUS PLAYBACK ---
+    elements.quranAudio.addEventListener('timeupdate', () => {
+        if (isSeekingManually) return;
+
+        const chIdx = getSelectValue(elements.selects.chapter);
+        const currentChObj = quranData[chIdx];
+        if (!currentChObj) return;
+
+        const chNum = currentChObj.chapterNumber;
+        const timingData = timingCache[chNum];
+        if (!timingData) return;
+
+        const currentMs = elements.quranAudio.currentTime * 1000;
+
+        const matchingVerse = timingData.verses.find(v => currentMs >= v.start_time_ms && currentMs < v.end_time_ms);
+        if (matchingVerse) {
+            const currentUiVerseIdx = parseInt(getSelectValue(elements.selects.verse));
+            const currentUiVerseNum = currentChObj.verses[currentUiVerseIdx]?.verseNumber;
+
+            if (currentUiVerseNum !== matchingVerse.verse) {
+                const newVIdx = currentChObj.verses.findIndex(v => v.verseNumber === matchingVerse.verse);
+                if (newVIdx !== -1) {
+                    setSelectValue(elements.selects.verse, newVIdx);
+                    
+                    const verseKey = `${chNum}-${matchingVerse.verse}`;
+                    const isForbidden = forbiddenToTranslateSet.has(verseKey);
+                    elements.display.title.innerHTML = `${currentChObj.title} <span class="chapter-subtitle">(${chNum}:${matchingVerse.verse})</span>`;
+
+                    if (isForbidden) {
+                        elements.display.trans.textContent = '';
+                    } else {
+                        updateTranslationText(chNum, matchingVerse.verse);
+                    }
+
+                    const newSrc = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chNum}_${matchingVerse.verse}.png`;
+                    const img1 = elements.display.verse;
+                    const img2 = elements.display.verseNext;
+                    const isImg1Active = img1.classList.contains('active-verse-img');
+                    const activeImg = isImg1Active ? img1 : img2;
+                    const nextImg = isImg1Active ? img2 : img1;
+
+                    nextImg.src = newSrc;
+                    nextImg.onload = () => {
+                        activeImg.classList.remove('active-verse-img');
+                        nextImg.classList.add('active-verse-img');
+                    };
+                    if (nextImg.complete && nextImg.naturalHeight !== 0) {
+                        activeImg.classList.remove('active-verse-img');
+                        nextImg.classList.add('active-verse-img');
+                    }
+
+                    saveState();
+                    updateMediaSession(currentChObj.title, matchingVerse.verse, RECITERS_CONFIG[getSelectValue(elements.selects.reciter)]?.name || "Tuwa Reader");
+                }
+            }
+        }
+    });
+
     ['mousemove', 'touchstart', 'click', 'keydown'].forEach(e => 
         window.addEventListener(e, () => {
             document.body.classList.remove('idle');
@@ -1319,11 +1390,10 @@ function setupEventListeners() {
     });
 }
 
-let currentSurahTitle = ""; // Variable to store the last updated Surah
+let currentSurahTitle = ""; 
 
 function updateMediaSession(surah, verse, artist) {
     if ('mediaSession' in navigator) {
-        // Pre-check: Only proceed if the Surah has actually changed
         if (surah === currentSurahTitle) {
             return; 
         }
@@ -1336,10 +1406,9 @@ function updateMediaSession(surah, verse, artist) {
         });
 
         navigator.mediaSession.setActionHandler('nexttrack', () => {
-            // Your next track logic here
+            nextVerse();
         });
 
-        // Update the gatekeeper variable
         currentSurahTitle = surah;
     }
 }
@@ -1415,30 +1484,20 @@ document.addEventListener('DOMContentLoaded', initializeApp);
 
 /* --- GLOBAL VERTICAL TO HORIZONTAL SCROLL MAPPING --- */
 document.addEventListener("DOMContentLoaded", () => {
-
-    // --- NEW LOGIC START ---
-    // Check if the URL contains "chapter" OR "stream" to disable scroll mapping in player mode
     if (window.location.href.includes("chapter") || window.location.href.includes("stream")) {
         return; 
     }
-    // --- NEW LOGIC END ---
 
-    // We still target the row to MOVE it
     const row = document.getElementById("all-row");
     
     if (row) {
-        // 1. Map Mouse Wheel (Anywhere on screen -> Horizontal Scroll on Row)
         window.addEventListener("wheel", (e) => {
-            // If vertical scroll (deltaY) is dominant
             if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-                // Prevent default behavior (though body is hidden, this is safer)
                 e.preventDefault();
-                // Apply the scroll to the ROW
                 row.scrollLeft += e.deltaY;
             }
         }, { passive: false });
 
-        // 2. Map Touchscreen Swipes (Anywhere on screen -> Horizontal Scroll on Row)
         let touchStartY = 0;
         let touchStartX = 0;
 
@@ -1454,10 +1513,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const deltaY = touchStartY - touchCurrentY;
             const deltaX = touchStartX - touchCurrentX;
 
-            // If the swipe is primarily vertical (Up/Down)
             if (Math.abs(deltaY) > Math.abs(deltaX)) {
                 e.preventDefault(); 
-                // Move the ROW horizontally based on the vertical swipe distance
                 row.scrollLeft += deltaY; 
                 
                 touchStartY = touchCurrentY;
@@ -1466,6 +1523,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }, { passive: false });
     }
 });
+
 (function() {
     const targetId = 'island-search-wrapper';
     const keywords = ['stream', 'chapter'];
@@ -1477,22 +1535,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (el) {
             if (shouldHide) {
-                // !important flag via style.setProperty to override most CSS
                 el.style.setProperty('display', 'none', 'important');
                 el.style.setProperty('visibility', 'hidden', 'important');
                 el.style.setProperty('opacity', '0', 'important');
                 el.style.setProperty('pointer-events', 'none', 'important');
             } else {
-                // Optional: Restore if keywords are no longer present
                 el.style.removeProperty('display');
             }
         }
     };
 
-    // 1. Run immediately on script injection
     hideElement();
 
-    // 2. Watch for DOM changes (in case other JS re-adds or shows the element)
     const observer = new MutationObserver(() => hideElement());
     observer.observe(document.body, { 
         childList: true, 
@@ -1501,7 +1555,6 @@ document.addEventListener("DOMContentLoaded", () => {
         attributeFilter: ['style', 'class'] 
     });
 
-    // 3. Watch for URL changes (for Single Page Apps like React/Vue)
     window.addEventListener('popstate', hideElement);
     window.addEventListener('hashchange', hideElement);
 })();
