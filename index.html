@@ -7,11 +7,15 @@
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <title>Tuwa - Web Player</title>
-    <meta name="application-name" content="Tuwa">
-    <meta name="apple-mobile-web-app-title" content="Tuwa">
+    <!-- Apple Ecosystem Meta Tags -->
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Tuwa">
+    <meta name="application-name" content="Tuwa">
+    
+    <title>Tuwa - Premium Audio Player</title>
     <meta name="description" content="Listen to premium content with distraction-free viewing. A brand of Tuwa Media.">
     <meta name="author" content="Tuwa Media">
     <link rel="manifest" href="/assets/favicon/site.webmanifest">
@@ -21,8 +25,8 @@
     <link rel="icon" type="image/svg+xml" href="/assets/favicon/favicon.svg" />
     <link rel="shortcut icon" href="/assets/favicon/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png" />
-    <meta name="apple-mobile-web-app-title" content="Tuwa" />
 
+    <!-- OpenGraph & Twitter Cards -->
     <meta property="og:site_name" content="Tuwa">
     <meta property="og:title" content="Tuwa - Premium Quran Audio Player">
     <meta property="og:description" content="Distraction-free Quran streaming with verse-by-verse navigation, multiple reciters, and 50+ translations. Listen to Alafasy, Sudais, Ghamdi, and more.">
@@ -39,6 +43,7 @@
     <meta name="twitter:site" content="@tuwa_media">
     <meta name="twitter:creator" content="@tuwa_media">
     <link rel="canonical" id="dynamic-canonical" href="https://tuwa-player.pages.dev/">
+    
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -73,7 +78,7 @@
           "name": "Tuwa",
           "alternateName": "Tuwa Quran Audio Player",
           "applicationCategory": "MusicApplication",
-          "operatingSystem": "Web, iOS, Android",
+          "operatingSystem": "Web, iOS, tvOS, Android",
           "offers": {
             "@type": "Offer",
             "price": "0",
@@ -85,7 +90,7 @@
             "name": "Tuwa Media",
             "url": "https://tuwa-player.pages.dev/"
           },
-          "description": "Distraction-free Quran streaming with verse-by-verse navigation, multiple reciters (Alafasy, Sudais, Ghamdi, etc.), and 50+ translations",
+          "description": "Distraction-free Quran streaming with verse-by-verse navigation, multiple reciters, and 50+ translations",
           "featureList": [
             "Verse-by-verse audio navigation",
             "Multiple reciters",
@@ -103,62 +108,48 @@
             "worstRating": "1"
           },
           "downloadUrl": "https://tuwa-player.pages.dev/",
-          "screenshot": "https://tuwa-player.pages.dev/assets/ui/social-preview.png",
-          "operatingSystem": "Any (Web-based)"
-        },
-        {
-          "@type": "ItemList",
-          "name": "Quran Chapters (Surahs)",
-          "description": "Complete list of 114 Quran chapters available for streaming",
-          "numberOfItems": 114,
-          "itemListElement": []
+          "screenshot": "https://tuwa-player.pages.dev/assets/ui/social-preview.png"
         }
       ]
     }
     </script>
-<script>
-window.addEventListener('DOMContentLoaded', () => {
-    // Check for "chapter" in the URL (handles ?chapter= and ?chapter)
-    const urlParams = new URLSearchParams(window.location.search);
+
+    <script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('regex')) {
+            const brandElements = document.querySelectorAll('.app-brand');
+            brandElements.forEach(el => {
+                el.style.setProperty('display', 'none', 'important');
+            });
+            console.log('Chapter detected: .app-brand hidden.');
+        }
+    });
+    </script>
     
-    if (urlParams.has('regex')) {
-        const brandElements = document.querySelectorAll('.app-brand');
-        
-        brandElements.forEach(el => {
-            // Using !important to override the 'display: flex' in your CSS
-            el.style.setProperty('display', 'none', 'important');
-        });
-        
-        // Optional: Console log to verify it triggered
-        console.log('Chapter detected: .app-brand hidden.');
-    }
-});
-</script>
-    
-    <link rel="canonical" id="dynamic-canonical" href="https://Quran-lite.pages.dev">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://everyayah.com">
     <link rel="preconnect" href="https://raw.githubusercontent.com">
     <link rel="icon" type="image/png" sizes="128x128" href="assets/ui/web.png">
-<link rel="shortcut icon" href="assets/ui/web.ico">
-<link rel="apple-touch-icon" href="assets/ui/apple-touch-icon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;900&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-    </noscript>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    
+    <!-- Fallback web fonts (Apple Native fonts handled strictly via CSS) -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    
     <script src="src/ui/error-handling-img.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDWXFDCQRH"></script>
+    
+    <!-- Core Application Styles (Apple HIG Compliant) -->
     <link id="main-css" rel="stylesheet" href="styles/index1.css" fetchpriority="high">
     <link id="custom-select-css" rel="stylesheet" href="styles/custom-select.css" fetchpriority="high">
     <link rel="stylesheet" href="styles/user-select.css">
     <link rel="stylesheet" href="styles/inline-styles.css">
+    
     <script src="src/utils/i18n-loader.js"></script>
     <script src="src/utils/analytics.js"></script>
     <script src="src/utils/github-redirect.js"></script>
+
+<!-- Clean Apple-Style Native Loader -->
 <script> 
 (function() {
     const css = `
@@ -168,74 +159,25 @@ window.addEventListener('DOMContentLoaded', () => {
         background-color: #000000;
         z-index: 2147483647;
         opacity: 1;
-        /* Background fades out slightly slower so we see the light show */
-        transition: opacity 0.8s ease-out 0.2s; 
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        overflow: hidden;
+        transition: opacity 0.8s cubic-bezier(0.32, 0.72, 0, 1) 0.2s; 
       }
-       
-      .wave-container {
-        position: relative;
-        width: 100%;
-        max-width: 600px;
-        height: 9000000000000000000000000000000px;
-        transform-origin: center center;
-        /* The Zoom Transition:
-           We use a cubic-bezier that starts slow and snaps fast (The "Punch")
-        */
-        transition: 
-            transform 1.0s cubic-bezier(0.7, 0, 0.3, 1), 
-            filter 1.0s ease-in, 
-            opacity 1.0s ease-in;
-        will-change: transform, filter, opacity;
+      .apple-spinner {
+        width: 44px;
+        height: 44px;
+        border: 3.5px solid rgba(255, 255, 255, 0.1);
+        border-top-color: #FFFFFF;
+        border-radius: 50%;
+        animation: apple-spin 1s linear infinite;
+        margin-bottom: 24px;
       }
-
-      /* --- THE BOMBASTIC EXIT STATE --- */
-      #_universal_loader.loaded .wave-container {
-        transform: scale(15); /* Infinite Zoom */
-        /* COMBINATION OF EFFECTS:
-           1. Blur: Simulates extreme speed
-           2. Brightness 600%: The "Flash" (Light Source)
-           3. Drop-shadow: Adds the glowing aura
-        */
-        filter: blur(8px) brightness(90000%) drop-shadow(0 4px 30px rgba(0,0,0,1));
-        opacity: 0.8;
-        color: #000000;
+      @keyframes apple-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
-
-      /* --- WARP SPEED ACCELERATION --- */
-      /* When loaded, we override the animation duration to be incredibly fast (0.2s) */
-      #_universal_loader.loaded .wave1 { animation: wave_loop 0.2s linear infinite !important; }
-
-
-      .wave-svg {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 200%;
-        height: 100%;
-        fill: none;
-        stroke-width: 4;
-        stroke-linecap: round;
-        overflow: visible;
-      }
-
-      /* Normal Speed Settings */
-      .wave1 { 
-          stroke: #fff; 
-          opacity: 0.7; 
-          animation: wave_loop 4s linear infinite;
-          filter: blur(2px) drop-shadow(0 4px 30px rgba(0,0,0,1));
-      }
-
-
-      @keyframes wave_loop {
-        0% { transform: translateX(0); }
-        100% { transform: translateX(-50%); }
-      }
-
       #_universal_loader.loaded {
         opacity: 0;
         pointer-events: none;
@@ -249,46 +191,23 @@ window.addEventListener('DOMContentLoaded', () => {
     const overlay = document.createElement('div');
     overlay.id = '_universal_loader';
     
-    const container = document.createElement('div');
-    container.className = 'wave-container';
-
-    const wavePath = "M0,100 C150,180 350,20 500,100 C650,180 850,20 1000,100 C1150,180 1350,20 1500,100 C1650,180 1850,20 2000,100";
-
-    const createWave = (cls) => {
-        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-        svg.setAttribute("viewBox", "0 0 1000 200");
-        svg.setAttribute("preserveAspectRatio", "none");
-        svg.setAttribute("class", `wave-svg ${cls}`);
-        
-        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        path.setAttribute("d", wavePath);
-        svg.appendChild(path);
-        return svg;
-    };
-
-    container.appendChild(createWave('wave1'));
-
+    const spinner = document.createElement('div');
+    spinner.className = 'apple-spinner';
     
-    overlay.appendChild(container);
+    overlay.appendChild(spinner);
     document.documentElement.appendChild(overlay);
 
     function revealPage() {
         overlay.classList.add('loaded');
-        // Wait for the 1.0s zoom/flash to finish before removing from DOM
         setTimeout(() => {
             if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-        }, 2200); 
+        }, 1200); 
     }
 
-    // --- NEW LOGIC START ---
-    // Wrapper to handle URL check
     function checkAndReveal() {
-        // Check if URL contains '?' (e.g. yyy.com/? or yyy.com?param=1)
         if (window.location.href.indexOf('?') > -1) {
-            // Add extra 3 seconds throttle
             setTimeout(revealPage, 1000);
         } else {
-            // No '?', reveal normally
             revealPage();
         }
     }
@@ -297,29 +216,22 @@ window.addEventListener('DOMContentLoaded', () => {
         checkAndReveal();
     } else {
         window.addEventListener('load', checkAndReveal);
-        // Fallback: Force reveal after 8 seconds (passing through check)
-        setTimeout(checkAndReveal, 8000);
+        setTimeout(checkAndReveal, 6000);
     }
-    // --- NEW LOGIC END ---
-
 })();
-</script><script>
+</script>
+
+<script>
   document.addEventListener("DOMContentLoaded", function() {
-      // --- CONFIGURATION ---
       const storageKey = 'saved_h1_data'; 
       const targetH2Id = 'doors-hero-title'; 
 
-      // --- HELPER: SAVE AND UPDATE ---
       function syncH1toH2() {
-          // 1. Find the current H1 (fresh search every time)
-          const currentH1 = document.querySelector('h1');
+          const currentH1 = document.querySelector('h1.hero-title-text');
           const targetH2 = document.getElementById(targetH2Id);
           
-          // 2. If we have an H1, save its data
           if (currentH1) {
               const newText = currentH1.innerText.trim();
-              
-              // Only update if it's actually different to avoid infinite loops
               if (newText && newText !== localStorage.getItem(storageKey)) {
                   localStorage.setItem(storageKey, newText);
                   if (targetH2) targetH2.innerText = newText;
@@ -327,68 +239,61 @@ window.addEventListener('DOMContentLoaded', () => {
           }
       }
 
-      // --- STEP 1: RESTORE IMMEDIATELY ---
-      // Check memory instantly so H2 is not empty on load
       const savedData = localStorage.getItem(storageKey);
       const targetH2 = document.getElementById(targetH2Id);
       if (savedData && targetH2) {
           targetH2.innerText = savedData;
       }
 
-      // --- STEP 2: WATCH THE WHOLE BODY ---
-      // We observe 'document.body' so we catch the H1 even if it gets deleted/swapped.
-      const observer = new MutationObserver(function(mutations) {
-          // Whenever ANYTHING changes in the body, check if we need to sync H1
-          syncH1toH2();
-      });
-
-      // Start watching everything (Text changes, new elements, etc.)
-      observer.observe(document.body, { 
-          childList: true, 
-          subtree: true, 
-          characterData: true 
-      });
-      
-      // Run once at start to catch dynamic H1s that load fast
+      const observer = new MutationObserver(syncH1toH2);
+      observer.observe(document.body, { childList: true, subtree: true, characterData: true });
       syncH1toH2();
   });
 </script>
+</head>
 
-
-
-    </head>
 <body>
-<a href="/" class="app-brand" aria-label="Tuwa Home">
-    <span class="brand-text">Tuwa</span>
-</a>
+    <!-- Global App Header -->
+    <a href="/" class="app-brand" aria-label="Tuwa Home">
+        <span class="brand-text">Tuwa</span>
+    </a>
 
     <script src="src/utils/resolution.js"></script>
     <script src="src/components/recommendations.js"></script>
     <script src="src/components/offline-status.js"></script>
     <script src="src/utils/service-worker-registration.js"></script>
-<div id="island-search-wrapper">
-    <div class="island-search-box">
-        <div class="search-icon-wrapper">
 
+    <!-- Dynamic Island Search Box -->
+    <div id="island-search-wrapper">
+        <div class="island-search-box">
+            <div class="search-icon-wrapper">
+                <!-- SF Symbol Parity Search Icon -->
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+            <input type="text" id="island-input" placeholder="Search anything" autocomplete="off" spellcheck="false">
         </div>
-        <input type="text" id="island-input" placeholder="Search anything" autocomplete="off">
+
+        <button id="island-trigger" class="enter-trigger" tabindex="0" aria-label="Execute Search">
+            <span class="key-hint" data-key="Enter">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 10 4 15 9 20"></polyline>
+                    <path d="M20 4v7a4 4 0 0 1-4 4H4"></path>
+                </svg>
+            </span>
+        </button>
     </div>
 
-    <button id="island-trigger" class="enter-trigger" tabindex="0">
-        <span class="key-hint" data-key="Enter">
-<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"></path>
-            </svg>
-    </button>
-</div>
-
+    <!-- tvOS/Web Sidebar Navigation -->
     <nav id="tv-sidebar">
         <a href="#" class="nav-item active" id="nav-home" tabindex="1">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
             <span class="nav-label" data-i18n="nav.home">Home</span>
         </a>
         <a href="#" class="nav-item" id="nav-search" tabindex="2">
-            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             <span class="nav-label" data-i18n="nav.search">Search</span>
         </a>
         <a href="../" class="nav-item" id="nav-profile" tabindex="3">
@@ -397,10 +302,11 @@ window.addEventListener('DOMContentLoaded', () => {
         </a>
     </nav>
 
+    <!-- Apple TV Styled Search Overlay -->
     <div id="search-overlay">
         <div class="keyboard-section">
             <div id="voice-search-btn" tabindex="0" role="button" data-i18n-aria-label="search.voiceSearch" aria-label="Voice Search">
-                <svg viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg>
             </div>
             <div id="search-input-display"></div>
             <div class="keyboard-grid" id="keyboard-grid"></div>
@@ -413,8 +319,7 @@ window.addEventListener('DOMContentLoaded', () => {
         </div>
     </div>
 
-
-
+    <!-- Main Dashboard View -->
     <div id="dashboard-view" class="active">
         <div class="hero-banner">
             <div class="hero-preview-layer" id="hero-preview-layer">
@@ -424,12 +329,15 @@ window.addEventListener('DOMContentLoaded', () => {
             <div id="hero-subtitle-overlay"></div>
 
             <div class="hero-content">
-
                 <h1 class="hero-title-text" id="door-hero-title" data-i18n="hero.title"></h1>
                 <div class="hero-subtitle" id="door-hero-subtitle" data-i18n="hero.subtitle"></div>
-                    
-                        <path d="M18.25 12L7.75 5.75V18.25L18.25 12Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                
+                <!-- Fixed Apple HIG Action Button -->
+                <button class="dash-btn" id="hero-action-btn" aria-label="Play Content">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round">
+                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
                     </svg>
+                    <span style="margin-left: 6px;" data-i18n="hero.play">Listen Now</span>
                 </button>
             </div>
         </div>
@@ -439,19 +347,19 @@ window.addEventListener('DOMContentLoaded', () => {
             <div class="card-scroller" id="continue-row"></div>
         </div>
 
-
         <div class="row-section row-section-padding-bottom">
             <div class="row-header"></div>
             <div class="card-scroller" id="all-row"></div>
         </div>
     </div>
 
+    <!-- Hidden Native Audio Elements -->
     <audio id="preview-audio" crossorigin="anonymous"></audio>
 
+    <!-- Cinema/Player View -->
     <div id="cinema-view">
         <div id="loading-overlay">
             <nav id="splash-footer">
-
                 <h2 class="heroz-title-text" id="doors-hero-title"></h2>
             </nav>
             <div class="loader-content">
@@ -459,8 +367,6 @@ window.addEventListener('DOMContentLoaded', () => {
                 <div class="loader-text" id="loader-text"></div>
                 <button id="start-btn" class="start-btn" data-i18n="player.start">Start</button>
             </div>
-
-
         </div>
 
         <div class="container">
@@ -479,6 +385,7 @@ window.addEventListener('DOMContentLoaded', () => {
             </div>
         </div>
 
+        <!-- Floating Glass Player Controls -->
         <div id="control-panel">
             <div id="chapterSelectWrapper" class="custom-select-wrapper">
                 <button class="custom-select-trigger" tabindex="0" data-i18n="player.selectSurahButton"><span>Select Surah</span></button>
@@ -504,10 +411,10 @@ window.addEventListener('DOMContentLoaded', () => {
                 <button class="custom-select-trigger" tabindex="0" data-i18n="player.audioTrans"><span>Audio Translation</span></button>
                 <div class="custom-options"></div>
             </div>
-
-           </div>
+        </div>
     </div>
 
+    <!-- Script Dependencies -->
     <script src="src/core/app.js"></script>
     <script src="src/core/ai-override.js"></script> 
     <script src="src/components/navigation.js"></script>
@@ -516,6 +423,8 @@ window.addEventListener('DOMContentLoaded', () => {
     <script src="src/components/search/grid-navigation.js"></script>
     <script src="src/ui/artifact.js"></script>
     <script src="src/ui/all-text-fade.js"></script>
+    
+    <!-- Screen Transition Overlay -->
     <div id="transition-fade-layer"></div>
 </body>
 </html>
