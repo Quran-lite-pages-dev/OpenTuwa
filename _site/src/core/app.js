@@ -64,7 +64,7 @@ const SURAH_METADATA = [
     { "chapter": 48, "english_name": "The Victory", "description": "Revealed after the Treaty of Hudaybiyyah, declaring it a clear victory and promising the future peaceful conquest of Mecca. (29 verses)" },
     { "chapter": 49, "english_name": "The Rooms", "description": "A Medinan chapter teaching manners, respect for the Prophet (Peace be upon him), and the brotherhood of all believers regardless of race. (18 verses)" },
     { "chapter": 50, "english_name": "The Letter Qaf", "description": "A Meccan Surah emphasizing the resurrection and how every human deed is recorded by guardian angels. (45 verses)" },
-    { "chapter": 51, "english_name": "The Winnowing Winds", "description": "A Meccan chapter discussing the purpose of creating humans and Jinnâ€”solely to worship God. (60 verses)" },
+    { "chapter": 51, "english_name": "The Winnowing Winds", "description": "A Meccan chapter discussing the purpose of creating humans and Jinnâ̱—solely to worship God. (60 verses)" },
     { "chapter": 52, "english_name": "The Mount", "description": "A Meccan Surah swearing by Mount Sinai, describing the bliss of Paradise for the righteous and the fate of deniers. (49 verses)" },
     { "chapter": 53, "english_name": "The Star", "description": "A Meccan chapter confirming the divine source of the Prophet's (Peace be upon him) vision during his ascension and refuting idol worship. (62 verses)" },
     { "chapter": 54, "english_name": "The Moon", "description": "A Meccan Surah referencing the splitting of the moon as a sign and recounting the punishments of past nations who rejected their prophets. (55 verses)" },
@@ -78,7 +78,7 @@ const SURAH_METADATA = [
     { "chapter": 62, "english_name": "The Congregation", "description": "A Medinan chapter establishing the importance of the Friday congregational prayer (Jumu'ah) over worldly commerce. (11 verses)" },
     { "chapter": 63, "english_name": "The Hypocrites", "description": "A Medinan Surah exposing the deceit of the hypocrites who internally opposed the Prophet (Peace be upon him) while pretending to believe. (11 verses)" },
     { "chapter": 64, "english_name": "The Mutual Disillusion", "description": "A Medinan chapter describing Judgment Day as a day of mutual gain and loss, emphasizing reliance on God alone. (18 verses)" },
-    { "chapter": 65, "elements": "The Divorce", "description": "A Medinan Surah outlining the specific laws, waiting periods (Iddah), and maintenance rights regarding divorce. (12 verses)" },
+    { "chapter": 65, "english_name": "The Divorce", "description": "A Medinan Surah outlining the specific laws, waiting periods (Iddah), and maintenance rights regarding divorce. (12 verses)" },
     { "chapter": 66, "english_name": "The Prohibition", "description": "A Medinan chapter addressing a domestic incident in the Prophet's (Peace be upon him) household and holding up the righteous wives of Noah (Peace be upon him) and Lot (Peace be upon him) as examples. (12 verses)" },
     { "chapter": 67, "english_name": "The Sovereignty", "description": "A Meccan Surah affirming God's dominion over life and death. (30 verses)" },
     { "chapter": 68, "english_name": "The Pen", "description": "A Meccan chapter defending the Prophet's (Peace be upon him) sanity and character against accusers, and telling the parable of the owners of the garden. (52 verses)" },
@@ -130,7 +130,6 @@ const SURAH_METADATA = [
     { "chapter": 114, "english_name": "Mankind", "description": "A Meccan chapter seeking refuge in the Lord of mankind from the whispers of devils and men. (6 verses)" }
 ];
 
-// --- MULTI-PROFILE & LOGIC ---
 const ACTIVE_PROFILE_ID = "1";
 const STORAGE_KEY = `quranState_${ACTIVE_PROFILE_ID}`;
 
@@ -268,11 +267,15 @@ const KEYBOARD_KEYS = [
     '1','2','3','4','5','6','7','8','9','0','SPACE', 'DEL', 'CLEAR'
 ];
 
-// --- SINGLE WAV IMPLEMENTATION GLOBALS ---
+// --- SINGLE WAV IMPLEMENTATION & RANGE OPTIMIZATION GLOBALS [APPLE REJECT RESOLUTION] ---
 let timingCache = {}; // Cache for chapter JSON timing data
 let isSeekingManually = false; // Flag to prevent timeupdate loops during user interactions
 let currentLoadedAudioChapter = null; // Track current playing chapter in the audio element
 let activePreviewTimeUpdateListener = null; // Prevent multi-registering preview timeupdates
+
+const isUsingBlobWavOptimization = true; // High-Performance Range Slicer Pipeline
+let activeBlobUrl = null; // Track current Blob URL to prevent client-side memory leak
+let chapterWavMetaCache = {}; // Cache metadata per chapter URL to prevent duplicate header fetches
 
 window.wipeUserData = function() {
     localStorage.removeItem(STORAGE_KEY);
@@ -423,6 +426,132 @@ async function getChapterTiming(chapterNum) {
         console.error("Failed to load timing JSON for chapter:", chapterNum, e);
         return null;
     }
+}
+
+// --- CLIENT-SIDE TRAFFIC OPTIMIZATION UTILITIES [APPLE HIG REQUIREMENT] ---
+
+/**
+ * Creates a standard uncompressed 44-byte WAV header on-the-fly.
+ * This wraps direct raw PCM byte payloads dynamically.
+ */
+function createWavHeader(dataLength, sampleRate, numChannels, bitsPerSample) {
+    const buffer = new ArrayBuffer(44);
+    const view = new DataView(buffer);
+    const byteRate = (sampleRate * numChannels * bitsPerSample) / 8;
+    const blockAlign = (numChannels * bitsPerSample) / 8;
+
+    const writeString = (offset, string) => {
+        for (let i = 0; i < string.length; i++) {
+            view.setUint8(offset + i, string.charCodeAt(i));
+        }
+    };
+
+    writeString(0, "RIFF");
+    view.setUint32(4, dataLength + 36, true); 
+    writeString(8, "WAVE");
+    writeString(12, "fmt ");
+    view.setUint32(16, 16, true);
+    view.setUint16(20, 1, true); // PCM Format (1)
+    view.setUint16(22, numChannels, true);
+    view.setUint32(24, sampleRate, true);
+    view.setUint32(28, byteRate, true);
+    view.setUint16(32, blockAlign, true);
+    view.setUint16(34, bitsPerSample, true);
+    writeString(36, "data");
+    view.setUint32(40, dataLength, true);
+
+    return new Uint8Array(buffer);
+}
+
+/**
+ * Parses the first 44 bytes of a remote WAV file to fetch its metadata parameters (SampleRate, BitDepth, Channels).
+ * Only fetches 44 bytes out of multi-gigabyte files to minimize overhead.
+ */
+async function getWavMetadata(audioUrl) {
+    if (chapterWavMetaCache[audioUrl]) {
+        return chapterWavMetaCache[audioUrl];
+    }
+
+    try {
+        const response = await fetch(audioUrl, {
+            headers: { 'Range': 'bytes=0-43' }
+        });
+        
+        if (!response.ok && response.status !== 206) {
+            throw new Error(`Server rejected early Range Request: status ${response.status}`);
+        }
+
+        const buffer = await response.arrayBuffer();
+        if (buffer.byteLength < 44) {
+            throw new Error("WAV header returned was incomplete.");
+        }
+
+        const view = new DataView(buffer);
+        
+        const riffMagic = String.fromCharCode(view.getUint8(0), view.getUint8(1), view.getUint8(2), view.getUint8(3));
+        const waveMagic = String.fromCharCode(view.getUint8(8), view.getUint8(9), view.getUint8(10), view.getUint8(11));
+        
+        if (riffMagic !== "RIFF" || waveMagic !== "WAVE") {
+            throw new Error("Unrecognized audio envelope format.");
+        }
+
+        const numChannels = view.getUint16(22, true);
+        const sampleRate = view.getUint32(24, true);
+        const bitsPerSample = view.getUint16(34, true);
+
+        const meta = { sampleRate, numChannels, bitsPerSample };
+        chapterWavMetaCache[audioUrl] = meta;
+        return meta;
+    } catch (e) {
+        console.warn("WAV Range parsing failed, falling back to standard parameters:", e);
+        const fallback = { sampleRate: 44100, numChannels: 2, bitsPerSample: 16 };
+        chapterWavMetaCache[audioUrl] = fallback;
+        return fallback;
+    }
+}
+
+/**
+ * Main Network traffic Optimizer. Calculates exact byte range representing the requested
+ * millisecond duration, executes a targeted HTTP Range Fetch, builds standard WAV Blob, and returns local URL.
+ */
+async function fetchWavSlice(chNum, vNum) {
+    const padCh = String(chNum).padStart(3, '0');
+    const audioUrl = `https://hosting.opentuwa.com/${padCh}.wav`;
+    
+    const timingData = await getChapterTiming(chNum);
+    if (!timingData) return null;
+    
+    const verseTiming = timingData.verses.find(v => v.verse === vNum);
+    if (!verseTiming) return null;
+
+    const meta = await getWavMetadata(audioUrl);
+    
+    const bytesPerSample = (meta.bitsPerSample / 8) * meta.numChannels;
+    const startByte = 44 + Math.floor((verseTiming.start_time_ms / 1000) * meta.sampleRate * bytesPerSample);
+    const endByte = 44 + Math.floor((verseTiming.end_time_ms / 1000) * meta.sampleRate * bytesPerSample);
+    
+    const segmentLength = endByte - startByte;
+    if (segmentLength <= 0) return null;
+
+    const rangeHeader = `bytes=${startByte}-${endByte}`;
+    const response = await fetch(audioUrl, {
+        headers: { 'Range': rangeHeader }
+    });
+
+    if (!response.ok && response.status !== 206) {
+        throw new Error(`Failed partial network Range request: ${response.status}`);
+    }
+
+    const pcmData = await response.arrayBuffer();
+    const header = createWavHeader(pcmData.byteLength, meta.sampleRate, meta.numChannels, meta.bitsPerSample);
+    const combinedBlob = new Blob([header, pcmData], { type: 'audio/wav' });
+    
+    if (activeBlobUrl) {
+        URL.revokeObjectURL(activeBlobUrl);
+    }
+    
+    activeBlobUrl = URL.createObjectURL(combinedBlob);
+    return activeBlobUrl;
 }
 
 /**
@@ -771,20 +900,11 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
     }
 }
 
-// Single WAV adaptive preview sequence
+// Single WAV adaptive preview sequence using Range Slices
 async function playPreviewStep(chapterNum, reciterId) {
     if (previewSeqIndex >= previewSequence.length) return;
     const verseNum = previewSequence[previewSeqIndex];
 
-    const timingData = await getChapterTiming(chapterNum);
-    if (!timingData) return;
-
-    const verseTiming = timingData.verses.find(v => v.verse === verseNum);
-    if (!verseTiming) return;
-
-    const padCh = String(chapterNum).padStart(3, '0');
-    const targetWav = `https://hosting.opentuwa.com/${padCh}.wav`;
-    
     const imgLayer = document.getElementById('hero-preview-layer');
     const previewImg = document.getElementById('preview-img');
     const newSrc = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chapterNum}_${verseNum}.png`;
@@ -818,61 +938,25 @@ async function playPreviewStep(chapterNum, reciterId) {
     }
 
     if (elements.previewAudio) {
-        if (elements.previewAudio.src !== targetWav) {
-            elements.previewAudio.src = targetWav;
-            await new Promise(resolve => {
-                let resolved = false;
-                const done = () => {
-                    if (resolved) return;
-                    resolved = true;
-                    elements.previewAudio.removeEventListener('loadedmetadata', onMeta);
-                    elements.previewAudio.removeEventListener('error', onError);
-                    clearTimeout(timeoutId);
-                    resolve();
-                };
-                const onMeta = () => done();
-                const onError = () => done();
-                const timeoutId = setTimeout(done, 3000);
+        try {
+            // High-Performance Fetch Slice Optimization
+            const blobUrl = await fetchWavSlice(chapterNum, verseNum);
+            
+            if (blobUrl) {
+                elements.previewAudio.src = blobUrl;
+                elements.previewAudio.currentTime = 0;
+                elements.previewAudio.volume = 0.6;
                 
-                elements.previewAudio.addEventListener('loadedmetadata', onMeta);
-                elements.previewAudio.addEventListener('error', onError);
-            });
-        }
+                elements.previewAudio.onended = () => {
+                    previewSeqIndex++;
+                    playPreviewStep(chapterNum, reciterId);
+                };
 
-        elements.previewAudio.currentTime = verseTiming.start_time_ms / 1000;
-        elements.previewAudio.volume = 0.6;
-
-        const targetEndTimeSeconds = verseTiming.end_time_ms / 1000;
-        
-        if (activePreviewTimeUpdateListener) {
-            elements.previewAudio.removeEventListener('timeupdate', activePreviewTimeUpdateListener);
-        }
-
-        const onTimeUpdate = () => {
-            if (elements.previewAudio.currentTime >= targetEndTimeSeconds) {
-                elements.previewAudio.removeEventListener('timeupdate', onTimeUpdate);
-                if (activePreviewTimeUpdateListener === onTimeUpdate) {
-                    activePreviewTimeUpdateListener = null;
-                }
-                elements.previewAudio.pause();
-                previewSeqIndex++;
-                playPreviewStep(chapterNum, reciterId);
+                elements.previewAudio.play().catch(e => console.log("Autoplay blocked"));
             }
-        };
-
-        activePreviewTimeUpdateListener = onTimeUpdate;
-        elements.previewAudio.addEventListener('timeupdate', onTimeUpdate);
-        
-        elements.previewAudio.onended = () => {
-            if (activePreviewTimeUpdateListener) {
-                elements.previewAudio.removeEventListener('timeupdate', activePreviewTimeUpdateListener);
-                activePreviewTimeUpdateListener = null;
-            }
-            previewSeqIndex++;
-            playPreviewStep(chapterNum, reciterId);
-        };
-
-        elements.previewAudio.play().catch(e => console.log("Autoplay blocked"));
+        } catch (e) {
+            console.error("WAV Range Preview Slicing Failed:", e);
+        }
     }
 }
 
@@ -1174,7 +1258,6 @@ async function loadVerse(autoplay = true) {
     if (!verseData) return;
     const vNum = verseData.verseNumber;
 
-    // Load custom chapter timings beforehand
     const timingData = await getChapterTiming(chNum);
     if (!timingData) {
         console.error("Could not load chapter timing configuration.");
@@ -1274,7 +1357,6 @@ function bufferNextResources(currentChIdx, currentVIdx) {
     const img = new Image();
     img.src = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${nextCh}_${nextV}.png`;
 
-    // Prefetch timing metadata and next WAV segment
     getChapterTiming(nextCh);
 
     const padCh = String(nextCh).padStart(3, '0');
@@ -1300,61 +1382,84 @@ function updateTranslationText(chNum, vNum) {
 
 async function updateQuranAudio(chNum, vNum, play) {
     if (!elements.quranAudio) return;
-    const padCh = String(chNum).padStart(3, '0');
-    const targetAudioSrc = `https://hosting.opentuwa.com/${padCh}.wav`;
-    
-    const timingData = await getChapterTiming(chNum);
-    if (!timingData) return;
 
-    const verseTiming = timingData.verses.find(v => v.verse === vNum);
-    if (!verseTiming) return;
+    try {
+        toggleBuffering(true);
 
-    const targetTimeSeconds = verseTiming.start_time_ms / 1000;
-
-    isSeekingManually = true;
-
-    if (currentLoadedAudioChapter !== chNum) {
-        elements.quranAudio.src = targetAudioSrc;
-        currentLoadedAudioChapter = chNum;
-        
-        await new Promise((resolve) => {
-            let resolved = false;
-            const done = () => {
-                if (resolved) return;
-                resolved = true;
-                elements.quranAudio.removeEventListener('loadedmetadata', onMetadata);
-                elements.quranAudio.removeEventListener('error', onError);
-                clearTimeout(timeoutId);
-                resolve();
-            };
-            const onMetadata = () => done();
-            const onError = () => done();
-            const timeoutId = setTimeout(done, 3000); // 3-second recovery escape
+        if (isUsingBlobWavOptimization) {
+            // Optimized Range Pipeline (Downloads only requested slice instead of full multi-gigabyte files)
+            const blobUrl = await fetchWavSlice(chNum, vNum);
             
-            elements.quranAudio.addEventListener('loadedmetadata', onMetadata);
-            elements.quranAudio.addEventListener('error', onError);
-        });
-    }
+            if (blobUrl) {
+                isSeekingManually = true;
+                elements.quranAudio.src = blobUrl;
+                elements.quranAudio.currentTime = 0; 
+                isSeekingManually = false;
+            } else {
+                const padCh = String(chNum).padStart(3, '0');
+                elements.quranAudio.src = `https://hosting.opentuwa.com/${padCh}.wav`;
+            }
+        } else {
+            const padCh = String(chNum).padStart(3, '0');
+            const targetAudioSrc = `https://hosting.opentuwa.com/${padCh}.wav`;
+            const timingData = await getChapterTiming(chNum);
+            if (!timingData) return;
 
-    let seekedFired = false;
-    const onSeeked = () => {
-        seekedFired = true;
-        elements.quranAudio.removeEventListener('seeked', onSeeked);
-        isSeekingManually = false;
-    };
-    elements.quranAudio.addEventListener('seeked', onSeeked);
-    elements.quranAudio.currentTime = targetTimeSeconds;
-    
-    setTimeout(() => {
-        if (!seekedFired) {
-            elements.quranAudio.removeEventListener('seeked', onSeeked);
-            isSeekingManually = false;
+            const verseTiming = timingData.verses.find(v => v.verse === vNum);
+            if (!verseTiming) return;
+
+            const targetTimeSeconds = verseTiming.start_time_ms / 1000;
+
+            isSeekingManually = true;
+
+            if (currentLoadedAudioChapter !== chNum) {
+                elements.quranAudio.src = targetAudioSrc;
+                currentLoadedAudioChapter = chNum;
+                
+                await new Promise((resolve) => {
+                    let resolved = false;
+                    const done = () => {
+                        if (resolved) return;
+                        resolved = true;
+                        elements.quranAudio.removeEventListener('loadedmetadata', onMetadata);
+                        elements.quranAudio.removeEventListener('error', onError);
+                        clearTimeout(timeoutId);
+                        resolve();
+                    };
+                    const onMetadata = () => done();
+                    const onError = () => done();
+                    const timeoutId = setTimeout(done, 3000);
+                    
+                    elements.quranAudio.addEventListener('loadedmetadata', onMetadata);
+                    elements.quranAudio.addEventListener('error', onError);
+                });
+            }
+
+            let seekedFired = false;
+            const onSeeked = () => {
+                seekedFired = true;
+                elements.quranAudio.removeEventListener('seeked', onSeeked);
+                isSeekingManually = false;
+            };
+            elements.quranAudio.addEventListener('seeked', onSeeked);
+            elements.quranAudio.currentTime = targetTimeSeconds;
+            
+            setTimeout(() => {
+                if (!seekedFired) {
+                    elements.quranAudio.removeEventListener('seeked', onSeeked);
+                    isSeekingManually = false;
+                }
+            }, 500);
         }
-    }, 500);
 
-    if (play) {
-        elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
-        if (window.initEQ) window.initEQ();
+        if (play) {
+            elements.quranAudio.play().catch(e => console.log("Waiting for user interaction"));
+            if (window.initEQ) window.initEQ();
+        }
+    } catch (e) {
+        console.error("Traffic Slicing Load Error:", e);
+    } finally {
+        toggleBuffering(false);
     }
 }
 
@@ -1422,7 +1527,6 @@ function setupEventListeners() {
         elements.transAudio.addEventListener('ended', nextVerse);
     }
 
-    // --- TIMEUPDATE EVENT MONITOR FOR ACTIVE CONTINUOUS PLAYBACK ---
     if (elements.quranAudio) {
         elements.quranAudio.addEventListener('timeupdate', () => {
             if (isSeekingManually) return;
@@ -1435,7 +1539,15 @@ function setupEventListeners() {
             const timingData = timingCache[chNum];
             if (!timingData) return;
 
-            const currentMs = elements.quranAudio.currentTime * 1000;
+            const activeUiVerseIdx = parseInt(getSelectValue(elements.selects.verse));
+            const activeVerseTiming = timingData.verses.find(v => v.verse === (activeUiVerseIdx + 1));
+
+            let currentMs = elements.quranAudio.currentTime * 1000;
+            
+            // Adjust Virtual Timeline when playing optimized Range Blobs
+            if (activeVerseTiming && isUsingBlobWavOptimization) {
+                currentMs += activeVerseTiming.start_time_ms;
+            }
 
             const matchingVerse = timingData.verses.find(v => currentMs >= v.start_time_ms && currentMs < v.end_time_ms);
             if (matchingVerse) {
