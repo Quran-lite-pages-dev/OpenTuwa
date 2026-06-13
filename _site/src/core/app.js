@@ -783,7 +783,7 @@ async function playPreviewStep(chapterNum, reciterId) {
     if (!verseTiming) return;
 
     const padCh = String(chapterNum).padStart(3, '0');
-    const targetWav = `https://github.com/muslim1446/CDN-muslim.opentuwa.com/releases/download/v1.0.0/${padCh}.wav`;
+    const targetWav = `https://cdn.jsdelivr.net/gh/muslim1446/CDN-muslim.opentuwa.com@v1.0.0/${padCh}.wav`;
     
     const imgLayer = document.getElementById('hero-preview-layer');
     const previewImg = document.getElementById('preview-img');
@@ -1278,7 +1278,7 @@ function bufferNextResources(currentChIdx, currentVIdx) {
     getChapterTiming(nextCh);
 
     const padCh = String(nextCh).padStart(3, '0');
-    const audioUrl = `https://github.com/muslim1446/CDN-muslim.opentuwa.com/releases/download/v1.0.0/${padCh}.wav`;
+    const audioUrl = `https://cdn.jsdelivr.net/gh/muslim1446/CDN-muslim.opentuwa.com@v1.0.0/${padCh}.wav`;
     const aud = new Audio();
     aud.src = audioUrl;
     aud.preload = 'auto'; 
@@ -1301,7 +1301,7 @@ function updateTranslationText(chNum, vNum) {
 async function updateQuranAudio(chNum, vNum, play) {
     if (!elements.quranAudio) return;
     const padCh = String(chNum).padStart(3, '0');
-    const targetAudioSrc = `https://github.com/muslim1446/CDN-muslim.opentuwa.com/releases/download/v1.0.0/${padCh}.wav`;
+    const targetAudioSrc = `https://cdn.jsdelivr.net/gh/muslim1446/CDN-muslim.opentuwa.com@v1.0.0/${padCh}.wav`;
     
     const timingData = await getChapterTiming(chNum);
     if (!timingData) return;
