@@ -206,48 +206,56 @@ const TRANSLATION_AUDIO_CONFIG = {
 const FTT_URL = 'https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/FTT.XML';
 const RTL_CODES = new Set(['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ur', 'ug']);
 
-// Elements Reference
-const elements = {
-    overlay: document.getElementById('loading-overlay'),
-    spinner: document.querySelector('.loader-spinner'),
-    loaderText: document.getElementById('loader-text'),
-    startBtn: document.getElementById('start-btn'),
-    quranAudio: document.getElementById('audio-player'),
-    transAudio: document.getElementById('translation-audio-player'),
-    previewAudio: document.getElementById('preview-audio'),
-    bufferInd: document.getElementById('buffering-indicator'),
-    selects: {
-        chapter: document.getElementById('chapterSelectWrapper'),
-        verse: document.getElementById('verseSelectWrapper'),
-        trans: document.getElementById('translationSelectWrapper'),
-        reciter: document.getElementById('reciterSelectWrapper'),
-        transAudio: document.getElementById('translationAudioSelectWrapper')
-    },
-    display: {
-        title: document.getElementById('chapter-title'),
-        verse: document.getElementById('verse-text'),
-        verseNext: document.getElementById('verse-text-next'),
-        trans: document.getElementById('translation-text'),
-        container: document.getElementById('content-display')
-    },
-    views: {
-        dashboard: document.getElementById('dashboard-view'),
-        cinema: document.getElementById('cinema-view')
-    },
-    sidebar: {
-        container: document.getElementById('tv-sidebar'),
-        home: document.getElementById('nav-home'),
-        search: document.getElementById('nav-search'),
-        profile: document.getElementById('nav-profile')
-    },
-    search: {
-        overlay: document.getElementById('search-overlay'),
-        inputDisplay: document.getElementById('search-input-display'),
-        keyboardGrid: document.getElementById('keyboard-grid'),
-        resultsGrid: document.getElementById('search-results-grid')
-    },
-    subtitle: document.getElementById('hero-subtitle-overlay')
-};
+    // Elements Reference
+    const elements = {
+        overlay: document.getElementById('loading-overlay'),
+        spinner: document.querySelector('.loader-spinner'),
+        loaderText: document.getElementById('loader-text'),
+        startBtn: document.getElementById('start-btn'),
+        quranAudio: document.getElementById('audio-player'),
+        transAudio: document.getElementById('translation-audio-player'),
+        previewAudio: document.getElementById('preview-audio'),
+        bufferInd: document.getElementById('buffering-indicator'),
+        playPauseBtn: document.getElementById('play-pause-btn'),
+        playIcon: document.getElementById('play-icon'),
+        pauseIcon: document.getElementById('pause-icon'),
+        volumeBtn: document.getElementById('volume-btn'),
+        volumeSlider: document.getElementById('volume-slider'),
+        volumeHighIcon: document.getElementById('volume-high-icon'),
+        volumeLowIcon: document.getElementById('volume-low-icon'),
+        volumeMutedIcon: document.getElementById('volume-muted-icon'),
+        selects: {
+            chapter: document.getElementById('chapterSelectWrapper'),
+            verse: document.getElementById('verseSelectWrapper'),
+            trans: document.getElementById('translationSelectWrapper'),
+            reciter: document.getElementById('reciterSelectWrapper'),
+            transAudio: document.getElementById('translationAudioSelectWrapper')
+        },
+        display: {
+            title: document.getElementById('chapter-title'),
+            verse: document.getElementById('verse-text'),
+            verseNext: document.getElementById('verse-text-next'),
+            trans: document.getElementById('translation-text'),
+            container: document.getElementById('content-display')
+        },
+        views: {
+            dashboard: document.getElementById('dashboard-view'),
+            cinema: document.getElementById('cinema-view')
+        },
+        sidebar: {
+            container: document.getElementById('tv-sidebar'),
+            home: document.getElementById('nav-home'),
+            search: document.getElementById('nav-search'),
+            profile: document.getElementById('nav-profile')
+        },
+        search: {
+            overlay: document.getElementById('search-overlay'),
+            inputDisplay: document.getElementById('search-input-display'),
+            keyboardGrid: document.getElementById('keyboard-grid'),
+            resultsGrid: document.getElementById('search-results-grid')
+        },
+        subtitle: document.getElementById('hero-subtitle-overlay')
+    };
 
 let quranData = []; 
 let translationCache = {}; 
@@ -1422,6 +1430,25 @@ function setupEventListeners() {
         elements.transAudio.addEventListener('ended', nextVerse);
     }
 
+    // Play/Pause button
+    if (elements.playPauseBtn && elements.quranAudio) {
+        elements.playPauseBtn.addEventListener('click', togglePlayPause);
+        elements.quranAudio.addEventListener('play', updatePlayPauseIcon);
+        elements.quranAudio.addEventListener('pause', updatePlayPauseIcon);
+    }
+
+    // Volume controls
+    if (elements.volumeBtn && elements.volumeSlider && elements.quranAudio) {
+        elements.volumeBtn.addEventListener('click', toggleMute);
+        elements.volumeSlider.addEventListener('input', (e) => {
+            elements.quranAudio.volume = parseFloat(e.target.value);
+            updateVolumeIcon(elements.quranAudio.volume);
+        });
+        elements.quranAudio.volume = 0.8;
+        elements.volumeSlider.value = 0.8;
+        updateVolumeIcon(0.8);
+    }
+
     // --- TIMEUPDATE EVENT MONITOR FOR ACTIVE CONTINUOUS PLAYBACK ---
     if (elements.quranAudio) {
         elements.quranAudio.addEventListener('timeupdate', () => {
@@ -1503,6 +1530,53 @@ function setupEventListeners() {
         document.documentElement.style.setProperty('--vh', `${window.innerHeight}px`);
         adjustFontSize();
     });
+}
+
+function togglePlayPause() {
+    if (!elements.quranAudio) return;
+    if (elements.quranAudio.paused) {
+        elements.quranAudio.play().catch(e => console.log("Playback failed:", e));
+    } else {
+        elements.quranAudio.pause();
+    }
+}
+
+function updatePlayPauseIcon() {
+    if (!elements.playIcon || !elements.pauseIcon) return;
+    if (elements.quranAudio.paused) {
+        elements.playIcon.style.display = 'block';
+        elements.pauseIcon.style.display = 'none';
+        elements.playPauseBtn.setAttribute('aria-label', 'Play');
+    } else {
+        elements.playIcon.style.display = 'none';
+        elements.pauseIcon.style.display = 'block';
+        elements.playPauseBtn.setAttribute('aria-label', 'Pause');
+    }
+}
+
+function toggleMute() {
+    if (!elements.quranAudio) return;
+    elements.quranAudio.muted = !elements.quranAudio.muted;
+    updateVolumeIcon(elements.quranAudio.volume);
+}
+
+function updateVolumeIcon(volume) {
+    if (!elements.volumeHighIcon || !elements.volumeLowIcon || !elements.volumeMutedIcon || !elements.volumeBtn) return;
+    
+    elements.volumeHighIcon.style.display = 'none';
+    elements.volumeLowIcon.style.display = 'none';
+    elements.volumeMutedIcon.style.display = 'none';
+    
+    if (elements.quranAudio.muted || volume === 0) {
+        elements.volumeMutedIcon.style.display = 'block';
+        elements.volumeBtn.setAttribute('aria-label', 'Unmute');
+    } else if (volume < 0.5) {
+        elements.volumeLowIcon.style.display = 'block';
+        elements.volumeBtn.setAttribute('aria-label', 'Mute');
+    } else {
+        elements.volumeHighIcon.style.display = 'block';
+        elements.volumeBtn.setAttribute('aria-label', 'Mute');
+    }
 }
 
 let currentSurahTitle = ""; 
