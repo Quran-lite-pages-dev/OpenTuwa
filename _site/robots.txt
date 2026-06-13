@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://quran-lite.pages.dev/sitemap.xml

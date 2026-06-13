@@ -1,0 +1,166 @@
+/* styles/custom-select.css */
+
+/* 1. The "Mom" (Wrapper) */
+.custom-select-wrapper {
+    position: relative;
+    user-select: none;
+    width: 200px;
+    font-family: 'Inter', sans-serif;
+}
+
+/* The Trigger:  Cinematic Style */
+.custom-select-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; 
+    
+    padding: 0 16px;
+    font-size: 1.1rem; /* Slightly tighter font for that premium look */
+    font-weight: 600;
+    color: #f9f9f9;
+    height: 48px; 
+    background: rgba(255, 255, 255, 0.04); 
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px; /* Slightly sharper corners like  */
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    
+    width: 100%; 
+}
+
+/* Text Magic */
+.custom-select-trigger span {
+    margin: 0 auto; 
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.5px;
+}
+
+/*  Hover & Focus (The Vibrant Glow) */
+.custom-select-trigger:hover,
+.custom-select-wrapper.open .custom-select-trigger {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.8); /* Becomes bright on hover */
+    transform: scale(1.02);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+/* 2. The Options (Dropdown) */
+.custom-options {
+    position: absolute;
+    bottom: 115%; /* Slight gap for depth */
+    
+    width: 370px; 
+    left: 50%; 
+    margin-left: -185px; /* Updated to match half of 370px width */
+
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    z-index: 9999; 
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    
+    /* Smooth upward slide */
+    transform: translateY(15px); 
+    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    
+    max-height: 320px;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+}
+
+/* Custom Scrollbar for Dropdown */
+.custom-options::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-options::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+/* Open State */
+.custom-select-wrapper.open .custom-options {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: all;
+    transform: translateY(0);
+}
+
+/* Individual Options */
+.custom-option {
+    position: relative;
+    display: block;
+    padding: 14px 20px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #a9a9b3; /* Muted text */
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    text-align: center;
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.custom-option:last-child {
+    border-bottom: none;
+}
+
+/*  Active Item Highlight */
+.custom-option:hover,
+.custom-option.selected {
+    background: rgba(255, 255, 255, 0.06);
+    color: #ffffff;
+    padding-left: 25px; /* Subtle indent on hover */
+}
+
+/* Selected Accent Bar */
+.custom-option.selected::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--accent); /* Your color kept */
+    box-shadow: 2px 0 10px var(--accent);
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .custom-select-wrapper {
+        width: 100%; 
+    }
+    
+    .custom-options {
+        width: 90%;
+        left: 5%;
+        margin-left: 0; 
+        
+        bottom: 15%; 
+        top: auto;
+        transform: translateY(20px) scale(0.95);
+        position: fixed; 
+        max-height: 60vh;
+    }
+
+    .custom-select-wrapper.open .custom-options {
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* --- MODE 0: HIDING LOGIC --- */
+body.simple-mode #chapterSelectWrapper,
+body.simple-mode #verseSelectWrapper,
+body.simple-mode #translationAudioSelectWrapper,
+body.simple-mode #reciterSelectWrapper {
+    display: none !important;
+}

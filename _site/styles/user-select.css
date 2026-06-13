@@ -1,0 +1,12 @@
+/* Copyright (c) Haykal M. Zaidi 2024-2026. All rights reserved. PROPRIETARY AND CONFIDENTIAL. */
+/* User Select Prevention - Applies to the entire document */
+*,
+*::before,
+*::after {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+

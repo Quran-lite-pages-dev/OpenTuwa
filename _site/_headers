@@ -1,0 +1,36 @@
+/styles/*
+  Content-Type: text/css; charset=utf-8
+/src/*
+  Content-Type: application/javascript; charset=utf-8
+/assets/*
+  Content-Type: application/octet-stream
+/locales/*
+  Content-Type: application/json; charset=utf-8
+/*.js
+  Content-Type: application/javascript; charset=utf-8
+/*.css
+  Content-Type: text/css; charset=utf-8
+/*.json
+  Content-Type: application/json; charset=utf-8
+/*.xml
+  Content-Type: application/xml; charset=utf-8
+/*.png
+  Content-Type: image/png
+/*.jpg
+  Content-Type: image/jpeg
+/*.ico
+  Content-Type: image/x-icon
+/*.woff
+  Content-Type: font/woff
+/*.woff2
+  Content-Type: font/woff2
+/*.mp3
+  Content-Type: audio/mpeg
+/*.wav
+  Content-Type: audio/wav
+/*.svg
+  Content-Type: image/svg+xml
+
+# SPA fallback for all other routes
+/*
+  Content-Type: text/html; charset=utf-8
