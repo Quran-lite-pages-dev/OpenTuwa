@@ -740,12 +740,6 @@ body.idle #control-panel { transform: translateY(100%); opacity: 0; pointer-even
     gap: 8px;
 }
 
-.volume-control:hover #volume-slider {
-    display: block;
-    opacity: 1;
-    pointer-events: auto;
-}
-
 #volume-slider {
     position: absolute;
     right: 56px;
@@ -759,10 +753,10 @@ body.idle #control-panel { transform: translateY(100%); opacity: 0; pointer-even
     background: rgba(255,255,255,0.2);
     border-radius: 2px;
     outline: none;
-    opacity: 0;
-    pointer-events: none;
+    opacity: 1;
+    pointer-events: auto;
     transition: opacity 0.2s ease;
-    display: none;
+    display: block;
 }
 
 #volume-slider::-webkit-slider-thumb {
@@ -812,7 +806,6 @@ body.idle #control-panel { transform: translateY(100%); opacity: 0; pointer-even
         opacity: 1;
         pointer-events: auto;
     }
-    .volume-control:hover #volume-slider { display: block; }
 }
 
 select {
