@@ -464,8 +464,8 @@ function createWavHeader(dataLength, sampleRate, numChannels, bitsPerSample) {
 }
 
 /**
- * Parses the first 44 bytes of a remote WAV file to fetch its metadata parameters (SampleRate, BitDepth, Channels).
- * Only fetches 44 bytes out of multi-gigabyte files to minimize overhead.
+ * Parses headers from the first 1024 bytes of the remote WAV file to find exact properties
+ * and locate the physical start of the "data" subchunk, bypassing arbitrary LIST/metadata offsets.
  */
 async function getWavMetadata(audioUrl) {
     if (chapterWavMetaCache[audioUrl]) {
@@ -474,7 +474,7 @@ async function getWavMetadata(audioUrl) {
 
     try {
         const response = await fetch(audioUrl, {
-            headers: { 'Range': 'bytes=0-43' }
+            headers: { 'Range': 'bytes=0-1023' }
         });
         
         if (!response.ok && response.status !== 206) {
@@ -483,7 +483,7 @@ async function getWavMetadata(audioUrl) {
 
         const buffer = await response.arrayBuffer();
         if (buffer.byteLength < 44) {
-            throw new Error("WAV header returned was incomplete.");
+            throw new Error("WAV header chunk is too short.");
         }
 
         const view = new DataView(buffer);
@@ -495,24 +495,48 @@ async function getWavMetadata(audioUrl) {
             throw new Error("Unrecognized audio envelope format.");
         }
 
-        const numChannels = view.getUint16(22, true);
-        const sampleRate = view.getUint32(24, true);
-        const bitsPerSample = view.getUint16(34, true);
+        let numChannels = 2;
+        let sampleRate = 44100;
+        let bitsPerSample = 16;
+        let dataOffset = 44; // Standard fallback offset
 
-        const meta = { sampleRate, numChannels, bitsPerSample };
+        // Walk standard WAV headers to locate fmt and data offsets dynamically
+        let offset = 12;
+        while (offset < buffer.byteLength - 8) {
+            const chunkId = String.fromCharCode(
+                view.getUint8(offset),
+                view.getUint8(offset + 1),
+                view.getUint8(offset + 2),
+                view.getUint8(offset + 3)
+            );
+            const chunkSize = view.getUint32(offset + 4, true);
+
+            if (chunkId === "fmt ") {
+                numChannels = view.getUint16(offset + 8 + 2, true);
+                sampleRate = view.getUint32(offset + 8 + 4, true);
+                bitsPerSample = view.getUint16(offset + 8 + 14, true);
+            } else if (chunkId === "data") {
+                dataOffset = offset + 8;
+                break; // Target chunk identified, exit loop
+            }
+            
+            offset += 8 + chunkSize;
+        }
+
+        const meta = { sampleRate, numChannels, bitsPerSample, dataOffset };
         chapterWavMetaCache[audioUrl] = meta;
         return meta;
     } catch (e) {
-        console.warn("WAV Range parsing failed, falling back to standard parameters:", e);
-        const fallback = { sampleRate: 44100, numChannels: 2, bitsPerSample: 16 };
+        console.warn("WAV Range parsing failed, falling back to standards:", e);
+        const fallback = { sampleRate: 44100, numChannels: 2, bitsPerSample: 16, dataOffset: 44 };
         chapterWavMetaCache[audioUrl] = fallback;
         return fallback;
     }
 }
 
 /**
- * Main Network traffic Optimizer. Calculates exact byte range representing the requested
- * millisecond duration, executes a targeted HTTP Range Fetch, builds standard WAV Blob, and returns local URL.
+ * Main Network traffic Optimizer. Calculates exact, block-aligned byte ranges
+ * representing the requested duration, fetches ONLY that slice, and returns a local blob URL.
  */
 async function fetchWavSlice(chNum, vNum) {
     const padCh = String(chNum).padStart(3, '0');
@@ -526,11 +550,16 @@ async function fetchWavSlice(chNum, vNum) {
 
     const meta = await getWavMetadata(audioUrl);
     
-    const bytesPerSample = (meta.bitsPerSample / 8) * meta.numChannels;
-    const startByte = 44 + Math.floor((verseTiming.start_time_ms / 1000) * meta.sampleRate * bytesPerSample);
-    const endByte = 44 + Math.floor((verseTiming.end_time_ms / 1000) * meta.sampleRate * bytesPerSample);
+    const blockAlign = (meta.bitsPerSample / 8) * meta.numChannels;
     
-    const segmentLength = endByte - startByte;
+    // Ensure boundaries align strictly on sample boundaries (prevent high frequency analog TV hiss)
+    const startSample = Math.floor((verseTiming.start_time_ms / 1000) * meta.sampleRate);
+    const endSample = Math.ceil((verseTiming.end_time_ms / 1000) * meta.sampleRate);
+
+    const startByte = meta.dataOffset + (startSample * blockAlign);
+    const endByte = meta.dataOffset + (endSample * blockAlign) - 1;
+    
+    const segmentLength = (endByte - startByte) + 1;
     if (segmentLength <= 0) return null;
 
     const rangeHeader = `bytes=${startByte}-${endByte}`;
@@ -939,7 +968,6 @@ async function playPreviewStep(chapterNum, reciterId) {
 
     if (elements.previewAudio) {
         try {
-            // High-Performance Fetch Slice Optimization
             const blobUrl = await fetchWavSlice(chapterNum, verseNum);
             
             if (blobUrl) {
