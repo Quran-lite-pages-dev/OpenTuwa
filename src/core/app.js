@@ -182,18 +182,18 @@ const TRANSLATIONS_CONFIG = {
 };
 
 const RECITERS_CONFIG = {
-    'alafasy': { name: 'Mishary Alafasy', path: 'Alafasy_128kbps' },
-    'juhaynee': { name: 'Al Juhany', path: 'Abdullaah_3awwaad_Al-Juhaynee_128kbps' },
-    'sudais': { name: 'As Sudais', path: 'Abdurrahmaan_As-Sudais_192kbps' },
-    'ghamadi': { name: 'Al Ghamdi', path: 'Ghamadi_40kbps' },
-    'abbad': { name: 'Fares Abbad', path: 'Fares_Abbad_64kbps' },
-    'muaiqly': { name: 'Al Muaiqly', path: 'MaherAlMuaiqly128kbps' },
-    'shuraym': { name: 'Ash Shuraym', path: 'Saood_ash-Shuraym_128kbps' },
-    'basit': { name: 'Abdul Basit', path: 'Abdul_Basit_Murattal_192kbps' },
-    'ayyoub': { name: 'Muhammad Ayyoub', path: 'Muhammad_Ayyoub_128kbps' },
-    'minshawy': { name: 'Minshawy', path: 'Minshawy_Murattal_128kbps' },
-    'jaber': { name: 'Ali Jaber', path: 'Ali_Jaber_64kbps' },
-    'ajamy': { name: 'Ahmed Ali Ajamy', path: 'ahmed_ibn_ali_al_ajamy_128kbps' },
+    'alafasy': { name: 'Mishary Alafasy' },
+    'juhaynee': { name: 'Al Juhany' },
+    'sudais': { name: 'As Sudais' },
+    'ghamadi': { name: 'Al Ghamdi' },
+    'abbad': { name: 'Fares Abbad' },
+    'muaiqly': { name: 'Al Muaiqly' },
+    'shuraym': { name: 'Ash Shuraym' },
+    'basit': { name: 'Abdul Basit' },
+    'ayyoub': { name: 'Muhammad Ayyoub' },
+    'minshawy': { name: 'Minshawy' },
+    'jaber': { name: 'Ali Jaber' },
+    'ajamy': { name: 'Ahmed Ali Ajamy' },
 };
 
 const TRANSLATION_AUDIO_CONFIG = {
