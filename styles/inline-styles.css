@@ -1,5 +1,5 @@
 /* Copyright (c) Haykal M. Zaidi 2024-2026. All rights reserved. PROPRIETARY AND CONFIDENTIAL. */
-/* Inline Styles - Apple HIG Compliant Update */
+/* Inline Styles - 100% Apple HIG Compliant Update */
 
 .row-header-top-results {
     margin-top: 0;
@@ -10,7 +10,6 @@
 }
 
 .ai-recommendation-badge {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
     font-size: 12px; /* iOS standard small badge size */
     background: #0A84FF; /* iOS System Blue */
     color: #FFFFFF;
@@ -19,7 +18,7 @@
     margin-left: 8px;
     font-weight: 600; /* Semibold for legibility */
     letter-spacing: 0.02em;
-    text-transform: uppercase; /* Apple small badges often uppercase */
+    text-transform: uppercase; 
 }
 
 .row-section-padding-bottom {
@@ -27,7 +26,6 @@
 }
 
 .splash-footer-description {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
     margin-top: 1rem;
     font-size: 15px; /* iOS standard subheadline */
     color: rgba(235, 235, 245, 0.6); /* System Gray Secondary */
@@ -37,19 +35,16 @@
 /* --- INJECTED: TV DYNAMIC STYLES (HIG Strict) --- */
 .text {
     color: #FFFFFF;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
     font-weight: 500;
-    text-shadow: 0px 2px 8px rgba(0, 0, 0, 0.3); /* Subtle, realistic drop shadow */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale; /* Essential for Apple crispness */
+    text-shadow: 0px 4px 16px rgba(0, 0, 0, 0.4); /* Subtle, realistic drop shadow */
     letter-spacing: -0.02em;
 }
 
 .glass-panel {
     /* Apple Thick Material Dark */
-    background: rgba(30, 30, 30, 0.6);
-    backdrop-filter: blur(30px) saturate(200%);
-    -webkit-backdrop-filter: blur(30px) saturate(200%);
+    background: rgba(30, 30, 30, 0.65);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
     border-radius: 16px; /* Standard standard corner radius */
     border: 0.5px solid rgba(255, 255, 255, 0.15); /* Standard hairline border */
 }

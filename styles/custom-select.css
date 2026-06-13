@@ -1,12 +1,10 @@
 /* styles/custom-select.css */
-/* Apple HIG Compliant Update */
+/* 100% Apple HIG Compliant Update (tvOS/iOS Context Menus) */
 
-/* 1. The Wrapper */
 .custom-select-wrapper {
     position: relative;
     user-select: none;
     width: 200px;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
 }
 
 /* The Trigger: Apple System Button Style (iOS/tvOS Dark Mode) */
@@ -22,15 +20,14 @@
     color: #FFFFFF;
     height: 44px; /* Standard Apple touch target minimum */
     background: rgba(118, 118, 128, 0.24); /* Apple System Gray Fill */
-    border: none; /* Apple prefers borderless translucent buttons until focused */
+    border: none; 
     border-radius: 12px; /* Standard Apple squircle-like radius */
     cursor: pointer;
-    transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1), background 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1), background 0.2s ease, box-shadow 0.2s ease;
     
     width: 100%; 
 }
 
-/* Text Magic */
 .custom-select-trigger span {
     margin: 0 auto; 
     max-width: 100%;
@@ -44,14 +41,14 @@
 .custom-select-trigger:hover,
 .custom-select-wrapper.open .custom-select-trigger {
     background: rgba(255, 255, 255, 0.15);
-    transform: scale(1.03); /* tvOS subtle focus pop */
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    transform: scale(1.04); /* tvOS subtle focus pop */
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
 }
 
-/* 2. The Options (Dropdown - Apple Context Menu Style) */
+/* The Options (Dropdown - Apple Context Menu Style) */
 .custom-options {
     position: absolute;
-    bottom: calc(100% + 8px); /* 8px Apple standard margin */
+    bottom: calc(100% + 8px); 
     
     width: 370px; 
     left: 50%; 
@@ -59,25 +56,24 @@
 
     /* Standard Apple Thick Glass */
     background: rgba(30, 30, 30, 0.75);
-    backdrop-filter: blur(30px) saturate(200%);
-    -webkit-backdrop-filter: blur(30px) saturate(200%);
-    border: 0.5px solid rgba(255, 255, 255, 0.15); /* Hairline border */
-    border-radius: 14px; /* Slightly larger radius for popovers */
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 0.5px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px; 
     z-index: 9999; 
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
     
-    /* Smooth upward slide (Apple Spring simulation) */
-    transform: translateY(10px) scale(0.98); 
-    transition: all 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    /* Apple Spring simulation */
+    transform: translateY(10px) scale(0.95); 
+    transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
     
     max-height: 320px;
     overflow-y: auto;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
 }
 
-/* Custom Scrollbar */
 .custom-options::-webkit-scrollbar {
     width: 5px;
 }
@@ -86,7 +82,6 @@
     border-radius: 10px;
 }
 
-/* Open State */
 .custom-select-wrapper.open .custom-options {
     opacity: 1;
     visibility: visible;
@@ -94,16 +89,15 @@
     transform: translateY(0) scale(1);
 }
 
-/* Individual Options */
 .custom-option {
     position: relative;
     display: block;
-    padding: 12px 20px;
+    padding: 14px 20px;
     font-size: 17px;
     font-weight: 400;
     color: rgba(235, 235, 245, 0.8); /* System Secondary Text */
     cursor: pointer;
-    transition: background 0.1s ease, color 0.1s ease;
+    transition: background 0.15s ease, color 0.15s ease;
     border-bottom: 0.5px solid rgba(84, 84, 88, 0.3); /* Apple separator */
     text-align: center;
     white-space: nowrap; 
@@ -116,48 +110,41 @@
     border-bottom: none;
 }
 
-/* Active Item Highlight (Apple Blue or Stark White for TV) */
+/* Active Item Highlight */
 .custom-option:hover,
 .custom-option.selected {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     color: #FFFFFF;
 }
 
-/* Selected Accent Bar (Apple Context Menu Checkmark alternative) */
 .custom-option.selected::before {
     content: '';
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
-    width: 3px;
+    width: 4px;
     background: #0A84FF; /* iOS System Blue */
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
 }
 
-/* Mobile Adjustments */
 @media (max-width: 768px) {
-    .custom-select-wrapper {
-        width: 100%; 
-    }
+    .custom-select-wrapper { width: 100%; }
     
     .custom-options {
         width: calc(100% - 32px);
         left: 16px;
         margin-left: 0; 
-        
         bottom: 16px; 
         top: auto;
         transform: translateY(20px) scale(0.95);
         position: fixed; 
         max-height: 60vh;
     }
-
-    .custom-select-wrapper.open .custom-options {
-        transform: translateY(0) scale(1);
-    }
+    .custom-select-wrapper.open .custom-options { transform: translateY(0) scale(1); }
 }
 
-/* --- MODE 0: HIDING LOGIC --- */
 body.simple-mode #chapterSelectWrapper,
 body.simple-mode #verseSelectWrapper,
 body.simple-mode #translationAudioSelectWrapper,
