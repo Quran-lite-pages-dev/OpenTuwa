@@ -1,0 +1,43 @@
+{
+  "name": "Tuwa - Quran Audio Player",
+  "short_name": "Tuwa",
+  "description": "Premium distraction-free Quran audio streaming with translations and verse-by-verse navigation",
+  "icons": [
+    {
+      "src": "/assets/favicon/web-app-manifest-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/assets/favicon/web-app-manifest-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "start_url": "/?utm_source=web_app_manifest",
+  "categories": ["music", "education", "books"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Surah Al-Fatiha",
+      "short_name": "Al-Fatiha",
+      "description": "Listen to Surah Al-Fatiha (The Opening)",
+      "url": "/?stream=eyJjaGFwdGVyIjoxLCJ2ZXJzZSI6MSwicmVjaXRlciI6ImFsYWZhc3kiLCJ0cmFucyI6ImVuIiwiYXVkaW9fdHJhbnMiOiJub25lIn0",
+      "icons": [{ "src": "/assets/favicon/web-app-manifest-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Surah Al-Baqarah",
+      "short_name": "Al-Baqarah",
+      "description": "Listen to Surah Al-Baqarah (The Cow)",
+      "url": "/?stream=eyJjaGFwdGVyIjoyLCJ2ZXJzZSI6MSwicmVjaXRlciI6ImFsYWZhc3kiLCJ0cmFucyI6ImVuIiwiYXVkaW9fdHJhbnMiOiJub25lIn0",
+      "icons": [{ "src": "/assets/favicon/web-app-manifest-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -14,47 +14,106 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="description" content="Listen to premium content with distraction-free viewing. A brand of Tuwa Media.">
     <meta name="author" content="Tuwa Media">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/assets/favicon/site.webmanifest">
     <link type="text/plain" rel="author" href="humans.txt" />
 
+    <link rel="icon" type="image/png" href="/assets/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="/assets/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/assets/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Tuwa" />
+
     <meta property="og:site_name" content="Tuwa">
-    <meta property="og:title" content="Tuwa - Web Player: Sight for everyone">
-    <meta property="og:description" content="Listen to premium content with distraction-free viewing. A brand of Tuwa Media.">
+    <meta property="og:title" content="Tuwa - Premium Quran Audio Player">
+    <meta property="og:description" content="Distraction-free Quran streaming with verse-by-verse navigation, multiple reciters, and 50+ translations. Listen to Alafasy, Sudais, Ghamdi, and more.">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="https://Quran-lite.pages.dev/social-preview.png"> 
-    <meta property="og:image" content="assets/og-image.jpg"> <script type="application/ld+json">
+    <meta property="og:image" content="https://tuwa-player.pages.dev/assets/ui/social-preview.png">
+    <meta property="og:url" content="https://tuwa-player.pages.dev/">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:audio" content="https://cdn.jsdelivr.net/gh/muslim1446/CDN-muslim.opentuwa.com@v1.0.0/001.wav">
+    <meta property="og:audio:type" content="audio/wav">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Tuwa - Premium Quran Audio Player">
+    <meta name="twitter:description" content="Distraction-free Quran streaming with verse-by-verse navigation, multiple reciters, and 50+ translations.">
+    <meta name="twitter:image" content="https://tuwa-player.pages.dev/assets/ui/social-preview.png">
+    <meta name="twitter:site" content="@tuwa_media">
+    <meta name="twitter:creator" content="@tuwa_media">
+    <link rel="canonical" id="dynamic-canonical" href="https://tuwa-player.pages.dev/">
+    <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "Tuwa",
-      "alternateName": "Tuwa Audio",
-      "headline": "Sight for everyone",
-      "operatingSystem": "Web, iOS, Android",
-      "applicationCategory": "MusicApplication",
-      "genre": "Music & Audio",
-      "description": "Premium content platform with distraction-free viewing. A brand of Tuwa Media.",
-      "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD",
-    "availability": "https://schema.org/InStock"
-  },
-      "author": {
-        "@type": "Organization",
-        "name": "Tuwa Media",
-        "url": "https://www.Quran-lite.pages.dev"
-      },
-      "copyrightHolder": {
-        "@type": "Organization",
-        "name": "Tuwa Media"
-      },
-  "aggregateRating": {
-    "@type": "AggregateRating",
-    "ratingValue": "4.8",
-    "ratingCount": "32000000"
-  },
-  "downloadUrl": "https://www.Quran-lite.pages.dev/download"
-}
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "name": "Tuwa",
+          "alternateName": "Tuwa Quran Audio Player",
+          "url": "https://tuwa-player.pages.dev/",
+          "description": "Premium distraction-free Quran audio streaming with verse-by-verse navigation, multiple reciters, and 50+ translations",
+          "publisher": {
+            "@type": "Organization",
+            "name": "Tuwa Media",
+            "url": "https://tuwa-player.pages.dev/",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://tuwa-player.pages.dev/assets/favicon/favicon-512x512.png"
+            }
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://tuwa-player.pages.dev/?search={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          },
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "SoftwareApplication",
+          "name": "Tuwa",
+          "alternateName": "Tuwa Quran Audio Player",
+          "applicationCategory": "MusicApplication",
+          "operatingSystem": "Web, iOS, Android",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock"
+          },
+          "author": {
+            "@type": "Organization",
+            "name": "Tuwa Media",
+            "url": "https://tuwa-player.pages.dev/"
+          },
+          "description": "Distraction-free Quran streaming with verse-by-verse navigation, multiple reciters (Alafasy, Sudais, Ghamdi, etc.), and 50+ translations",
+          "featureList": [
+            "Verse-by-verse audio navigation",
+            "Multiple reciters",
+            "50+ language translations",
+            "Offline playback support",
+            "Dark/Light theme",
+            "Sleep timer",
+            "Background playback"
+          ],
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "ratingCount": "32000000",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "downloadUrl": "https://tuwa-player.pages.dev/",
+          "screenshot": "https://tuwa-player.pages.dev/assets/ui/social-preview.png",
+          "operatingSystem": "Any (Web-based)"
+        },
+        {
+          "@type": "ItemList",
+          "name": "Quran Chapters (Surahs)",
+          "description": "Complete list of 114 Quran chapters available for streaming",
+          "numberOfItems": 114,
+          "itemListElement": []
+        }
+      ]
     }
     </script>
 <script>
