@@ -72,6 +72,15 @@ body {
     padding: 0 4px;
     transform-origin: center left;
     transition: var(--transition-spring);
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.95) translateY(-10px);
+}
+
+body.home .app-brand {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1) translateY(0);
 }
 
 html[dir="rtl"] .app-brand { transform-origin: center right; inset-inline-start: auto; inset-inline-end: 5%; }

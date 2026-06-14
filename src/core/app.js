@@ -488,6 +488,7 @@ function switchView(viewName) {
         }
         stopPreview();
         if (elements.sidebar.container) elements.sidebar.container.style.display = 'none';
+        document.body.classList.remove('home');
         
         setTimeout(() => {
             if (elements.selects.chapter) {
@@ -507,6 +508,7 @@ function switchView(viewName) {
         refreshDashboard();
         const doorPlayBtn = document.getElementById('door-play-btn');
         if (doorPlayBtn) doorPlayBtn.focus();
+        document.body.classList.add('home');
     }
 }
 

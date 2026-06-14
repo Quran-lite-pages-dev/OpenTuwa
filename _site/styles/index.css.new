@@ -1,4 +1,4 @@
-/* * TUWA - The Sacred Valley
+﻿/* * TUWA - The Sacred Valley
  * Copyright (c) 2024-2026 Tuwa Media (Haykal M. Zaidi).
  * All Rights Reserved. 
  */
@@ -56,88 +56,77 @@ body {
     overflow: hidden !important; 
     display: flex; flex-direction: column;
 }
-
-/* --- APP BRANDING (Apple Product Ecosystem Style) --- */
+/* --- APP BRANDING (Standard Alignment + Flat Top Axis) --- */
 .app-brand {
     position: fixed;
-    top: 32px; 
-    inset-inline-start: 5%; 
+    top: 40px; 
+    
+    /* LTR = Right, RTL = Left */
+    inset-inline-end: 5%; 
+    
     z-index: 9000;
     display: flex;
     align-items: center; 
     flex-direction: row; 
-    gap: 14px; 
+    gap: 0.2px; /* Reduced from 14px to 1px to pull the img 98% closer to the text */
+    
     text-decoration: none;
-    height: 56px; 
-    padding: 0 4px;
+    height: 42px; 
+    
     transform-origin: center left;
-    transition: var(--transition-smooth);
-    opacity: 0;
-    pointer-events: none;
-    transform: scale(0.95) translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.2, 0, 0, 1);
 }
 
-body.home .app-brand {
-    opacity: 1;
-    pointer-events: auto;
-    transform: scale(1) translateY(0);
+/* RTL Flip */
+html[dir="rtl"] .app-brand {
+    transform-origin: center right;
 }
 
-html[dir="rtl"] .app-brand { transform-origin: center right; inset-inline-start: auto; inset-inline-end: 5%; }
-.app-brand:hover { opacity: 0.9; transform: scale(1.01); }
-
-.brand-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 56px;
-    height: 56px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.05) 100%);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border: 0.5px solid rgba(255,255,255,0.12);
-    box-shadow: 
-        0 4px 24px rgba(0,0,0,0.4),
-        0 1px 0 rgba(255,255,255,0.1) inset,
-        0 -1px 0 rgba(0,0,0,0.1) inset;
-    flex-shrink: 0;
+.app-brand:hover {
+    opacity: 0.8;
+    transform: scale(1.02);
 }
 
+/* BRAND ICON */
 .brand-icon img {
-    width: 32px;
-    height: 32px;
+    width: 108px; 
+    height: 58px;
+    opacity: 0.5;
+    display: block;
     object-fit: contain;
-    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+    transform: translate(18%, 14%);
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.5));
 }
 
+/* BRAND TEXT - THE FLAT TOP FIX */
 .brand-text {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
-    font-weight: 700;
-    font-size: clamp(32px, 4vw, 44px);
-    letter-spacing: -0.035em;
-    line-height: 1.05;
-    background: linear-gradient(135deg, #FFFFFF 0%, #E8E8ED 40%, #D1D1D6 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-fill-color: transparent;
-    filter: drop-shadow(0 4px 24px rgba(0, 0, 0, 0.5));
+    font-family: "Plus Jakarta Sans", sans-serif;
+    font-weight: 900; 
+    font-size: 29.8px; 
+    
+
+    letter-spacing: -2.5px; 
+    
+    color: #fff; 
+    opacity: 19;
+    
+    line-height: 1; 
+    margin-top: 2px; 
+    
+    text-shadow: 0 4px 30px rgba(255, 255, 255,0.2);
     white-space: nowrap;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
 }
 
+/* MOBILE RESPONSIVENESS */
 @media screen and (max-width: 1024px) {
-    .brand-text { display: none; }
-    .app-brand { inset-inline-start: 20px; top: 20px; }
-}
-
-@media screen and (max-width: 768px) {
-    .app-brand { top: 16px; inset-inline-start: 16px; }
-    .brand-icon { width: 48px; height: 48px; border-radius: 14px; }
-    .brand-icon img { width: 28px; height: 28px; }
+    .brand-text {
+        display: none; 
+    }
+    
+    .app-brand {
+        inset-inline-end: 20px; 
+        top: 25px;
+    }
 }
 
 /* --- ISLAND SEARCH BOX --- */
