@@ -497,6 +497,7 @@
                 opacity   0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
     will-change: transform, opacity;
     transform: translateZ(0);
+    contain: layout paint style;
   }
   #eq-backdrop.eq-open #eq-popup {
     transform: translateY(0);
@@ -560,6 +561,8 @@
     background: var(--surface-secondary);
     outline: none;
     cursor: pointer;
+    will-change: transform;
+    transform: translateZ(0);
   }
   .eq-band-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -572,7 +575,7 @@
     cursor: pointer;
     will-change: transform;
   }
-  .eq-band-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
   .eq-band-slider::-moz-range-thumb {
     width: 18px;
     height: 18px;
@@ -586,10 +589,11 @@
   .eq-band-value {
     font-size: 1.1rem;
     color: var(--text-tertiary);
-    width: 38px;
+    width: 48px;
     text-align: right;
     font-variant-numeric: tabular-nums;
     flex-shrink: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   }
 
   /* ── Divider + Reset ───────────────────────────────────────────── */
@@ -902,7 +906,8 @@
 
   /* ── Helpers ─────────────────────────────────────────────────── */
   function formatGain(g) {
-    return (g >= 0 ? '+' : '') + Number(g).toFixed(1) + ' dB';
+    var sign = g >= 0 ? '+' : '';
+    return sign + Number(g).toFixed(1) + ' dB';
   }
 
   /* ── Boot: wait for DOM so .volume-control exists ─────────────── */
