@@ -1765,3 +1765,660 @@ document.addEventListener("DOMContentLoaded", () => {
     window.addEventListener('popstate', hideElement);
     window.addEventListener('hashchange', hideElement);
 })();
+
+// --- INLINE SCRIPTS MOVED FROM INDEX.HTML ---
+
+// Google Fonts load handler
+document.getElementById('google-fonts-link')?.addEventListener('load', function() {
+    this.media = 'all';
+});
+
+// ?regex brand hider
+window.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('regex')) {
+        const brandElements = document.querySelectorAll('.app-brand');
+        brandElements.forEach(el => {
+            el.style.setProperty('display', 'none', 'important');
+        });
+    }
+});
+
+// Universal Loader (overlay + spinner creation & reveal)
+(function() {
+    const overlay = document.createElement('div');
+    overlay.id = '_universal_loader';
+    const spinner = document.createElement('div');
+    spinner.className = 'apple-spinner';
+    overlay.appendChild(spinner);
+    document.documentElement.appendChild(overlay);
+
+    function revealPage() {
+        overlay.classList.add('loaded');
+        setTimeout(() => {
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        }, 1200);
+    }
+
+    function checkAndReveal() {
+        if (window.location.href.indexOf('?') > -1) {
+            setTimeout(revealPage, 1000);
+        } else {
+            revealPage();
+        }
+    }
+
+    if (document.readyState === 'complete') {
+        checkAndReveal();
+    } else {
+        window.addEventListener('load', checkAndReveal);
+        setTimeout(checkAndReveal, 6000);
+    }
+})();
+
+// H1 → H2 text sync
+document.addEventListener("DOMContentLoaded", function() {
+    const storageKey = 'saved_h1_data';
+    const targetH2Id = 'doors-hero-title';
+
+    function syncH1toH2() {
+        const currentH1 = document.querySelector('h1.hero-title-text');
+        const targetH2 = document.getElementById(targetH2Id);
+        if (currentH1) {
+            const newText = currentH1.innerText.trim();
+            if (newText && newText !== localStorage.getItem(storageKey)) {
+                localStorage.setItem(storageKey, newText);
+                if (targetH2) targetH2.innerText = newText;
+            }
+        }
+    }
+
+    const savedData = localStorage.getItem(storageKey);
+    const targetH2 = document.getElementById(targetH2Id);
+    if (savedData && targetH2) {
+        targetH2.innerText = savedData;
+    }
+
+    const observer = new MutationObserver(syncH1toH2);
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    syncH1toH2();
+});
+
+// EQ Monkey Patch
+(function () {
+  'use strict';
+
+  var EQ_BANDS = [
+    { label: 'Bass',     freq:   80, type: 'lowshelf',  Q: 0.7 },
+    { label: 'Low Mid',  freq:  500, type: 'peaking',   Q: 1.0 },
+    { label: 'High Mid', freq: 2500, type: 'peaking',   Q: 1.0 },
+    { label: 'Treble',   freq: 8000, type: 'highshelf', Q: 0.7 },
+  ];
+
+   var LS_KEY       = 'tuwa_eq_v1';
+  var audioCtx     = null;
+  var sourceNode   = null;
+  var filterNodes  = [];
+  var eqConnected  = false;
+  var sliderEls    = [];
+  var saveTimer    = null;
+
+  function loadGains() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; }
+    catch (e) { return {}; }
+  }
+  function saveGains(gains) {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(gains)); }
+      catch (e) {}
+    }, 150);
+  }
+
+  function ensureEQ() {
+    if (eqConnected) {
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      return true;
+    }
+
+    var audioEl = document.getElementById('audio-player');
+    if (!audioEl) return false;
+
+    try {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      if (!sourceNode) {
+        sourceNode = audioCtx.createMediaElementSource(audioEl);
+      }
+
+      var saved = loadGains();
+      filterNodes = EQ_BANDS.map(function (band, i) {
+        var f = audioCtx.createBiquadFilter();
+        f.type            = band.type;
+        f.frequency.value = band.freq;
+        f.Q.value         = band.Q;
+        f.gain.value      = (saved[i] !== undefined) ? saved[i] : 0;
+        return f;
+      });
+
+      var prev = sourceNode;
+      filterNodes.forEach(function (f) { prev.connect(f); prev = f; });
+      prev.connect(audioCtx.destination);
+
+      eqConnected = true;
+      window.TuwaAudio = window.TuwaAudio || {};
+      window.TuwaAudio.ctx = audioCtx;
+      return true;
+    } catch (e) {
+      console.warn('[Tuwa EQ] Web Audio setup failed:', e.message);
+      return false;
+    }
+  }
+
+  function applyGains(gains) {
+    if (!eqConnected) return;
+    filterNodes.forEach(function (f, i) {
+      f.gain.value = (gains[i] !== undefined) ? gains[i] : 0;
+    });
+  }
+
+  function gainsFromSliders() {
+    return sliderEls.map(function (s) { return parseFloat(s.value); });
+  }
+
+  window.initEQ = function () {
+    var ok = ensureEQ();
+    if (ok) {
+      applyGains(gainsFromSliders().length ? gainsFromSliders() : loadGains());
+    }
+  };
+
+  function buildUI() {
+    var volControl = document.querySelector('.volume-control');
+    if (!volControl) {
+      console.warn('[Tuwa EQ] .volume-control not found in DOM.');
+      return;
+    }
+
+    var eqBtn = document.createElement('button');
+    eqBtn.id        = 'eq-btn';
+    eqBtn.className = 'player-btn';
+    eqBtn.setAttribute('aria-label', 'Equalizer');
+    eqBtn.setAttribute('tabindex', '0');
+    eqBtn.innerHTML = [
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"',
+      ' stroke="currentColor" stroke-width="2"',
+      ' stroke-linecap="round" stroke-linejoin="round">',
+      '<line x1="4"  y1="21" x2="4"  y2="14"/>',
+      '<line x1="4"  y1="10" x2="4"  y2="3"/>',
+      '<line x1="12" y1="21" x2="12" y2="12"/>',
+      '<line x1="12" y1="8"  x2="12" y2="3"/>',
+      '<line x1="20" y1="21" x2="20" y2="16"/>',
+      '<line x1="20" y1="12" x2="20" y2="3"/>',
+      '<line x1="1"  y1="14" x2="7"  y2="14"/>',
+      '<line x1="9"  y1="8"  x2="15" y2="8"/>',
+      '<line x1="17" y1="16" x2="23" y2="16"/>',
+      '</svg>',
+    ].join('');
+    volControl.appendChild(eqBtn);
+
+    var backdrop = document.createElement('div');
+    backdrop.id = 'eq-backdrop';
+
+    var popup = document.createElement('div');
+    popup.id = 'eq-popup';
+    popup.setAttribute('role', 'dialog');
+    popup.setAttribute('aria-modal', 'true');
+    popup.setAttribute('aria-label', 'Equalizer');
+
+    var header = document.createElement('div');
+    header.id = 'eq-popup-header';
+
+    var title = document.createElement('span');
+    title.id          = 'eq-popup-title';
+    title.textContent = 'Equalizer';
+
+    var closeBtn = document.createElement('button');
+    closeBtn.id = 'eq-close-btn';
+    closeBtn.setAttribute('aria-label', 'Close equalizer');
+    closeBtn.textContent = '\u2715';
+
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+    popup.appendChild(header);
+
+    var saved = loadGains();
+    sliderEls = [];
+
+    EQ_BANDS.forEach(function (band, i) {
+      var gain = (saved[i] !== undefined) ? saved[i] : 0;
+
+      var row = document.createElement('div');
+      row.className = 'eq-band-row';
+
+      var lbl = document.createElement('span');
+      lbl.className   = 'eq-band-label';
+      lbl.textContent = band.label;
+
+      var slider = document.createElement('input');
+      slider.type      = 'range';
+      slider.className = 'eq-band-slider';
+      slider.min       = '-12';
+      slider.max       = '12';
+      slider.step      = '0.5';
+      slider.value     = gain;
+      slider.setAttribute('aria-label', band.label + ' gain');
+
+      var valLbl = document.createElement('span');
+      valLbl.className   = 'eq-band-value';
+      valLbl.textContent = formatGain(gain);
+
+      slider.addEventListener('input', function () {
+        var g = parseFloat(slider.value);
+        if (!eqConnected) ensureEQ();
+        if (filterNodes[i]) filterNodes[i].gain.value = g;
+        saveGains(gainsFromSliders());
+        requestAnimationFrame(function () {
+          valLbl.textContent = formatGain(g);
+        });
+      });
+
+      sliderEls.push(slider);
+      row.appendChild(lbl);
+      row.appendChild(slider);
+      row.appendChild(valLbl);
+      popup.appendChild(row);
+    });
+
+    var divider = document.createElement('div');
+    divider.id = 'eq-divider';
+    popup.appendChild(divider);
+
+    var resetBtn = document.createElement('button');
+    resetBtn.id          = 'eq-reset-btn';
+    resetBtn.textContent = 'Reset to flat';
+    resetBtn.addEventListener('click', function () {
+      sliderEls.forEach(function (s) { s.value = '0'; });
+      popup.querySelectorAll('.eq-band-value').forEach(function (v) {
+        v.textContent = '+0.0 dB';
+      });
+      saveGains({});
+      if (!eqConnected) ensureEQ();
+      applyGains(Array(EQ_BANDS.length).fill(0));
+    });
+    popup.appendChild(resetBtn);
+
+    backdrop.appendChild(popup);
+    document.body.appendChild(backdrop);
+
+    function openEQ() {
+      backdrop.classList.add('eq-open');
+      eqBtn.classList.add('eq-active');
+      eqBtn.setAttribute('aria-expanded', 'true');
+      if (!eqConnected) ensureEQ();
+      closeBtn.focus();
+    }
+
+    function closeEQ() {
+      backdrop.classList.remove('eq-open');
+      eqBtn.classList.remove('eq-active');
+      eqBtn.setAttribute('aria-expanded', 'false');
+      eqBtn.focus();
+    }
+
+    eqBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      backdrop.classList.contains('eq-open') ? closeEQ() : openEQ();
+    });
+
+    closeBtn.addEventListener('click', closeEQ);
+
+    backdrop.addEventListener('click', function (e) {
+      if (e.target === backdrop) closeEQ();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && backdrop.classList.contains('eq-open')) closeEQ();
+    });
+  }
+
+  function formatGain(g) {
+    var sign = g >= 0 ? '+' : '';
+    return sign + Number(g).toFixed(1) + ' dB';
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildUI);
+  } else {
+    buildUI();
+  }
+}());
+
+// Audio Output Device Monkey Patch
+(function () {
+  'use strict';
+
+  window.TuwaAudio = window.TuwaAudio || {};
+
+  var LS_KEY        = 'tuwa_audio_out_v1';
+  var pillEl        = null;
+  var statusEl      = null;
+  var selectBtn     = null;
+  var outBtn        = null;
+  var isBusy        = false;
+
+  function loadSaved() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY)) || null; }
+    catch (e) { return null; }
+  }
+  function saveDev(id, label) {
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ id: id, label: label })); }
+    catch (e) {}
+  }
+  function clearSaved() {
+    try { localStorage.removeItem(LS_KEY); }
+    catch (e) {}
+  }
+
+  async function applySinkId(deviceId) {
+    var ctx = window.TuwaAudio.ctx;
+    var promises = [];
+    var routedAtLeastOne = false;
+
+    if (ctx && typeof ctx.setSinkId === 'function') {
+      promises.push(
+        ctx.setSinkId(deviceId)
+          .then(function () { routedAtLeastOne = true; })
+          .catch(function (e) { console.warn('[Tuwa AudioOut] Web Audio setSinkId failed:', e.message); })
+      );
+    }
+
+    var targetIds = ['audio-player', 'translation-audio-player', 'preview-audio'];
+    targetIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && typeof el.setSinkId === 'function') {
+        promises.push(
+          el.setSinkId(deviceId)
+            .then(function () { routedAtLeastOne = true; })
+            .catch(function (e) {
+              if (e.name !== 'AbortError') {
+                console.warn('[Tuwa AudioOut] setSinkId failed for #' + id + ':', e.message);
+              }
+            })
+        );
+      }
+    });
+
+    if (promises.length > 0) {
+      await Promise.all(promises);
+    }
+
+    if (!routedAtLeastOne) {
+      throw new Error('setSinkId is not supported or failed on all elements in this browser.');
+    }
+  }
+
+  async function applySinkIdWithRetry(deviceId, retriesLeft) {
+    if (retriesLeft === undefined) retriesLeft = 2;
+    try {
+      await applySinkId(deviceId);
+    } catch (e) {
+      if (retriesLeft > 0 && (e.name === 'AbortError' || e.message.indexOf('abort') > -1)) {
+        console.warn('[Tuwa AudioOut] Transient routing failure, retrying in 250ms... Retries left:', retriesLeft);
+        await new Promise(function (resolve) { setTimeout(resolve, 250); });
+        return applySinkIdWithRetry(deviceId, retriesLeft - 1);
+      }
+      throw e;
+    }
+  }
+
+  function setupAutoReapply() {
+    var saved = loadSaved();
+    if (!saved || !saved.id) return;
+
+    var targetIds = ['audio-player', 'translation-audio-player', 'preview-audio'];
+    targetIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+
+      if (el.dataset.sinkTrackingAttached) return;
+      el.dataset.sinkTrackingAttached = "true";
+
+      var reapply = function () {
+        var currentSaved = loadSaved();
+        if (!currentSaved || !currentSaved.id) return;
+
+        setTimeout(async function () {
+          try {
+            if (el.sinkId !== currentSaved.id) {
+              await el.setSinkId(currentSaved.id);
+            }
+          } catch (e) {
+            if (e.name !== 'AbortError') {
+              console.warn('[Tuwa AudioOut] Auto-reapply failed for #' + id + ':', e.message);
+            }
+          }
+        }, 80);
+      };
+
+      el.addEventListener('playing', reapply);
+      el.addEventListener('loadedmetadata', reapply);
+    });
+  }
+
+  async function restoreOutput() {
+    var saved = loadSaved();
+    if (!saved || !saved.id) return;
+    try {
+      await applySinkIdWithRetry(saved.id);
+      setStatus('\u21b3 ' + saved.label, 'ok', 3000);
+      setupAutoReapply();
+    } catch (e) {
+      console.warn('[Tuwa AudioOut] Could not restore saved device:', e.message);
+      clearSaved();
+    }
+  }
+
+  var _prevInitEQ = window.initEQ || function () {};
+  window.initEQ = function () {
+    _prevInitEQ();
+    restoreOutput();
+  };
+
+  var statusTimer = null;
+  function setStatus(msg, type, autoClearMs) {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    statusEl.className   = 'status-' + (type || '');
+    clearTimeout(statusTimer);
+    if (autoClearMs) {
+      statusTimer = setTimeout(function () {
+        statusEl.textContent = '';
+        statusEl.className   = '';
+      }, autoClearMs);
+    }
+  }
+
+  async function pickDevice() {
+    if (isBusy) return;
+    isBusy = true;
+    if (selectBtn) selectBtn.disabled = true;
+    setStatus('Waiting for browser picker\u2026', '');
+
+    try {
+      var device = await navigator.mediaDevices.selectAudioOutput();
+
+      setStatus('Routing audio\u2026', '');
+      await applySinkIdWithRetry(device.deviceId);
+
+      saveDev(device.deviceId, device.label);
+      if (pillEl) pillEl.textContent = device.label || device.deviceId;
+      if (outBtn) outBtn.classList.add('out-active');
+      setStatus('\u2713  ' + device.label, 'ok', 4000);
+      setupAutoReapply();
+
+    } catch (e) {
+      if (e.name === 'NotAllowedError') {
+        setStatus('Permission denied.', 'warn', 4000);
+      } else if (e.name === 'AbortError') {
+        setStatus('Cancelled.', '', 2500);
+      } else {
+        setStatus('Error: ' + e.message, 'err', 5000);
+        console.error('[Tuwa AudioOut]', e);
+      }
+    } finally {
+      isBusy = false;
+      if (selectBtn) selectBtn.disabled = false;
+    }
+  }
+
+  function buildUI() {
+    var supported = (
+      'mediaDevices' in navigator &&
+      typeof navigator.mediaDevices.selectAudioOutput === 'function'
+    );
+
+    var volControl = document.querySelector('.volume-control');
+    if (!volControl) {
+      console.warn('[Tuwa AudioOut] .volume-control not found.');
+      return;
+    }
+
+    outBtn = document.createElement('button');
+    outBtn.id        = 'audio-out-btn';
+    outBtn.className = 'player-btn';
+    outBtn.setAttribute('aria-label', 'Select audio output device');
+    outBtn.setAttribute('tabindex', '0');
+    outBtn.innerHTML = [
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"',
+      ' stroke="currentColor" stroke-width="2"',
+      ' stroke-linecap="round" stroke-linejoin="round">',
+      '<path d="M2 16.1A5 5 0 0 1 5.9 20"/>',
+      '<path d="M2 12.05A9 9 0 0 1 9.95 20"/>',
+      '<path d="M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/>',
+      '<line x1="2" y1="20" x2="2.01" y2="20"/>',
+      '</svg>',
+    ].join('');
+    volControl.appendChild(outBtn);
+
+    var backdrop = document.createElement('div');
+    backdrop.id = 'audio-out-backdrop';
+
+    var popup = document.createElement('div');
+    popup.id = 'audio-out-popup';
+    popup.setAttribute('role', 'dialog');
+    popup.setAttribute('aria-modal', 'true');
+    popup.setAttribute('aria-label', 'Audio Output');
+
+    var hdr = document.createElement('div');
+    hdr.id = 'audio-out-header';
+
+    var titleEl = document.createElement('span');
+    titleEl.id          = 'audio-out-title';
+    titleEl.textContent = 'Audio Output';
+
+    var closeBtn = document.createElement('button');
+    closeBtn.id = 'audio-out-close';
+    closeBtn.setAttribute('aria-label', 'Close');
+    closeBtn.textContent = '\u2715';
+
+    hdr.appendChild(titleEl);
+    hdr.appendChild(closeBtn);
+    popup.appendChild(hdr);
+
+    var devRow = document.createElement('div');
+    devRow.id = 'audio-out-device-row';
+
+    var devHead = document.createElement('span');
+    devHead.id          = 'audio-out-device-label-head';
+    devHead.textContent = 'Now:';
+
+    pillEl = document.createElement('span');
+    pillEl.id = 'audio-out-device-pill';
+    var saved = loadSaved();
+    pillEl.textContent = (saved && saved.label) ? saved.label : 'System Default';
+
+    devRow.appendChild(devHead);
+    devRow.appendChild(pillEl);
+    popup.appendChild(devRow);
+
+    selectBtn = document.createElement('button');
+    selectBtn.id   = 'audio-out-select-btn';
+    selectBtn.innerHTML = [
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"',
+      ' stroke="currentColor" stroke-width="2.5"',
+      ' stroke-linecap="round" stroke-linejoin="round">',
+      '<circle cx="12" cy="12" r="3"/>',
+      '<path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>',
+      '<path d="M4.93 4.93a10 10 0 0 0 0 14.14M8.46 8.46a5 5 0 0 0 0 7.07"/>',
+      '</svg>',
+      '<span>Select Output Device\u2026</span>',
+    ].join('');
+
+    if (!supported) {
+      selectBtn.disabled = true;
+      selectBtn.title    = 'Requires Chrome 102+ (desktop)';
+    } else {
+      selectBtn.addEventListener('click', pickDevice);
+    }
+    popup.appendChild(selectBtn);
+
+    statusEl = document.createElement('div');
+    statusEl.id = 'audio-out-status';
+    popup.appendChild(statusEl);
+
+    var div = document.createElement('div');
+    div.id = 'audio-out-divider';
+    popup.appendChild(div);
+
+    var note = document.createElement('div');
+    note.id = 'audio-out-note';
+    if (!supported) {
+      note.textContent = 'Audio Output Devices API requires Chrome 102+ on desktop. Pair your Bluetooth speaker via the OS first.';
+    } else {
+      note.textContent = 'Pair your Bluetooth speaker or headphones via your OS before selecting here.';
+    }
+    popup.appendChild(note);
+
+    backdrop.appendChild(popup);
+    document.body.appendChild(backdrop);
+
+    function openOut() {
+      backdrop.classList.add('out-open');
+      outBtn.classList.add('out-active');
+      outBtn.setAttribute('aria-expanded', 'true');
+      closeBtn.focus();
+    }
+    function closeOut() {
+      backdrop.classList.remove('out-open');
+      if (!loadSaved()) outBtn.classList.remove('out-active');
+      outBtn.setAttribute('aria-expanded', 'false');
+      outBtn.focus();
+    }
+
+    outBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      backdrop.classList.contains('out-open') ? closeOut() : openOut();
+    });
+    closeBtn.addEventListener('click', closeOut);
+    backdrop.addEventListener('click', function (e) {
+      if (e.target === backdrop) closeOut();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && backdrop.classList.contains('out-open')) closeOut();
+    });
+
+    if (saved && saved.label) outBtn.classList.add('out-active');
+
+    setupAutoReapply();
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildUI);
+  } else {
+    buildUI();
+  }
+}());

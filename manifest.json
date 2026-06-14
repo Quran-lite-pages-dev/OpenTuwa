@@ -1,36 +1,23 @@
 {
-  "name": "Tuwa",
-  "short_name": "Tuwa",
-  "description": "Premium streaming provider with distraction-free viewing. A brand of OpenTuwa Media.",
+  "name": "OpenTuwa",
+  "short_name": "OpenTuwa",
+  "description": "OpenTuwa — explore alternative perspectives, deep-dive narratives, and timeless reflections through an interactive and minimal media experience.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#121212",
   "theme_color": "#000000",
   "orientation": "any",
-  "categories": ["music", "entertainment"],
+  "categories": ["education", "entertainment"],
   "icons": [
     {
-      "src": "https://Quran-lite.pages.dev/assets/ui/web.png",
-      "sizes": "1080x1080",
+      "src": "https://opentuwa.com/assets/ui/favicon-96x96.png",
+      "sizes": "96x96",
       "type": "image/png"
     },
     {
-      "src": "https://Quran-lite.pages.dev/assets/ui/web_512.png",
-      "sizes": "512x512",
+      "src": "https://opentuwa.com/assets/ui/apple-touch-icon.png",
+      "sizes": "180x180",
       "type": "image/png"
     }
-],
-  "related_applications": [
-    {
-      "platform": "play",
-      "url": "https://play.google.com/store/apps/details?id=com.tuwa.audio",
-      "id": "com.tuwa.audio"
-    },
-    {
-      "platform": "itunes",
-      "url": "https://itunes.apple.com/app/tuwa-audio"
-    }
-  ],
-  "prefer_related_applications": false
+  ]
 }
-
