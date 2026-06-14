@@ -445,5 +445,463 @@
     
     <!-- Screen Transition Overlay -->
     <div id="transition-fade-layer"></div>
+<!-- ═══════════════════════════════════════════════════════════════════
+     TUWA EQ MONKEY PATCH
+     Paste this block immediately before </body> in index.html.
+     Touches nothing in app.js, index1.css, or any other file.
+     Hooks into the window.initEQ slot already declared in app.js:1365.
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── EQ Button ─────────────────────────────────────────────────── */
+  #eq-btn {
+    /* Inherits .player-btn sizing/shape — only sets active glow */
+    position: relative;
+  }
+  #eq-btn.eq-active svg {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.5));
+  }
+  #eq-btn svg { opacity: 0.7; transition: opacity 0.2s, filter 0.2s; }
+  #eq-btn:hover svg, #eq-btn:focus svg { opacity: 1; }
+
+  /* ── Backdrop ──────────────────────────────────────────────────── */
+  #eq-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9998; /* below universal loader (2147483647) but above cinema (1000) */
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(6px) saturate(120%);
+    -webkit-backdrop-filter: blur(6px) saturate(120%);
+    align-items: flex-end;
+    justify-content: center;
+    /* Bottom padding lifts popup clear of the control panel */
+    padding-bottom: 130px;
+  }
+  #eq-backdrop.eq-open { display: flex; }
+
+  /* ── Popup Shell ───────────────────────────────────────────────── */
+  #eq-popup {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-vibrancy);
+    -webkit-backdrop-filter: var(--glass-vibrancy);
+    border: 0.5px solid var(--glass-border);
+    border-radius: var(--radius-squircle);
+    box-shadow: var(--shadow-floating);
+    padding: 20px 22px 22px;
+    width: min(320px, 92vw);
+    /* Animate in from below */
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1),
+                opacity   0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  #eq-backdrop.eq-open #eq-popup {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* ── Popup Header ──────────────────────────────────────────────── */
+  #eq-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  #eq-popup-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  #eq-close-btn {
+    background: var(--surface-secondary);
+    border: none;
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: background 0.15s, color 0.15s;
+  }
+  #eq-close-btn:hover { color: var(--text-primary); }
+
+  /* ── Band Rows ─────────────────────────────────────────────────── */
+  .eq-band-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .eq-band-row:last-of-type { margin-bottom: 0; }
+
+  .eq-band-label {
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    width: 56px;
+    flex-shrink: 0;
+  }
+
+  .eq-band-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--surface-secondary);
+    outline: none;
+    cursor: pointer;
+  }
+  .eq-band-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.15s;
+    cursor: pointer;
+  }
+  .eq-band-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+  .eq-band-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    border: none;
+    cursor: pointer;
+  }
+
+  .eq-band-value {
+    font-size: 1.1rem;
+    color: var(--text-tertiary);
+    width: 38px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+
+  /* ── Divider + Reset ───────────────────────────────────────────── */
+  #eq-divider {
+    height: 0.5px;
+    background: var(--glass-border);
+    margin: 14px 0 12px;
+  }
+  #eq-reset-btn {
+    width: 100%;
+    padding: 8px;
+    background: transparent;
+    border: 0.5px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 1.2rem;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.15s, color 0.15s;
+  }
+  #eq-reset-btn:hover { background: var(--surface-secondary); color: var(--text-primary); }
+
+  /* ── Mobile: stack EQ button in controls-right ─────────────────── */
+  @media screen and (max-width: 768px) {
+    #eq-backdrop { padding-bottom: 160px; }
+  }
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ────────────────────────────────────────────────────────────────
+     Band definition
+     type 'lowshelf' / 'highshelf' uses only frequency + gain.
+     type 'peaking' also uses Q (bandwidth).
+  ──────────────────────────────────────────────────────────────── */
+  var EQ_BANDS = [
+    { label: 'Bass',     freq:   80, type: 'lowshelf',  Q: 0.7 },
+    { label: 'Low Mid',  freq:  500, type: 'peaking',   Q: 1.0 },
+    { label: 'High Mid', freq: 2500, type: 'peaking',   Q: 1.0 },
+    { label: 'Treble',   freq: 8000, type: 'highshelf', Q: 0.7 },
+  ];
+
+  var LS_KEY       = 'tuwa_eq_v1';
+  var audioCtx     = null;
+  var sourceNode   = null;
+  var filterNodes  = [];
+  var eqConnected  = false;
+  var sliderEls    = [];   // kept in sync for UI ↔ filter
+
+  /* ── Persist ────────────────────────────────────────────────── */
+  function loadGains() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; }
+    catch (e) { return {}; }
+  }
+  function saveGains(gains) {
+    try { localStorage.setItem(LS_KEY, JSON.stringify(gains)); }
+    catch (e) { /* storage full – no crash */ }
+  }
+
+  /* ── Web Audio EQ setup (idempotent — safe to call many times) ── */
+  function ensureEQ() {
+    if (eqConnected) {
+      /* AudioContext may have been suspended (e.g. mobile tab switch) */
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      return true;
+    }
+
+    var audioEl = document.getElementById('audio-player');
+    if (!audioEl) return false;
+
+    try {
+      /* Create context once */
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      /* createMediaElementSource must be called exactly once per element */
+      if (!sourceNode) {
+        sourceNode = audioCtx.createMediaElementSource(audioEl);
+      }
+
+      /* Build filter chain from saved gains */
+      var saved = loadGains();
+      filterNodes = EQ_BANDS.map(function (band, i) {
+        var f = audioCtx.createBiquadFilter();
+        f.type            = band.type;
+        f.frequency.value = band.freq;
+        f.Q.value         = band.Q;
+        f.gain.value      = (saved[i] !== undefined) ? saved[i] : 0;
+        return f;
+      });
+
+      /* Wire: source → f0 → f1 → f2 → f3 → destination */
+      var prev = sourceNode;
+      filterNodes.forEach(function (f) { prev.connect(f); prev = f; });
+      prev.connect(audioCtx.destination);
+
+      eqConnected = true;
+      return true;
+    } catch (e) {
+      /* If another script already called createMediaElementSource,
+         this will throw. Swallow and report — we won't crash the player. */
+      console.warn('[Tuwa EQ] Web Audio setup failed:', e.message);
+      return false;
+    }
+  }
+
+  /* Apply current gain values to the live filter nodes */
+  function applyGains(gains) {
+    if (!eqConnected) return;
+    filterNodes.forEach(function (f, i) {
+      f.gain.value = (gains[i] !== undefined) ? gains[i] : 0;
+    });
+  }
+
+  /* Collect gain values from the slider DOM elements */
+  function gainsFromSliders() {
+    return sliderEls.map(function (s) { return parseFloat(s.value); });
+  }
+
+  /* ── Hook already declared in app.js updateQuranAudio():
+       if (window.initEQ) window.initEQ();
+     Called every time a verse starts playing — this is what makes
+     the EQ actually apply across all chapters, not just the first. ── */
+  window.initEQ = function () {
+    var ok = ensureEQ();
+    if (ok) {
+      /* Reapply the stored gains so chapter changes don't reset EQ */
+      applyGains(gainsFromSliders().length ? gainsFromSliders() : loadGains());
+    }
+  };
+
+  /* ── DOM ────────────────────────────────────────────────────── */
+  function buildUI() {
+    /* ── EQ button — injected inside .volume-control ── */
+    var volControl = document.querySelector('.volume-control');
+    if (!volControl) {
+      console.warn('[Tuwa EQ] .volume-control not found in DOM.');
+      return;
+    }
+
+    var eqBtn = document.createElement('button');
+    eqBtn.id        = 'eq-btn';
+    eqBtn.className = 'player-btn';
+    eqBtn.setAttribute('aria-label', 'Equalizer');
+    eqBtn.setAttribute('tabindex', '0');
+    /* SF-Symbol-parity sliders icon (same stroke convention as existing icons) */
+    eqBtn.innerHTML = [
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"',
+      ' stroke="currentColor" stroke-width="2"',
+      ' stroke-linecap="round" stroke-linejoin="round">',
+      '<line x1="4"  y1="21" x2="4"  y2="14"/>',
+      '<line x1="4"  y1="10" x2="4"  y2="3"/>',
+      '<line x1="12" y1="21" x2="12" y2="12"/>',
+      '<line x1="12" y1="8"  x2="12" y2="3"/>',
+      '<line x1="20" y1="21" x2="20" y2="16"/>',
+      '<line x1="20" y1="12" x2="20" y2="3"/>',
+      '<line x1="1"  y1="14" x2="7"  y2="14"/>',
+      '<line x1="9"  y1="8"  x2="15" y2="8"/>',
+      '<line x1="17" y1="16" x2="23" y2="16"/>',
+      '</svg>',
+    ].join('');
+    volControl.appendChild(eqBtn);
+
+    /* ── Backdrop ── */
+    var backdrop = document.createElement('div');
+    backdrop.id = 'eq-backdrop';
+
+    /* ── Popup ── */
+    var popup = document.createElement('div');
+    popup.id = 'eq-popup';
+    popup.setAttribute('role', 'dialog');
+    popup.setAttribute('aria-modal', 'true');
+    popup.setAttribute('aria-label', 'Equalizer');
+
+    /* Header */
+    var header = document.createElement('div');
+    header.id = 'eq-popup-header';
+
+    var title = document.createElement('span');
+    title.id          = 'eq-popup-title';
+    title.textContent = 'Equalizer';
+
+    var closeBtn = document.createElement('button');
+    closeBtn.id = 'eq-close-btn';
+    closeBtn.setAttribute('aria-label', 'Close equalizer');
+    closeBtn.textContent = '✕';
+
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+    popup.appendChild(header);
+
+    /* Band rows */
+    var saved = loadGains();
+    sliderEls = [];
+
+    EQ_BANDS.forEach(function (band, i) {
+      var gain = (saved[i] !== undefined) ? saved[i] : 0;
+
+      var row = document.createElement('div');
+      row.className = 'eq-band-row';
+
+      var lbl = document.createElement('span');
+      lbl.className   = 'eq-band-label';
+      lbl.textContent = band.label;
+
+      var slider = document.createElement('input');
+      slider.type      = 'range';
+      slider.className = 'eq-band-slider';
+      slider.min       = '-12';
+      slider.max       = '12';
+      slider.step      = '0.5';
+      slider.value     = gain;
+      slider.setAttribute('aria-label', band.label + ' gain');
+
+      var valLbl = document.createElement('span');
+      valLbl.className   = 'eq-band-value';
+      valLbl.textContent = formatGain(gain);
+
+      /* Real-time: update filter gain AND localStorage on every move */
+      slider.addEventListener('input', function () {
+        var g = parseFloat(slider.value);
+        valLbl.textContent = formatGain(g);
+
+        /* Ensure EQ is wired before touching filter nodes */
+        if (!eqConnected) ensureEQ();
+        if (filterNodes[i]) filterNodes[i].gain.value = g;
+
+        saveGains(gainsFromSliders());
+      });
+
+      sliderEls.push(slider);
+      row.appendChild(lbl);
+      row.appendChild(slider);
+      row.appendChild(valLbl);
+      popup.appendChild(row);
+    });
+
+    /* Divider + Reset */
+    var divider = document.createElement('div');
+    divider.id = 'eq-divider';
+    popup.appendChild(divider);
+
+    var resetBtn = document.createElement('button');
+    resetBtn.id          = 'eq-reset-btn';
+    resetBtn.textContent = 'Reset to flat';
+    resetBtn.addEventListener('click', function () {
+      sliderEls.forEach(function (s) { s.value = '0'; });
+      /* Update value labels */
+      popup.querySelectorAll('.eq-band-value').forEach(function (v) {
+        v.textContent = '+0.0 dB';
+      });
+      saveGains({});
+      if (!eqConnected) ensureEQ();
+      applyGains(Array(EQ_BANDS.length).fill(0));
+    });
+    popup.appendChild(resetBtn);
+
+    backdrop.appendChild(popup);
+    document.body.appendChild(backdrop);
+
+    /* ── Open / Close logic ── */
+    function openEQ() {
+      backdrop.classList.add('eq-open');
+      eqBtn.classList.add('eq-active');
+      eqBtn.setAttribute('aria-expanded', 'true');
+      /* Attempt connection on open; user gesture guarantees AudioContext unlock */
+      if (!eqConnected) ensureEQ();
+      closeBtn.focus();
+    }
+
+    function closeEQ() {
+      backdrop.classList.remove('eq-open');
+      eqBtn.classList.remove('eq-active');
+      eqBtn.setAttribute('aria-expanded', 'false');
+      eqBtn.focus();
+    }
+
+    eqBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      backdrop.classList.contains('eq-open') ? closeEQ() : openEQ();
+    });
+
+    closeBtn.addEventListener('click', closeEQ);
+
+    /* Click outside popup → close */
+    backdrop.addEventListener('click', function (e) {
+      if (e.target === backdrop) closeEQ();
+    });
+
+    /* Escape key → close */
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && backdrop.classList.contains('eq-open')) closeEQ();
+    });
+  }
+
+  /* ── Helpers ─────────────────────────────────────────────────── */
+  function formatGain(g) {
+    return (g >= 0 ? '+' : '') + Number(g).toFixed(1) + ' dB';
+  }
+
+  /* ── Boot: wait for DOM so .volume-control exists ─────────────── */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildUI);
+  } else {
+    buildUI();
+  }
+
+}());
+</script>
+
+<!-- ═══ END EQ MONKEY PATCH ═══ -->
 </body>
 </html>
