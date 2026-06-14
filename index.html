@@ -387,53 +387,50 @@
             </div>
         </div>
 
-            <!-- Floating Glass Player Controls -->
-            <div id="control-panel">
-                <div class="player-controls-left">
-                    <button id="play-pause-btn" class="player-btn" aria-label="Play" tabindex="0">
-                        <svg id="play-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                        <svg id="pause-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
-                    </button>
+            <!-- Top Selects Row (chapter, verse, reciter, audio trans) -->
+            <div id="selects-row">
+                <div id="chapterSelectWrapper" class="custom-select-wrapper">
+                    <button class="custom-select-trigger" tabindex="0" data-i18n="player.selectSurahButton"><span>Select Surah</span></button>
+                    <div class="custom-options"></div>
                 </div>
-                
-                <div class="player-controls-center">
-                    <div id="chapterSelectWrapper" class="custom-select-wrapper">
-                        <button class="custom-select-trigger" tabindex="0" data-i18n="player.selectSurahButton"><span>Select Surah</span></button>
-                        <div class="custom-options"></div>
-                    </div>
-                    
-                    <div id="verseSelectWrapper" class="custom-select-wrapper">
-                        <button class="custom-select-trigger" tabindex="0" data-i18n="player.ayah"><span>Ayah</span></button>
-                        <div class="custom-options"></div>
-                    </div>
+                <div id="verseSelectWrapper" class="custom-select-wrapper">
+                    <button class="custom-select-trigger" tabindex="0" data-i18n="player.ayah"><span>Ayah</span></button>
+                    <div class="custom-options"></div>
+                </div>
+                <div id="reciterSelectWrapper" class="custom-select-wrapper">
+                    <button class="custom-select-trigger" tabindex="0" data-i18n="player.reciter"><span>Reciter</span></button>
+                    <div class="custom-options"></div>
+                </div>
+                <div id="translationAudioSelectWrapper" class="custom-select-wrapper">
+                    <button class="custom-select-trigger" tabindex="0" data-i18n="player.audioTrans"><span>Audio Translation</span></button>
+                    <div class="custom-options"></div>
+                </div>
+            </div>
 
-                    <div id="reciterSelectWrapper" class="custom-select-wrapper">
-                        <button class="custom-select-trigger" tabindex="0" data-i18n="player.reciter"><span>Reciter</span></button>
-                        <div class="custom-options"></div>
-                    </div>
-
+            <!-- Unified Player Island Bar (Apple Dynamic Island style) -->
+            <div id="player-island">
+                <div class="island-left">
                     <div id="translationSelectWrapper" class="custom-select-wrapper">
                         <button class="custom-select-trigger" tabindex="0" data-i18n="player.translation"><span>Translation</span></button>
                         <div class="custom-options"></div>
                     </div>
-
-                    <div id="translationAudioSelectWrapper" class="custom-select-wrapper">
-                        <button class="custom-select-trigger" tabindex="0" data-i18n="player.audioTrans"><span>Audio Translation</span></button>
-                        <div class="custom-options"></div>
-                    </div>
                 </div>
 
-                <div class="player-controls-right">
-                    <div class="volume-control">
-                        <button id="volume-btn" class="player-btn" aria-label="Mute" tabindex="0">
-                            <svg id="volume-high-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-                            <svg id="volume-low-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
-                            <svg id="volume-muted-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                <button id="play-pause-btn" class="island-play-btn" aria-label="Play" tabindex="0">
+                    <svg id="play-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                    <svg id="pause-icon" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
+                </button>
+
+                <div class="island-right">
+                    <div class="island-volume-wrap">
+                        <button id="volume-btn" class="island-icon-btn" aria-label="Mute" tabindex="0">
+                            <svg id="volume-high-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                            <svg id="volume-low-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                            <svg id="volume-muted-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
                         </button>
-                        <div id="volume-popover" class="volume-popover" role="slider" aria-label="Volume" tabindex="0">
-                            <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.8" aria-label="Volume">
-                        </div>
+                        <input type="range" id="volume-slider" class="island-volume-slider" min="0" max="1" step="0.05" value="0.8" aria-label="Volume">
                     </div>
+                    <!-- EQ and Audio Out buttons injected by JS -->
                 </div>
             </div>
     </div>
@@ -617,82 +614,182 @@
   /* ── Mobile: stack EQ button in controls-right ─────────────────── */
   @media screen and (max-width: 768px) {
     #eq-backdrop { padding-bottom: 160px; }
+    #player-island { bottom: 32px; padding: 5px 12px; gap: 8px; }
+    .island-volume-slider { width: 56px; }
   }
 
-  /* ── Volume Popover ──────────────────────────────────────────────── */
-  .volume-control {
-    position: relative;
+  /* ── Selects Row ────────────────────────────────────────────────── */
+  #selects-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 12px;
+    flex-wrap: wrap;
   }
-  .volume-popover {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%) translateY(8px);
-    margin-bottom: 8px;
-    background: var(--glass-surface);
+  #selects-row .custom-select-wrapper .custom-select-trigger {
+    font-size: 1.05rem;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    background: var(--surface-secondary);
     border: 0.5px solid var(--glass-border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-floating);
-    padding: 12px 16px;
-    width: 140px;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
-    z-index: 1000;
-    will-change: transform, opacity;
+    color: var(--text-secondary);
+    cursor: pointer;
+    white-space: nowrap;
   }
-  .volume-popover::after {
-    content: '';
-    position: absolute;
-    top: 100%;
+  #selects-row .custom-select-wrapper .custom-select-trigger:hover {
+    color: var(--text-primary);
+    background: var(--surface);
+  }
+  #selects-row .custom-options {
+    bottom: 100%;
+    top: auto;
+    margin-bottom: 4px;
+  }
+
+  /* ── Player Island (Apple Dynamic Island style) ─────────────────── */
+  #player-island {
+    position: fixed;
+    bottom: 40px;
     left: 50%;
     transform: translateX(-50%);
-    border-width: 6px;
-    border-style: solid;
-    border-color: var(--glass-surface) transparent transparent transparent;
+    z-index: 900;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 14px;
+    background: rgba(28, 28, 30, 0.88);
+    backdrop-filter: blur(50px) saturate(200%);
+    -webkit-backdrop-filter: blur(50px) saturate(200%);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 42px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
+    user-select: none;
+    -webkit-user-select: none;
   }
-  .volume-control:hover .volume-popover,
-  .volume-control:focus-within .volume-popover,
-  .volume-popover:focus {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transform: translateX(-50%) translateY(0);
+
+  /* Translation select in island */
+  #player-island #translationSelectWrapper .custom-select-trigger {
+    font-size: 1.05rem;
+    padding: 4px 14px;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 0.5px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+    font-weight: 500;
+    letter-spacing: 0.02em;
   }
-  #volume-slider {
+  #player-island #translationSelectWrapper .custom-select-trigger:hover {
+    background: rgba(255, 255, 255, 0.18);
+  }
+  #player-island #translationSelectWrapper .custom-options {
+    bottom: 100%;
+    top: auto;
+    margin-bottom: 6px;
+  }
+
+  /* Play button */
+  .island-play-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    flex-shrink: 0;
+  }
+  .island-play-btn:hover { background: rgba(255, 255, 255, 0.25); }
+  .island-play-btn:active { transform: scale(0.9); }
+
+  /* Right section */
+  .island-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Volume wrap */
+  .island-volume-wrap {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .island-icon-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    flex-shrink: 0;
+  }
+  .island-icon-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+  .island-icon-btn:active { transform: scale(0.9); }
+
+  .island-volume-slider {
+    width: 76px;
+    height: 3px;
     -webkit-appearance: none;
     appearance: none;
-    width: 100%;
-    height: 4px;
-    background: var(--surface-secondary);
+    background: rgba(255, 255, 255, 0.2);
     border-radius: 999px;
     outline: none;
     cursor: pointer;
-    will-change: transform;
-    transform: translateZ(0);
   }
-  #volume-slider::-webkit-slider-thumb {
+  .island-volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
+    width: 13px;
+    height: 13px;
     border-radius: 50%;
-    background: var(--text-primary);
-    box-shadow: var(--shadow-soft);
-    transition: transform 0.15s;
+    background: #fff;
+    border: none;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
     cursor: pointer;
-    will-change: transform;
   }
-  #volume-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
-  #volume-slider::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
+  .island-volume-slider::-moz-range-thumb {
+    width: 13px;
+    height: 13px;
     border-radius: 50%;
-    background: var(--text-primary);
+    background: #fff;
     border: none;
     cursor: pointer;
-    will-change: transform;
   }
+
+  /* EQ & Audio Out icon buttons inside island */
+  #player-island #eq-btn,
+  #player-island #audio-out-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: color 0.2s, background 0.2s;
+    flex-shrink: 0;
+  }
+  #player-island #eq-btn:hover,
+  #player-island #audio-out-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
+  #player-island #eq-btn:active,
+  #player-island #audio-out-btn:active { transform: scale(0.9); }
+  #player-island #eq-btn.eq-active,
+  #player-island #audio-out-btn.out-active { color: #fff; }
 </style>
 
 <script>
@@ -810,10 +907,10 @@
 
   /* ── DOM ────────────────────────────────────────────────────── */
   function buildUI() {
-    /* ── EQ button — injected inside .volume-control ── */
-    var volControl = document.querySelector('.volume-control');
-    if (!volControl) {
-      console.warn('[Tuwa EQ] .volume-control not found in DOM.');
+    /* ── EQ button — injected inside .island-right ── */
+    var islandRight = document.querySelector('.island-right');
+    if (!islandRight) {
+      console.warn('[Tuwa EQ] .island-right not found in DOM.');
       return;
     }
 
@@ -838,7 +935,7 @@
       '<line x1="17" y1="16" x2="23" y2="16"/>',
       '</svg>',
     ].join('');
-    volControl.appendChild(eqBtn);
+    islandRight.appendChild(eqBtn);
 
     /* ── Backdrop ── */
     var backdrop = document.createElement('div');
@@ -1363,9 +1460,9 @@
     );
 
     /* ── Button ── */
-    var volControl = document.querySelector('.volume-control');
-    if (!volControl) {
-      console.warn('[Tuwa AudioOut] .volume-control not found.');
+    var islandRight = document.querySelector('.island-right');
+    if (!islandRight) {
+      console.warn('[Tuwa AudioOut] .island-right not found.');
       return;
     }
 
@@ -1384,7 +1481,7 @@
       '<line x1="2" y1="20" x2="2.01" y2="20"/>',
       '</svg>',
     ].join('');
-    volControl.appendChild(outBtn);
+    islandRight.appendChild(outBtn);
 
     /* ── Backdrop ── */
     var backdrop = document.createElement('div');
