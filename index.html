@@ -689,6 +689,8 @@
       prev.connect(audioCtx.destination);
 
       eqConnected = true;
+      window.TuwaAudio = window.TuwaAudio || {};
+      window.TuwaAudio.ctx = audioCtx;
       return true;
     } catch (e) {
       /* If another script already called createMediaElementSource,
@@ -903,5 +905,516 @@
 </script>
 
 <!-- ═══ END EQ MONKEY PATCH ═══ -->
+<!-- ═══════════════════════════════════════════════════════════════════
+     TUWA AUDIO OUTPUT DEVICE MONKEY PATCH
+     Paste this block immediately AFTER the EQ monkey patch block,
+     still before </body>.
+
+     Also requires ONE LINE added to the EQ patch — see the note at
+     the very bottom of this file. Without it, device routing will
+     silently fail when the EQ is active (because createMediaElementSource
+     has taken ownership of the audio element's output path).
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── Output button ─────────────────────────────────────────────── */
+  #audio-out-btn svg {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  #audio-out-btn:hover svg,
+  #audio-out-btn:focus  svg { opacity: 1; }
+  #audio-out-btn.out-active svg {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.45));
+  }
+
+  /* ── Backdrop (same layer order / blur as EQ patch) ────────────── */
+  #audio-out-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9997; /* one below EQ backdrop so they don't collide */
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(6px) saturate(120%);
+    -webkit-backdrop-filter: blur(6px) saturate(120%);
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 130px;
+  }
+  #audio-out-backdrop.out-open { display: flex; }
+
+  /* ── Popup shell (mirrors EQ popup geometry exactly) ───────────── */
+  #audio-out-popup {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-vibrancy);
+    -webkit-backdrop-filter: var(--glass-vibrancy);
+    border: 0.5px solid var(--glass-border);
+    border-radius: var(--radius-squircle);
+    box-shadow: var(--shadow-floating);
+    padding: 20px 22px 22px;
+    width: min(320px, 92vw);
+    transform: translateY(20px);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1),
+                opacity   0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  #audio-out-backdrop.out-open #audio-out-popup {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* ── Header row ────────────────────────────────────────────────── */
+  #audio-out-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  #audio-out-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  #audio-out-close {
+    background: var(--surface-secondary);
+    border: none;
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: background 0.15s, color 0.15s;
+  }
+  #audio-out-close:hover { color: var(--text-primary); }
+
+  /* ── Current device pill ───────────────────────────────────────── */
+  #audio-out-device-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  #audio-out-device-label-head {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  #audio-out-device-pill {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: var(--surface-secondary);
+    border: 0.5px solid var(--glass-border);
+    border-radius: var(--radius-pill);
+    padding: 5px 12px;
+    min-width: 0;
+  }
+
+  /* ── Action button ─────────────────────────────────────────────── */
+  #audio-out-select-btn {
+    width: 100%;
+    padding: 11px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-vibrancy);
+    -webkit-backdrop-filter: var(--glass-vibrancy);
+    border: 0.5px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-size: 1.3rem;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: var(--shadow-soft);
+  }
+  #audio-out-select-btn:hover {
+    background: var(--surface);
+    transform: scale(1.02);
+    box-shadow: var(--shadow-elevated);
+  }
+  #audio-out-select-btn:active { transform: scale(0.98); }
+  #audio-out-select-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ── Status / feedback line ────────────────────────────────────── */
+  #audio-out-status {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: 10px;
+    min-height: 1.5em;
+    transition: opacity 0.3s;
+  }
+  #audio-out-status.status-ok   { color: #30D158; /* Apple Green  */ }
+  #audio-out-status.status-warn { color: #FF9F0A; /* Apple Orange */ }
+  #audio-out-status.status-err  { color: #FF453A; /* Apple Red    */ }
+
+  /* ── Divider ───────────────────────────────────────────────────── */
+  #audio-out-divider {
+    height: 0.5px;
+    background: var(--glass-border);
+    margin: 14px 0 12px;
+  }
+
+  /* ── Support note ──────────────────────────────────────────────── */
+  #audio-out-note {
+    font-size: 1.05rem;
+    color: var(--text-tertiary);
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 768px) {
+    #audio-out-backdrop { padding-bottom: 160px; }
+  }
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ─── Shared namespace ─────────────────────────────────────────────
+     The EQ patch must expose its AudioContext here after eqConnected = true:
+       window.TuwaAudio = window.TuwaAudio || {};
+       window.TuwaAudio.ctx = audioCtx;
+     Without that line, only the HTML element fallback path runs —
+     which has zero effect once createMediaElementSource has been called.
+  ─────────────────────────────────────────────────────────────────── */
+  window.TuwaAudio = window.TuwaAudio || {};
+
+  var LS_KEY        = 'tuwa_audio_out_v1';
+  var pillEl        = null;
+  var statusEl      = null;
+  var selectBtn     = null;
+  var outBtn        = null;
+  var isBusy        = false;
+
+  /* ── Persistence ─────────────────────────────────────────────── */
+  function loadSaved() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY)) || null; }
+    catch (e) { return null; }
+  }
+  function saveDev(id, label) {
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ id: id, label: label })); }
+    catch (e) { /* quota error — no crash */ }
+  }
+  function clearSaved() {
+    try { localStorage.removeItem(LS_KEY); }
+    catch (e) {}
+  }
+
+  /* ── Core routing ────────────────────────────────────────────── */
+  /*
+     Priority order:
+       1. AudioContext.setSinkId()  — required when EQ patch is active
+          (audio flows through Web Audio graph, not the element itself)
+       2. HTMLMediaElement.setSinkId() — fallback when EQ patch absent
+  */
+  async function applySinkId(deviceId) {
+    var routed = false;
+
+    /* Route 1: Web Audio Context (EQ patch exposes this) */
+    var ctx = window.TuwaAudio.ctx;
+    if (ctx && typeof ctx.setSinkId === 'function') {
+      await ctx.setSinkId(deviceId);
+      routed = true;
+    }
+
+    /* Route 2: HTML element (works only when EQ patch is NOT active) */
+    if (!routed) {
+      var audioEl = document.getElementById('audio-player');
+      if (audioEl && typeof audioEl.setSinkId === 'function') {
+        await audioEl.setSinkId(deviceId);
+        routed = true;
+      }
+    }
+
+    if (!routed) {
+      throw new Error('setSinkId is not available in this browser.');
+    }
+  }
+
+  /* ── Restore on play (chained onto window.initEQ) ────────────── */
+  async function restoreOutput() {
+    var saved = loadSaved();
+    if (!saved || !saved.id) return;
+    try {
+      await applySinkId(saved.id);
+      setStatus('↳ ' + saved.label, 'ok', 3000);
+    } catch (e) {
+      /* Device may have been disconnected — clear stale entry */
+      console.warn('[Tuwa AudioOut] Could not restore saved device:', e.message);
+      clearSaved();
+    }
+  }
+
+  /*
+     Chain onto window.initEQ (defined by the EQ patch).
+     This is called by app.js every time a verse starts playing —
+     giving us a reliable, post-user-gesture moment to re-apply
+     the saved sink without triggering autoplay/permission errors.
+  */
+  var _prevInitEQ = window.initEQ || function () {};
+  window.initEQ = function () {
+    _prevInitEQ();
+    restoreOutput();
+  };
+
+  /* ── Status helper ───────────────────────────────────────────── */
+  var statusTimer = null;
+  function setStatus(msg, type, autoClearMs) {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    statusEl.className   = 'status-' + (type || '');
+    clearTimeout(statusTimer);
+    if (autoClearMs) {
+      statusTimer = setTimeout(function () {
+        statusEl.textContent = '';
+        statusEl.className   = '';
+      }, autoClearMs);
+    }
+  }
+
+  /* ── Pick device ─────────────────────────────────────────────── */
+  async function pickDevice() {
+    if (isBusy) return;
+    isBusy = true;
+    if (selectBtn) selectBtn.disabled = true;
+    setStatus('Waiting for browser picker…', '');
+
+    try {
+      /* selectAudioOutput() shows Chrome's native device picker.
+         Must be called inside a user gesture — the button click
+         provides that guarantee here. */
+      var device = await navigator.mediaDevices.selectAudioOutput();
+
+      setStatus('Routing audio…', '');
+      await applySinkId(device.deviceId);
+
+      saveDev(device.deviceId, device.label);
+      if (pillEl) pillEl.textContent = device.label || device.deviceId;
+      if (outBtn) outBtn.classList.add('out-active');
+      setStatus('✓  ' + device.label, 'ok', 4000);
+
+    } catch (e) {
+      if (e.name === 'NotAllowedError') {
+        setStatus('Permission denied.', 'warn', 4000);
+      } else if (e.name === 'AbortError') {
+        setStatus('Cancelled.', '', 2500);
+      } else {
+        setStatus('Error: ' + e.message, 'err', 5000);
+        console.error('[Tuwa AudioOut]', e);
+      }
+    } finally {
+      isBusy = false;
+      if (selectBtn) selectBtn.disabled = false;
+    }
+  }
+
+  /* ── DOM injection ───────────────────────────────────────────── */
+  function buildUI() {
+    var supported = (
+      'mediaDevices' in navigator &&
+      typeof navigator.mediaDevices.selectAudioOutput === 'function'
+    );
+
+    /* ── Button ── */
+    var volControl = document.querySelector('.volume-control');
+    if (!volControl) {
+      console.warn('[Tuwa AudioOut] .volume-control not found.');
+      return;
+    }
+
+    outBtn = document.createElement('button');
+    outBtn.id        = 'audio-out-btn';
+    outBtn.className = 'player-btn';
+    outBtn.setAttribute('aria-label', 'Select audio output device');
+    outBtn.setAttribute('tabindex', '0');
+    /* Cast / AirPlay-style icon (Feather-compatible stroke style) */
+    outBtn.innerHTML = [
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"',
+      ' stroke="currentColor" stroke-width="2"',
+      ' stroke-linecap="round" stroke-linejoin="round">',
+      '<path d="M2 16.1A5 5 0 0 1 5.9 20"/>',
+      '<path d="M2 12.05A9 9 0 0 1 9.95 20"/>',
+      '<path d="M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/>',
+      '<line x1="2" y1="20" x2="2.01" y2="20"/>',
+      '</svg>',
+    ].join('');
+    volControl.appendChild(outBtn);
+
+    /* ── Backdrop ── */
+    var backdrop = document.createElement('div');
+    backdrop.id = 'audio-out-backdrop';
+
+    /* ── Popup ── */
+    var popup = document.createElement('div');
+    popup.id = 'audio-out-popup';
+    popup.setAttribute('role', 'dialog');
+    popup.setAttribute('aria-modal', 'true');
+    popup.setAttribute('aria-label', 'Audio Output');
+
+    /* Header */
+    var hdr = document.createElement('div');
+    hdr.id = 'audio-out-header';
+
+    var titleEl = document.createElement('span');
+    titleEl.id          = 'audio-out-title';
+    titleEl.textContent = 'Audio Output';
+
+    var closeBtn = document.createElement('button');
+    closeBtn.id = 'audio-out-close';
+    closeBtn.setAttribute('aria-label', 'Close');
+    closeBtn.textContent = '✕';
+
+    hdr.appendChild(titleEl);
+    hdr.appendChild(closeBtn);
+    popup.appendChild(hdr);
+
+    /* Current device row */
+    var devRow = document.createElement('div');
+    devRow.id = 'audio-out-device-row';
+
+    var devHead = document.createElement('span');
+    devHead.id          = 'audio-out-device-label-head';
+    devHead.textContent = 'Now:';
+
+    pillEl = document.createElement('span');
+    pillEl.id = 'audio-out-device-pill';
+    var saved = loadSaved();
+    pillEl.textContent = (saved && saved.label) ? saved.label : 'System Default';
+
+    devRow.appendChild(devHead);
+    devRow.appendChild(pillEl);
+    popup.appendChild(devRow);
+
+    /* Select button */
+    selectBtn = document.createElement('button');
+    selectBtn.id   = 'audio-out-select-btn';
+    selectBtn.innerHTML = [
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"',
+      ' stroke="currentColor" stroke-width="2.5"',
+      ' stroke-linecap="round" stroke-linejoin="round">',
+      '<circle cx="12" cy="12" r="3"/>',
+      '<path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>',
+      '<path d="M4.93 4.93a10 10 0 0 0 0 14.14M8.46 8.46a5 5 0 0 0 0 7.07"/>',
+      '</svg>',
+      '<span>Select Output Device\u2026</span>',
+    ].join('');
+
+    if (!supported) {
+      selectBtn.disabled = true;
+      selectBtn.title    = 'Requires Chrome 102+ (desktop)';
+    } else {
+      selectBtn.addEventListener('click', pickDevice);
+    }
+    popup.appendChild(selectBtn);
+
+    /* Status line */
+    statusEl = document.createElement('div');
+    statusEl.id = 'audio-out-status';
+    popup.appendChild(statusEl);
+
+    /* Divider + note */
+    var div = document.createElement('div');
+    div.id = 'audio-out-divider';
+    popup.appendChild(div);
+
+    var note = document.createElement('div');
+    note.id = 'audio-out-note';
+    if (!supported) {
+      note.textContent = 'Audio Output Devices API requires Chrome 102+ on desktop. Pair your Bluetooth speaker via the OS first.';
+    } else {
+      note.textContent = 'Pair your Bluetooth speaker or headphones via your OS before selecting here.';
+    }
+    popup.appendChild(note);
+
+    backdrop.appendChild(popup);
+    document.body.appendChild(backdrop);
+
+    /* ── Open / close ── */
+    function openOut() {
+      backdrop.classList.add('out-open');
+      outBtn.classList.add('out-active');
+      outBtn.setAttribute('aria-expanded', 'true');
+      closeBtn.focus();
+    }
+    function closeOut() {
+      backdrop.classList.remove('out-open');
+      /* Only remove active glow if no custom device is selected */
+      if (!loadSaved()) outBtn.classList.remove('out-active');
+      outBtn.setAttribute('aria-expanded', 'false');
+      outBtn.focus();
+    }
+
+    outBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      backdrop.classList.contains('out-open') ? closeOut() : openOut();
+    });
+    closeBtn.addEventListener('click', closeOut);
+    backdrop.addEventListener('click', function (e) {
+      if (e.target === backdrop) closeOut();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && backdrop.classList.contains('out-open')) closeOut();
+    });
+
+    /* Restore glow state if we have a saved device */
+    if (saved && saved.label) outBtn.classList.add('out-active');
+  }
+
+  /* ── Boot ────────────────────────────────────────────────────── */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildUI);
+  } else {
+    buildUI();
+  }
+
+}());
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     REQUIRED ADDITION TO THE EQ MONKEY PATCH
+     ───────────────────────────────────────────────────────────────────
+     In the EQ patch script, find this line:
+
+         eqConnected = true;
+
+     Immediately AFTER it, add:
+
+         window.TuwaAudio = window.TuwaAudio || {};
+         window.TuwaAudio.ctx = audioCtx;
+
+     That's it. This exposes the shared AudioContext so this patch
+     can call audioCtx.setSinkId() — the only way to reroute audio
+     after createMediaElementSource() has taken ownership of the
+     audio element's output path.
+
+     Without this, selectAudioOutput() will work (the browser picker
+     appears and the user can select a device) but the audio will keep
+     playing through the system default because setSinkId never fires
+     on the correct node in the signal chain.
+     ═══════════════════════════════════════════════════════════════════ -->
 </body>
 </html>
