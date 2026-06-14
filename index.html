@@ -904,16 +904,10 @@
 }());
 </script>
 
-<!-- ═══ END EQ MONKEY PATCH ═══ -->
 <!-- ═══════════════════════════════════════════════════════════════════
-     TUWA AUDIO OUTPUT DEVICE MONKEY PATCH
+     TUWA AUDIO OUTPUT DEVICE MONKEY PATCH (FIXED)
      Paste this block immediately AFTER the EQ monkey patch block,
      still before </body>.
-
-     Also requires ONE LINE added to the EQ patch — see the note at
-     the very bottom of this file. Without it, device routing will
-     silently fail when the EQ is active (because createMediaElementSource
-     has taken ownership of the audio element's output path).
      ═══════════════════════════════════════════════════════════════════ -->
 
 <style>
@@ -1094,13 +1088,6 @@
 (function () {
   'use strict';
 
-  /* ─── Shared namespace ─────────────────────────────────────────────
-     The EQ patch must expose its AudioContext here after eqConnected = true:
-       window.TuwaAudio = window.TuwaAudio || {};
-       window.TuwaAudio.ctx = audioCtx;
-     Without that line, only the HTML element fallback path runs —
-     which has zero effect once createMediaElementSource has been called.
-  ─────────────────────────────────────────────────────────────────── */
   window.TuwaAudio = window.TuwaAudio || {};
 
   var LS_KEY        = 'tuwa_audio_out_v1';
@@ -1125,34 +1112,94 @@
   }
 
   /* ── Core routing ────────────────────────────────────────────── */
-  /*
-     Priority order:
-       1. AudioContext.setSinkId()  — required when EQ patch is active
-          (audio flows through Web Audio graph, not the element itself)
-       2. HTMLMediaElement.setSinkId() — fallback when EQ patch absent
-  */
   async function applySinkId(deviceId) {
-    var routed = false;
-
-    /* Route 1: Web Audio Context (EQ patch exposes this) */
     var ctx = window.TuwaAudio.ctx;
+    var promises = [];
+    var routedAtLeastOne = false;
+
+    // Route 1: Web Audio Context (EQ patch)
     if (ctx && typeof ctx.setSinkId === 'function') {
-      await ctx.setSinkId(deviceId);
-      routed = true;
+      promises.push(
+        ctx.setSinkId(deviceId)
+          .then(function () { routedAtLeastOne = true; })
+          .catch(function (e) { console.warn('[Tuwa AudioOut] Web Audio setSinkId failed:', e.message); })
+      );
     }
 
-    /* Route 2: HTML element (works only when EQ patch is NOT active) */
-    if (!routed) {
-      var audioEl = document.getElementById('audio-player');
-      if (audioEl && typeof audioEl.setSinkId === 'function') {
-        await audioEl.setSinkId(deviceId);
-        routed = true;
+    // Route 2: Individual HTML Media Elements (All active audio nodes in Tuwa)
+    var targetIds = ['audio-player', 'translation-audio-player', 'preview-audio'];
+    targetIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && typeof el.setSinkId === 'function') {
+        promises.push(
+          el.setSinkId(deviceId)
+            .then(function () { routedAtLeastOne = true; })
+            .catch(function (e) {
+              if (e.name !== 'AbortError') {
+                console.warn('[Tuwa AudioOut] setSinkId failed for #' + id + ':', e.message);
+              }
+            })
+        );
       }
+    });
+
+    if (promises.length > 0) {
+      await Promise.all(promises);
     }
 
-    if (!routed) {
-      throw new Error('setSinkId is not available in this browser.');
+    if (!routedAtLeastOne) {
+      throw new Error('setSinkId is not supported or failed on all elements in this browser.');
     }
+  }
+
+  /* ── Robust Retry handling for Windows 11 Bluetooth stack ── */
+  async function applySinkIdWithRetry(deviceId, retriesLeft) {
+    if (retriesLeft === undefined) retriesLeft = 2;
+    try {
+      await applySinkId(deviceId);
+    } catch (e) {
+      if (retriesLeft > 0 && (e.name === 'AbortError' || e.message.indexOf('abort') > -1)) {
+        console.warn('[Tuwa AudioOut] Transient routing failure, retrying in 250ms... Retries left:', retriesLeft);
+        await new Promise(function (resolve) { setTimeout(resolve, 250); });
+        return applySinkIdWithRetry(deviceId, retriesLeft - 1);
+      }
+      throw e;
+    }
+  }
+
+  /* ── Event tracking to auto-reapply device on .src transitions ── */
+  function setupAutoReapply() {
+    var saved = loadSaved();
+    if (!saved || !saved.id) return;
+
+    var targetIds = ['audio-player', 'translation-audio-player', 'preview-audio'];
+    targetIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+
+      if (el.dataset.sinkTrackingAttached) return;
+      el.dataset.sinkTrackingAttached = "true";
+
+      var reapply = function () {
+        var currentSaved = loadSaved();
+        if (!currentSaved || !currentSaved.id) return;
+        
+        setTimeout(async function () {
+          try {
+            if (el.sinkId !== currentSaved.id) {
+              await el.setSinkId(currentSaved.id);
+            }
+          } catch (e) {
+            if (e.name !== 'AbortError') {
+              console.warn('[Tuwa AudioOut] Auto-reapply failed for #' + id + ':', e.message);
+            }
+          }
+        }, 80); 
+      };
+
+      el.addEventListener('playing', reapply);
+      el.addEventListener('loadedmetadata', reapply);
+    });
   }
 
   /* ── Restore on play (chained onto window.initEQ) ────────────── */
@@ -1160,21 +1207,15 @@
     var saved = loadSaved();
     if (!saved || !saved.id) return;
     try {
-      await applySinkId(saved.id);
+      await applySinkIdWithRetry(saved.id);
       setStatus('↳ ' + saved.label, 'ok', 3000);
+      setupAutoReapply(); 
     } catch (e) {
-      /* Device may have been disconnected — clear stale entry */
       console.warn('[Tuwa AudioOut] Could not restore saved device:', e.message);
       clearSaved();
     }
   }
 
-  /*
-     Chain onto window.initEQ (defined by the EQ patch).
-     This is called by app.js every time a verse starts playing —
-     giving us a reliable, post-user-gesture moment to re-apply
-     the saved sink without triggering autoplay/permission errors.
-  */
   var _prevInitEQ = window.initEQ || function () {};
   window.initEQ = function () {
     _prevInitEQ();
@@ -1204,18 +1245,16 @@
     setStatus('Waiting for browser picker…', '');
 
     try {
-      /* selectAudioOutput() shows Chrome's native device picker.
-         Must be called inside a user gesture — the button click
-         provides that guarantee here. */
       var device = await navigator.mediaDevices.selectAudioOutput();
 
       setStatus('Routing audio…', '');
-      await applySinkId(device.deviceId);
+      await applySinkIdWithRetry(device.deviceId);
 
       saveDev(device.deviceId, device.label);
       if (pillEl) pillEl.textContent = device.label || device.deviceId;
       if (outBtn) outBtn.classList.add('out-active');
       setStatus('✓  ' + device.label, 'ok', 4000);
+      setupAutoReapply();
 
     } catch (e) {
       if (e.name === 'NotAllowedError') {
@@ -1251,7 +1290,6 @@
     outBtn.className = 'player-btn';
     outBtn.setAttribute('aria-label', 'Select audio output device');
     outBtn.setAttribute('tabindex', '0');
-    /* Cast / AirPlay-style icon (Feather-compatible stroke style) */
     outBtn.innerHTML = [
       '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"',
       ' stroke="currentColor" stroke-width="2"',
@@ -1362,7 +1400,6 @@
     }
     function closeOut() {
       backdrop.classList.remove('out-open');
-      /* Only remove active glow if no custom device is selected */
       if (!loadSaved()) outBtn.classList.remove('out-active');
       outBtn.setAttribute('aria-expanded', 'false');
       outBtn.focus();
@@ -1380,8 +1417,9 @@
       if (e.key === 'Escape' && backdrop.classList.contains('out-open')) closeOut();
     });
 
-    /* Restore glow state if we have a saved device */
     if (saved && saved.label) outBtn.classList.add('out-active');
+
+    setupAutoReapply();
   }
 
   /* ── Boot ────────────────────────────────────────────────────── */
@@ -1393,28 +1431,5 @@
 
 }());
 </script>
-
-<!-- ═══════════════════════════════════════════════════════════════════
-     REQUIRED ADDITION TO THE EQ MONKEY PATCH
-     ───────────────────────────────────────────────────────────────────
-     In the EQ patch script, find this line:
-
-         eqConnected = true;
-
-     Immediately AFTER it, add:
-
-         window.TuwaAudio = window.TuwaAudio || {};
-         window.TuwaAudio.ctx = audioCtx;
-
-     That's it. This exposes the shared AudioContext so this patch
-     can call audioCtx.setSinkId() — the only way to reroute audio
-     after createMediaElementSource() has taken ownership of the
-     audio element's output path.
-
-     Without this, selectAudioOutput() will work (the browser picker
-     appears and the user can select a device) but the audio will keep
-     playing through the system default because setSinkId never fires
-     on the correct node in the signal chain.
-     ═══════════════════════════════════════════════════════════════════ -->
 </body>
 </html>
