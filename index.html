@@ -148,6 +148,21 @@
     <script src="src/utils/analytics.js"></script>
     <script src="src/utils/github-redirect.js"></script>
 
+<style>
+  /* Removes the tap highlight and flash on Android/iOS */
+  * {
+    -webkit-tap-highlight-color: transparent !important;
+    -webkit-touch-callout: none !important;
+    user-select: none !important;
+  }
+
+  /* Removes the blue/orange outline when an element is focused */
+  input, button, a, *:focus {
+    outline: none !important;
+  }
+</style>
+
+
 <!-- Clean Apple-Style Native Loader -->
 <script> 
 (function() {
@@ -422,13 +437,15 @@
                 </button>
 
                 <div class="island-right">
-                    <div class="island-volume-wrap">
+                    <div class="island-volume-wrap" id="volume-wrap">
+                        <div class="volume-popover" id="volume-popover">
+                            <input type="range" id="volume-slider" class="island-volume-slider" min="0" max="1" step="0.05" value="0.8" aria-label="Volume">
+                        </div>
                         <button id="volume-btn" class="island-icon-btn" aria-label="Mute" tabindex="0">
                             <svg id="volume-high-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                             <svg id="volume-low-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
                             <svg id="volume-muted-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
                         </button>
-                        <input type="range" id="volume-slider" class="island-volume-slider" min="0" max="1" step="0.05" value="0.8" aria-label="Volume">
                     </div>
                     <!-- EQ and Audio Out buttons injected by JS -->
                 </div>
@@ -615,7 +632,8 @@
   @media screen and (max-width: 768px) {
     #eq-backdrop { padding-bottom: 160px; }
     #player-island { bottom: 32px; padding: 5px 12px; gap: 8px; }
-    .island-volume-slider { width: 56px; }
+    .volume-popover { padding: 10px 14px; }
+    .island-volume-slider { width: 90px; }
   }
 
   /* ── Selects Row ────────────────────────────────────────────────── */
@@ -717,9 +735,9 @@
 
   /* Volume wrap */
   .island-volume-wrap {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 5px;
   }
 
   .island-icon-btn {
@@ -739,9 +757,44 @@
   .island-icon-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
   .island-icon-btn:active { transform: scale(0.9); }
 
+  /* Volume popover slider */
+  .volume-popover {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.92);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    padding: 12px 18px;
+    background: rgba(28, 28, 30, 0.92);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+    z-index: 110;
+  }
+  .volume-popover::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(28, 28, 30, 0.92);
+  }
+  .island-volume-wrap.volume-open .volume-popover {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) scale(1);
+  }
+
   .island-volume-slider {
-    width: 76px;
-    height: 3px;
+    width: 120px;
+    height: 4px;
     -webkit-appearance: none;
     appearance: none;
     background: rgba(255, 255, 255, 0.2);
@@ -751,17 +804,19 @@
   }
   .island-volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 13px;
-    height: 13px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background: #fff;
     border: none;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
     cursor: pointer;
+    transition: transform 0.15s;
   }
+  .island-volume-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
   .island-volume-slider::-moz-range-thumb {
-    width: 13px;
-    height: 13px;
+    width: 16px;
+    height: 16px;
     border-radius: 50%;
     background: #fff;
     border: none;

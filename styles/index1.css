@@ -744,9 +744,9 @@ body.idle #player-island { transform: translate(-50%, 150%); opacity: 0; }
     gap: 4px;
 }
 .island-volume-wrap {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 5px;
 }
 .island-icon-btn {
     width: 30px; height: 30px;
@@ -764,8 +764,43 @@ body.idle #player-island { transform: translate(-50%, 150%); opacity: 0; }
 .island-icon-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
 .island-icon-btn:active { transform: scale(0.9); }
 
+/* Volume popover slider */
+.volume-popover {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.92);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    padding: 12px 18px;
+    background: rgba(28, 28, 30, 0.92);
+    backdrop-filter: blur(40px) saturate(200%);
+    -webkit-backdrop-filter: blur(40px) saturate(200%);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+    z-index: 110;
+}
+.volume-popover::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(28, 28, 30, 0.92);
+}
+.island-volume-wrap.volume-open .volume-popover {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) scale(1);
+}
+
 .island-volume-slider {
-    width: 76px; height: 3px;
+    width: 120px; height: 4px;
     -webkit-appearance: none; appearance: none;
     background: rgba(255, 255, 255, 0.2);
     border-radius: 999px;
@@ -774,14 +809,17 @@ body.idle #player-island { transform: translate(-50%, 150%); opacity: 0; }
 }
 .island-volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 13px; height: 13px;
+    width: 16px; height: 16px;
     border-radius: 50%;
     background: #fff;
     border: none;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    transition: transform 0.15s;
 }
+.island-volume-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
 .island-volume-slider::-moz-range-thumb {
-    width: 13px; height: 13px;
+    width: 16px; height: 16px;
     border-radius: 50%;
     background: #fff;
     border: none;
@@ -873,7 +911,8 @@ select:focus, select:hover {
         padding: 5px 12px;
         gap: 8px;
     }
-    .island-volume-slider { width: 56px; }
+    .volume-popover { padding: 10px 14px; }
+    .island-volume-slider { width: 90px; }
     #selects-row { gap: 4px; padding: 4px 8px; }
     #selects-row .custom-select-wrapper .custom-select-trigger { font-size: 1rem; padding: 3px 8px; }
     

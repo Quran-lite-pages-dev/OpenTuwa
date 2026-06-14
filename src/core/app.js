@@ -1441,7 +1441,18 @@ function setupEventListeners() {
 
     // Volume controls
     if (elements.volumeBtn && elements.volumeSlider && elements.quranAudio) {
-        elements.volumeBtn.addEventListener('click', toggleMute);
+        const volumeWrap = document.getElementById('volume-wrap');
+        elements.volumeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (volumeWrap) {
+                volumeWrap.classList.toggle('volume-open');
+            }
+        });
+        document.addEventListener('click', (e) => {
+            if (volumeWrap && !volumeWrap.contains(e.target)) {
+                volumeWrap.classList.remove('volume-open');
+            }
+        });
         elements.volumeSlider.addEventListener('input', (e) => {
             const vol = parseFloat(e.target.value);
             elements.quranAudio.volume = vol;
