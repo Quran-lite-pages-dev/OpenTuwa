@@ -1,25 +1,43 @@
 {
   "name": "Tuwa",
   "short_name": "Tuwa",
-  "description": "Premium streaming provider with distraction-free viewing. A brand of OpenTuwa Media.",
-  "start_url": "/",
+  "description": "Premium distraction-free Quran audio streaming with translations and verse-by-verse navigation. A brand of Tuwa Media.",
+  "start_url": "/?utm_source=web_app_manifest",
   "display": "standalone",
-  "background_color": "#121212",
+  "background_color": "#000000",
   "theme_color": "#000000",
-  "orientation": "any",
-  "categories": ["music", "entertainment"],
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["music", "education", "books", "entertainment"],
   "icons": [
     {
-      "src": "https://Quran-lite.pages.dev/assets/ui/web.png",
-      "sizes": "1080x1080",
+      "src": "https://opentuwa.com/assets/ui/favicon-96x96.png",
+      "sizes": "96x96",
       "type": "image/png"
     },
     {
-      "src": "https://Quran-lite.pages.dev/assets/ui/web_512.png",
-      "sizes": "512x512",
+      "src": "https://opentuwa.com/assets/ui/apple-touch-icon.png",
+      "sizes": "180x180",
       "type": "image/png"
     }
-],
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Surah Al-Fatiha",
+      "short_name": "Al-Fatiha",
+      "description": "Listen to Surah Al-Fatiha (The Opening)",
+      "url": "/?stream=eyJjaGFwdGVyIjoxLCJ2ZXJzZSI6MSwicmVjaXRlciI6ImFsYWZhc3kiLCJ0cmFucyI6ImVuIiwiYXVkaW9fdHJhbnMiOiJub25lIn0",
+      "icons": [{ "src": "/assets/favicon/web-app-manifest-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Surah Al-Baqarah",
+      "short_name": "Al-Baqarah",
+      "description": "Listen to Surah Al-Baqarah (The Cow)",
+      "url": "/?stream=eyJjaGFwdGVyIjoyLCJ2ZXJzZSI6MSwicmVjaXRlciI6ImFsYWZhc3kiLCJ0cmFucyI6ImVuIiwiYXVkaW9fdHJhbnMiOiJub25lIn0",
+      "icons": [{ "src": "/assets/favicon/web-app-manifest-192x192.png", "sizes": "192x192" }]
+    }
+  ],
   "related_applications": [
     {
       "platform": "play",
@@ -33,4 +51,3 @@
   ],
   "prefer_related_applications": false
 }
-
