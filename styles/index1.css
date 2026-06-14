@@ -815,3 +815,25 @@ select:focus, select:hover {
     .surah-card { flex: 0 0 380px; }
     .hero-banner { padding: 0 10%; }
 }
+/* Fixed Apple HIG Action Button */
+.dash-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--text-primary);
+    color: var(--bg);
+    padding: 14px 28px;
+    border-radius: var(--radius-pill);
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition-snappy);
+    box-shadow: var(--shadow-elevated);
+}
+
+.dash-btn:hover {
+    transform: scale(1.03);
+    opacity: 0.9;
+}
