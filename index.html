@@ -563,8 +563,6 @@
     background: var(--surface-secondary);
     outline: none;
     cursor: pointer;
-    will-change: transform;
-    transform: translateZ(0);
   }
   .eq-band-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
@@ -573,9 +571,7 @@
     border-radius: 50%;
     background: var(--text-primary);
     box-shadow: var(--shadow-soft);
-    transition: transform 0.15s;
     cursor: pointer;
-    will-change: transform;
   }
 
   .eq-band-slider::-moz-range-thumb {
@@ -585,7 +581,6 @@
     background: var(--text-primary);
     border: none;
     cursor: pointer;
-    will-change: transform;
   }
 
   .eq-band-value {
@@ -900,7 +895,7 @@
       valLbl.className   = 'eq-band-value';
       valLbl.textContent = formatGain(gain);
 
-      /* Real-time: update filter gain on every move (audio thread, no layout) */
+      /* Real-time: update filter gain on every move */
       slider.addEventListener('input', function () {
         var g = parseFloat(slider.value);
 
@@ -909,11 +904,7 @@
         if (filterNodes[i]) filterNodes[i].gain.value = g;
 
         saveGains(gainsFromSliders());
-
-        /* Defer label update to next frame to avoid layout thrashing */
-        requestAnimationFrame(function () {
-          valLbl.textContent = formatGain(g);
-        });
+        valLbl.textContent = formatGain(g);
       });
 
       sliderEls.push(slider);
