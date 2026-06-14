@@ -484,9 +484,7 @@
 
   /* ── Popup Shell ───────────────────────────────────────────────── */
   #eq-popup {
-    background: var(--glass-bg);
-    backdrop-filter: var(--glass-vibrancy);
-    -webkit-backdrop-filter: var(--glass-vibrancy);
+    background: var(--glass-surface);
     border: 0.5px solid var(--glass-border);
     border-radius: var(--radius-squircle);
     box-shadow: var(--shadow-floating);
@@ -821,16 +819,20 @@
       valLbl.className   = 'eq-band-value';
       valLbl.textContent = formatGain(gain);
 
-      /* Real-time: update filter gain AND localStorage on every move */
+      /* Real-time: update filter gain on every move (audio thread, no layout) */
       slider.addEventListener('input', function () {
         var g = parseFloat(slider.value);
-        valLbl.textContent = formatGain(g);
 
         /* Ensure EQ is wired before touching filter nodes */
         if (!eqConnected) ensureEQ();
         if (filterNodes[i]) filterNodes[i].gain.value = g;
 
         saveGains(gainsFromSliders());
+
+        /* Defer label update to next frame to avoid layout thrashing */
+        requestAnimationFrame(function () {
+          valLbl.textContent = formatGain(g);
+        });
       });
 
       sliderEls.push(slider);
