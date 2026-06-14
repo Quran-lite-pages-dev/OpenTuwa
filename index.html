@@ -475,8 +475,6 @@
     inset: 0;
     z-index: 9998; /* below universal loader (2147483647) but above cinema (1000) */
     background: rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(6px) saturate(120%);
-    -webkit-backdrop-filter: blur(6px) saturate(120%);
     align-items: flex-end;
     justify-content: center;
     /* Bottom padding lifts popup clear of the control panel */
@@ -499,6 +497,8 @@
     opacity: 0;
     transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1),
                 opacity   0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+    will-change: transform, opacity;
+    transform: translateZ(0);
   }
   #eq-backdrop.eq-open #eq-popup {
     transform: translateY(0);
@@ -572,6 +572,7 @@
     box-shadow: var(--shadow-soft);
     transition: transform 0.15s;
     cursor: pointer;
+    will-change: transform;
   }
   .eq-band-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
   .eq-band-slider::-moz-range-thumb {
@@ -581,6 +582,7 @@
     background: var(--text-primary);
     border: none;
     cursor: pointer;
+    will-change: transform;
   }
 
   .eq-band-value {
@@ -635,12 +637,13 @@
     { label: 'Treble',   freq: 8000, type: 'highshelf', Q: 0.7 },
   ];
 
-  var LS_KEY       = 'tuwa_eq_v1';
+   var LS_KEY       = 'tuwa_eq_v1';
   var audioCtx     = null;
   var sourceNode   = null;
   var filterNodes  = [];
   var eqConnected  = false;
   var sliderEls    = [];   // kept in sync for UI ↔ filter
+  var saveTimer    = null; // debounce localStorage writes
 
   /* ── Persist ────────────────────────────────────────────────── */
   function loadGains() {
@@ -648,8 +651,11 @@
     catch (e) { return {}; }
   }
   function saveGains(gains) {
-    try { localStorage.setItem(LS_KEY, JSON.stringify(gains)); }
-    catch (e) { /* storage full – no crash */ }
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(gains)); }
+      catch (e) { /* storage full – no crash */ }
+    }, 150);
   }
 
   /* ── Web Audio EQ setup (idempotent — safe to call many times) ── */
