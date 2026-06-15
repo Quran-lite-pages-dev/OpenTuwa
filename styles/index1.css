@@ -79,13 +79,28 @@
     }
 }
 
-/* --- Reduced Motion (HIG Section 47) --- */
+/* --- Accessibility: Reduce Motion & Reduce Transparency (HIG §47) --- */
 @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
+    }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    .island-search-box,
+    .enter-trigger,
+    .surah-card,
+    #search-overlay,
+    #hero-subtitle-overlay {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        background: var(--surface) !important;
+    }
+    .island-search-box.ai-thinking::before {
+        opacity: 0.4;
     }
 }
 
@@ -279,11 +294,15 @@ html[dir="rtl"] .app-brand { }
     pointer-events: none;
 }
 
-/* Apple Intelligence Inspired Glow */
+/* Apple Intelligence Inspired Glow — HIG Compliant */
+/* §12: Static gradient border on glass (no continuous animation).
+   §47: Reduced-motion kills all animations; reduced-transparency removes blur. */
 .island-search-box.ai-thinking {
     width: 280px !important;
     transform: translateY(0) scale(1) !important;
     background: var(--surface);
+    /* Subtle entrance on state change (HIG §12: animate only on state changes) */
+    animation: ai-think-fadein 0.4s ease-out both;
 }
 
 .island-search-box.ai-thinking::before {
@@ -299,15 +318,15 @@ html[dir="rtl"] .app-brand { }
         var(--accent-indigo) 240deg,
         transparent 360deg
     );
-    animation: siri-spin 2s linear infinite;
     -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
     mask-composite: exclude;
     padding: 2px;
 }
 
-@keyframes siri-spin {
-    100% { transform: rotate(360deg); }
+@keyframes ai-think-fadein {
+    from { opacity: 0; transform: scale(0.96); }
+    to   { opacity: 1; transform: scale(1); }
 }
 
 @keyframes island-shake {
