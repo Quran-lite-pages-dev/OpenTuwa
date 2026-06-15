@@ -300,22 +300,6 @@
         </button>
     </div>
 
-    <!-- tvOS/Web Sidebar Navigation -->
-    <nav id="tv-sidebar">
-        <a href="#" class="nav-item active" id="nav-home" tabindex="1">
-            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            <span class="nav-label" data-i18n="nav.home">Home</span>
-        </a>
-        <a href="#" class="nav-item" id="nav-search" tabindex="2">
-            <svg class="nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            <span class="nav-label" data-i18n="nav.search">Search</span>
-        </a>
-        <a href="../" class="nav-item" id="nav-profile" tabindex="3">
-            <div class="nav-icon profile-icon">Q</div>
-            <span class="nav-label" data-i18n="nav.profile">Profile</span>
-        </a>
-    </nav>
-
     <!-- Apple TV Styled Search Overlay -->
     <div id="search-overlay">
         <div class="keyboard-section">
@@ -336,9 +320,7 @@
     <!-- Main Dashboard View -->
     <div id="dashboard-view" class="active">
         <div class="hero-banner">
-            <div class="hero-preview-layer" id="hero-preview-layer">
-                <img id="preview-img" class="preview-img" src="" alt="">
-            </div>
+            
             <div class="hero-shadow-overlay"></div>
             <div id="hero-subtitle-overlay"></div>
 
@@ -390,11 +372,6 @@
             <h1 id="chapter-title" data-i18n="player.title"></h1>
             
             <div id="content-display">
-                <div id="verse-container">
-                    <div id="buffering-indicator"></div>
-                    <img id="verse-text" class="active-verse-img" alt="Verse" width="600" height="300" loading="eager">
-                    <img id="verse-text-next" alt="Next Verse" width="600" height="300" loading="lazy">
-                </div>
                 <div id="translation-text" dir="auto" data-i18n="loading.selectSurah">Select a Surah...</div>
             </div>
         </div>

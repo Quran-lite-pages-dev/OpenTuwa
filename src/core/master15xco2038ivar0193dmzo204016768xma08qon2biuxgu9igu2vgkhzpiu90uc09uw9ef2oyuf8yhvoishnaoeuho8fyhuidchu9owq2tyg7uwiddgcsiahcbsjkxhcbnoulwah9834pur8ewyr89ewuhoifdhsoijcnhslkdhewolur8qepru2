@@ -227,20 +227,12 @@ const elements = {
     },
     display: {
         title: document.getElementById('chapter-title'),
-        verse: document.getElementById('verse-text'),
-        verseNext: document.getElementById('verse-text-next'),
         trans: document.getElementById('translation-text'),
         container: document.getElementById('content-display')
     },
     views: {
         dashboard: document.getElementById('dashboard-view'),
         cinema: document.getElementById('cinema-view')
-    },
-    sidebar: {
-        container: document.getElementById('tv-sidebar'),
-        home: document.getElementById('nav-home'),
-        search: document.getElementById('nav-search'),
-        profile: document.getElementById('nav-profile')
     },
     search: {
         overlay: document.getElementById('search-overlay'),
@@ -424,7 +416,6 @@ function switchView(viewName) {
         elements.views.cinema.classList.add('active');
         elements.views.cinema.style.opacity = '1';
         stopPreview();
-        elements.sidebar.container.style.display = 'none';
         
         setTimeout(() => {
             const chapterTrigger = elements.selects.chapter.querySelector('.custom-select-trigger');
@@ -434,7 +425,6 @@ function switchView(viewName) {
         elements.views.cinema.classList.remove('active');
         elements.views.cinema.style.opacity = '0';
         elements.views.dashboard.classList.add('active');
-        elements.sidebar.container.style.display = 'none';
         elements.quranAudio.pause();
         elements.transAudio.pause();
         refreshDashboard();
@@ -692,16 +682,6 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
         previewSequence.push(i);
     }
 
-    const verseNum = previewSequence[0];
-    const imgUrl = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chapterNum}_${verseNum}.png`;
-    
-    const tempImg = new Image();
-    tempImg.src = imgUrl;
-    tempImg.onload = () => {
-        const heroImg = document.getElementById('door-hero-img');
-        if (heroImg) heroImg.src = imgUrl;
-    };
-
     const transId = getSelectValue(elements.selects.trans) || 'en';
     if (!translationCache[transId]) {
         await loadTranslationData(transId);
@@ -717,19 +697,6 @@ function playPreviewStep(chapterNum, reciterId) {
     const verseNum = previewSequence[previewSeqIndex];
     const padCh = String(chapterNum).padStart(3, '0');
     const padV = String(verseNum).padStart(3, '0');
-    
-    const imgLayer = document.getElementById('hero-preview-layer');
-    const previewImg = document.getElementById('preview-img');
-    const newSrc = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chapterNum}_${verseNum}.png`;
-
-    previewImg.style.opacity = 0;
-    setTimeout(() => {
-        previewImg.src = newSrc;
-        previewImg.onload = () => {
-            previewImg.style.opacity = 0.6;
-            imgLayer.classList.add('active');
-        };
-    }, 200);
 
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const transId = saved.trans || 'en';
@@ -1056,32 +1023,6 @@ async function loadVerse(autoplay = true) {
     const isForbidden = forbiddenToTranslateSet.has(verseKey);
 
     elements.display.title.innerHTML = `${currentChapterData.title} <span class="chapter-subtitle">(${chNum}:${vNum})</span>`;
-    
-    const newSrc = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chNum}_${vNum}.png`;
-    const img1 = elements.display.verse;
-    const img2 = elements.display.verseNext;
-
-    let imgReady = false;
-    if(img1.src === newSrc || img2.src === newSrc) imgReady = true;
-
-    const isImg1Active = img1.classList.contains('active-verse-img');
-    const activeImg = isImg1Active ? img1 : img2;
-    const nextImg = isImg1Active ? img2 : img1;
-
-    if(!imgReady && autoplay) toggleBuffering(true);
-
-    nextImg.src = newSrc;
-    nextImg.onload = () => {
-        activeImg.classList.remove('active-verse-img');
-        nextImg.classList.add('active-verse-img');
-        toggleBuffering(false); 
-    };
-    
-    if (nextImg.complete && nextImg.naturalHeight !== 0) {
-        activeImg.classList.remove('active-verse-img');
-        nextImg.classList.add('active-verse-img');
-        toggleBuffering(false);
-    }
 
     const tid = getSelectValue(elements.selects.trans);
     if(!translationCache[tid]) {
@@ -1120,9 +1061,6 @@ function bufferNextResources(currentChIdx, currentVIdx) {
 
     const nextCh = quranData[nextChIdx].chapterNumber;
     const nextV = quranData[nextChIdx].verses[nextVIdx].verseNumber;
-
-    const img = new Image();
-    img.src = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${nextCh}_${nextV}.png`;
 
     const rId = getSelectValue(elements.selects.reciter);
     const qPath = RECITERS_CONFIG[rId].path;

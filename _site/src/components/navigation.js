@@ -10,8 +10,7 @@
         SEARCH: 'search-overlay',
         ISLAND_SEARCH: 'island-search-wrapper',
         CINEMA: 'cinema-view',
-        DASHBOARD: 'dashboard-view',
-        SIDEBAR: 'tv-sidebar'
+        DASHBOARD: 'dashboard-view'
     };
 
     let currentFocus = null;
@@ -29,7 +28,6 @@
         const searchOverlay = document.getElementById(VIEWS.SEARCH);
         const cinemaView = document.getElementById(VIEWS.CINEMA);
         const dashboardView = document.getElementById(VIEWS.DASHBOARD);
-        const sidebar = document.getElementById(VIEWS.SIDEBAR);
 
         // PRIORITY 1: Search Overlay
         if (searchOverlay && searchOverlay.classList.contains('active')) {
@@ -47,10 +45,8 @@
     const islandCandidates = islandSearch ? Array.from(islandSearch.querySelectorAll(SELECTOR)) : [];
     
     const dashCandidates = dashboardView ? Array.from(dashboardView.querySelectorAll(SELECTOR)) : [];
-    const sidebarCandidates = sidebar ? Array.from(sidebar.querySelectorAll(SELECTOR)) : [];
     
-    // Include islandCandidates in the return array
-    return [...islandCandidates, ...sidebarCandidates, ...dashCandidates].filter(isVisible);
+    return [...islandCandidates, ...dashCandidates].filter(isVisible);
     }
 
     /**

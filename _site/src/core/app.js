@@ -233,20 +233,12 @@ const RTL_CODES = new Set(['ar', 'dv', 'fa', 'he', 'ku', 'ps', 'sd', 'ur', 'ug']
         },
         display: {
             title: document.getElementById('chapter-title'),
-            verse: document.getElementById('verse-text'),
-            verseNext: document.getElementById('verse-text-next'),
             trans: document.getElementById('translation-text'),
             container: document.getElementById('content-display')
         },
         views: {
             dashboard: document.getElementById('dashboard-view'),
             cinema: document.getElementById('cinema-view')
-        },
-        sidebar: {
-            container: document.getElementById('tv-sidebar'),
-            home: document.getElementById('nav-home'),
-            search: document.getElementById('nav-search'),
-            profile: document.getElementById('nav-profile')
         },
         search: {
             overlay: document.getElementById('search-overlay'),
@@ -487,7 +479,6 @@ function switchView(viewName) {
             elements.views.cinema.style.opacity = '1';
         }
         stopPreview();
-        if (elements.sidebar.container) elements.sidebar.container.style.display = 'none';
         document.body.classList.remove('home');
         
         setTimeout(() => {
@@ -502,7 +493,6 @@ function switchView(viewName) {
             elements.views.cinema.style.opacity = '0';
         }
         if (elements.views.dashboard) elements.views.dashboard.classList.add('active');
-        if (elements.sidebar.container) elements.sidebar.container.style.display = 'none';
         if (elements.quranAudio) elements.quranAudio.pause();
         if (elements.transAudio) elements.transAudio.pause();
         refreshDashboard();
@@ -761,16 +751,6 @@ async function updateHeroPreview(chapterNum, startVerse, reciterId, autoPlay) {
         previewSequence.push(i);
     }
 
-    const verseNum = previewSequence[0];
-    const imgUrl = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chapterNum}_${verseNum}.png`;
-    
-    const tempImg = new Image();
-    tempImg.src = imgUrl;
-    tempImg.onload = () => {
-        const heroImg = document.getElementById('door-hero-img');
-        if (heroImg) heroImg.src = imgUrl;
-    };
-
     const transId = getSelectValue(elements.selects.trans) || 'en';
     if (transId && !translationCache[transId]) {
         await loadTranslationData(transId);
@@ -794,21 +774,6 @@ async function playPreviewStep(chapterNum, reciterId) {
 
     const padCh = String(chapterNum).padStart(3, '0');
     const targetWav = `https://hosting.opentuwa.com/${padCh}.wav`;
-    
-    const imgLayer = document.getElementById('hero-preview-layer');
-    const previewImg = document.getElementById('preview-img');
-    const newSrc = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chapterNum}_${verseNum}.png`;
-
-    if (previewImg) {
-        previewImg.style.opacity = 0;
-        setTimeout(() => {
-            previewImg.src = newSrc;
-            previewImg.onload = () => {
-                previewImg.style.opacity = 0.6;
-                if (imgLayer) imgLayer.classList.add('active');
-            };
-        }, 200);
-    }
 
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
     const transId = saved.trans || 'en';
@@ -1212,34 +1177,6 @@ async function loadVerse(autoplay = true) {
     if (elements.display.title) {
         elements.display.title.innerHTML = `${currentChapterData.title} <span class="chapter-subtitle">(${chNum}:${vNum})</span>`;
     }
-    
-    const newSrc = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chNum}_${vNum}.png`;
-    const img1 = elements.display.verse;
-    const img2 = elements.display.verseNext;
-
-    if (img1 && img2) {
-        let imgReady = false;
-        if(img1.src === newSrc || img2.src === newSrc) imgReady = true;
-
-        const isImg1Active = img1.classList.contains('active-verse-img');
-        const activeImg = isImg1Active ? img1 : img2;
-        const nextImg = isImg1Active ? img2 : img1;
-
-        if(!imgReady && autoplay) toggleBuffering(true);
-
-        nextImg.src = newSrc;
-        nextImg.onload = () => {
-            activeImg.classList.remove('active-verse-img');
-            nextImg.classList.add('active-verse-img');
-            toggleBuffering(false); 
-        };
-        
-        if (nextImg.complete && nextImg.naturalHeight !== 0) {
-            activeImg.classList.remove('active-verse-img');
-            nextImg.classList.add('active-verse-img');
-            toggleBuffering(false);
-        }
-    }
 
     const tid = getSelectValue(elements.selects.trans);
     if(tid && !translationCache[tid]) {
@@ -1281,10 +1218,6 @@ function bufferNextResources(currentChIdx, currentVIdx) {
     const nextCh = quranData[nextChIdx].chapterNumber;
     const nextV = quranData[nextChIdx].verses[nextVIdx].verseNumber;
 
-    const img = new Image();
-    img.src = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${nextCh}_${nextV}.png`;
-
-    // Prefetch timing metadata and next WAV segment
     getChapterTiming(nextCh);
 
     const padCh = String(nextCh).padStart(3, '0');
@@ -1486,25 +1419,6 @@ function setupEventListeners() {
                             if (elements.display.trans) elements.display.trans.textContent = '';
                         } else {
                             updateTranslationText(chNum, matchingVerse.verse);
-                        }
-
-                        const newSrc = `https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/images/img/${chNum}_${matchingVerse.verse}.png`;
-                        const img1 = elements.display.verse;
-                        const img2 = elements.display.verseNext;
-                        if (img1 && img2) {
-                            const isImg1Active = img1.classList.contains('active-verse-img');
-                            const activeImg = isImg1Active ? img1 : img2;
-                            const nextImg = isImg1Active ? img2 : img1;
-
-                            nextImg.src = newSrc;
-                            nextImg.onload = () => {
-                                activeImg.classList.remove('active-verse-img');
-                                nextImg.classList.add('active-verse-img');
-                            };
-                            if (nextImg.complete && nextImg.naturalHeight !== 0) {
-                                activeImg.classList.remove('active-verse-img');
-                                nextImg.classList.add('active-verse-img');
-                            }
                         }
 
                         saveState();
