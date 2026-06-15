@@ -301,6 +301,10 @@ function initCustomSelects(mode = 0) {
         const trigger = wrapper.querySelector('.custom-select-trigger');
         if (!trigger) return;
         
+        trigger.setAttribute('role', 'combobox');
+        trigger.setAttribute('aria-haspopup', 'listbox');
+        trigger.setAttribute('aria-expanded', 'false');
+
         trigger.addEventListener('click', (e) => {
             e.stopPropagation(); 
             e.preventDefault();
@@ -314,27 +318,40 @@ function initCustomSelects(mode = 0) {
             const isOpen = wrapper.classList.contains('open');
 
             document.querySelectorAll('.custom-select-wrapper.open').forEach(other => {
+                if (other !== wrapper) {
+                    const otherTrigger = other.querySelector('.custom-select-trigger');
+                    if (otherTrigger) otherTrigger.setAttribute('aria-expanded', 'false');
+                }
                 other.classList.remove('open');
             });
             
             if (!isOpen) {
                 wrapper.classList.add('open');
+                trigger.setAttribute('aria-expanded', 'true');
+                const optionsContainer = wrapper.querySelector('.custom-options');
+                if (optionsContainer) optionsContainer.setAttribute('role', 'listbox');
                 const selected = wrapper.querySelector('.custom-option.selected');
                 if (selected) {
-                    setTimeout(() => selected.scrollIntoView({ block: 'center' }), 10);
+                    selected.scrollIntoView({ block: 'center' });
                 } else {
                     const list = wrapper.querySelector('.custom-options');
                     if(list) list.scrollTop = 0;
                 }
             } else {
                 wrapper.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
             }
         });
         
         trigger.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
+            if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
                 trigger.click();
+            }
+            if (e.key === 'Escape' && wrapper.classList.contains('open')) {
+                wrapper.classList.remove('open');
+                trigger.setAttribute('aria-expanded', 'false');
+                trigger.focus();
             }
         });
     });
@@ -356,12 +373,16 @@ function populateCustomSelect(wrapper, items, onChange) {
     
     const fragment = document.createDocumentFragment();
 
+    optionsContainer.setAttribute('role', 'listbox');
+
     items.forEach(item => {
         const opt = document.createElement('div');
         opt.className = 'custom-option';
         opt.dataset.value = item.value;
         opt.textContent = item.text;
-        opt.tabIndex = 0; 
+        opt.tabIndex = 0;
+        opt.setAttribute('role', 'option');
+        opt.id = 'option-' + wrapper.id + '-' + item.value; 
 
         const handleSelection = (e) => {
             e.preventDefault();
@@ -481,27 +502,34 @@ function mergeMetadata(apiChapters) {
 
 function switchView(viewName) {
     if(viewName === 'cinema') {
-        if (elements.views.dashboard) elements.views.dashboard.classList.remove('active');
+        if (elements.views.dashboard) {
+            elements.views.dashboard.classList.remove('active');
+            elements.views.dashboard.setAttribute('aria-hidden', 'true');
+        }
         if (elements.views.cinema) {
             elements.views.cinema.classList.add('active');
-            elements.views.cinema.style.opacity = '1';
+            elements.views.cinema.removeAttribute('aria-hidden');
+        }
+        if (elements.search && elements.search.overlay) {
+            elements.search.overlay.setAttribute('aria-hidden', 'true');
         }
         stopPreview();
         if (elements.sidebar.container) elements.sidebar.container.style.display = 'none';
         document.body.classList.remove('home');
         
-        setTimeout(() => {
-            if (elements.selects.chapter) {
-                const chapterTrigger = elements.selects.chapter.querySelector('.custom-select-trigger');
-                if(chapterTrigger) chapterTrigger.focus();
-            }
-        }, 150);
+        if (elements.selects.chapter) {
+            const chapterTrigger = elements.selects.chapter.querySelector('.custom-select-trigger');
+            if(chapterTrigger) chapterTrigger.focus();
+        }
     } else {
         if (elements.views.cinema) {
             elements.views.cinema.classList.remove('active');
-            elements.views.cinema.style.opacity = '0';
+            elements.views.cinema.setAttribute('aria-hidden', 'true');
         }
-        if (elements.views.dashboard) elements.views.dashboard.classList.add('active');
+        if (elements.views.dashboard) {
+            elements.views.dashboard.classList.add('active');
+            elements.views.dashboard.removeAttribute('aria-hidden');
+        }
         if (elements.sidebar.container) elements.sidebar.container.style.display = 'none';
         if (elements.quranAudio) elements.quranAudio.pause();
         if (elements.transAudio) elements.transAudio.pause();
@@ -526,6 +554,10 @@ window.addEventListener('popstate', (event) => {
 async function initializeApp() {
     try {
         initCustomSelects();
+
+        /* Set initial aria-hidden states */
+        if (elements.views.cinema) elements.views.cinema.setAttribute('aria-hidden', 'true');
+        if (elements.search && elements.search.overlay) elements.search.overlay.setAttribute('aria-hidden', 'true');
 
         const jsonResponse = await fetch('https://raw.githubusercontent.com/Quran-lite-pages-dev/Quran-lite.pages.dev/refs/heads/master/assets/data/translations/2TM3TM.json');
         if (!jsonResponse.ok) throw new Error("Failed to load Quran JSON");
@@ -630,6 +662,8 @@ function fillRow(elementId, indexArray) {
         const card = document.createElement('div');
         card.className = 'surah-card';
         card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', surah.english_name);
         
         let cardTitle = surah.english_name;
         if (window.t) {
@@ -913,7 +947,9 @@ function launchPlayer(chapterNum, verseNum = 1) {
 
     const streamToken = encodeStream(chapterNum, verseNum, currentReciter, currentTrans, currentAudioTrans);
     const newUrl = `?stream=${streamToken}`;
-    window.location.assign(newUrl);
+    window.history.pushState({ view: 'cinema', stream: streamToken }, '', newUrl);
+    switchView('cinema');
+    restoreState();
 }
 
 // --- PLAYER HELPERS ---
@@ -1401,17 +1437,8 @@ function nextVerse() {
 }
 
 function adjustFontSize() {
-    const el = elements.display.trans;
-    if (!el || window.innerWidth <= 768) return; 
-
-    el.style.fontSize = '3.5rem';
-    let iter = 0;
-    while (el.scrollHeight > el.clientHeight && iter < 50) {
-        let size = parseFloat(window.getComputedStyle(el).fontSize);
-        if (size <= 16) break;
-        el.style.fontSize = (size - 1) + 'px';
-        iter++;
-    }
+    /* Removed — was bypassing Dynamic Type, violating HIG accessibility.
+       System font scaling is now handled purely via CSS (rem-based sizing). */
 }
 
 function setupEventListeners() {
@@ -1652,11 +1679,17 @@ function renderKeyboard() {
             btn.className = 'key';
             btn.textContent = key;
             btn.tabIndex = 0;
+            btn.setAttribute('role', 'button');
+            const keyLabels = { 'SPACE': 'Space', 'DEL': 'Delete', 'CLEAR': 'Clear', 'ENTER': 'Enter' };
+            btn.setAttribute('aria-label', keyLabels[key] || key);
             if (['SPACE', 'DEL', 'CLEAR'].includes(key)) btn.classList.add('wide');
 
             btn.onclick = () => handleKeyPress(key);
             btn.onkeydown = (e) => {
-                if (e.key === 'Enter') handleKeyPress(key);
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleKeyPress(key);
+                }
             };
 
             grid.appendChild(btn);
@@ -1682,65 +1715,59 @@ function handleKeyPress(key) {
     }
 }
 
+function focusTrap(container, event) {
+    if (!container || !container.classList.contains('active')) return;
+    const focusable = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.key === 'Tab') {
+        if (event.shiftKey && document.activeElement === first) {
+            event.preventDefault();
+            last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+            event.preventDefault();
+            first.focus();
+        }
+    }
+}
+
 function openSearch() {
-    if (elements.search.overlay) elements.search.overlay.classList.add('active');
-    setTimeout(() => {
+    if (elements.search.overlay) {
+        elements.search.overlay.classList.add('active');
+        elements.search.overlay.setAttribute('role', 'dialog');
+        elements.search.overlay.setAttribute('aria-modal', 'true');
+        elements.search.overlay.setAttribute('aria-label', 'Search');
+        elements.search.overlay.removeAttribute('aria-hidden');
+        elements.search.overlay.addEventListener('keydown', (e) => focusTrap(elements.search.overlay, e));
         if (elements.search.keyboardGrid) {
             const firstKey = elements.search.keyboardGrid.querySelector('.key');
             if(firstKey) firstKey.focus();
         }
-    }, 100);
+    }
 }
 
 function closeSearch() {
-    if (elements.search.overlay) elements.search.overlay.classList.remove('active');
+    if (elements.search.overlay) {
+        elements.search.overlay.classList.remove('active');
+        elements.search.overlay.setAttribute('aria-hidden', 'true');
+        elements.search.overlay.removeAttribute('role');
+        elements.search.overlay.removeAttribute('aria-modal');
+    }
     const doorPlayBtn = document.getElementById('door-play-btn');
     if (doorPlayBtn) doorPlayBtn.focus();
 }
 
-document.addEventListener('DOMContentLoaded', initializeApp);
-
-/* --- GLOBAL VERTICAL TO HORIZONTAL SCROLL MAPPING --- */
-document.addEventListener("DOMContentLoaded", () => {
-    if (window.location.href.includes("chapter") || window.location.href.includes("stream")) {
-        return; 
-    }
-
-    const row = document.getElementById("all-row");
-    
-    if (row) {
-        window.addEventListener("wheel", (e) => {
-            if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-                e.preventDefault();
-                row.scrollLeft += e.deltaY;
-            }
-        }, { passive: false });
-
-        let touchStartY = 0;
-        let touchStartX = 0;
-
-        window.addEventListener("touchstart", (e) => {
-            touchStartY = e.touches[0].clientY;
-            touchStartX = e.touches[0].clientX;
-        }, { passive: false });
-
-        window.addEventListener("touchmove", (e) => {
-            const touchCurrentY = e.touches[0].clientY;
-            const touchCurrentX = e.touches[0].clientX;
-            
-            const deltaY = touchStartY - touchCurrentY;
-            const deltaX = touchStartX - touchCurrentX;
-
-            if (Math.abs(deltaY) > Math.abs(deltaX)) {
-                e.preventDefault(); 
-                row.scrollLeft += deltaY; 
-                
-                touchStartY = touchCurrentY;
-                touchStartX = touchCurrentX;
-            }
-        }, { passive: false });
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && elements.search && elements.search.overlay && elements.search.overlay.classList.contains('active')) {
+        closeSearch();
     }
 });
+
+document.addEventListener('DOMContentLoaded', initializeApp);
+
+/* HORIZONTAL SCROLL for card rows — uses native horizontal scroll,
+   does NOT intercept system vertical scroll or touch gestures. */
 
 (function() {
     const targetId = 'island-search-wrapper';

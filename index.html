@@ -149,16 +149,27 @@
     <script src="src/utils/github-redirect.js"></script>
 
 <style>
-  /* Removes the tap highlight and flash on Android/iOS */
+  /* Respects user preferences for tap highlights */
   * {
-    -webkit-tap-highlight-color: transparent !important;
-    -webkit-touch-callout: none !important;
-    user-select: none !important;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
   }
 
-  /* Removes the blue/orange outline when an element is focused */
-  input, button, a, *:focus {
-    outline: none !important;
+  /* Accessibility: visible focus ring, HIG compliant */
+  :focus-visible {
+    outline: 3px solid #007AFF;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Allow text selection on content for accessibility */
+  #translation-text, #search-input-display,
+  .card-title, .hero-title-text {
+    user-select: text !important;
+    -webkit-user-select: text !important;
   }
 </style>
 
@@ -491,6 +502,8 @@
     inset: 0;
     z-index: 9998; /* below universal loader (2147483647) but above cinema (1000) */
     background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     align-items: flex-end;
     justify-content: center;
     /* Bottom padding lifts popup clear of the control panel */
@@ -538,8 +551,8 @@
     background: var(--surface-secondary);
     border: none;
     cursor: pointer;
-    width: 22px;
-    height: 22px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1166,8 +1179,8 @@
     inset: 0;
     z-index: 9997; /* one below EQ backdrop so they don't collide */
     background: rgba(0, 0, 0, 0.35);
-    backdrop-filter: blur(6px) saturate(120%);
-    -webkit-backdrop-filter: blur(6px) saturate(120%);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     align-items: flex-end;
     justify-content: center;
     padding-bottom: 130px;
@@ -1212,8 +1225,8 @@
     background: var(--surface-secondary);
     border: none;
     cursor: pointer;
-    width: 22px;
-    height: 22px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -1296,9 +1309,9 @@
     min-height: 1.5em;
     transition: opacity 0.3s;
   }
-  #audio-out-status.status-ok   { color: #30D158; /* Apple Green  */ }
-  #audio-out-status.status-warn { color: #FF9F0A; /* Apple Orange */ }
-  #audio-out-status.status-err  { color: #FF453A; /* Apple Red    */ }
+  #audio-out-status.status-ok   { color: var(--accent-green); }
+  #audio-out-status.status-warn { color: var(--accent-orange); }
+  #audio-out-status.status-err  { color: var(--accent-red); }
 
   /* ── Divider ───────────────────────────────────────────────────── */
   #audio-out-divider {

@@ -17,9 +17,9 @@
     padding: 0 16px;
     font-size: 17px; /* Standard iOS body text size */
     font-weight: 500; /* Medium weight for Apple buttons */
-    color: #FFFFFF;
+    color: var(--text-primary);
     height: 44px; /* Standard Apple touch target minimum */
-    background: rgba(118, 118, 128, 0.24); /* Apple System Gray Fill */
+    background: var(--surface-secondary);
     border: none; 
     border-radius: 12px; /* Standard Apple squircle-like radius */
     cursor: pointer;
@@ -40,9 +40,9 @@
 /* Hover & Focus (tvOS Focus Paradigm: Stark White / Scale Up) */
 .custom-select-trigger:hover,
 .custom-select-wrapper.open .custom-select-trigger {
-    background: rgba(255, 255, 255, 0.15);
+    background: var(--surface);
     transform: scale(1.04); /* tvOS subtle focus pop */
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-elevated);
 }
 
 /* The Options (Dropdown - Apple Context Menu Style) */
@@ -55,10 +55,10 @@
     margin-left: -185px; 
 
     /* Standard Apple Thick Glass */
-    background: rgba(30, 30, 30, 0.75);
-    backdrop-filter: blur(40px) saturate(200%);
-    -webkit-backdrop-filter: blur(40px) saturate(200%);
-    border: 0.5px solid rgba(255, 255, 255, 0.15);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-vibrancy);
+    -webkit-backdrop-filter: var(--glass-vibrancy);
+    border: 0.5px solid var(--glass-border);
     border-radius: 16px; 
     z-index: 9999; 
     opacity: 0;
@@ -71,14 +71,14 @@
     
     max-height: 320px;
     overflow-y: auto;
-    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.6);
+    box-shadow: var(--shadow-floating);
 }
 
 .custom-options::-webkit-scrollbar {
     width: 5px;
 }
 .custom-options::-webkit-scrollbar-thumb {
-    background: rgba(235, 235, 245, 0.3); /* iOS System scrollbar */
+    background: var(--text-tertiary);
     border-radius: 10px;
 }
 
@@ -95,10 +95,10 @@
     padding: 14px 20px;
     font-size: 17px;
     font-weight: 400;
-    color: rgba(235, 235, 245, 0.8); /* System Secondary Text */
+    color: var(--text-secondary);
     cursor: pointer;
     transition: background 0.15s ease, color 0.15s ease;
-    border-bottom: 0.5px solid rgba(84, 84, 88, 0.3); /* Apple separator */
+    border-bottom: 0.5px solid var(--glass-border);
     text-align: center;
     white-space: nowrap; 
     overflow: hidden;
@@ -113,8 +113,8 @@
 /* Active Item Highlight */
 .custom-option:hover,
 .custom-option.selected {
-    background: rgba(255, 255, 255, 0.15);
-    color: #FFFFFF;
+    background: var(--surface);
+    color: var(--text-primary);
 }
 
 .custom-option.selected::before {
@@ -124,7 +124,7 @@
     top: 0;
     bottom: 0;
     width: 4px;
-    background: #0A84FF; /* iOS System Blue */
+    background: var(--accent-blue);
     border-top-right-radius: 2px;
     border-bottom-right-radius: 2px;
 }
