@@ -1,14 +1,14 @@
 {
   "name": "Tuwa",
   "short_name": "Tuwa",
-  "description": "Premium distraction-free Quran audio streaming with translations and verse-by-verse navigation. A brand of Tuwa Media.",
-  "start_url": "/?utm_source=web_app_manifest",
+  "description": "Premium distraction-free Quran audio streaming with translations and verse-by-verse navigation.",
+  "start_url": "/",
   "display": "standalone",
-  "background_color": "#000000",
-  "theme_color": "#000000",
+  "background_color": "#1C1C1E",
+  "theme_color": "#1C1C1E",
   "orientation": "portrait-primary",
   "scope": "/",
-  "categories": ["music", "education", "books", "entertainment"],
+  "categories": ["education", "books"],
   "icons": [
     {
       "src": "https://opentuwa.com/assets/ui/favicon-96x96.png",
@@ -36,17 +36,6 @@
       "description": "Listen to Surah Al-Baqarah (The Cow)",
       "url": "/?stream=eyJjaGFwdGVyIjoyLCJ2ZXJzZSI6MSwicmVjaXRlciI6ImFsYWZhc3kiLCJ0cmFucyI6ImVuIiwiYXVkaW9fdHJhbnMiOiJub25lIn0",
       "icons": [{ "src": "/assets/favicon/web-app-manifest-192x192.png", "sizes": "192x192" }]
-    }
-  ],
-  "related_applications": [
-    {
-      "platform": "play",
-      "url": "https://play.google.com/store/apps/details?id=com.tuwa.audio",
-      "id": "com.tuwa.audio"
-    },
-    {
-      "platform": "itunes",
-      "url": "https://itunes.apple.com/app/tuwa-audio"
     }
   ],
   "prefer_related_applications": false

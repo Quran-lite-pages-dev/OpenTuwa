@@ -3,13 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="referrer" content="no-referrer-when-downgrade">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     
     <!-- Apple Ecosystem Meta Tags -->
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#000000">
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1C1C1E">
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F2F2F7">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Tuwa">
@@ -128,48 +127,27 @@
     });
     </script>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://everyayah.com">
     <link rel="preconnect" href="https://raw.githubusercontent.com">
-    <!-- Fallback web fonts (Apple Native fonts handled strictly via CSS) -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400..700;1,400..700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     
     <script src="src/ui/error-handling-img.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDWXFDCQRH"></script>
     
     <!-- Core Application Styles (Apple HIG Compliant) -->
     <link id="main-css" rel="stylesheet" href="styles/index1.css" fetchpriority="high">
     <link id="custom-select-css" rel="stylesheet" href="styles/custom-select.css" fetchpriority="high">
-    <link rel="stylesheet" href="styles/user-select.css">
-    <link rel="stylesheet" href="styles/inline-styles.css">
     
     <script src="src/utils/i18n-loader.js"></script>
-    <script src="src/utils/analytics.js"></script>
     <script src="src/utils/github-redirect.js"></script>
 
 <style>
-  /* Respects user preferences for tap highlights */
-  * {
-    -webkit-tap-highlight-color: transparent;
-    -webkit-touch-callout: none;
-  }
-
-  /* Accessibility: visible focus ring, HIG compliant */
+  /* Accessibility: visible focus ring, HIG compliant (Section 47) */
   :focus-visible {
     outline: 3px solid #007AFF;
     outline-offset: 2px;
-    border-radius: 4px;
+    border-radius: 8px;
   }
   :focus:not(:focus-visible) {
     outline: none;
-  }
-
-  /* Allow text selection on content for accessibility */
-  #translation-text, #search-input-display,
-  .card-title, .hero-title-text {
-    user-select: text !important;
-    -webkit-user-select: text !important;
   }
 </style>
 
@@ -181,7 +159,7 @@
       #_universal_loader {
         position: fixed;
         top: 0; left: 0; width: 100vw; height: 100vh;
-        background-color: #000000;
+        background-color: #1C1C1E;
         z-index: 2147483647;
         opacity: 1;
         display: flex;
