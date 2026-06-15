@@ -91,9 +91,15 @@
 
 /* --- 1. GLOBAL RESET & TYPOGRAPHY --- */
 * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+
+*::-webkit-scrollbar {
+    display: none !important;
 }
 
 html {
