@@ -619,7 +619,6 @@ function fillRow(elementId, indexArray) {
         card.innerHTML = `
             <div class="card-bg-num">${surah.chapterNumber}</div>
             <div class="card-title">${surah.english_name}</div>
-            <div class="card-sub">${surah.title || ''}</div>
         `;
         card.onclick = () => launchPlayer(surah.chapterNumber, 1);
         card.onfocus = () => { schedulePreview(surah.chapterNumber); };

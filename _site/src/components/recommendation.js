@@ -124,7 +124,6 @@
                 card.innerHTML = `
                     <div class="card-bg-num" style="color:rgba(0,255,187,0.05)">${surah.chapterNumber}</div>
                     <div class="card-title">${cardTitle}</div>
-                    <div class="card-sub">${surah.title || ''}</div>
                 `;
                 
                 // Use the global launchPlayer (which is now patched!)
