@@ -616,18 +616,9 @@ function fillRow(elementId, indexArray) {
         card.className = 'surah-card';
         card.tabIndex = 0;
         
-        let cardTitle = surah.english_name;
-        if (window.t) {
-            const translatedKey = 'surahNames.' + surah.english_name;
-            const translatedName = window.t(translatedKey);
-            if (translatedName && translatedName !== translatedKey) {
-                cardTitle = translatedName;
-            }
-        }
-        
         card.innerHTML = `
             <div class="card-bg-num">${surah.chapterNumber}</div>
-            <div class="card-title">${cardTitle}</div>
+            <div class="card-title">${surah.english_name}</div>
             <div class="card-sub">${surah.title || ''}</div>
         `;
         card.onclick = () => launchPlayer(surah.chapterNumber, 1);

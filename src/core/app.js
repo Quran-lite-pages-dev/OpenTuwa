@@ -650,18 +650,9 @@ function fillRow(elementId, indexArray) {
         card.setAttribute('role', 'button');
         card.setAttribute('aria-label', surah.english_name);
         
-        let cardTitle = surah.english_name;
-        if (window.t) {
-            const translatedKey = 'surahNames.' + surah.english_name;
-            const translatedName = window.t(translatedKey);
-            if (translatedName && translatedName !== translatedKey) {
-                cardTitle = translatedName;
-            }
-        }
-        
         card.innerHTML = `
             <div class="card-bg-num">${surah.chapterNumber}</div>
-            <div class="card-title">${cardTitle}</div>
+            <div class="card-title">${surah.english_name}</div>
             <div class="card-sub">${surah.title || ''}</div>
         `;
         card.onclick = () => launchPlayer(surah.chapterNumber, 1);
