@@ -91,18 +91,25 @@
 
 /* --- 1. GLOBAL RESET & TYPOGRAPHY --- */
 * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
+*::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+}
+
 html {
-    font-size: 62.5%;
     background-color: var(--bg);
 }
 
 body {
-    /* Strict San Francisco Typography Stack - Apple HIG Section 13 */
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
     background-color: var(--bg);
     color: var(--text-primary);
@@ -110,11 +117,10 @@ body {
     font-size: 17px;
     letter-spacing: -0.022em;
     font-weight: 400;
-    min-height: 100vh;
-    min-height: -webkit-fill-available;
+    height: 100vh;
+    height: -webkit-fill-available;
     width: 100vw;
-    overflow-x: hidden;
-    overflow-y: auto;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     -webkit-font-smoothing: antialiased;
@@ -130,47 +136,47 @@ img { object-fit: cover; }
 /* --- 2. APP BRANDING --- */
 .app-brand {
     position: fixed;
-    top: max(40px, env(safe-area-inset-top, 40px));
-    inset-inline-end: max(16px, env(safe-area-inset-right, 16px));
+    top: max(24px, env(safe-area-inset-top, 24px));
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 9000;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 12px;
     text-decoration: none;
-    height: 44px;
-    transform-origin: center right;
+    height: 48px;
     transition: var(--transition-spring);
     cursor: pointer;
-    padding: 0 8px;
+    padding: 0 16px;
 }
 
-html[dir="rtl"] .app-brand { transform-origin: center left; }
+html[dir="rtl"] .app-brand { }
 
 .app-brand:hover {
-    opacity: 0.8;
-    transform: scale(0.98);
+    opacity: 0.85;
 }
 
 .brand-icon img {
-    width: 108px;
-    height: 58px;
+    width: 44px;
+    height: 44px;
     display: block;
     object-fit: contain;
-    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.15));
 }
 
 .brand-text {
-    font-weight: 600;
-    font-size: 28px;
-    letter-spacing: -0.03em;
+    font-weight: 700;
+    font-size: 32px;
+    letter-spacing: -0.04em;
     color: var(--text-primary);
     line-height: 1;
     white-space: nowrap;
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 768px) {
     .brand-text { display: none; }
-    .app-brand { inset-inline-end: 16px; top: max(16px, env(safe-area-inset-top, 16px)); }
+    .app-brand { top: max(16px, env(safe-area-inset-top, 16px)); }
 }
 
 /* --- 3. DYNAMIC ISLAND SEARCH BOX --- */
@@ -425,8 +431,7 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     display: none;
     flex-direction: column;
     justify-content: flex-start;
-    overflow-y: auto !important;
-    scroll-behavior: smooth;
+    overflow: hidden;
 }
 
 #dashboard-view.active { display: flex; animation: fade-in 0.6s var(--transition-spring); }
@@ -783,6 +788,7 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     transition: var(--transition-spring);
 }
 
+#cinema-view.active #chapter-title { display: none !important; }
 body.idle #chapter-title { opacity: 0; transform: translateY(-20px); }
 
 #translation-text {
@@ -1051,9 +1057,8 @@ select:focus, select:hover {
 }
 
 @media screen and (min-width: 2500px) {
-    html { font-size: 100%; }
     .surah-card { flex: 0 0 320px; }
-    .hero-banner { padding: 0 32px; }
+    .hero-banner { padding: 0 48px; }
 }
 
 /* --- IMPORTED: inline-styles.css content (consolidated) --- */
