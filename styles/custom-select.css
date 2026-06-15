@@ -1,72 +1,71 @@
 /* styles/custom-select.css */
-/* 100% Apple HIG Compliant Update (tvOS/iOS Context Menus) */
+/* Apple HIG Compliant - Sections 14, 32, 37 */
 
 .custom-select-wrapper {
     position: relative;
     user-select: none;
-    width: 200px;
+    width: 100%;
+    max-width: 200px;
 }
 
-/* The Trigger: Apple System Button Style (iOS/tvOS Dark Mode) */
+/* The Trigger: Apple HIG Button Style (Sections 26, 32) */
 .custom-select-trigger {
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: flex-start; 
+    justify-content: flex-start;
     
     padding: 0 16px;
-    font-size: 17px; /* Standard iOS body text size */
-    font-weight: 500; /* Medium weight for Apple buttons */
+    font-size: 17px;
+    font-weight: 500;
     color: var(--text-primary);
-    height: 44px; /* Standard Apple touch target minimum */
+    min-height: 44px;
     background: var(--surface-secondary);
-    border: none; 
-    border-radius: 12px; /* Standard Apple squircle-like radius */
+    border: none;
+    border-radius: 12px;
     cursor: pointer;
     transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1), background 0.2s ease, box-shadow 0.2s ease;
     
-    width: 100%; 
+    width: 100%;
 }
 
 .custom-select-trigger span {
-    margin: 0 auto; 
+    margin: 0 auto;
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    letter-spacing: -0.41px; /* Standard Apple SF Pro letter tracking */
+    letter-spacing: -0.41px;
 }
 
-/* Hover & Focus (tvOS Focus Paradigm: Stark White / Scale Up) */
 .custom-select-trigger:hover,
 .custom-select-wrapper.open .custom-select-trigger {
     background: var(--surface);
-    transform: scale(1.04); /* tvOS subtle focus pop */
     box-shadow: var(--shadow-elevated);
 }
 
-/* The Options (Dropdown - Apple Context Menu Style) */
+/* The Options Dropdown - Apple Context Menu Style (Section 14) */
 .custom-options {
     position: absolute;
-    bottom: calc(100% + 8px); 
+    bottom: calc(100% + 8px);
     
-    width: 370px; 
-    left: 50%; 
-    margin-left: -185px; 
+    width: 280px;
+    left: 50%;
+    margin-left: -140px;
 
-    /* Standard Apple Thick Glass */
+    /* Apple Material */
     background: var(--glass-bg);
     backdrop-filter: var(--glass-vibrancy);
     -webkit-backdrop-filter: var(--glass-vibrancy);
     border: 0.5px solid var(--glass-border);
-    border-radius: 16px; 
-    z-index: 9999; 
+    border-radius: 16px;
+    z-index: 9999;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
     
-    /* Apple Spring simulation */
-    transform: translateY(10px) scale(0.95); 
+    /* Apple spring animation */
+    transform: translateY(8px) scale(0.95);
     transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
     
     max-height: 320px;
@@ -92,7 +91,7 @@
 .custom-option {
     position: relative;
     display: block;
-    padding: 14px 20px;
+    padding: 12px 16px;
     font-size: 17px;
     font-weight: 400;
     color: var(--text-secondary);
@@ -100,7 +99,7 @@
     transition: background 0.15s ease, color 0.15s ease;
     border-bottom: 0.5px solid var(--glass-border);
     text-align: center;
-    white-space: nowrap; 
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     letter-spacing: -0.41px;
@@ -130,16 +129,16 @@
 }
 
 @media (max-width: 768px) {
-    .custom-select-wrapper { width: 100%; }
+    .custom-select-wrapper { width: 100%; max-width: none; }
     
     .custom-options {
-        width: calc(100% - 32px);
+        width: calc(100vw - 32px);
         left: 16px;
-        margin-left: 0; 
-        bottom: 16px; 
+        margin-left: 0;
+        bottom: 16px;
         top: auto;
-        transform: translateY(20px) scale(0.95);
-        position: fixed; 
+        transform: translateY(16px) scale(0.95);
+        position: fixed;
         max-height: 60vh;
     }
     .custom-select-wrapper.open .custom-options { transform: translateY(0) scale(1); }

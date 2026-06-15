@@ -6,13 +6,16 @@
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     
-    <!-- Apple Ecosystem Meta Tags -->
+    <!-- Apple Ecosystem Meta Tags (HIG Sections 3, 9, 47) -->
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1C1C1E">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F2F2F7">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Tuwa">
     <meta name="application-name" content="Tuwa">
+    <meta name="apple-mobile-web-app-orientations" content="portrait-primary">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
     
     <title>Tuwa - Premium Audio Player</title>
     <meta name="description" content="Listen to premium content with distraction-free viewing. A brand of Tuwa Media.">
@@ -20,10 +23,15 @@
     <link rel="manifest" href="/manifest.json">
     <link type="text/plain" rel="author" href="humans.txt" />
 
+    <!-- Apple Touch Icons - all required sizes (HIG Section 9) -->
     <link rel="icon" type="image/png" href="https://opentuwa.com/assets/ui/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="https://opentuwa.com/assets/ui/favicon.svg" />
     <link rel="shortcut icon" href="https://opentuwa.com/assets/ui/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="https://opentuwa.com/assets/ui/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="https://opentuwa.com/assets/ui/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="https://opentuwa.com/assets/ui/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="https://opentuwa.com/assets/ui/apple-touch-icon.png" />
+    <link rel="mask-icon" href="https://opentuwa.com/assets/ui/favicon.svg" color="#1C1C1E">
 
     <!-- OpenGraph & Twitter Cards -->
     <meta property="og:site_name" content="Tuwa">
@@ -142,7 +150,7 @@
 <style>
   /* Accessibility: visible focus ring, HIG compliant (Section 47) */
   :focus-visible {
-    outline: 3px solid #007AFF;
+    outline: 3px solid var(--accent-blue);
     outline-offset: 2px;
     border-radius: 8px;
   }
@@ -478,33 +486,28 @@
     display: none;
     position: fixed;
     inset: 0;
-    z-index: 9998; /* below universal loader (2147483647) but above cinema (1000) */
+    z-index: 9998;
     background: rgba(0, 0, 0, 0.35);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     align-items: flex-end;
     justify-content: center;
-    /* Bottom padding lifts popup clear of the control panel */
-    padding-bottom: 130px;
+    padding-bottom: max(130px, calc(env(safe-area-inset-bottom, 0px) + 80px));
   }
   #eq-backdrop.eq-open { display: flex; }
 
   /* ── Popup Shell ───────────────────────────────────────────────── */
   #eq-popup {
-    background: var(--glass-surface);
+    background: var(--glass-bg);
     border: 0.5px solid var(--glass-border);
     border-radius: var(--radius-squircle);
     box-shadow: var(--shadow-floating);
-    padding: 20px 22px 22px;
+    padding: 16px 20px;
     width: min(320px, 92vw);
-    /* Animate in from below */
-    transform: translateY(20px);
+    transform: translateY(16px);
     opacity: 0;
     transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1),
                 opacity   0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
-    will-change: transform, opacity;
-    transform: translateZ(0);
-    contain: layout paint style;
   }
   #eq-backdrop.eq-open #eq-popup {
     transform: translateY(0);
@@ -519,7 +522,7 @@
     margin-bottom: 16px;
   }
   #eq-popup-title {
-    font-size: 1.1rem;
+    font-size: 15px;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -536,7 +539,7 @@
     align-items: center;
     justify-content: center;
     color: var(--text-secondary);
-    font-size: 1.1rem;
+    font-size: 15px;
     line-height: 1;
     transition: background 0.15s, color 0.15s;
   }
@@ -546,16 +549,16 @@
   .eq-band-row {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 12px;
   }
   .eq-band-row:last-of-type { margin-bottom: 0; }
 
   .eq-band-label {
-    font-size: 1.2rem;
+    font-size: 15px;
     color: var(--text-secondary);
     font-weight: 500;
-    width: 56px;
+    width: 48px;
     flex-shrink: 0;
   }
 
@@ -571,17 +574,16 @@
   }
   .eq-band-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: var(--text-primary);
     box-shadow: var(--shadow-soft);
     cursor: pointer;
   }
-
   .eq-band-slider::-moz-range-thumb {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: var(--text-primary);
     border: none;
@@ -589,7 +591,7 @@
   }
 
   .eq-band-value {
-    font-size: 1.1rem;
+    font-size: 13px;
     color: var(--text-tertiary);
     width: 48px;
     text-align: right;
@@ -602,7 +604,7 @@
   #eq-divider {
     height: 0.5px;
     background: var(--glass-border);
-    margin: 14px 0 12px;
+    margin: 16px 0 12px;
   }
   #eq-reset-btn {
     width: 100%;
@@ -611,162 +613,21 @@
     border: 0.5px solid var(--glass-border);
     border-radius: var(--radius-md);
     color: var(--text-secondary);
-    font-size: 1.2rem;
+    font-size: 15px;
     font-family: inherit;
     cursor: pointer;
     letter-spacing: 0.02em;
     transition: background 0.15s, color 0.15s;
+    min-height: 44px;
   }
   #eq-reset-btn:hover { background: var(--surface-secondary); color: var(--text-primary); }
 
-  /* ── Mobile: stack EQ button in controls-right ─────────────────── */
+  /* ── Mobile ────────────────────────────────────────────────────── */
   @media screen and (max-width: 768px) {
-    #eq-backdrop { padding-bottom: 160px; }
-    #player-island { bottom: 32px; padding: 5px 12px; gap: 8px; }
-    .volume-popover { padding: 10px 14px; }
-    .island-volume-slider { width: 90px; }
+    #eq-backdrop { padding-bottom: max(160px, calc(env(safe-area-inset-bottom, 0px) + 100px)); }
   }
 
-  /* ── Selects Row ────────────────────────────────────────────────── */
-  #selects-row {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    padding: 6px 12px;
-    flex-wrap: wrap;
-  }
-  #selects-row .custom-select-wrapper .custom-select-trigger {
-    font-size: 1.05rem;
-    padding: 4px 10px;
-    border-radius: var(--radius-pill);
-    background: var(--surface-secondary);
-    border: 0.5px solid var(--glass-border);
-    color: var(--text-secondary);
-    cursor: pointer;
-    white-space: nowrap;
-  }
-  #selects-row .custom-select-wrapper .custom-select-trigger:hover {
-    color: var(--text-primary);
-    background: var(--surface);
-  }
-  #selects-row .custom-options {
-    bottom: 100%;
-    top: auto;
-    margin-bottom: 4px;
-  }
-
-  /* ── Player Island (Apple Dynamic Island style) ─────────────────── */
-  #player-island {
-    position: fixed;
-    bottom: 40px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 900;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 6px 14px;
-    background: rgba(28, 28, 30, 0.88);
-    backdrop-filter: blur(50px) saturate(200%);
-    -webkit-backdrop-filter: blur(50px) saturate(200%);
-    border: 0.5px solid rgba(255, 255, 255, 0.1);
-    border-radius: 42px;
-    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5), inset 0 0 0 0.5px rgba(255, 255, 255, 0.06);
-    user-select: none;
-    -webkit-user-select: none;
-  }
-
-  /* Translation select in island */
-  #player-island #translationSelectWrapper .custom-select-trigger {
-    font-size: 1.05rem;
-    padding: 4px 14px;
-    border-radius: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 0.5px solid rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.85);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: background 0.2s;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-  }
-  #player-island #translationSelectWrapper .custom-select-trigger:hover {
-    background: rgba(255, 255, 255, 0.18);
-  }
-  #player-island #translationSelectWrapper .custom-options {
-    bottom: 100%;
-    top: auto;
-    margin-bottom: 6px;
-  }
-
-  /* Play button */
-  .island-play-btn {
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.15);
-    border: none;
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.15s;
-    flex-shrink: 0;
-  }
-  .island-play-btn:hover { background: rgba(255, 255, 255, 0.25); }
-  .island-play-btn:active { transform: scale(0.9); }
-
-  /* Right section */
-  .island-right {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  /* Volume wrap */
-  .island-volume-wrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-  }
-
-  .island-icon-btn {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.65);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: color 0.2s, background 0.2s;
-    flex-shrink: 0;
-  }
-  .island-icon-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
-  .island-icon-btn:active { transform: scale(0.9); }
-
-  /* Volume popover slider */
-  .volume-popover {
-    position: absolute;
-    bottom: calc(100% + 10px);
-    left: 50%;
-    transform: translateX(-50%) scale(0.92);
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    padding: 12px 18px;
-    background: rgba(28, 28, 30, 0.92);
-    backdrop-filter: blur(40px) saturate(200%);
-    -webkit-backdrop-filter: blur(40px) saturate(200%);
-    border: 0.5px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
-    z-index: 110;
-  }
+  /* Volume popover slider (unique to inline) */
   .volume-popover::after {
     content: '';
     position: absolute;
@@ -774,68 +635,18 @@
     left: 50%;
     transform: translateX(-50%);
     border: 6px solid transparent;
-    border-top-color: rgba(28, 28, 30, 0.92);
+    border-top-color: var(--glass-bg);
   }
-  .island-volume-wrap.volume-open .volume-popover {
+
+  /* EQ button active glow (unique to inline) */
+  #eq-btn.eq-active svg {
     opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-    transform: translateX(-50%) scale(1);
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.5));
   }
-
-  .island-volume-slider {
-    width: 120px;
-    height: 4px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 999px;
-    outline: none;
-    cursor: pointer;
+  #audio-out-btn.out-active svg {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.45));
   }
-  .island-volume-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #fff;
-    border: none;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
-    transition: transform 0.15s;
-  }
-  .island-volume-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
-  .island-volume-slider::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #fff;
-    border: none;
-    cursor: pointer;
-  }
-
-  /* EQ & Audio Out icon buttons inside island */
-  #player-island #eq-btn,
-  #player-island #audio-out-btn {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.65);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: color 0.2s, background 0.2s;
-    flex-shrink: 0;
-  }
-  #player-island #eq-btn:hover,
-  #player-island #audio-out-btn:hover { color: #fff; background: rgba(255, 255, 255, 0.1); }
-  #player-island #eq-btn:active,
-  #player-island #audio-out-btn:active { transform: scale(0.9); }
-  #player-island #eq-btn.eq-active,
-  #player-island #audio-out-btn.out-active { color: #fff; }
 </style>
 
 <script>
@@ -1150,22 +961,22 @@
     filter: drop-shadow(0 0 6px rgba(255,255,255,0.45));
   }
 
-  /* ── Backdrop (same layer order / blur as EQ patch) ────────────── */
+  /* ── Backdrop ──────────────────────────────────────────────────── */
   #audio-out-backdrop {
     display: none;
     position: fixed;
     inset: 0;
-    z-index: 9997; /* one below EQ backdrop so they don't collide */
+    z-index: 9997;
     background: rgba(0, 0, 0, 0.35);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     align-items: flex-end;
     justify-content: center;
-    padding-bottom: 130px;
+    padding-bottom: max(130px, calc(env(safe-area-inset-bottom, 0px) + 80px));
   }
   #audio-out-backdrop.out-open { display: flex; }
 
-  /* ── Popup shell (mirrors EQ popup geometry exactly) ───────────── */
+  /* ── Popup shell ──────────────────────────────────────────────── */
   #audio-out-popup {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-vibrancy);
@@ -1173,9 +984,9 @@
     border: 0.5px solid var(--glass-border);
     border-radius: var(--radius-squircle);
     box-shadow: var(--shadow-floating);
-    padding: 20px 22px 22px;
+    padding: 16px 20px;
     width: min(320px, 92vw);
-    transform: translateY(20px);
+    transform: translateY(16px);
     opacity: 0;
     transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1),
                 opacity   0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -1193,7 +1004,7 @@
     margin-bottom: 16px;
   }
   #audio-out-title {
-    font-size: 1.1rem;
+    font-size: 15px;
     font-weight: 600;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -1221,10 +1032,10 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
   }
   #audio-out-device-label-head {
-    font-size: 1.1rem;
+    font-size: 13px;
     color: var(--text-secondary);
     font-weight: 500;
     flex-shrink: 0;
@@ -1235,27 +1046,27 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 1.2rem;
+    font-size: 15px;
     font-weight: 600;
     color: var(--text-primary);
     background: var(--surface-secondary);
     border: 0.5px solid var(--glass-border);
     border-radius: var(--radius-pill);
-    padding: 5px 12px;
+    padding: 8px 12px;
     min-width: 0;
   }
 
   /* ── Action button ─────────────────────────────────────────────── */
   #audio-out-select-btn {
     width: 100%;
-    padding: 11px;
+    padding: 12px;
     background: var(--glass-bg);
     backdrop-filter: var(--glass-vibrancy);
     -webkit-backdrop-filter: var(--glass-vibrancy);
     border: 0.5px solid var(--glass-border);
     border-radius: var(--radius-lg);
     color: var(--text-primary);
-    font-size: 1.3rem;
+    font-size: 17px;
     font-weight: 600;
     font-family: inherit;
     cursor: pointer;
@@ -1265,10 +1076,10 @@
     gap: 8px;
     transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
     box-shadow: var(--shadow-soft);
+    min-height: 44px;
   }
   #audio-out-select-btn:hover {
     background: var(--surface);
-    transform: scale(1.02);
     box-shadow: var(--shadow-elevated);
   }
   #audio-out-select-btn:active { transform: scale(0.98); }
@@ -1280,10 +1091,10 @@
 
   /* ── Status / feedback line ────────────────────────────────────── */
   #audio-out-status {
-    font-size: 1.1rem;
+    font-size: 13px;
     color: var(--text-secondary);
     text-align: center;
-    margin-top: 10px;
+    margin-top: 8px;
     min-height: 1.5em;
     transition: opacity 0.3s;
   }
@@ -1295,19 +1106,19 @@
   #audio-out-divider {
     height: 0.5px;
     background: var(--glass-border);
-    margin: 14px 0 12px;
+    margin: 16px 0 12px;
   }
 
   /* ── Support note ──────────────────────────────────────────────── */
   #audio-out-note {
-    font-size: 1.05rem;
+    font-size: 13px;
     color: var(--text-tertiary);
     line-height: 1.5;
     text-align: center;
   }
 
   @media screen and (max-width: 768px) {
-    #audio-out-backdrop { padding-bottom: 160px; }
+    #audio-out-backdrop { padding-bottom: max(160px, calc(env(safe-area-inset-bottom, 0px) + 100px)); }
   }
 </style>
 

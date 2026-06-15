@@ -1,128 +1,121 @@
 /* styles/custom-select.css */
+/* Apple HIG Compliant - Sections 14, 32, 37 */
 
-/* 1. The "Mom" (Wrapper) */
 .custom-select-wrapper {
     position: relative;
     user-select: none;
-    width: 200px;
-    font-family: 'Inter', sans-serif;
+    width: 100%;
+    max-width: 200px;
 }
 
-/* The Trigger:  Cinematic Style */
+/* The Trigger: Apple HIG Button Style (Sections 26, 32) */
 .custom-select-trigger {
     position: relative;
     display: flex;
     align-items: center;
-    justify-content: flex-start; 
+    justify-content: flex-start;
     
     padding: 0 16px;
-    font-size: 1.1rem; /* Slightly tighter font for that premium look */
-    font-weight: 600;
-    color: #f9f9f9;
-    height: 48px; 
-    background: rgba(255, 255, 255, 0.04); 
-    border: 1.5px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px; /* Slightly sharper corners like  */
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text-primary);
+    min-height: 44px;
+    background: var(--surface-secondary);
+    border: none;
+    border-radius: 12px;
     cursor: pointer;
-    transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
+    transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1), background 0.2s ease, box-shadow 0.2s ease;
     
-    width: 100%; 
+    width: 100%;
 }
 
-/* Text Magic */
 .custom-select-trigger span {
-    margin: 0 auto; 
+    margin: 0 auto;
     max-width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    letter-spacing: 0.5px;
+    letter-spacing: -0.41px;
 }
 
-/*  Hover & Focus (The Vibrant Glow) */
 .custom-select-trigger:hover,
 .custom-select-wrapper.open .custom-select-trigger {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.8); /* Becomes bright on hover */
-    transform: scale(1.02);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    background: var(--surface);
+    box-shadow: var(--shadow-elevated);
 }
 
-/* 2. The Options (Dropdown) */
+/* The Options Dropdown - Apple Context Menu Style (Section 14) */
 .custom-options {
     position: absolute;
-    bottom: 115%; /* Slight gap for depth */
+    bottom: calc(100% + 8px);
     
-    width: 370px; 
-    left: 50%; 
-    margin-left: -185px; /* Updated to match half of 370px width */
+    width: 280px;
+    left: 50%;
+    margin-left: -140px;
 
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
-    z-index: 9999; 
+    /* Apple Material */
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-vibrancy);
+    -webkit-backdrop-filter: var(--glass-vibrancy);
+    border: 0.5px solid var(--glass-border);
+    border-radius: 16px;
+    z-index: 9999;
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
     
-    /* Smooth upward slide */
-    transform: translateY(15px); 
-    transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    /* Apple spring animation */
+    transform: translateY(8px) scale(0.95);
+    transition: all 0.4s cubic-bezier(0.32, 0.72, 0, 1);
     
     max-height: 320px;
     overflow-y: auto;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+    box-shadow: var(--shadow-floating);
 }
 
-/* Custom Scrollbar for Dropdown */
 .custom-options::-webkit-scrollbar {
-    width: 6px;
+    width: 5px;
 }
 .custom-options::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background: var(--text-tertiary);
     border-radius: 10px;
 }
 
-/* Open State */
 .custom-select-wrapper.open .custom-options {
     opacity: 1;
     visibility: visible;
     pointer-events: all;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
 }
 
-/* Individual Options */
 .custom-option {
     position: relative;
     display: block;
-    padding: 14px 20px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    color: #a9a9b3; /* Muted text */
+    padding: 12px 16px;
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text-secondary);
     cursor: pointer;
-    transition: all 0.2s ease;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    transition: background 0.15s ease, color 0.15s ease;
+    border-bottom: 0.5px solid var(--glass-border);
     text-align: center;
-    white-space: nowrap; 
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    letter-spacing: -0.41px;
 }
 
 .custom-option:last-child {
     border-bottom: none;
 }
 
-/*  Active Item Highlight */
+/* Active Item Highlight */
 .custom-option:hover,
 .custom-option.selected {
-    background: rgba(255, 255, 255, 0.06);
-    color: #ffffff;
-    padding-left: 25px; /* Subtle indent on hover */
+    background: var(--surface);
+    color: var(--text-primary);
 }
 
-/* Selected Accent Bar */
 .custom-option.selected::before {
     content: '';
     position: absolute;
@@ -130,34 +123,27 @@
     top: 0;
     bottom: 0;
     width: 4px;
-    background: var(--accent); /* Your color kept */
-    box-shadow: 2px 0 10px var(--accent);
+    background: var(--accent-blue);
+    border-top-right-radius: 2px;
+    border-bottom-right-radius: 2px;
 }
 
-/* Mobile Adjustments */
 @media (max-width: 768px) {
-    .custom-select-wrapper {
-        width: 100%; 
-    }
+    .custom-select-wrapper { width: 100%; max-width: none; }
     
     .custom-options {
-        width: 90%;
-        left: 5%;
-        margin-left: 0; 
-        
-        bottom: 15%; 
+        width: calc(100vw - 32px);
+        left: 16px;
+        margin-left: 0;
+        bottom: 16px;
         top: auto;
-        transform: translateY(20px) scale(0.95);
-        position: fixed; 
+        transform: translateY(16px) scale(0.95);
+        position: fixed;
         max-height: 60vh;
     }
-
-    .custom-select-wrapper.open .custom-options {
-        transform: translateY(0) scale(1);
-    }
+    .custom-select-wrapper.open .custom-options { transform: translateY(0) scale(1); }
 }
 
-/* --- MODE 0: HIDING LOGIC --- */
 body.simple-mode #chapterSelectWrapper,
 body.simple-mode #verseSelectWrapper,
 body.simple-mode #translationAudioSelectWrapper,

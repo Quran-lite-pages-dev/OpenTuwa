@@ -1,23 +1,29 @@
 /* * TUWA - The Sacred Valley
  * Copyright (c) 2024-2026 Tuwa Media.
  * All Rights Reserved. 
- * 100% Apple HIG Compliant Architecture
+ * Apple HIG Compliant Architecture
  */
-* {
-    scrollbar-width: none !important;
-    -ms-overflow-style: none !important;
-}
 
+/* Scrollbar styles - HIG Section 15: scroll indicators must be visible */
 *::-webkit-scrollbar { 
-    display: none !important; 
-    width: 0 !important; 
-    height: 0 !important; 
-    background: transparent !important; 
+    width: 6px; 
+    height: 6px; 
+}
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+    background: rgba(128, 128, 128, 0.3);
+    border-radius: 3px;
+}
+*::-webkit-scrollbar-thumb:hover {
+    background: rgba(128, 128, 128, 0.5);
 }
 
 html, body { 
-    overflow: hidden !important; 
-    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 100vh;
     width: 100vw; 
     margin: 0;
     background-color: #000000;
@@ -50,9 +56,11 @@ body {
     background-image: radial-gradient(circle at 50% -20%, #1C1C1E 0%, #000000 80%);
     color: var(--text-primary);
     line-height: 1.47059;
-    font-size: 1.7rem;
-    height: 100vh; 
-    overflow: hidden !important; 
+    font-size: 17px;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+    overflow-x: hidden;
+    overflow-y: auto;
     display: flex; flex-direction: column;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -228,11 +236,11 @@ html[dir="rtl"] .app-brand { transform-origin: center right; inset-inline-start:
 
 #dashboard-view {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000;
-    background: #000000; padding-left: 0 !important; overflow: hidden !important; 
+    background: #000000; padding-left: 0; overflow-y: auto; overflow-x: hidden;
     display: none; flex-direction: column; justify-content: flex-start; 
     transition: justify-content 0.6s cubic-bezier(0.32, 0.72, 0, 1);
 }
-#dashboard-view::-webkit-scrollbar { display: none !important; }
+#dashboard-view::-webkit-scrollbar { width: 6px; }
 #dashboard-view.active { display: flex; animation: fadeIn 0.5s ease; }
 #dashboard-view:has(#door-hero-title:empty) { justify-content: center; }
 
@@ -240,7 +248,7 @@ html[dir="rtl"] .app-brand { transform-origin: center right; inset-inline-start:
 
 .hero-banner {
     height: 55vh; width: 100%; position: relative; display: flex; flex-direction: column; justify-content: center;
-    padding: 0 5%; overflow: hidden; background: #000000; 
+    padding: 0 max(16px, env(safe-area-inset-left, 16px)); overflow: hidden; background: #000000; 
     transition: height 0.7s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.5s ease, padding 0.5s ease;
     flex-shrink: 0; opacity: 1;
 }
@@ -276,12 +284,12 @@ img:-moz-broken { display: none !important; }
 .hero-super { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.04em; text-transform: uppercase; font-size: 1.2rem; align-items: baseline; }
 .hero-super span.text-content { position: relative; top: -1px; }
 .hero-super span.badge, .hero-super span.badges { background: rgba(255, 255, 255, 0.15); color: var(--text-primary); padding: 4px 10px; border-radius: 6px; font-size: 1.1rem; font-weight: 600; letter-spacing: 0.02em; border: none; }
-.heroz-title-text { font-size: clamp(6rem, 5vw, 12rem); font-weight: 700; line-height: 1.05; margin-bottom: 22rem; text-shadow: 0 10px 40px rgba(0,0,0,0.8); color: var(--text-primary); opacity: 0.9; letter-spacing: -0.04em; }
+.heroz-title-text { font-size: clamp(48px, 5vw, 96px); font-weight: 700; line-height: 1.05; margin-bottom: 80px; text-shadow: 0 10px 40px rgba(0,0,0,0.8); color: var(--text-primary); opacity: 0.9; letter-spacing: -0.04em; }
 
-@media (max-width: 768px) { .heroz-title-text { font-size: clamp(4rem, 5vw, 7rem); text-align: left; margin-left: 0; width: 100%; transform: none; } }
+@media (max-width: 768px) { .heroz-title-text { font-size: clamp(32px, 5vw, 56px); text-align: left; margin-left: 0; width: 100%; transform: none; } }
 
-.hero-title-text { font-size: clamp(6rem, 5vw, 12rem); font-weight: 700; line-height: 1.05; margin-bottom: 1rem; text-shadow: 0 10px 40px rgba(0,0,0,0.8); color: var(--text-primary); opacity: 0.9; letter-spacing: -0.04em; }
-.hero-subtitle { display: none; font-size: clamp(1.6rem, 5vw, 2.4rem); color: var(--text-primary); font-weight: 500; margin-bottom: 1.5rem; text-shadow: 0 4px 20px rgba(0,0,0,0.8); padding-left: 1%; opacity: 0.8; }
+.hero-title-text { font-size: clamp(48px, 5vw, 96px); font-weight: 700; line-height: 1.05; margin-bottom: 16px; text-shadow: 0 10px 40px rgba(0,0,0,0.8); color: var(--text-primary); opacity: 0.9; letter-spacing: -0.04em; }
+.hero-subtitle { display: none; font-size: clamp(17px, 5vw, 22px); color: var(--text-primary); font-weight: 500; margin-bottom: 16px; text-shadow: 0 4px 20px rgba(0,0,0,0.8); padding-left: 0; opacity: 0.8; }
 .hero-desc { display: none; color: var(--text-secondary); font-size: 1.6rem; margin-bottom: 2.5rem; line-height: 1.5; max-width: 600px; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 
 .dash-btn {
@@ -298,8 +306,8 @@ img:-moz-broken { display: none !important; }
 #dashboard-view:has(#door-hero-title:empty) .row-section { margin-top: 0; }
 .row-section:has(.surah-card:hover), .row-section:has(.surah-card:focus), .row-section:focus-within { z-index: 100; }
 
-.row-header { width: fit-content; display: flex; align-items: center; margin-left: 5%; margin-bottom: 1.5rem; padding: 0; background: transparent; border: none; border-radius: 0; box-shadow: none; font-size: 2.2rem; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; }
-.card-scroller { display: flex; gap: 16px; overflow-x: auto; padding: 4rem 5%; scroll-behavior: smooth; content-visibility: auto; contain-intrinsic-size: 1px 280px; overscroll-behavior-x: contain; }
+.row-header { width: fit-content; display: flex; align-items: center; margin-left: max(16px, env(safe-area-inset-left, 16px)); margin-bottom: 16px; padding: 0; background: transparent; border: none; border-radius: 0; box-shadow: none; font-size: 22px; font-weight: 600; color: var(--text-primary); letter-spacing: -0.02em; }
+.card-scroller { display: flex; gap: 16px; overflow-x: auto; padding: 16px max(16px, env(safe-area-inset-left, 16px)) 32px max(16px, env(safe-area-inset-right, 16px)); scroll-behavior: smooth; content-visibility: auto; contain-intrinsic-size: 1px 280px; overscroll-behavior-x: contain; }
 
 .surah-card {
     flex: 0 0 280px; aspect-ratio: 16 / 9; height: auto;

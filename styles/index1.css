@@ -107,17 +107,20 @@ body {
     background-color: var(--bg);
     color: var(--text-primary);
     line-height: 1.47059;
-    font-size: 1.7rem;
-    letter-spacing: -0.022em; /* SF Pro Body Tracking */
+    font-size: 17px;
+    letter-spacing: -0.022em;
     font-weight: 400;
-    height: 100vh;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
     width: 100vw;
-    overflow: hidden !important;
+    overflow-x: hidden;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     transition: background-color 0.4s ease;
+    touch-action: manipulation;
 }
 
 /* Base Image Setup */
@@ -127,24 +130,25 @@ img { object-fit: cover; }
 /* --- 2. APP BRANDING --- */
 .app-brand {
     position: fixed;
-    top: 40px;
-    inset-inline-end: 5%;
+    top: max(40px, env(safe-area-inset-top, 40px));
+    inset-inline-end: max(16px, env(safe-area-inset-right, 16px));
     z-index: 9000;
     display: flex;
     align-items: center;
     gap: 8px;
     text-decoration: none;
-    height: 42px;
+    height: 44px;
     transform-origin: center right;
     transition: var(--transition-spring);
     cursor: pointer;
+    padding: 0 8px;
 }
 
 html[dir="rtl"] .app-brand { transform-origin: center left; }
 
 .app-brand:hover {
     opacity: 0.8;
-    transform: scale(0.98); /* Apple prefers subtle push-in over aggressive scale-up */
+    transform: scale(0.98);
 }
 
 .brand-icon img {
@@ -156,8 +160,8 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
 }
 
 .brand-text {
-    font-weight: 600; /* SF Pro Semibold */
-    font-size: 2.8rem;
+    font-weight: 600;
+    font-size: 28px;
     letter-spacing: -0.03em;
     color: var(--text-primary);
     line-height: 1;
@@ -166,14 +170,14 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
 
 @media screen and (max-width: 1024px) {
     .brand-text { display: none; }
-    .app-brand { inset-inline-end: 24px; top: 24px; }
+    .app-brand { inset-inline-end: 16px; top: max(16px, env(safe-area-inset-top, 16px)); }
 }
 
 /* --- 3. DYNAMIC ISLAND SEARCH BOX --- */
 #island-search-wrapper {
     position: fixed;
-    bottom: 40px;
-    left: 5%;
+    bottom: max(40px, calc(env(safe-area-inset-bottom, 0px) + 16px));
+    left: max(16px, env(safe-area-inset-left, 16px));
     display: flex;
     align-items: center;
     gap: 16px;
@@ -192,8 +196,9 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     border-radius: var(--radius-pill);
     display: flex;
     align-items: center;
-    padding: 12px 20px;
+    padding: 12px 16px;
     width: 280px;
+    min-height: 44px;
     box-shadow: var(--shadow-floating);
     transition: var(--transition-spring);
     transform: translateY(0) scale(1);
@@ -211,11 +216,12 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     border: none;
     color: var(--text-primary);
     font-family: inherit;
-    font-size: 1.8rem;
-    font-weight: 500; /* SF Pro Medium */
+    font-size: 17px;
+    font-weight: 500;
     letter-spacing: -0.02em;
     width: 100%;
     outline: none;
+    min-height: 44px;
 }
 
 #island-input::placeholder {
@@ -225,14 +231,13 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
 
 .island-search-box:focus-within,
 .island-search-box:hover {
-    width: 380px;
+    width: 320px;
     background: var(--surface);
     border-color: var(--glass-highlight);
-    transform: translateY(-4px) scale(1.02);
     box-shadow: var(--shadow-floating);
 }
 
-/* Enter Trigger Button */
+/* Enter Trigger Button - HIG Section 26: minimum 44pt touch target */
 .enter-trigger {
     background: var(--glass-bg);
     backdrop-filter: var(--glass-vibrancy);
@@ -240,8 +245,8 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     border: 0.5px solid var(--glass-border);
     box-shadow: var(--shadow-elevated);
     z-index: 10;
-    width: 52px;
-    height: 52px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -310,6 +315,108 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     border-color: var(--accent-red) !important;
 }
 
+/* --- 3B. TAB BAR NAVIGATION (HIG Sections 27, 20) --- */
+#tv-sidebar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 8000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px max(16px, env(safe-area-inset-left, 16px));
+    padding-bottom: max(8px, env(safe-area-inset-bottom, 8px));
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-vibrancy);
+    -webkit-backdrop-filter: var(--glass-vibrancy);
+    border-top: 0.5px solid var(--glass-border);
+}
+
+#tv-sidebar .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 16px;
+    min-width: 64px;
+    min-height: 44px;
+    text-decoration: none;
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+    border-radius: var(--radius-sm);
+    -webkit-tap-highlight-color: transparent;
+}
+
+#tv-sidebar .nav-item:hover,
+#tv-sidebar .nav-item:focus {
+    color: var(--text-primary);
+    background: var(--surface-secondary);
+    outline: none;
+}
+
+#tv-sidebar .nav-item.active {
+    color: var(--accent-blue);
+}
+
+#tv-sidebar .nav-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+
+#tv-sidebar .profile-icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--surface-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+#tv-sidebar .nav-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+}
+
+@media screen and (min-width: 1024px) {
+    #tv-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        right: auto;
+        width: 240px;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
+        gap: 4px;
+        padding: max(48px, env(safe-area-inset-top, 48px)) 8px 8px;
+        border-top: none;
+        border-right: 0.5px solid var(--glass-border);
+    }
+    
+    #tv-sidebar .nav-item {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 12px 16px;
+        min-width: auto;
+        gap: 12px;
+    }
+    
+    #tv-sidebar .nav-label {
+        font-size: 15px;
+        font-weight: 500;
+    }
+}
+
 /* --- 4. DASHBOARD & HERO VIEW --- */
 #dashboard-view {
     position: fixed;
@@ -336,7 +443,8 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 0 5%;
+    padding: 0 max(16px, env(safe-area-inset-left, 16px));
+    padding-right: max(16px, env(safe-area-inset-right, 16px));
     overflow: hidden;
     flex-shrink: 0;
     transition: var(--transition-spring);
@@ -388,27 +496,27 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
 
 .hero-title-text, .heroz-title-text {
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
-    font-size: clamp(6rem, 6vw, 12rem);
+    font-size: clamp(34px, 6vw, 96px);
     font-weight: 700;
     line-height: 1.05;
-    margin-bottom: 1.5rem;
+    margin-bottom: 16px;
     color: var(--text-primary);
     letter-spacing: -0.04em;
     text-shadow: var(--shadow-soft);
 }
 
-.heroz-title-text { margin-bottom: 10rem; }
+.heroz-title-text { margin-bottom: 80px; }
 
 .hero-subtitle {
     display: none;
-    font-size: 2.2rem;
+    font-size: 22px;
     color: var(--text-secondary);
     font-weight: 500;
-    margin-bottom: 2rem;
+    margin-bottom: 16px;
     letter-spacing: -0.01em;
 }
 
-/* Fixed Apple HIG Action Button */
+/* Fixed Apple HIG Action Button - HIG Section 26: Filled Button */
 .dash-btn {
     display: inline-flex;
     align-items: center;
@@ -417,13 +525,14 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     color: var(--bg);
     padding: 14px 28px;
     border-radius: var(--radius-pill);
-    font-size: 1.6rem;
+    font-size: 16px;
     font-weight: 600;
     letter-spacing: -0.01em;
     border: none;
     cursor: pointer;
     transition: var(--transition-snappy);
     box-shadow: var(--shadow-elevated);
+    min-height: 44px;
 }
 
 .dash-btn:hover {
@@ -431,34 +540,38 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     opacity: 0.9;
 }
 
-/* --- 5. CONTENT SECTIONS & SURAH CARDS --- */
+.dash-btn:active {
+    opacity: 0.7;
+}
+
+/* --- 5. CONTENT SECTIONS & SURAH CARDS (HIG Sections 11, 36) --- */
 .row-section {
-    padding: 2rem 0;
+    padding: 16px 0;
     position: relative;
     z-index: 5;
 }
 
 .row-header {
-    margin-left: 5%;
-    font-size: 2.4rem;
+    margin-left: max(16px, env(safe-area-inset-left, 16px));
+    font-size: 22px;
     font-weight: 700;
     color: var(--text-primary);
     letter-spacing: -0.03em;
-    margin-bottom: 2rem;
+    margin-bottom: 16px;
 }
 
 .card-scroller {
     display: flex;
-    gap: 20px;
+    gap: 16px;
     overflow-x: auto;
-    padding: 2rem 5% 4rem 5%;
+    padding: 16px max(16px, env(safe-area-inset-left, 16px)) 32px max(16px, env(safe-area-inset-right, 16px));
     scroll-behavior: smooth;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
 }
 
 .surah-card {
-    flex: 0 0 300px;
+    flex: 0 0 280px;
     scroll-snap-align: start;
     aspect-ratio: 16 / 9;
     background: var(--surface);
@@ -469,10 +582,11 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    padding: 2.4rem;
+    padding: 16px;
     position: relative;
     overflow: hidden;
     box-shadow: var(--shadow-soft);
+    min-height: 44px;
 }
 
 .surah-card:hover, .surah-card:focus {
@@ -496,7 +610,7 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
 }
 
 .card-title {
-    font-size: 2.2rem;
+    font-size: 22px;
     font-weight: 600;
     color: var(--text-primary);
     z-index: 2;
@@ -506,7 +620,7 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     letter-spacing: -0.02em;
 }
 
-/* --- 6. SEARCH OVERLAY --- */
+/* --- 6. SEARCH OVERLAY (HIG Section 16) --- */
 #search-overlay {
     position: fixed; inset: 0;
     background: var(--glass-bg);
@@ -514,13 +628,13 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     -webkit-backdrop-filter: var(--glass-vibrancy);
     z-index: 2500;
     display: none;
-    grid-template-columns: 380px 1fr;
+    grid-template-columns: 320px 1fr;
 }
 #search-overlay.active { display: grid; }
 
 .keyboard-section {
     background: var(--surface);
-    padding: 4rem 2rem;
+    padding: 32px 16px;
     display: flex;
     flex-direction: column;
     border-right: 0.5px solid var(--glass-border);
@@ -530,12 +644,12 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
 #search-input-display {
     background: var(--surface-secondary);
     color: var(--text-primary);
-    padding: 1.6rem;
-    font-size: 2.2rem;
+    padding: 12px 16px;
+    font-size: 17px;
     border-radius: var(--radius-md);
     font-weight: 500;
-    margin-bottom: 2rem;
-    min-height: 56px;
+    margin-bottom: 16px;
+    min-height: 44px;
     display: flex;
     align-items: center;
     border: 0.5px solid var(--glass-border);
@@ -551,7 +665,7 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     aspect-ratio: 1;
     background: var(--surface-secondary);
     color: var(--text-primary);
-    font-size: 1.8rem;
+    font-size: 17px;
     font-weight: 500;
     display: flex;
     justify-content: center;
@@ -560,38 +674,39 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
     cursor: pointer;
     border: 0.5px solid var(--glass-border);
     transition: var(--transition-snappy);
+    min-height: 44px;
+    min-width: 44px;
 }
 
 .key:hover, .key:focus {
     background: var(--text-primary);
     color: var(--bg);
-    transform: scale(1.08);
     box-shadow: var(--shadow-elevated);
     z-index: 2;
     outline: none;
 }
 
-.key.wide { grid-column: span 2; aspect-ratio: auto; height: 54px; }
+.key.wide { grid-column: span 2; aspect-ratio: auto; }
 
 .results-section {
-    padding: 4rem;
+    padding: 32px;
     overflow-y: auto;
 }
 
 .results-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 2.4rem;
-    padding-bottom: 120px;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+    padding-bottom: 80px;
 }
 
 .no-results {
-    font-size: 2rem;
+    font-size: 17px;
     color: var(--text-secondary);
     font-weight: 500;
     grid-column: 1 / -1;
     text-align: center;
-    margin-top: 10vh;
+    margin-top: 40px;
 }
 
 /* --- 7. CINEMA / PLAYER VIEW --- */
@@ -647,8 +762,8 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
 .container {
     flex: 1;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
-    padding: 4rem;
-    padding-bottom: 14rem;
+    padding: 32px;
+    padding-bottom: 120px;
     position: relative;
     z-index: 1;
 }
@@ -659,10 +774,10 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
 }
 
 #chapter-title {
-    position: fixed; top: 40px; left: 5%;
+    position: fixed; top: max(40px, env(safe-area-inset-top, 40px)); left: max(16px, env(safe-area-inset-left, 16px));
     color: var(--text-primary);
     font-weight: 700;
-    font-size: 2.8rem;
+    font-size: 24px;
     letter-spacing: -0.04em;
     z-index: 100;
     transition: var(--transition-spring);
@@ -671,29 +786,29 @@ html[dir="rtl"] .app-brand { transform-origin: center left; }
 body.idle #chapter-title { opacity: 0; transform: translateY(-20px); }
 
 #translation-text {
-    font-size: 2.4rem;
+    font-size: 17px;
     line-height: 1.5;
     color: var(--text-primary);
     font-weight: 500;
     letter-spacing: -0.02em;
-    padding: 0 2rem;
+    padding: 0 16px;
     transition: opacity 0.4s ease;
 }
 
-/* --- 8. PLAYER ISLAND + SELECTS ROW (DYNAMIC ISLAND STYLE) --- */
+/* --- 8. PLAYER ISLAND + SELECTS ROW (HIG Sections 28, 29) --- */
 #selects-row {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
+    gap: 8px;
+    padding: 8px 16px;
     flex-wrap: wrap;
     transition: var(--transition-spring);
 }
 body.idle #selects-row { opacity: 0; pointer-events: none; }
 #selects-row .custom-select-wrapper .custom-select-trigger {
-    font-size: 1.1rem;
-    padding: 4px 12px;
+    font-size: 15px;
+    padding: 8px 16px;
     border-radius: var(--radius-pill);
     background: var(--surface-secondary);
     border: 0.5px solid var(--glass-border);
@@ -707,23 +822,23 @@ body.idle #selects-row { opacity: 0; pointer-events: none; }
     color: var(--text-primary);
     background: var(--surface);
 }
-#selects-row .custom-options { bottom: 100%; top: auto; margin-bottom: 4px; }
+#selects-row .custom-options { bottom: 100%; top: auto; margin-bottom: 8px; }
 
 #player-island {
     position: fixed;
-    bottom: 40px;
+    bottom: max(40px, calc(env(safe-area-inset-bottom, 0px) + 16px));
     left: 50%;
     transform: translateX(-50%);
     z-index: 100;
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 6px 14px;
+    gap: 8px;
+    padding: 8px 16px;
     background: var(--glass-bg);
     backdrop-filter: var(--glass-vibrancy);
     -webkit-backdrop-filter: var(--glass-vibrancy);
     border: 0.5px solid var(--glass-border);
-    border-radius: 42px;
+    border-radius: 40px;
     box-shadow: var(--shadow-floating);
     transition: var(--transition-spring);
     user-select: none;
@@ -751,7 +866,7 @@ body.idle #player-island { transform: translate(-50%, 150%); opacity: 0; }
 .island-right {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
 }
 .island-volume-wrap {
     position: relative;
@@ -774,16 +889,16 @@ body.idle #player-island { transform: translate(-50%, 150%); opacity: 0; }
 .island-icon-btn:hover { color: var(--text-primary); background: rgba(255, 255, 255, 0.1); }
 .island-icon-btn:active { transform: scale(0.9); }
 
-/* Volume popover slider */
+/* Volume popover slider (HIG Section 33) */
 .volume-popover {
     position: absolute;
-    bottom: calc(100% + 10px);
+    bottom: calc(100% + 8px);
     left: 50%;
     transform: translateX(-50%) scale(0.92);
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    padding: 12px 18px;
+    padding: 12px 16px;
     background: var(--glass-bg);
     backdrop-filter: var(--glass-vibrancy);
     -webkit-backdrop-filter: var(--glass-vibrancy);
@@ -819,7 +934,7 @@ body.idle #player-island { transform: translate(-50%, 150%); opacity: 0; }
 }
 .island-volume-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 16px; height: 16px;
+    width: 20px; height: 20px;
     border-radius: 50%;
     background: var(--text-primary);
     border: none;
@@ -829,7 +944,7 @@ body.idle #player-island { transform: translate(-50%, 150%); opacity: 0; }
 }
 .island-volume-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
 .island-volume-slider::-moz-range-thumb {
-    width: 16px; height: 16px;
+    width: 20px; height: 20px;
     border-radius: 50%;
     background: var(--text-primary);
     border: none;
@@ -859,8 +974,8 @@ body.idle #player-island { transform: translate(-50%, 150%); opacity: 0; }
 
 /* Translation select inside island */
 #player-island #translationSelectWrapper .custom-select-trigger {
-    font-size: 1.05rem;
-    padding: 4px 14px;
+    font-size: 15px;
+    padding: 8px 16px;
     border-radius: 20px;
     background: rgba(255, 255, 255, 0.1);
     border: 0.5px solid rgba(255, 255, 255, 0.08);
@@ -870,6 +985,7 @@ body.idle #player-island { transform: translate(-50%, 150%); opacity: 0; }
     transition: background 0.2s;
     font-weight: 500;
     letter-spacing: 0.02em;
+    min-height: 44px;
 }
 #player-island #translationSelectWrapper .custom-select-trigger:hover {
     background: rgba(255, 255, 255, 0.18);
@@ -877,7 +993,7 @@ body.idle #player-island { transform: translate(-50%, 150%); opacity: 0; }
 #player-island #translationSelectWrapper .custom-options {
     bottom: 100%;
     top: auto;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
 /* Custom Select Dropdowns */
@@ -914,17 +1030,17 @@ select:focus, select:hover {
 }
 #transition-fade-layer.active { opacity: 1; pointer-events: all; }
 
-/* --- 10. RESPONSIVE DESIGN --- */
+/* --- 10. RESPONSIVE DESIGN (HIG Sections 3, 11) --- */
 @media screen and (max-width: 768px) {
     #player-island {
-        bottom: 32px;
-        padding: 5px 12px;
+        bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
+        padding: 8px 12px;
         gap: 8px;
     }
-    .volume-popover { padding: 10px 14px; }
-    .island-volume-slider { width: 90px; }
-    #selects-row { gap: 4px; padding: 4px 8px; }
-    #selects-row .custom-select-wrapper .custom-select-trigger { font-size: 1rem; padding: 3px 8px; }
+    .volume-popover { padding: 8px 12px; }
+    .island-volume-slider { width: 80px; }
+    #selects-row { gap: 8px; padding: 8px; }
+    #selects-row .custom-select-wrapper .custom-select-trigger { font-size: 13px; padding: 8px; }
     
     #chapter-title {
         position: relative; top: 0; left: 0;
@@ -935,9 +1051,9 @@ select:focus, select:hover {
 }
 
 @media screen and (min-width: 2500px) {
-    html { font-size: 120%; }
-    .surah-card { flex: 0 0 380px; }
-    .hero-banner { padding: 0 10%; }
+    html { font-size: 100%; }
+    .surah-card { flex: 0 0 320px; }
+    .hero-banner { padding: 0 32px; }
 }
 
 /* --- IMPORTED: inline-styles.css content (consolidated) --- */

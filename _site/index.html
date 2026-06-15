@@ -6,13 +6,16 @@
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     
-    <!-- Apple Ecosystem Meta Tags -->
+    <!-- Apple Ecosystem Meta Tags (HIG Sections 3, 9, 47) -->
     <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#1C1C1E">
     <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F2F2F7">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Tuwa">
     <meta name="application-name" content="Tuwa">
+    <meta name="apple-mobile-web-app-orientations" content="portrait-primary">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
     
     <title>Tuwa - Premium Audio Player</title>
     <meta name="description" content="Listen to premium content with distraction-free viewing. A brand of Tuwa Media.">
@@ -20,10 +23,15 @@
     <link rel="manifest" href="/manifest.json">
     <link type="text/plain" rel="author" href="humans.txt" />
 
+    <!-- Apple Touch Icons - all required sizes (HIG Section 9) -->
     <link rel="icon" type="image/png" href="https://opentuwa.com/assets/ui/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="https://opentuwa.com/assets/ui/favicon.svg" />
     <link rel="shortcut icon" href="https://opentuwa.com/assets/ui/favicon.ico" />
     <link rel="apple-touch-icon" sizes="180x180" href="https://opentuwa.com/assets/ui/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="152x152" href="https://opentuwa.com/assets/ui/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="120x120" href="https://opentuwa.com/assets/ui/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="76x76" href="https://opentuwa.com/assets/ui/apple-touch-icon.png" />
+    <link rel="mask-icon" href="https://opentuwa.com/assets/ui/favicon.svg" color="#1C1C1E">
 
     <!-- OpenGraph & Twitter Cards -->
     <meta property="og:site_name" content="Tuwa">
@@ -138,6 +146,19 @@
     
     <script src="src/utils/i18n-loader.js"></script>
     <script src="src/utils/github-redirect.js"></script>
+
+<style>
+  /* Accessibility: visible focus ring, HIG compliant (Section 47) */
+  :focus-visible {
+    outline: 3px solid var(--accent-blue);
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+</style>
+
 
 <!-- Clean Apple-Style Native Loader -->
 <script> 
@@ -423,6 +444,7 @@
                             <svg id="volume-muted-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
                         </button>
                     </div>
+                    <!-- EQ and Audio Out buttons injected by JS -->
                 </div>
             </div>
     </div>
@@ -439,5 +461,1013 @@
     
     <!-- Screen Transition Overlay -->
     <div id="transition-fade-layer"></div>
+<!-- ═══════════════════════════════════════════════════════════════════
+     TUWA EQ MONKEY PATCH
+     Paste this block immediately before </body> in index.html.
+     Touches nothing in app.js, index1.css, or any other file.
+     Hooks into the window.initEQ slot already declared in app.js:1365.
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── EQ Button ─────────────────────────────────────────────────── */
+  #eq-btn {
+    /* Inherits .player-btn sizing/shape — only sets active glow */
+    position: relative;
+  }
+  #eq-btn.eq-active svg {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.5));
+  }
+  #eq-btn svg { opacity: 0.7; transition: opacity 0.2s, filter 0.2s; }
+  #eq-btn:hover svg, #eq-btn:focus svg { opacity: 1; }
+
+  /* ── Backdrop ──────────────────────────────────────────────────── */
+  #eq-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: max(130px, calc(env(safe-area-inset-bottom, 0px) + 80px));
+  }
+  #eq-backdrop.eq-open { display: flex; }
+
+  /* ── Popup Shell ───────────────────────────────────────────────── */
+  #eq-popup {
+    background: var(--glass-bg);
+    border: 0.5px solid var(--glass-border);
+    border-radius: var(--radius-squircle);
+    box-shadow: var(--shadow-floating);
+    padding: 16px 20px;
+    width: min(320px, 92vw);
+    transform: translateY(16px);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1),
+                opacity   0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  #eq-backdrop.eq-open #eq-popup {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* ── Popup Header ──────────────────────────────────────────────── */
+  #eq-popup-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  #eq-popup-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  #eq-close-btn {
+    background: var(--surface-secondary);
+    border: none;
+    cursor: pointer;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1;
+    transition: background 0.15s, color 0.15s;
+  }
+  #eq-close-btn:hover { color: var(--text-primary); }
+
+  /* ── Band Rows ─────────────────────────────────────────────────── */
+  .eq-band-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .eq-band-row:last-of-type { margin-bottom: 0; }
+
+  .eq-band-label {
+    font-size: 15px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    width: 48px;
+    flex-shrink: 0;
+  }
+
+  .eq-band-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 999px;
+    background: var(--surface-secondary);
+    outline: none;
+    cursor: pointer;
+  }
+  .eq-band-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    box-shadow: var(--shadow-soft);
+    cursor: pointer;
+  }
+  .eq-band-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--text-primary);
+    border: none;
+    cursor: pointer;
+  }
+
+  .eq-band-value {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    width: 48px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  /* ── Divider + Reset ───────────────────────────────────────────── */
+  #eq-divider {
+    height: 0.5px;
+    background: var(--glass-border);
+    margin: 16px 0 12px;
+  }
+  #eq-reset-btn {
+    width: 100%;
+    padding: 8px;
+    background: transparent;
+    border: 0.5px solid var(--glass-border);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: 15px;
+    font-family: inherit;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: background 0.15s, color 0.15s;
+    min-height: 44px;
+  }
+  #eq-reset-btn:hover { background: var(--surface-secondary); color: var(--text-primary); }
+
+  /* ── Mobile ────────────────────────────────────────────────────── */
+  @media screen and (max-width: 768px) {
+    #eq-backdrop { padding-bottom: max(160px, calc(env(safe-area-inset-bottom, 0px) + 100px)); }
+  }
+
+  /* Volume popover slider (unique to inline) */
+  .volume-popover::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--glass-bg);
+  }
+
+  /* EQ button active glow (unique to inline) */
+  #eq-btn.eq-active svg {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.5));
+  }
+  #audio-out-btn.out-active svg {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.45));
+  }
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ────────────────────────────────────────────────────────────────
+     Band definition
+     type 'lowshelf' / 'highshelf' uses only frequency + gain.
+     type 'peaking' also uses Q (bandwidth).
+  ──────────────────────────────────────────────────────────────── */
+  var EQ_BANDS = [
+    { label: 'Bass',     freq:   80, type: 'lowshelf',  Q: 0.7 },
+    { label: 'Low Mid',  freq:  500, type: 'peaking',   Q: 1.0 },
+    { label: 'High Mid', freq: 2500, type: 'peaking',   Q: 1.0 },
+    { label: 'Treble',   freq: 8000, type: 'highshelf', Q: 0.7 },
+  ];
+
+   var LS_KEY       = 'tuwa_eq_v1';
+  var audioCtx     = null;
+  var sourceNode   = null;
+  var filterNodes  = [];
+  var eqConnected  = false;
+  var sliderEls    = [];   // kept in sync for UI ↔ filter
+  var saveTimer    = null; // debounce localStorage writes
+
+  /* ── Persist ────────────────────────────────────────────────── */
+  function loadGains() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY)) || {}; }
+    catch (e) { return {}; }
+  }
+  function saveGains(gains) {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(function () {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(gains)); }
+      catch (e) { /* storage full – no crash */ }
+    }, 150);
+  }
+
+  /* ── Web Audio EQ setup (idempotent — safe to call many times) ── */
+  function ensureEQ() {
+    if (eqConnected) {
+      /* AudioContext may have been suspended (e.g. mobile tab switch) */
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+      return true;
+    }
+
+    var audioEl = document.getElementById('audio-player');
+    if (!audioEl) return false;
+
+    try {
+      /* Create context once */
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      /* createMediaElementSource must be called exactly once per element */
+      if (!sourceNode) {
+        sourceNode = audioCtx.createMediaElementSource(audioEl);
+      }
+
+      /* Build filter chain from saved gains */
+      var saved = loadGains();
+      filterNodes = EQ_BANDS.map(function (band, i) {
+        var f = audioCtx.createBiquadFilter();
+        f.type            = band.type;
+        f.frequency.value = band.freq;
+        f.Q.value         = band.Q;
+        f.gain.value      = (saved[i] !== undefined) ? saved[i] : 0;
+        return f;
+      });
+
+      /* Wire: source → f0 → f1 → f2 → f3 → destination */
+      var prev = sourceNode;
+      filterNodes.forEach(function (f) { prev.connect(f); prev = f; });
+      prev.connect(audioCtx.destination);
+
+      eqConnected = true;
+      window.TuwaAudio = window.TuwaAudio || {};
+      window.TuwaAudio.ctx = audioCtx;
+      return true;
+    } catch (e) {
+      /* If another script already called createMediaElementSource,
+         this will throw. Swallow and report — we won't crash the player. */
+      console.warn('[Tuwa EQ] Web Audio setup failed:', e.message);
+      return false;
+    }
+  }
+
+  /* Apply current gain values to the live filter nodes */
+  function applyGains(gains) {
+    if (!eqConnected) return;
+    filterNodes.forEach(function (f, i) {
+      f.gain.value = (gains[i] !== undefined) ? gains[i] : 0;
+    });
+  }
+
+  /* Collect gain values from the slider DOM elements */
+  function gainsFromSliders() {
+    return sliderEls.map(function (s) { return parseFloat(s.value); });
+  }
+
+  /* ── Hook already declared in app.js updateQuranAudio():
+       if (window.initEQ) window.initEQ();
+     Called every time a verse starts playing — this is what makes
+     the EQ actually apply across all chapters, not just the first. ── */
+  window.initEQ = function () {
+    var ok = ensureEQ();
+    if (ok) {
+      /* Reapply the stored gains so chapter changes don't reset EQ */
+      applyGains(gainsFromSliders().length ? gainsFromSliders() : loadGains());
+    }
+  };
+
+  /* ── DOM ────────────────────────────────────────────────────── */
+  function buildUI() {
+    /* ── EQ button — injected inside .island-right ── */
+    var islandRight = document.querySelector('.island-right');
+    if (!islandRight) {
+      console.warn('[Tuwa EQ] .island-right not found in DOM.');
+      return;
+    }
+
+    var eqBtn = document.createElement('button');
+    eqBtn.id        = 'eq-btn';
+    eqBtn.className = 'player-btn';
+    eqBtn.setAttribute('aria-label', 'Equalizer');
+    eqBtn.setAttribute('tabindex', '0');
+    /* SF-Symbol-parity sliders icon (same stroke convention as existing icons) */
+    eqBtn.innerHTML = [
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"',
+      ' stroke="currentColor" stroke-width="2"',
+      ' stroke-linecap="round" stroke-linejoin="round">',
+      '<line x1="4"  y1="21" x2="4"  y2="14"/>',
+      '<line x1="4"  y1="10" x2="4"  y2="3"/>',
+      '<line x1="12" y1="21" x2="12" y2="12"/>',
+      '<line x1="12" y1="8"  x2="12" y2="3"/>',
+      '<line x1="20" y1="21" x2="20" y2="16"/>',
+      '<line x1="20" y1="12" x2="20" y2="3"/>',
+      '<line x1="1"  y1="14" x2="7"  y2="14"/>',
+      '<line x1="9"  y1="8"  x2="15" y2="8"/>',
+      '<line x1="17" y1="16" x2="23" y2="16"/>',
+      '</svg>',
+    ].join('');
+    islandRight.appendChild(eqBtn);
+
+    /* ── Backdrop ── */
+    var backdrop = document.createElement('div');
+    backdrop.id = 'eq-backdrop';
+
+    /* ── Popup ── */
+    var popup = document.createElement('div');
+    popup.id = 'eq-popup';
+    popup.setAttribute('role', 'dialog');
+    popup.setAttribute('aria-modal', 'true');
+    popup.setAttribute('aria-label', 'Equalizer');
+
+    /* Header */
+    var header = document.createElement('div');
+    header.id = 'eq-popup-header';
+
+    var title = document.createElement('span');
+    title.id          = 'eq-popup-title';
+    title.textContent = 'Equalizer';
+
+    var closeBtn = document.createElement('button');
+    closeBtn.id = 'eq-close-btn';
+    closeBtn.setAttribute('aria-label', 'Close equalizer');
+    closeBtn.textContent = '✕';
+
+    header.appendChild(title);
+    header.appendChild(closeBtn);
+    popup.appendChild(header);
+
+    /* Band rows */
+    var saved = loadGains();
+    sliderEls = [];
+
+    EQ_BANDS.forEach(function (band, i) {
+      var gain = (saved[i] !== undefined) ? saved[i] : 0;
+
+      var row = document.createElement('div');
+      row.className = 'eq-band-row';
+
+      var lbl = document.createElement('span');
+      lbl.className   = 'eq-band-label';
+      lbl.textContent = band.label;
+
+      var slider = document.createElement('input');
+      slider.type      = 'range';
+      slider.className = 'eq-band-slider';
+      slider.min       = '-12';
+      slider.max       = '12';
+      slider.step      = '0.5';
+      slider.value     = gain;
+      slider.setAttribute('aria-label', band.label + ' gain');
+
+      var valLbl = document.createElement('span');
+      valLbl.className   = 'eq-band-value';
+      valLbl.textContent = formatGain(gain);
+
+      /* Real-time: update filter gain on every move */
+      slider.addEventListener('input', function () {
+        var g = parseFloat(slider.value);
+
+        /* Ensure EQ is wired before touching filter nodes */
+        if (!eqConnected) ensureEQ();
+        if (filterNodes[i]) filterNodes[i].gain.value = g;
+
+        saveGains(gainsFromSliders());
+        valLbl.textContent = formatGain(g);
+      });
+
+      sliderEls.push(slider);
+      row.appendChild(lbl);
+      row.appendChild(slider);
+      row.appendChild(valLbl);
+      popup.appendChild(row);
+    });
+
+    /* Divider + Reset */
+    var divider = document.createElement('div');
+    divider.id = 'eq-divider';
+    popup.appendChild(divider);
+
+    var resetBtn = document.createElement('button');
+    resetBtn.id          = 'eq-reset-btn';
+    resetBtn.textContent = 'Reset to flat';
+    resetBtn.addEventListener('click', function () {
+      sliderEls.forEach(function (s) { s.value = '0'; });
+      /* Update value labels */
+      popup.querySelectorAll('.eq-band-value').forEach(function (v) {
+        v.textContent = '+0.0 dB';
+      });
+      saveGains({});
+      if (!eqConnected) ensureEQ();
+      applyGains(Array(EQ_BANDS.length).fill(0));
+    });
+    popup.appendChild(resetBtn);
+
+    backdrop.appendChild(popup);
+    document.body.appendChild(backdrop);
+
+    /* ── Open / Close logic ── */
+    function openEQ() {
+      backdrop.classList.add('eq-open');
+      eqBtn.classList.add('eq-active');
+      eqBtn.setAttribute('aria-expanded', 'true');
+      /* Attempt connection on open; user gesture guarantees AudioContext unlock */
+      if (!eqConnected) ensureEQ();
+      closeBtn.focus();
+    }
+
+    function closeEQ() {
+      backdrop.classList.remove('eq-open');
+      eqBtn.classList.remove('eq-active');
+      eqBtn.setAttribute('aria-expanded', 'false');
+      eqBtn.focus();
+    }
+
+    eqBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      backdrop.classList.contains('eq-open') ? closeEQ() : openEQ();
+    });
+
+    closeBtn.addEventListener('click', closeEQ);
+
+    /* Click outside popup → close */
+    backdrop.addEventListener('click', function (e) {
+      if (e.target === backdrop) closeEQ();
+    });
+
+    /* Escape key → close */
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && backdrop.classList.contains('eq-open')) closeEQ();
+    });
+  }
+
+  /* ── Helpers ─────────────────────────────────────────────────── */
+  function formatGain(g) {
+    var sign = g >= 0 ? '+' : '';
+    return sign + Number(g).toFixed(1) + ' dB';
+  }
+
+  /* ── Boot: wait for DOM so .volume-control exists ─────────────── */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildUI);
+  } else {
+    buildUI();
+  }
+
+}());
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════
+     TUWA AUDIO OUTPUT DEVICE MONKEY PATCH (FIXED)
+     Paste this block immediately AFTER the EQ monkey patch block,
+     still before </body>.
+     ═══════════════════════════════════════════════════════════════════ -->
+
+<style>
+  /* ── Output button ─────────────────────────────────────────────── */
+  #audio-out-btn svg {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  #audio-out-btn:hover svg,
+  #audio-out-btn:focus  svg { opacity: 1; }
+  #audio-out-btn.out-active svg {
+    opacity: 1;
+    filter: drop-shadow(0 0 6px rgba(255,255,255,0.45));
+  }
+
+  /* ── Backdrop ──────────────────────────────────────────────────── */
+  #audio-out-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 9997;
+    background: rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: max(130px, calc(env(safe-area-inset-bottom, 0px) + 80px));
+  }
+  #audio-out-backdrop.out-open { display: flex; }
+
+  /* ── Popup shell ──────────────────────────────────────────────── */
+  #audio-out-popup {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-vibrancy);
+    -webkit-backdrop-filter: var(--glass-vibrancy);
+    border: 0.5px solid var(--glass-border);
+    border-radius: var(--radius-squircle);
+    box-shadow: var(--shadow-floating);
+    padding: 16px 20px;
+    width: min(320px, 92vw);
+    transform: translateY(16px);
+    opacity: 0;
+    transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1),
+                opacity   0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  #audio-out-backdrop.out-open #audio-out-popup {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* ── Header row ────────────────────────────────────────────────── */
+  #audio-out-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  #audio-out-title {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+  #audio-out-close {
+    background: var(--surface-secondary);
+    border: none;
+    cursor: pointer;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+    line-height: 1;
+    transition: background 0.15s, color 0.15s;
+  }
+  #audio-out-close:hover { color: var(--text-primary); }
+
+  /* ── Current device pill ───────────────────────────────────────── */
+  #audio-out-device-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  #audio-out-device-label-head {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-weight: 500;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  #audio-out-device-pill {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    background: var(--surface-secondary);
+    border: 0.5px solid var(--glass-border);
+    border-radius: var(--radius-pill);
+    padding: 8px 12px;
+    min-width: 0;
+  }
+
+  /* ── Action button ─────────────────────────────────────────────── */
+  #audio-out-select-btn {
+    width: 100%;
+    padding: 12px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-vibrancy);
+    -webkit-backdrop-filter: var(--glass-vibrancy);
+    border: 0.5px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    color: var(--text-primary);
+    font-size: 17px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+    box-shadow: var(--shadow-soft);
+    min-height: 44px;
+  }
+  #audio-out-select-btn:hover {
+    background: var(--surface);
+    box-shadow: var(--shadow-elevated);
+  }
+  #audio-out-select-btn:active { transform: scale(0.98); }
+  #audio-out-select-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ── Status / feedback line ────────────────────────────────────── */
+  #audio-out-status {
+    font-size: 13px;
+    color: var(--text-secondary);
+    text-align: center;
+    margin-top: 8px;
+    min-height: 1.5em;
+    transition: opacity 0.3s;
+  }
+  #audio-out-status.status-ok   { color: var(--accent-green); }
+  #audio-out-status.status-warn { color: var(--accent-orange); }
+  #audio-out-status.status-err  { color: var(--accent-red); }
+
+  /* ── Divider ───────────────────────────────────────────────────── */
+  #audio-out-divider {
+    height: 0.5px;
+    background: var(--glass-border);
+    margin: 16px 0 12px;
+  }
+
+  /* ── Support note ──────────────────────────────────────────────── */
+  #audio-out-note {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  @media screen and (max-width: 768px) {
+    #audio-out-backdrop { padding-bottom: max(160px, calc(env(safe-area-inset-bottom, 0px) + 100px)); }
+  }
+</style>
+
+<script>
+(function () {
+  'use strict';
+
+  window.TuwaAudio = window.TuwaAudio || {};
+
+  var LS_KEY        = 'tuwa_audio_out_v1';
+  var pillEl        = null;
+  var statusEl      = null;
+  var selectBtn     = null;
+  var outBtn        = null;
+  var isBusy        = false;
+
+  /* ── Persistence ─────────────────────────────────────────────── */
+  function loadSaved() {
+    try { return JSON.parse(localStorage.getItem(LS_KEY)) || null; }
+    catch (e) { return null; }
+  }
+  function saveDev(id, label) {
+    try { localStorage.setItem(LS_KEY, JSON.stringify({ id: id, label: label })); }
+    catch (e) { /* quota error — no crash */ }
+  }
+  function clearSaved() {
+    try { localStorage.removeItem(LS_KEY); }
+    catch (e) {}
+  }
+
+  /* ── Core routing ────────────────────────────────────────────── */
+  async function applySinkId(deviceId) {
+    var ctx = window.TuwaAudio.ctx;
+    var promises = [];
+    var routedAtLeastOne = false;
+
+    // Route 1: Web Audio Context (EQ patch)
+    if (ctx && typeof ctx.setSinkId === 'function') {
+      promises.push(
+        ctx.setSinkId(deviceId)
+          .then(function () { routedAtLeastOne = true; })
+          .catch(function (e) { console.warn('[Tuwa AudioOut] Web Audio setSinkId failed:', e.message); })
+      );
+    }
+
+    // Route 2: Individual HTML Media Elements (All active audio nodes in Tuwa)
+    var targetIds = ['audio-player', 'translation-audio-player', 'preview-audio'];
+    targetIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && typeof el.setSinkId === 'function') {
+        promises.push(
+          el.setSinkId(deviceId)
+            .then(function () { routedAtLeastOne = true; })
+            .catch(function (e) {
+              if (e.name !== 'AbortError') {
+                console.warn('[Tuwa AudioOut] setSinkId failed for #' + id + ':', e.message);
+              }
+            })
+        );
+      }
+    });
+
+    if (promises.length > 0) {
+      await Promise.all(promises);
+    }
+
+    if (!routedAtLeastOne) {
+      throw new Error('setSinkId is not supported or failed on all elements in this browser.');
+    }
+  }
+
+  /* ── Robust Retry handling for Windows 11 Bluetooth stack ── */
+  async function applySinkIdWithRetry(deviceId, retriesLeft) {
+    if (retriesLeft === undefined) retriesLeft = 2;
+    try {
+      await applySinkId(deviceId);
+    } catch (e) {
+      if (retriesLeft > 0 && (e.name === 'AbortError' || e.message.indexOf('abort') > -1)) {
+        console.warn('[Tuwa AudioOut] Transient routing failure, retrying in 250ms... Retries left:', retriesLeft);
+        await new Promise(function (resolve) { setTimeout(resolve, 250); });
+        return applySinkIdWithRetry(deviceId, retriesLeft - 1);
+      }
+      throw e;
+    }
+  }
+
+  /* ── Event tracking to auto-reapply device on .src transitions ── */
+  function setupAutoReapply() {
+    var saved = loadSaved();
+    if (!saved || !saved.id) return;
+
+    var targetIds = ['audio-player', 'translation-audio-player', 'preview-audio'];
+    targetIds.forEach(function (id) {
+      var el = document.getElementById(id);
+      if (!el) return;
+
+      if (el.dataset.sinkTrackingAttached) return;
+      el.dataset.sinkTrackingAttached = "true";
+
+      var reapply = function () {
+        var currentSaved = loadSaved();
+        if (!currentSaved || !currentSaved.id) return;
+        
+        setTimeout(async function () {
+          try {
+            if (el.sinkId !== currentSaved.id) {
+              await el.setSinkId(currentSaved.id);
+            }
+          } catch (e) {
+            if (e.name !== 'AbortError') {
+              console.warn('[Tuwa AudioOut] Auto-reapply failed for #' + id + ':', e.message);
+            }
+          }
+        }, 80); 
+      };
+
+      el.addEventListener('playing', reapply);
+      el.addEventListener('loadedmetadata', reapply);
+    });
+  }
+
+  /* ── Restore on play (chained onto window.initEQ) ────────────── */
+  async function restoreOutput() {
+    var saved = loadSaved();
+    if (!saved || !saved.id) return;
+    try {
+      await applySinkIdWithRetry(saved.id);
+      setStatus('↳ ' + saved.label, 'ok', 3000);
+      setupAutoReapply(); 
+    } catch (e) {
+      console.warn('[Tuwa AudioOut] Could not restore saved device:', e.message);
+      clearSaved();
+    }
+  }
+
+  var _prevInitEQ = window.initEQ || function () {};
+  window.initEQ = function () {
+    _prevInitEQ();
+    restoreOutput();
+  };
+
+  /* ── Status helper ───────────────────────────────────────────── */
+  var statusTimer = null;
+  function setStatus(msg, type, autoClearMs) {
+    if (!statusEl) return;
+    statusEl.textContent = msg;
+    statusEl.className   = 'status-' + (type || '');
+    clearTimeout(statusTimer);
+    if (autoClearMs) {
+      statusTimer = setTimeout(function () {
+        statusEl.textContent = '';
+        statusEl.className   = '';
+      }, autoClearMs);
+    }
+  }
+
+  /* ── Pick device ─────────────────────────────────────────────── */
+  async function pickDevice() {
+    if (isBusy) return;
+    isBusy = true;
+    if (selectBtn) selectBtn.disabled = true;
+    setStatus('Waiting for browser picker…', '');
+
+    try {
+      var device = await navigator.mediaDevices.selectAudioOutput();
+
+      setStatus('Routing audio…', '');
+      await applySinkIdWithRetry(device.deviceId);
+
+      saveDev(device.deviceId, device.label);
+      if (pillEl) pillEl.textContent = device.label || device.deviceId;
+      if (outBtn) outBtn.classList.add('out-active');
+      setStatus('✓  ' + device.label, 'ok', 4000);
+      setupAutoReapply();
+
+    } catch (e) {
+      if (e.name === 'NotAllowedError') {
+        setStatus('Permission denied.', 'warn', 4000);
+      } else if (e.name === 'AbortError') {
+        setStatus('Cancelled.', '', 2500);
+      } else {
+        setStatus('Error: ' + e.message, 'err', 5000);
+        console.error('[Tuwa AudioOut]', e);
+      }
+    } finally {
+      isBusy = false;
+      if (selectBtn) selectBtn.disabled = false;
+    }
+  }
+
+  /* ── DOM injection ───────────────────────────────────────────── */
+  function buildUI() {
+    var supported = (
+      'mediaDevices' in navigator &&
+      typeof navigator.mediaDevices.selectAudioOutput === 'function'
+    );
+
+    /* ── Button ── */
+    var islandRight = document.querySelector('.island-right');
+    if (!islandRight) {
+      console.warn('[Tuwa AudioOut] .island-right not found.');
+      return;
+    }
+
+    outBtn = document.createElement('button');
+    outBtn.id        = 'audio-out-btn';
+    outBtn.className = 'player-btn';
+    outBtn.setAttribute('aria-label', 'Select audio output device');
+    outBtn.setAttribute('tabindex', '0');
+    outBtn.innerHTML = [
+      '<svg width="22" height="22" viewBox="0 0 24 24" fill="none"',
+      ' stroke="currentColor" stroke-width="2"',
+      ' stroke-linecap="round" stroke-linejoin="round">',
+      '<path d="M2 16.1A5 5 0 0 1 5.9 20"/>',
+      '<path d="M2 12.05A9 9 0 0 1 9.95 20"/>',
+      '<path d="M2 8V6a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-6"/>',
+      '<line x1="2" y1="20" x2="2.01" y2="20"/>',
+      '</svg>',
+    ].join('');
+    islandRight.appendChild(outBtn);
+
+    /* ── Backdrop ── */
+    var backdrop = document.createElement('div');
+    backdrop.id = 'audio-out-backdrop';
+
+    /* ── Popup ── */
+    var popup = document.createElement('div');
+    popup.id = 'audio-out-popup';
+    popup.setAttribute('role', 'dialog');
+    popup.setAttribute('aria-modal', 'true');
+    popup.setAttribute('aria-label', 'Audio Output');
+
+    /* Header */
+    var hdr = document.createElement('div');
+    hdr.id = 'audio-out-header';
+
+    var titleEl = document.createElement('span');
+    titleEl.id          = 'audio-out-title';
+    titleEl.textContent = 'Audio Output';
+
+    var closeBtn = document.createElement('button');
+    closeBtn.id = 'audio-out-close';
+    closeBtn.setAttribute('aria-label', 'Close');
+    closeBtn.textContent = '✕';
+
+    hdr.appendChild(titleEl);
+    hdr.appendChild(closeBtn);
+    popup.appendChild(hdr);
+
+    /* Current device row */
+    var devRow = document.createElement('div');
+    devRow.id = 'audio-out-device-row';
+
+    var devHead = document.createElement('span');
+    devHead.id          = 'audio-out-device-label-head';
+    devHead.textContent = 'Now:';
+
+    pillEl = document.createElement('span');
+    pillEl.id = 'audio-out-device-pill';
+    var saved = loadSaved();
+    pillEl.textContent = (saved && saved.label) ? saved.label : 'System Default';
+
+    devRow.appendChild(devHead);
+    devRow.appendChild(pillEl);
+    popup.appendChild(devRow);
+
+    /* Select button */
+    selectBtn = document.createElement('button');
+    selectBtn.id   = 'audio-out-select-btn';
+    selectBtn.innerHTML = [
+      '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"',
+      ' stroke="currentColor" stroke-width="2.5"',
+      ' stroke-linecap="round" stroke-linejoin="round">',
+      '<circle cx="12" cy="12" r="3"/>',
+      '<path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>',
+      '<path d="M4.93 4.93a10 10 0 0 0 0 14.14M8.46 8.46a5 5 0 0 0 0 7.07"/>',
+      '</svg>',
+      '<span>Select Output Device\u2026</span>',
+    ].join('');
+
+    if (!supported) {
+      selectBtn.disabled = true;
+      selectBtn.title    = 'Requires Chrome 102+ (desktop)';
+    } else {
+      selectBtn.addEventListener('click', pickDevice);
+    }
+    popup.appendChild(selectBtn);
+
+    /* Status line */
+    statusEl = document.createElement('div');
+    statusEl.id = 'audio-out-status';
+    popup.appendChild(statusEl);
+
+    /* Divider + note */
+    var div = document.createElement('div');
+    div.id = 'audio-out-divider';
+    popup.appendChild(div);
+
+    var note = document.createElement('div');
+    note.id = 'audio-out-note';
+    if (!supported) {
+      note.textContent = 'Audio Output Devices API requires Chrome 102+ on desktop. Pair your Bluetooth speaker via the OS first.';
+    } else {
+      note.textContent = 'Pair your Bluetooth speaker or headphones via your OS before selecting here.';
+    }
+    popup.appendChild(note);
+
+    backdrop.appendChild(popup);
+    document.body.appendChild(backdrop);
+
+    /* ── Open / close ── */
+    function openOut() {
+      backdrop.classList.add('out-open');
+      outBtn.classList.add('out-active');
+      outBtn.setAttribute('aria-expanded', 'true');
+      closeBtn.focus();
+    }
+    function closeOut() {
+      backdrop.classList.remove('out-open');
+      if (!loadSaved()) outBtn.classList.remove('out-active');
+      outBtn.setAttribute('aria-expanded', 'false');
+      outBtn.focus();
+    }
+
+    outBtn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      backdrop.classList.contains('out-open') ? closeOut() : openOut();
+    });
+    closeBtn.addEventListener('click', closeOut);
+    backdrop.addEventListener('click', function (e) {
+      if (e.target === backdrop) closeOut();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && backdrop.classList.contains('out-open')) closeOut();
+    });
+
+    if (saved && saved.label) outBtn.classList.add('out-active');
+
+    setupAutoReapply();
+  }
+
+  /* ── Boot ────────────────────────────────────────────────────── */
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', buildUI);
+  } else {
+    buildUI();
+  }
+
+}());
+</script>
 </body>
 </html>
