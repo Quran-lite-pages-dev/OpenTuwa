@@ -738,6 +738,38 @@ body.idle #player-island { transform: translate(-50%, 150%); opacity: 0; }
 .island-play-btn:hover { background: rgba(255, 255, 255, 0.25); }
 .island-play-btn:active { transform: scale(0.9); }
 
+.island-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Tuwa branding inside the island bar — compact sizing (HIG §26: 44pt touch target, visual can be smaller) */
+#player-island .app-brand {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    z-index: auto;
+    height: 44px;
+    padding: 0 4px;
+    gap: 6px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    flex-shrink: 0;
+}
+#player-island .brand-icon img {
+    width: 22px;
+    height: 22px;
+    filter: none;
+}
+#player-island .brand-text {
+    font-size: 15px;
+    line-height: 1;
+    font-weight: 600;
+}
+
 .island-right {
     display: flex;
     align-items: center;
