@@ -119,15 +119,7 @@
                 card.className = 'surah-card ai-card-border'; // Add the special class
                 card.tabIndex = 0;
                 
-                // Use Arabic script for card-title if locale is Arabic
-                const currentLocale = window.getLocale ? window.getLocale() : 'en';
                 let cardTitle = surah.english_name;
-                if (currentLocale === 'ar' && window.t) {
-                    const arabicName = window.t(`surahNames.${surah.english_name}`);
-                    if (arabicName && arabicName !== `surahNames.${surah.english_name}`) {
-                        cardTitle = arabicName;
-                    }
-                }
                 
                 card.innerHTML = `
                     <div class="card-bg-num" style="color:rgba(0,255,187,0.05)">${surah.chapterNumber}</div>

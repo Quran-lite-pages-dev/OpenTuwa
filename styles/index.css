@@ -277,15 +277,6 @@ img:-moz-broken { display: none !important; }
 .hero-subtitle { display: none; font-size: clamp(17px, 5vw, 22px); color: var(--text-primary); font-weight: 500; margin-bottom: 16px; text-shadow: 0 4px 20px rgba(0,0,0,0.8); padding-left: 0; opacity: 0.8; }
 .hero-desc { display: none; color: var(--text-secondary); font-size: 1.6rem; margin-bottom: 2.5rem; line-height: 1.5; max-width: 600px; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 
-.dash-btn {
-    background: rgba(255, 255, 255, 0.15); color: var(--text-primary); 
-    backdrop-filter: blur(40px) saturate(200%); -webkit-backdrop-filter: blur(40px) saturate(200%);
-    font-size: 1.5rem; font-weight: 600; border: none; border-radius: 99px;       
-    padding: 14px 32px; letter-spacing: -0.02em; cursor: pointer; display: inline-flex; align-items: center; gap: 10px;
-    transition: var(--transition-spring); will-change: transform, background;
-}
-.dash-btn:focus, .dash-btn:hover { transform: scale(1.05); background: #FFFFFF; color: #000000; box-shadow: 0 16px 48px rgba(255, 255, 255, 0.3); outline: none; }
-
 .row-section { padding: 0 0 2rem 0; position: relative; z-index: 5; background: linear-gradient(to bottom, transparent, #000000 20%); transition: margin-top 0.7s cubic-bezier(0.32, 0.72, 0, 1); }
 #dashboard-view:not(:has(#door-hero-title:empty)) .row-section { margin-top: -12vh; }
 #dashboard-view:has(#door-hero-title:empty) .row-section { margin-top: 0; }
@@ -350,4 +341,4 @@ select:focus { outline: none; border-color: #FFFFFF; background-color: rgba(255,
 @media (max-width: 768px) { #dashboard-view { padding-left: 0 !important; } #chapter-title { display: none;} .container { padding: 0; padding-bottom: 100px; } #control-panel { display: grid; grid-template-columns: 1fr 1fr; } }
 @media screen and (min-width: 2500px) { html { font-size: 100%; } .surah-card { flex: 0 0 350px; } .hero-banner { padding: 0 10%; } }
 
-.start-btn::before, .island-search-box:not(.ai-thinking)::after, .dash-btn::before, .surah-card::before { content: ''; position: absolute; inset: -30px; z-index: -1; border-radius: inherit; background: transparent; }
+.start-btn::before, .island-search-box:not(.ai-thinking)::after, .surah-card::before { content: ''; position: absolute; inset: -30px; z-index: -1; border-radius: inherit; background: transparent; }

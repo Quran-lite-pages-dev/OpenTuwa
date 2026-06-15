@@ -487,8 +487,6 @@ function switchView(viewName) {
         if (elements.quranAudio) elements.quranAudio.pause();
         if (elements.transAudio) elements.transAudio.pause();
         refreshDashboard();
-        const doorPlayBtn = document.getElementById('door-play-btn');
-        if (doorPlayBtn) doorPlayBtn.focus();
     }
 }
 
@@ -576,7 +574,6 @@ async function initializeApp() {
 
 function refreshDashboard() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    const heroBtn = document.getElementById('door-play-btn');
 
     const allIndices = Array.from({length: 114}, (_, i) => i);
     const shortRowIndices = allIndices.slice(77, 114);
@@ -591,10 +588,8 @@ function refreshDashboard() {
         const vNum = (saved.verse || 0) + 1;
         const reciter = saved.reciter || 'alafasy';
         updateHeroPreview(chNum, vNum, reciter, false);
-        if (heroBtn) heroBtn.onclick = () => launchPlayer(chNum, vNum);
     } else {
         updateHeroPreview(1, 1, 'alafasy', false);
-        if (heroBtn) heroBtn.onclick = () => launchPlayer(1, 1);
     }
 }
 
@@ -706,9 +701,6 @@ function schedulePreview(chapterNum) {
 
     const doorHeroSubtitle = document.getElementById('door-hero-subtitle');
     if (doorHeroSubtitle) doorHeroSubtitle.textContent = surah.title;
-
-    const doorPlayBtn = document.getElementById('door-play-btn');
-    if (doorPlayBtn) doorPlayBtn.onclick = () => launchPlayer(chapterNum, 1);
 
     previewTimeout = setTimeout(() => {
         updateHeroPreview(chapterNum, 1, 'alafasy', true); 
@@ -1514,8 +1506,6 @@ function openSearch() {
 
 function closeSearch() {
     if (elements.search.overlay) elements.search.overlay.classList.remove('active');
-    const doorPlayBtn = document.getElementById('door-play-btn');
-    if (doorPlayBtn) doorPlayBtn.focus();
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);

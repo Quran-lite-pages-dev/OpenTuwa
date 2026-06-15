@@ -240,8 +240,8 @@
         setTimeout(() => {
             const dash = document.getElementById(VIEWS.DASHBOARD);
             if (dash && dash.classList.contains('active')) {
-                const playBtn = document.getElementById('door-play-btn');
-                if(playBtn) focusElement(playBtn);
+                const firstFocusable = document.querySelector('#dashboard-view .surah-card, #dashboard-view .hero-content');
+                if(firstFocusable) focusElement(firstFocusable);
             }
         }, 500); 
     });

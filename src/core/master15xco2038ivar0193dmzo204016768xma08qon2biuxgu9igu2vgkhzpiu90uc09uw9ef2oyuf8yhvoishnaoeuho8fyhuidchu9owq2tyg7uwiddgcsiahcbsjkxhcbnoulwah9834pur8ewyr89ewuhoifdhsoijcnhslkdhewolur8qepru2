@@ -428,7 +428,6 @@ function switchView(viewName) {
         elements.quranAudio.pause();
         elements.transAudio.pause();
         refreshDashboard();
-        document.getElementById('door-play-btn').focus();
     }
 }
 
@@ -512,7 +511,6 @@ async function initializeApp() {
 // --- UPDATED: DASHBOARD LOGIC (SINGLE FISH MODE & INFINITE SCROLL) ---
 function refreshDashboard() {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
-    const heroBtn = document.getElementById('door-play-btn');
 
     // 1. Get all lists like before
     const allIndices = Array.from({length: 114}, (_, i) => i);
@@ -526,18 +524,13 @@ function refreshDashboard() {
     // 3. Populate ONLY the 'all-row' container (Single Fish requirement)
     fillRow('all-row', combinedIndices);
 
-    // Note: We deliberately do NOT populate 'trending-row' or 'short-row' anymore
-    // because index.css hides them, and Single Fish means one continuous loop.
-
     if(saved.chapter !== undefined && quranData[saved.chapter]) {
         const chNum = quranData[saved.chapter].chapterNumber;
         const vNum = (saved.verse || 0) + 1;
         const reciter = saved.reciter || 'alafasy';
         updateHeroPreview(chNum, vNum, reciter, false);
-        heroBtn.onclick = () => launchPlayer(chNum, vNum);
     } else {
         updateHeroPreview(1, 1, 'alafasy', false);
-        heroBtn.onclick = () => launchPlayer(1, 1);
     }
 }
 
@@ -656,7 +649,6 @@ function schedulePreview(chapterNum) {
     }
 
     document.getElementById('door-hero-subtitle').textContent = surah.title;
-    document.getElementById('door-play-btn').onclick = () => launchPlayer(chapterNum, 1);
 
     previewTimeout = setTimeout(() => {
         updateHeroPreview(chapterNum, 1, 'alafasy', true); 
@@ -1268,7 +1260,6 @@ function openSearch() {
 
 function closeSearch() {
     elements.search.overlay.classList.remove('active');
-    document.getElementById('door-play-btn').focus();
 }
 
 document.addEventListener('DOMContentLoaded', initializeApp);
